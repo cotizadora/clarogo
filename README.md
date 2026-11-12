@@ -35,6 +35,21 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 12-11-2026 (sexta entrega): Oferta PNG pasa a la oferta PYME
+
+Fuente: imagen "Oferta Móvil PYME, RUT mayor a 50 millones" enviada por Eduardo el 12-11-2026. La imagen no trae fecha de vigencia.
+
+| Plan | Portabilidad hasta 3 líneas | Portabilidad desde 4 líneas |
+|---|---|---|
+| Plan L | $7.000 + IVA | $6.000 + IVA |
+| Plan XL | $7.500 + IVA | $6.500 + IVA |
+| Plan Premium Pro | $9.000 + IVA | $8.000 + IVA |
+
+- Se eliminaron los planes PNG antiguos (Plan S, Max L, Max XL y Max Libre Pro, individuales y multilínea).
+- La sección calcula el total según las líneas a portar. Supuesto: desde 4 líneas, el valor menor se aplica a todas las líneas.
+- La imagen no indica gigas, minutos ni duración del precio, por eso la sección no los muestra.
+- Se agregó una pregunta sobre la oferta PYME en Preguntas y Respuestas.
+
 ### 12-11-2026 (quinta entrega): se retiran los planes antiguos
 
 Fuente: Eduardo confirmó el 12-11-2026 que los planes con letras ya no existen.

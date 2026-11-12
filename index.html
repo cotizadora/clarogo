@@ -332,14 +332,10 @@ footer a,footer button{color:inherit;background:none;border:0;padding:0;text-dec
   <!-- OFERTA PNG -->
   <section id="v-png" class="view" hidden>
     <h1 class="h">Oferta PNG</h1>
-    <p class="sub">Planes PNG Móvil. Los valores con IVA se calculan con 19%.</p>
-    <div class="note red" style="margin-bottom:12px"><b>Sin verificar.</b> Estos planes vienen del sitio antiguo y usan los nombres con letras (S, Max L, Max XL, Max Libre Pro). Confírmalos con el Plan Comercial vigente antes de ofrecerlos.</div>
-    <div class="sec-t">📱 Planes <em>Individuales</em></div>
-    <p class="sub">Un plan por línea</p>
-    <div class="plans four" id="p-ind"></div>
-    <div class="sec-t">📲 Planes <em>Multilínea</em></div>
-    <p class="sub">Precio por línea, elige la cantidad</p>
-    <div class="plans" id="p-mul"></div>
+    <p class="sub">Oferta Móvil PYME para portabilidad. Valores mensuales por línea, sin IVA. El IVA se calcula con 19%.</p>
+    <div class="note green" style="margin-bottom:12px">Aplica para clientes PYME con <b>RUT mayor a 50 millones</b>. Considera estos valores al momento de ofertar y registrar la venta.</div>
+    <p style="margin-bottom:14px"><button class="btn dark" id="p-todos">📸 Capturar tabla de precios</button></p>
+    <div class="plans" id="p-grid"></div>
   </section>
 
   <!-- SCRIPT -->
@@ -551,20 +547,15 @@ const PLANES_VIGENTES = [
  {id:'v1000n',title:'Plan 1000 + Netflix',data:'1000 GB libres',roaming:'100 Min + 5 GB + 100 SMS',ldi:'100 minutos',price:25990,netflix:true,puj:'Al usar la cuota baja a 256 kbps hasta el siguiente ciclo.'}
 ];
 
-// Oferta PNG
+// Oferta PNG (PYME). Valores mensuales por línea, sin IVA.
+// Fuente: imagen "Oferta Móvil PYME, RUT mayor a 50 millones" enviada por Eduardo el 12-11-2026.
 const IVA = 0.19;
-const PNG_IND = [
- {id:'s',title:'Plan S',data:'100 Gigas',price:6990,dur:'x 12 meses',old:'$9.990',after:'Luego $9.990/mes'},
- {id:'ml',title:'Plan Max L Libre',data:'300 Gigas',price:7990,dur:'x 12 meses',old:'$14.990',after:'Luego $14.990/mes'},
- {id:'mxl',title:'Plan Max XL Libre',data:'500 Gigas',price:9590,dur:'x 12 meses',old:'$16.990',after:'Luego $16.990/mes'},
- {id:'pro',title:'Plan Max Libre Pro',data:'Gigas Libres',price:12990,dur:'x 12 meses',old:'$20.990',after:'Luego $20.990/mes'}
+const PNG_CORTE = 4;   // desde esta cantidad de líneas portadas aplica el valor menor
+const PNG_PLANES = [
+ {id:'l',title:'Plan L',hasta3:7000,desde4:6000},
+ {id:'xl',title:'Plan XL',hasta3:7500,desde4:6500},
+ {id:'pro',title:'Plan Premium Pro',hasta3:9000,desde4:8000}
 ];
-const PNG_MUL = [
- {id:'mml',title:'Plan Max L',data:'300 Gigas',ppl:4554,oldVal:14990,dur:'x 12 meses/línea',old:'$14.990',after:'Luego $14.990/mes'},
- {id:'mmxl',title:'Plan Max XL',data:'500 Gigas',ppl:5370,oldVal:16990,dur:'x 12 meses/línea',old:'$16.990',after:'Luego $16.990/mes'},
- {id:'mpro',title:'Plan Max Libre Pro',data:'Gigas Libres',ppl:7145,oldVal:20990,dur:'x 12 meses/línea',old:'$20.990',after:'Luego $20.990/mes'}
-];
-
 // Script de validación: usa los mismos PLANES_VIGENTES de arriba
 const SCRIPT_NOTAS = {
  'Portabilidad':'📱 <strong>Para Portabilidad:</strong> El número quedará habilitado al día siguiente desde la fecha en que recibe el chip. <strong>Importante:</strong> No cambie el chip antes de haber perdido la señal con su compañía de origen.',
@@ -996,55 +987,46 @@ function initOferta() {
    ════════════════════════════════════════════════════════════════ */
 const conIva = n => clp(Math.round(n * (1 + IVA)));
 const pLineas = {};
-function pIndHTML(p) {
+const pValor = (p, n) => n >= PNG_CORTE ? p.desde4 : p.hasta3;
+const pTramo = n => n >= PNG_CORTE ? 'Portabilidad desde 4 líneas' : 'Portabilidad hasta 3 líneas';
+const pTxtLineas = n => n + (n === 1 ? ' línea' : ' líneas');
+function pHTML(p) {
+  const n = pLineas[p.id], v = pValor(p, n);
   return `<div class="plan-h">${esc(p.title)}</div><div class="plan-b">
-    <div class="plan-data">${esc(p.data)}</div>
-    <div class="plan-price"><b>${clp(p.price)}</b><span>${esc(p.dur)}</span></div>
-    <div><small>(Oferta PNG Móvil)</small><small>${esc(p.after)}</small></div>
-    <div><small>Con IVA (19%): <b>${conIva(p.price)}</b></small><small class="strike">Cargo normal ${esc(p.old)}</small></div>
-  </div><div class="plan-total">1 plan × ${clp(p.price)}</div>
+    <div class="plan-price"><small>PRECIO POR LÍNEA</small><b>${clp(v)}</b><span>+ IVA · ${pTramo(n)}</span></div>
+    <div><small>Con IVA (19%): <b>${conIva(v)}</b> por línea</small></div>
+    <div class="plan-rows"><div><span>Hasta 3 líneas</span><span>${clp(p.hasta3)} + IVA</span></div><div><span>Desde 4 líneas</span><span>${clp(p.desde4)} + IVA</span></div></div>
+    <div class="plan-sel"><label>Líneas a portar</label><select data-plin="${p.id}">${Array.from({ length: 20 }, (_, i) => `<option value="${i + 1}"${i + 1 === n ? ' selected' : ''}>${pTxtLineas(i + 1)}</option>`).join('')}</select></div>
+  </div><div class="plan-total solid">TOTAL MENSUAL<b>${pTxtLineas(n)} = ${clp(v * n)} + IVA</b>Con IVA: ${conIva(v * n)}</div>
   <div class="plan-btns"><button class="btn" data-pcap="${p.id}">📸 Capturar</button><button class="btn red" data-pmsg="${p.id}">📋 Copiar mensaje</button></div>`;
 }
-function pMulHTML(p) {
-  const n = pLineas[p.id], L = n + 1;
-  return `<div class="plan-h">Multilínea ${esc(p.title)}</div><div class="plan-b">
-    <div class="plan-data">${esc(p.data)}</div>
-    <div class="plan-price"><small>PRECIO POR LÍNEA</small><b>${clp(p.ppl)}</b><span>${esc(p.dur)}</span></div>
-    <div><small>Con IVA (19%): <b>${conIva(p.ppl)}</b></small><small class="strike">Cargo normal ${esc(p.old)}</small></div>
-    <div class="plan-sel"><label>➕ Líneas adicionales</label><select data-plin="${p.id}">${[1,2,3,4,5,6,7,8].map(i => `<option value="${i}"${i === n ? ' selected' : ''}>${i} adicional${i > 1 ? 'es' : ''} (${i + 1} en total)</option>`).join('')}</select></div>
-  </div><div class="plan-total solid">TOTAL A PAGAR<b>${L} líneas = ${clp(p.ppl * L)}</b>Con IVA: ${conIva(p.ppl * L)}<br><br>DESPUÉS DEL AÑO<b>${clp(p.oldVal * L)}</b>Con IVA: ${conIva(p.oldVal * L)}</div>
-  <div class="plan-btns"><button class="btn" data-pcap="${p.id}">📸 Capturar</button><button class="btn red" data-pmsg="${p.id}">📋 Copiar mensaje</button></div>`;
+function pBloques(p) {
+  const n = pLineas[p.id], v = pValor(p, n), B = '#fff';
+  return [{ t: 'head', text: 'Oferta Móvil PYME · ' + p.title },
+    { t: 'grp', bg: '#f3f4f6', items: [T('PRECIO POR LÍNEA', 10, 600, '#9ca3af'), T(clp(v), 32, 800, '#1f2937'), T('+ IVA', 13, 600, '#4b5563')] },
+    T(pTramo(n), 12, 600, '#374151', { gap: 2 }), T('Con IVA (19%): ' + conIva(v) + ' por línea', 11, 400, '#6b7280', { gap: 12 }),
+    { t: 'grp', bg: 'rojo', items: [T('TOTAL MENSUAL', 10, 700, B), T(`${pTxtLineas(n)} = ${clp(v * n)} + IVA`, 18, 800, B), T('Con IVA: ' + conIva(v * n), 11, 400, B)] },
+    T('Para clientes PYME con RUT mayor a 50 millones', 10, 400, '#6b7280', { gap: 6 })];
 }
-function pBloques(p, multi) {
-  const B = '#fff';
-  if (!multi) return [{ t: 'head', text: p.title }, T(p.data, 24, 800, '#e60000', { gap: 8 }),
-    { t: 'grp', bg: '#f3f4f6', items: [T(clp(p.price), 32, 800, '#1f2937'), T(p.dur, 13, 600, '#4b5563')] },
-    T('(Oferta PNG Móvil)', 11, 400, '#6b7280', { gap: 0 }), T(p.after, 11, 400, '#6b7280', { gap: 8 }),
-    T('Con IVA (19%): ' + conIva(p.price), 11, 600, '#374151', { gap: 0 }), T('Cargo normal ' + p.old, 11, 400, '#9ca3af', { strike: true, gap: 12 }),
-    { t: 'grp', bg: '#fff1f1', dash: true, items: [T('1 plan × ' + clp(p.price), 15, 800, '#e60000')] }];
-  const L = pLineas[p.id] + 1;
-  return [{ t: 'head', text: 'Multilínea ' + p.title }, T(p.data, 20, 800, '#e60000', { gap: 8 }),
-    { t: 'grp', bg: '#f3f4f6', items: [T('PRECIO POR LÍNEA', 10, 600, '#9ca3af'), T(clp(p.ppl), 32, 800, '#1f2937'), T(p.dur, 11, 400, '#6b7280')] },
-    T('Con IVA (19%): ' + conIva(p.ppl), 11, 600, '#374151', { gap: 0 }), T('Cargo normal ' + p.old, 11, 400, '#9ca3af', { strike: true, gap: 12 }),
-    { t: 'grp', bg: 'rojo', items: [T('TOTAL A PAGAR', 10, 700, B), T(`${L} líneas = ${clp(p.ppl * L)}`, 20, 800, B), T('Con IVA: ' + conIva(p.ppl * L), 11, 400, B, { gap: 10 }),
-      T('DESPUÉS DEL AÑO', 10, 700, B), T(clp(p.oldVal * L), 16, 700, B), T('Con IVA: ' + conIva(p.oldVal * L), 11, 400, B)] }];
+const pBloquesTabla = p => [{ t: 'head', text: p.title },
+  T('Portabilidad hasta 3 líneas', 11, 600, '#6b7280', { gap: 0 }), T(clp(p.hasta3), 28, 800, '#e60000', { gap: 0 }), T('+ IVA por línea', 11, 600, '#374151', { gap: 10 }), { t: 'hr' },
+  T('Portabilidad desde 4 líneas', 11, 600, '#6b7280', { gap: 0 }), T(clp(p.desde4), 28, 800, '#e60000', { gap: 0 }), T('+ IVA por línea', 11, 600, '#374151', { gap: 10 })];
+function pMensaje(p) {
+  const n = pLineas[p.id], v = pValor(p, n);
+  return `📲 *Oferta Móvil PYME: ${p.title}*\n- *Líneas a portar:* ${n}\n- *Valor por línea:* ${clp(v)} + IVA (${conIva(v)} con IVA)\n- *Total mensual:* ${clp(v * n)} + IVA (${conIva(v * n)} con IVA)\n\nAplica para clientes PYME con RUT mayor a 50 millones.`;
 }
 function initPng() {
-  PNG_MUL.forEach(p => pLineas[p.id] = 1);
-  $('#p-ind').innerHTML = PNG_IND.map(p => `<article class="card plan">${pIndHTML(p)}</article>`).join('');
-  $('#p-mul').innerHTML = PNG_MUL.map(p => `<article class="card plan" id="p-${p.id}">${pMulHTML(p)}</article>`).join('');
-  const busca = id => { const m = PNG_MUL.find(p => p.id === id); return m ? [m, true] : [PNG_IND.find(p => p.id === id), false]; };
-  $('#v-png').addEventListener('change', e => { const s = e.target.closest('[data-plin]'); if (!s) return; pLineas[s.dataset.plin] = +s.value; $('#p-' + s.dataset.plin).innerHTML = pMulHTML(busca(s.dataset.plin)[0]); });
-  $('#v-png').addEventListener('click', e => {
+  PNG_PLANES.forEach(p => pLineas[p.id] = 1);
+  const plan = id => PNG_PLANES.find(p => p.id === id);
+  $('#p-grid').innerHTML = PNG_PLANES.map(p => `<article class="card plan" id="p-${p.id}">${pHTML(p)}</article>`).join('');
+  $('#p-grid').addEventListener('change', e => { const s = e.target.closest('[data-plin]'); if (!s) return; pLineas[s.dataset.plin] = +s.value; $('#p-' + s.dataset.plin).innerHTML = pHTML(plan(s.dataset.plin)); });
+  $('#p-grid').addEventListener('click', e => {
     const c = e.target.closest('[data-pcap]'), m = e.target.closest('[data-pmsg]');
-    if (c) { const [p, multi] = busca(c.dataset.pcap); copyCanvas(tarjetaCanvas(pBloques(p, multi)), 'png-' + p.id + '.png', 'Captura copiada. Pégala en el chat.'); }
-    if (m) { const [p, multi] = busca(m.dataset.pmsg), n = pLineas[p.id];
-      copyText(multi
-        ? `📲 Multilínea — ${p.title}\n\nDatos: ${p.data}\nPrecio/línea: ${clp(p.ppl)} ${p.dur}\nCon IVA: ${conIva(p.ppl)}\n\nLíneas adicionales: ${n}\nTotal líneas: ${n + 1}\nTotal: ${clp(p.ppl * (n + 1))}`
-        : `📱 PNG Móvil — ${p.title}\n\nDatos: ${p.data}\nPrecio promo: ${clp(p.price)} ${p.dur}\nCon IVA (19%): ${conIva(p.price)}\n\nCargo normal: ${p.old}\n${p.after}`, 'Mensaje copiado'); }
+    if (c) { const p = plan(c.dataset.pcap); copyCanvas(tarjetaCanvas(pBloques(p)), 'pyme-' + p.id + '.png', 'Captura copiada. Pégala en el chat.'); }
+    if (m) copyText(pMensaje(plan(m.dataset.pmsg)), 'Mensaje copiado');
   });
+  $('#p-todos').onclick = () => copyCanvas(variasCanvas('Oferta Móvil PYME · RUT mayor a 50 millones', PNG_PLANES.map(p => tarjetaCanvas(pBloquesTabla(p)))), 'oferta-pyme.png', 'Tabla copiada. Pégala en el chat.');
 }
-
 /* ════════════════════════════════════════════════════════════════
    EXCEPCIONES DE BOLETAS
    ════════════════════════════════════════════════════════════════ */
@@ -1193,7 +1175,8 @@ const FAQ_FUENTES = {
   PM: 'Producto Móvil 14-08-2026 (Entrenamiento Técnico Comercial)',
   GEN: 'Inducción VR Fijo y Móvil, Genesys (resumen de apoyo)',
   FRONT: 'Inducción VR Móvil, Sistema Front Comercial (resumen de apoyo)',
-  TALLER: 'Resumen del Taller de Ventas (resumen de apoyo)'
+  TALLER: 'Resumen del Taller de Ventas (resumen de apoyo)',
+  PYME: 'Oferta Móvil PYME, imagen recibida el 12-11-2026'
 };
 const FAQ = [
  // Planes
@@ -1204,6 +1187,7 @@ const FAQ = [
  ['Planes','PM','¿El cliente puede contratar los servicios por separado?','Sí. Puede contratar los servicios por separado o como oferta conjunta, y también puede contratar o dar de baja cada servicio de forma independiente (Decreto 18 de Subtel).'],
  ['Planes','PM','¿Para qué tipo de cliente es un Plan Libre?','Para clientes hiperconectados, que se interesan en especificaciones técnicas, conectividad y cobertura, y que privilegian el uso de internet: teletrabajo, streaming, juegos, redes sociales y videos.'],
  ['Planes','PM','¿Qué atributos puedo usar como argumento de venta?','<ul><li>La oferta más atractiva del mercado.</li><li>Equipos con las cuotas más convenientes.</li><li>La mejor tasa de resolutividad de reclamos.</li><li>Pioneros en incluir servicios internacionales, con roaming los 365 días del año.</li><li>100 GB gratuitos en la nube con Claro Drive.</li></ul>'],
+ ['Planes','PYME','¿Cuál es la oferta móvil para PYME?','Para clientes PYME con <b>RUT mayor a 50 millones</b>, en portabilidad. Valores mensuales por línea, más IVA:<ul><li><b>Plan L:</b> $7.000 hasta 3 líneas y $6.000 desde 4 líneas.</li><li><b>Plan XL:</b> $7.500 hasta 3 líneas y $6.500 desde 4 líneas.</li><li><b>Plan Premium Pro:</b> $9.000 hasta 3 líneas y $8.000 desde 4 líneas.</li></ul>En la sección Oferta PNG puedes calcular el total según la cantidad de líneas.'],
  // Roaming y LDI
  ['Roaming y LDI','PM','¿En qué países funciona el roaming incluido?','En 51 países de los cinco continentes.<ul><li><b>América (17):</b> Canadá, Colombia, Costa Rica, Ecuador, El Salvador, Guatemala, Honduras, México, Nicaragua, Panamá, Paraguay, Perú, Puerto Rico, República Dominicana, Trinidad y Tobago, Uruguay y Estados Unidos.</li><li><b>Europa (26):</b> Albania, Alemania, Austria, Bélgica, Bielorrusia, Bulgaria, Croacia, Eslovenia, España, Estonia, Francia, Grecia, Irlanda, Italia, Letonia, Lituania, Luxemburgo, Macedonia, Malta, Países Bajos, Reino Unido, República Checa, Rumania, Serbia, Turquía y Ucrania.</li><li><b>Oceanía (2):</b> Australia y Nueva Zelanda.</li><li><b>Asia (5):</b> Arabia Saudita, Kuwait, Omán, Pakistán y Qatar.</li><li><b>África (1):</b> Ghana.</li></ul>En Reino Unido incluye Escocia, Inglaterra, Gales e Irlanda del Norte.'],
  ['Roaming y LDI','PM','¿El cliente tiene que activar el roaming?','No. Los Planes Libres incluyen una bolsa de roaming y el servicio ya viene activo. Solo debe activar la itinerancia de datos en su teléfono y estar en un país con convenio.'],
