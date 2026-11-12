@@ -35,6 +35,15 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 12-11-2026 (quinta entrega): se retiran los planes antiguos
+
+Fuente: Eduardo confirmó el 12-11-2026 que los planes con letras ya no existen.
+
+- Oferta Personas: se eliminó la "Oferta anterior del portal" (Max M, Max L Libre, Max XL Libre, Max Libre Pro, sus variantes de Línea Nueva y Port. Prepago, el adicional Max M y Plan Persona Mayor). Quedan solo Plan 500, Plan 800 y Plan 1000, con y sin Netflix.
+- Script: la lista de planes ahora es la misma de Oferta Personas y muestra el cargo fijo normal. Ya no muestra precio promocional, valor desde el mes 7 ni redes sociales, porque no hay fuente vigente para esos datos.
+- Oferta PNG: sigue con sus planes antiguos (S, Max L, Max XL, Max Libre Pro), ahora con aviso de "sin verificar". Falta confirmar si también dejaron de existir.
+- Los planes retirados siguen disponibles en `original/oferta.html` y `original/Script.html`.
+
 ### 12-11-2026 (cuarta entrega): stock del 12-11
 
 - datos/stock.csv se reemplazó con el archivo `Stock Diario, Planilla de precios 12-11.xlsx` que envió Eduardo.

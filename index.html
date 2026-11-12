@@ -323,20 +323,17 @@ footer a,footer button{color:inherit;background:none;border:0;padding:0;text-dec
   <!-- OFERTA PERSONAS -->
   <section id="v-oferta" class="view" hidden>
     <h1 class="h">Oferta Personas</h1>
-    <p class="sub">Planes y ofertas. Captura la tarjeta como imagen o copia el mensaje para WhatsApp.</p>
+    <p class="sub">Planes Libres vigentes. Captura la tarjeta como imagen o copia el mensaje para WhatsApp.</p>
     <div class="sec-t" style="margin-top:0">Planes Libres <em>vigentes</em></div>
     <div class="note green" style="margin:6px 0 12px">Fuente: <b id="ov-fuente"></b>. Los valores son el <b>cargo fijo normal</b> y no incluyen descuentos ni promociones. Para las ofertas disponibles revisa siempre el Plan Comercial vigente.</div>
     <div class="plans" id="ov-grid"></div>
-    <div class="sec-t" style="margin-top:28px">Oferta <em>anterior</em> del portal</div>
-    <div class="note red" style="margin:6px 0 12px"><b>Sin verificar.</b> Estos planes y precios promocionales vienen del sitio antiguo. Sus nombres no aparecen en el documento Producto Móvil del 14-08-2026, que solo lista Plan 500, Plan 800 y Plan 1000. Confírmalos con el Plan Comercial vigente antes de ofrecerlos.</div>
-    <p style="margin-bottom:14px"><button class="btn dark" id="o-todos">📸 Capturar planes de portabilidad</button></p>
-    <div class="plans" id="o-grid"></div>
-  </section>
+    <p style="margin-top:16px"><button class="btn dark" id="o-todos">📸 Capturar los 3 planes en una imagen</button></p>  </section>
 
   <!-- OFERTA PNG -->
   <section id="v-png" class="view" hidden>
     <h1 class="h">Oferta PNG</h1>
     <p class="sub">Planes PNG Móvil. Los valores con IVA se calculan con 19%.</p>
+    <div class="note red" style="margin-bottom:12px"><b>Sin verificar.</b> Estos planes vienen del sitio antiguo y usan los nombres con letras (S, Max L, Max XL, Max Libre Pro). Confírmalos con el Plan Comercial vigente antes de ofrecerlos.</div>
     <div class="sec-t">📱 Planes <em>Individuales</em></div>
     <p class="sub">Un plan por línea</p>
     <div class="plans four" id="p-ind"></div>
@@ -391,7 +388,6 @@ footer a,footer button{color:inherit;background:none;border:0;padding:0;text-dec
       </div>
       <div class="card sc">
         <h2><i>4</i> Confirmación del Plan y Condiciones</h2>
-        <div class="note" style="margin-bottom:10px"><b>Planes sin verificar.</b> Los nombres y precios de esta lista vienen del sitio antiguo y no aparecen en el documento Producto Móvil del 14-08-2026 (Plan 500, Plan 800 y Plan 1000). Confirma el plan y sus valores con el Plan Comercial vigente antes de leerlos al cliente.</div>
         <label for="sc-plan">Plan Contratado</label>
         <select id="sc-plan"></select>
         <div id="sc-detalle"></div>
@@ -555,23 +551,6 @@ const PLANES_VIGENTES = [
  {id:'v1000n',title:'Plan 1000 + Netflix',data:'1000 GB libres',roaming:'100 Min + 5 GB + 100 SMS',ldi:'100 minutos',price:25990,netflix:true,puj:'Al usar la cuota baja a 256 kbps hasta el siguiente ciclo.'}
 ];
 
-// Oferta anterior del portal (sin verificar con el Plan Comercial vigente)
-const ADICIONAL_NORMAL = 9743;           // valor de cada línea adicional desde el mes 7
-const SIN_ADICIONAL = 'No Aplica Adicional';
-const SIN_DCTO_PERMANENTE = ['module-mayor','module-maxm-linea','module-maxl-linea','module-maxm-prepago','module-maxl-prepago'];
-const CAPTURA_GENERAL = ['module1','module2','module3'];
-const PLANES = [
- {id:'module-mayor',title:'Plan Persona Mayor',data:'50 GIGAS',price:'$3.990',priceDuration:'x 12 meses',discount:'Oferta Portabilidad PosPos',afterDiscount:'Luego $6.990 al mes',normalPrice:'Cargo Fijo Normal $6.990',vigencia:'Para titulares desde 70 años.',additionalTitle:SIN_ADICIONAL,additionalPrice:'Gratis',additionalData:'0 GB',totalPrice:'¡1 plan x $3.990!',callsInfo:'1000 minutos de llamadas'},
- {id:'module0',title:'Max M',data:'200 GIGAS',price:'$6.495',priceDuration:'x 6 meses',discount:'50% de Dcto',afterDiscount:'Desde 7º mes $9.743',normalPrice:'Cargo Fijo Normal $12.990',additionalTitle:SIN_ADICIONAL,additionalPrice:'Gratis',additionalData:'0 GB',totalPrice:'¡1 plan x $6.495!',callsInfo:'Llamadas ilimitadas hasta 300 contactos'},
- {id:'module1',title:'Max L Libre',data:'600 GIGAS',price:'$7.495',priceDuration:'x 6 meses',discount:'50% de Dcto',afterDiscount:'Desde 7º mes $11.243',normalPrice:'Cargo Fijo Normal $14.990',additionalTitle:'Max M Adicional',additionalPrice:'$4.990 x 6 meses',additionalData:'400 GB',totalPrice:'¡2 planes x $12.485!',vigencia:'por 1 año',callsInfo:'Llamadas ilimitadas hasta 300 contactos'},
- {id:'module2',title:'Max XL Libre',data:'1.000 GIGAS',price:'$8.495',priceDuration:'x 6 meses',discount:'50% de Dcto',afterDiscount:'Desde 7º mes $12.743',normalPrice:'Cargo Fijo Normal $16.990',additionalTitle:'Max M Adicional',additionalPrice:'$2.990 x 6 meses',additionalData:'400 GB',totalPrice:'¡2 planes x $11.485!',vigencia:'por 1 año',callsInfo:'Llamadas ilimitadas hasta 300 contactos'},
- {id:'module3',title:'Max Libre Pro',data:'GIGAS Libres',price:'$10.495',priceDuration:'x 6 meses',discount:'50% de Dcto',afterDiscount:'Desde 7º mes $15.743',normalPrice:'Cargo Fijo Normal $20.990',additionalTitle:'Max M Adicional',additionalPrice:'$2.990 x 6 meses',additionalData:'400 GB',totalPrice:'¡2 planes x $13.485!',callsInfo:'Llamadas ilimitadas hasta 300 contactos'},
- {id:'module-maxm-linea',title:'MAX M — Línea Nueva',data:'200 GIGAS',price:'$8.444',priceDuration:'x 6 meses (30% Dcto)',discount:'30% de Dcto',afterDiscount:'Desde 7º mes $12.990',normalPrice:'Cargo Fijo Normal $12.990',additionalTitle:SIN_ADICIONAL,additionalPrice:'Gratis',additionalData:'0 GB',totalPrice:'1 plan x $8.444',callsInfo:'Llamadas ilimitadas hasta 300 contactos'},
- {id:'module-maxl-linea',title:'MAX L LIBRE — Línea Nueva',data:'300 GIGAS',price:'$9.744',priceDuration:'x 6 meses',discount:'Oferta Línea Nueva',afterDiscount:'Desde 7º mes $14.990',normalPrice:'Cargo Fijo Normal $14.990',additionalTitle:SIN_ADICIONAL,additionalPrice:'Gratis',additionalData:'0 GB',totalPrice:'1 plan x $9.744',callsInfo:'Llamadas ilimitadas hasta 300 contactos'},
- {id:'module-maxm-prepago',title:'MAX M — Port. Prepago',data:'200 GIGAS',price:'$8.444',priceDuration:'x 6 meses (30% Dcto)',discount:'30% de Dcto',afterDiscount:'Desde 7º mes $12.990',normalPrice:'Cargo Fijo Normal $12.990',additionalTitle:SIN_ADICIONAL,additionalPrice:'Gratis',additionalData:'0 GB',totalPrice:'1 plan x $8.444',callsInfo:'Portabilidad desde Prepago'},
- {id:'module-maxl-prepago',title:'MAX L LIBRE — Port. Prepago',data:'300 GIGAS',price:'$9.744',priceDuration:'x 6 meses',discount:'Oferta Port. Prepago',afterDiscount:'Desde 7º mes $14.990',normalPrice:'Cargo Fijo Normal $14.990',additionalTitle:SIN_ADICIONAL,additionalPrice:'Gratis',additionalData:'0 GB',totalPrice:'1 plan x $9.744',callsInfo:'Portabilidad desde Prepago'}
-];
-
 // Oferta PNG
 const IVA = 0.19;
 const PNG_IND = [
@@ -586,24 +565,7 @@ const PNG_MUL = [
  {id:'mpro',title:'Plan Max Libre Pro',data:'Gigas Libres',ppl:7145,oldVal:20990,dur:'x 12 meses/línea',old:'$20.990',after:'Luego $20.990/mes'}
 ];
 
-// Script de validación
-const SCRIPT_PLANES = {
- 'Plan Max M':{internet:'200 GB',minutos:'Libres a 300 números',roaming:'20 min + 1 GB + 20 SMS',ldi:'20 minutos',rrss:'WhatsApp, Facebook, Instagram, Telegram, TikTok, X (Libres)',sms:'500 SMS',via_ingreso:'Todas',cargo_fijo_normal:'$12.990',cargo_promo:'$6.495',cargo_mes_7:'$9.743',dscto:'50%',promo_detalle:'Oferta out. 50% x 6 meses, luego 25% permanente',vigencia_dcto:'6 meses al 50%'},
- 'Plan Max L Libre':{internet:'300 GB alta velocidad',minutos:'Libres a 300 números',roaming:'40 min + 2 GB + 40 SMS',ldi:'40 minutos',rrss:'WhatsApp, Facebook, Instagram, Telegram, TikTok, X (Libres)',sms:'500 SMS',via_ingreso:'Todas',cargo_fijo_normal:'$14.990',cargo_promo:'$7.495',cargo_mes_7:'$11.243',dscto:'50%',promo_detalle:'Oferta out. 50% x 6 meses, luego 25% permanente',vigencia_dcto:'6 meses al 50%'},
- 'Plan Max XL Libre':{internet:'500 GB alta velocidad',minutos:'Libres a 300 números',roaming:'60 min + 3 GB + 60 SMS',ldi:'60 minutos',rrss:'WhatsApp, Facebook, Instagram, Telegram, TikTok, X (Libres)',sms:'500 SMS',via_ingreso:'Portabilidad y Línea Nueva (Pos a Pos)',cargo_fijo_normal:'$16.990',cargo_promo:'$8.495',cargo_mes_7:'$12.743',dscto:'50%',promo_detalle:'Oferta out. 50% x 6 meses, luego 25% permanente',vigencia_dcto:'6 meses al 50%'},
- 'Plan Max Libre Pro':{internet:'GB libres (Ilimitado)',minutos:'Libres a 300 números',roaming:'100 min + 5 GB + 100 SMS',ldi:'100 minutos',rrss:'WhatsApp, Facebook, Instagram, Telegram, TikTok, X (Libres)',sms:'500 SMS',via_ingreso:'Portabilidad y Línea Nueva (Pos a Pos)',cargo_fijo_normal:'$20.990',cargo_promo:'$10.495',cargo_mes_7:'$15.743',dscto:'50%',promo_detalle:'Oferta out. 50% x 6 meses, luego 25% permanente',vigencia_dcto:'6 meses al 50%'},
- 'Plan Persona Mayor':{internet:'50 GB',minutos:'1000 minutos de llamadas',roaming:'No incluido',ldi:'No incluido',rrss:'Instagram, Facebook, X, WhatsApp, TikTok (Ilimitadas)',sms:'No incluido',via_ingreso:'Portabilidad PosPos',cargo_fijo_normal:'$6.990',cargo_promo:'$3.990',cargo_mes_7:'$6.990',dscto:'43%',promo_detalle:'Oferta Portabilidad PosPos. 43% x 12 meses',vigencia_dcto:'12 meses al 43%',restriccion:'Para titulares desde 70 años'}
-};
-// Precios que reemplazan a los anteriores cuando el servicio es Línea Nueva o Migración
-const SCRIPT_OVERRIDE = {
- 'Plan Max M':{cargo_promo:'$8.444',cargo_mes_7:'$12.990',dscto:'35%',vigencia_dcto:'6 meses al 35%',promo_detalle:'35% de descuento por 6 meses, luego precio normal. No aplica descuento permanente.'},
- 'Plan Max L Libre':{cargo_promo:'$9.744',cargo_mes_7:'$14.990',dscto:'35%',vigencia_dcto:'6 meses al 35%',promo_detalle:'35% de descuento por 6 meses, luego precio normal. No aplica descuento permanente.'}
-};
-const SCRIPT_PLANES_POR_TIPO = {
- 'Portabilidad':['Plan Max M','Plan Max L Libre','Plan Max XL Libre','Plan Max Libre Pro','Plan Persona Mayor'],
- 'Línea Nueva':['Plan Max M','Plan Max L Libre'],
- 'Migración':['Plan Max M','Plan Max L Libre']
-};
+// Script de validación: usa los mismos PLANES_VIGENTES de arriba
 const SCRIPT_NOTAS = {
  'Portabilidad':'📱 <strong>Para Portabilidad:</strong> El número quedará habilitado al día siguiente desde la fecha en que recibe el chip. <strong>Importante:</strong> No cambie el chip antes de haber perdido la señal con su compañía de origen.',
  'Línea Nueva':'➕ <strong>Para Línea Nueva:</strong> Su nuevo número de Claro quedará activo en los próximos minutos una vez que inserte el chip en su equipo.',
@@ -997,60 +959,6 @@ const T = (text, size, w, color, extra) => Object.assign({ t: 'txt', text, size,
 /* ════════════════════════════════════════════════════════════════
    OFERTA PERSONAS
    ════════════════════════════════════════════════════════════════ */
-const oAdic = {};
-const etiquetaAdic = n => n === 0 ? '0 — Sin adicionales' : `${n} línea${n > 1 ? 's' : ''} adicional${n > 1 ? 'es' : ''}`;
-function oCalculo(p, n) {
-  const base = dinero(p.price), normal7 = dinero(p.afterDiscount), ad = dinero(p.additionalPrice);
-  const t6 = base + n * ad, t7 = normal7 + n * ADICIONAL_NORMAL;
-  return { totalTxt: n === 0 ? p.totalPrice : `${n + 1} Planes x ${clp(t6)}`,
-    filas: [['Base (6 meses):', clp(base)], ['Adicional c/u:', clp(ad)], [`Total adicionales (x${n}):`, clp(n * ad)], ['Total mes 1-6:', clp(t6)], ['Total desde mes 7:', clp(t7)]] };
-}
-const oDespues = p => SIN_DCTO_PERMANENTE.includes(p.id) ? [p.afterDiscount] : [p.afterDiscount, '(25% Dcto. permanente)'];
-function oTarjeta(p) {
-  const n = oAdic[p.id] || 0, tiene = p.additionalTitle !== SIN_ADICIONAL, mayor = p.id === 'module-mayor', c = oCalculo(p, n);
-  let h = `<div class="plan-h">${esc(p.title)}</div><div class="plan-b">
-    <div class="plan-data">${esc(p.data)}</div>
-    <div class="plan-price"><b>${esc(p.price)}</b><span>${esc(p.priceDuration)}</span></div>
-    <div><small>(${esc(mayor ? p.discount.replace('Oferta ', '') : p.discount)})</small>${oDespues(p).map(t => `<small>${esc(t)}</small>`).join('')}</div>
-    <small>Redes Sociales ilimitadas</small><small><b>${esc(p.callsInfo)}</b></small>`;
-  if (mayor) h += `<small><b>${esc(p.vigencia)}</b></small>`;
-  if (tiene) {
-    h += `<div class="plan-add"><b>+ ${esc(p.additionalTitle)}</b><br>${esc(p.additionalPrice)}<br>${esc(p.additionalData)}</div>
-      <div class="plan-sel"><label>Líneas adicionales</label><select data-adic="${p.id}">${[0,1,2,3,4,5,6,7,8,9,10].map(i => `<option value="${i}"${i === n ? ' selected' : ''}>${etiquetaAdic(i)}</option>`).join('')}</select></div>`;
-    if (n > 0) h += `<div class="plan-det"><span class="t">🧮 ${etiquetaAdic(n)} (${n + 1} planes en total)</span>${c.filas.map((f, i) => `<div${i > 2 ? ' class="b"' : ''}><span>${f[0]}</span><span>${f[1]}</span></div>`).join('')}</div>`;
-  }
-  h += `</div><div class="plan-total">${esc(c.totalTxt)}</div>
-    <div class="plan-btns"><button class="btn" data-ocap="${p.id}">📸 Capturar</button><button class="btn red" data-omsg="${p.id}">📋 Copiar mensaje</button></div>`;
-  return h;
-}
-function oBloques(p) {
-  const n = oAdic[p.id] || 0, tiene = p.additionalTitle !== SIN_ADICIONAL, mayor = p.id === 'module-mayor', c = oCalculo(p, n);
-  const b = [{ t: 'head', text: p.title }, T(p.data, 24, 800, '#e60000', { gap: 8 }),
-    { t: 'grp', bg: '#f3f4f6', items: [T(p.price, 32, 800, '#1f2937'), T(p.priceDuration, 13, 600, '#4b5563')] },
-    T('(' + (mayor ? p.discount.replace('Oferta ', '') : p.discount) + ')', 11, 400, '#6b7280', { gap: 0 }),
-    T(oDespues(p).join('\n'), 11, 400, '#6b7280', { gap: 10 }),
-    T('Redes Sociales ilimitadas', 11, 500, '#6b7280'), T(p.callsInfo, 11, 600, '#4b5563', { gap: 10 })];
-  if (mayor) b.push(T(p.vigencia, 13, 600, '#374151', { gap: 10 }));
-  if (tiene) {
-    b.push({ t: 'hr' }, T('+ ' + p.additionalTitle, 12, 700, '#e60000', { gap: 2 }), T(p.additionalPrice, 12, 600, '#1f2937', { gap: 2 }), T(p.additionalData, 12, 600, '#1f2937', { gap: 10 }));
-    if (n > 0) b.push({ t: 'grp', bg: '#f9fafb', pad: 8, items: [T(`${etiquetaAdic(n)} (${n + 1} planes en total)`, 11, 700, '#e60000', { gap: 6 }),
-      { t: 'rows', rows: c.filas.map((f, i) => [f[0], f[1], i > 2, i === 3 ? '#e60000' : i === 4 ? '#1f2937' : '']) }, T('', 1, 400, '', { gap: 0 })] });
-  }
-  b.push({ t: 'grp', bg: '#fff1f1', dash: true, items: [T(c.totalTxt, 15, 800, '#e60000')] });
-  return b;
-}
-function oMensaje(p) {
-  const n = oAdic[p.id] || 0, c = oCalculo(p, n), social = '- *Redes Sociales Ilimitadas:* (Instagram, Facebook, X, WhatsApp, TikTok)';
-  const precio = p.price + (p.priceDuration ? ` ${p.priceDuration}` : '');
-  const despues = SIN_DCTO_PERMANENTE.includes(p.id) ? p.afterDiscount : `${p.afterDiscount} (25% Dcto. permanente)`;
-  const limpio = s => s.replace('¡', '').replace('!', '');
-  if (p.id === 'module-mayor')
-    return `*${p.title}*\n- *Datos:* ${p.data}\n${social}\n- *Precio Oferta:* ${precio}\n- *Descuento:* ${p.discount}\n- *Siguiente Precio:* ${despues}${p.vigencia ? `\n- *Vigencia:* ${p.vigencia}` : ''}\n- *Total:* ${p.totalPrice}`;
-  if (p.additionalTitle === SIN_ADICIONAL)
-    return `*${p.title}*\n- *Datos:* ${p.data}\n${social}\n- *Precio Oferta:* ${precio}\n- *Descuento:* ${p.discount}\n- *Siguiente Precio:* ${despues}\n- *Total:* ${limpio(p.totalPrice)}`;
-  const detalle = n > 0 ? `- *Líneas adicionales:* ${etiquetaAdic(n)}` + c.filas.map(f => `\n  • ${f[0]} ${f[1]}`).join('') : '';
-  return `📲 *Plan Principal: ${p.title}*\n- *Datos:* ${p.data}\n${social}\n- *Precio Oferta:* ${precio}\n- *Descuento:* ${p.discount}\n- *Siguiente Precio:* ${despues}\n\n➕ *Plan Adicional: ${p.additionalTitle}*\n- *Datos:* ${p.additionalData}\n- *Precio:* ${p.additionalPrice}\n${detalle}\n*Total Planes: ${limpio(c.totalTxt)}*`;
-}
 // Planes vigentes (cargo fijo normal)
 const vFilas = p => [['Minutos', PV_MIN], ['Mensajes', PV_SMS], ['Roaming', p.roaming], ['Larga Distancia Internacional', p.ldi]];
 function vTarjeta(p) {
@@ -1081,18 +989,8 @@ function initOferta() {
     if (c) { const p = pv(c.dataset.vcap); copyCanvas(tarjetaCanvas(vBloques(p)), p.id + '.png', `Imagen del ${p.title} copiada. Pégala en el chat.`); }
     if (m) copyText(vMensaje(pv(m.dataset.vmsg)), 'Mensaje copiado. Pégalo con Ctrl+V.');
   });
-  const grid = $('#o-grid');
-  grid.innerHTML = PLANES.map(p => `<article class="card plan" id="o-${p.id}">${oTarjeta(p)}</article>`).join('');
-  const plan = id => PLANES.find(p => p.id === id);
-  grid.addEventListener('change', e => { const s = e.target.closest('[data-adic]'); if (!s) return; oAdic[s.dataset.adic] = +s.value; $('#o-' + s.dataset.adic).innerHTML = oTarjeta(plan(s.dataset.adic)); });
-  grid.addEventListener('click', e => {
-    const c = e.target.closest('[data-ocap]'), m = e.target.closest('[data-omsg]');
-    if (c) { const p = plan(c.dataset.ocap); copyCanvas(tarjetaCanvas(oBloques(p)), p.id + '.png', `Imagen del plan ${p.title} copiada. Pégala en el chat.`); }
-    if (m) copyText(oMensaje(plan(m.dataset.omsg)), 'Mensaje copiado. Pégalo con Ctrl+V.');
-  });
-  $('#o-todos').onclick = () => copyCanvas(variasCanvas('Planes y Ofertas Claro Chile', CAPTURA_GENERAL.map(id => tarjetaCanvas(oBloques(plan(id))))), 'planes.png', 'Captura copiada. Pégala en el chat.');
+  $('#o-todos').onclick = () => copyCanvas(variasCanvas('Planes Libres', PLANES_VIGENTES.filter(p => !p.netflix).map(p => tarjetaCanvas(vBloques(p)))), 'planes.png', 'Captura copiada. Pégala en el chat.');
 }
-
 /* ════════════════════════════════════════════════════════════════
    OFERTA PNG
    ════════════════════════════════════════════════════════════════ */
@@ -1203,21 +1101,17 @@ function initScript() {
     if (rut.value.length > 4) { const v = rutValido(rut.value); ok.textContent = v ? '✓ Válido' : '✗ Inválido'; ok.style.color = rut.style.borderColor = v ? 'var(--green)' : 'var(--red)'; }
     else { ok.textContent = ''; rut.style.borderColor = ''; }
   };
+  const SP = Object.fromEntries(PLANES_VIGENTES.map(p => [p.title, { internet: p.data, minutos: PV_MIN, sms: PV_SMS, ldi: p.ldi, roaming: p.roaming, extra: p.netflix ? 'Netflix Estándar' : '', cargo: clp(p.price) }]));
   const detalle = () => {
-    const base = SCRIPT_PLANES[plan.value]; if (!base) return;
-    const d = Object.assign({}, base, tipo.value !== 'Portabilidad' ? SCRIPT_OVERRIDE[plan.value] : null);
+    const d = SP[plan.value]; if (!d) return;
     $('#sc-detalle').innerHTML = `<div class="pd"><div class="pd-h">📶 ${esc(plan.value)}</div>
-      <div class="pd-g"><div><b>Internet</b>${esc(d.internet)}</div><div><b>Minutos</b>${esc(d.minutos)}</div><div><b>SMS</b>${esc(d.sms)}</div><div><b>LDI</b>${esc(d.ldi)}</div><div class="w"><b>Redes Sociales</b>${esc(d.rrss)}</div><div class="w"><b>Roaming</b>${esc(d.roaming)}</div></div>
-      <div class="pd-p"><div class="row"><span>Precio Normal:</span><span style="text-decoration:line-through;opacity:.6">${esc(d.cargo_fijo_normal)}</span></div>
-        <div class="row"><span>Precio Promocional:</span><span class="promo">${esc(d.cargo_promo)}</span></div>
-        <div class="row"><span>Desde mes 7:</span><b>${esc(d.cargo_mes_7)}</b></div>
-        <div style="margin-top:8px;font-size:.84rem;color:var(--muted)"><b>Descuento:</b> ${esc(d.dscto)} (${esc(d.vigencia_dcto)})<br><b>Vía de ingreso:</b> ${esc(d.via_ingreso)}<br><em>${esc(d.promo_detalle)}</em></div>
-        ${d.restriccion ? `<div class="note red" style="margin-top:10px"><b>${esc(d.restriccion)}</b></div>` : ''}</div></div>`;
+      <div class="pd-g"><div><b>Internet</b>${esc(d.internet)}</div><div><b>Minutos</b>${esc(d.minutos)}</div><div><b>SMS</b>${esc(d.sms)}</div><div><b>LDI</b>${esc(d.ldi)}</div><div class="w"><b>Roaming</b>${esc(d.roaming)}</div>${d.extra ? `<div class="w"><b>Incluye</b>${esc(d.extra)}</div>` : ''}</div>
+      <div class="pd-p"><div class="row"><span>Cargo fijo mensual:</span><span class="promo">${esc(d.cargo)}</span></div>
+        <div style="margin-top:8px;font-size:.84rem;color:var(--muted)">Valor normal, sin descuentos. Si la venta tiene una promoción, lee al cliente el valor y la duración que indica el Plan Comercial vigente.</div></div></div>`;
   };
   const cambioTipo = () => {
-    const t = tipo.value, permitidos = SCRIPT_PLANES_POR_TIPO[t], pref = t === 'Portabilidad' ? '' : t + ' - ';
-    const actual = permitidos.includes(plan.value) ? plan.value : (permitidos.includes('Plan Max L Libre') && !plan.value ? 'Plan Max L Libre' : permitidos[0]);
-    plan.innerHTML = permitidos.map(p => `<option value="${p}"${p === actual ? ' selected' : ''}>${pref}${p}</option>`).join('');
+    const t = tipo.value, lista = Object.keys(SP), actual = SP[plan.value] ? plan.value : lista[0];
+    plan.innerHTML = lista.map(p => `<option${p === actual ? ' selected' : ''}>${p}</option>`).join('');
     $('#sc-port').hidden = t !== 'Portabilidad'; $('#sc-nota').innerHTML = SCRIPT_NOTAS[t]; detalle();
   };
   const ponerAgente = v => { agente.value = v; $('#sc-agente2').textContent = v || '[Nombre del Ejecutivo]'; };
