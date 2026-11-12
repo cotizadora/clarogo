@@ -199,6 +199,21 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 #dlg-phone iframe{width:100%;height:min(72vh,680px);border:0;border-radius:20px;background:#fff;display:block}
 #dlg-phone .btn{width:100%;margin-top:8px}
 
+/* Preguntas y respuestas */
+.faq{margin-bottom:8px;overflow:hidden}
+.faq summary{cursor:pointer;padding:13px 40px 13px 14px;font-weight:700;font-size:.92rem;list-style:none;position:relative}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'+';position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--red);font-size:1.3rem;font-weight:400}
+.faq[open] summary::after{content:'−'}
+.faq[open] summary{color:var(--red)}
+.faq .a{padding:0 14px 14px;font-size:.88rem;line-height:1.6}
+.faq .a ul{margin:6px 0;padding-left:20px}
+.faq .src{display:block;margin-top:10px;font-size:.72rem;color:var(--dim)}
+.plan-rows{text-align:left;font-size:.8rem;border-top:1px solid var(--border);padding-top:6px}
+.plan-rows div{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px solid #f1f3f6}
+.plan-rows span:first-child{color:var(--muted)}
+.plan-rows span:last-child{font-weight:600;text-align:right}
+
 /* Ingreso de venta */
 #venta-frame{width:100%;height:calc(100vh - 190px);min-height:520px;border:0;display:block;border-radius:var(--r);background:#fff}
 
@@ -309,6 +324,11 @@ footer a,footer button{color:inherit;background:none;border:0;padding:0;text-dec
   <section id="v-oferta" class="view" hidden>
     <h1 class="h">Oferta Personas</h1>
     <p class="sub">Planes y ofertas. Captura la tarjeta como imagen o copia el mensaje para WhatsApp.</p>
+    <div class="sec-t" style="margin-top:0">Planes Libres <em>vigentes</em></div>
+    <div class="note green" style="margin:6px 0 12px">Fuente: <b id="ov-fuente"></b>. Los valores son el <b>cargo fijo normal</b> y no incluyen descuentos ni promociones. Para las ofertas disponibles revisa siempre el Plan Comercial vigente.</div>
+    <div class="plans" id="ov-grid"></div>
+    <div class="sec-t" style="margin-top:28px">Oferta <em>anterior</em> del portal</div>
+    <div class="note red" style="margin:6px 0 12px"><b>Sin verificar.</b> Estos planes y precios promocionales vienen del sitio antiguo. Sus nombres no aparecen en el documento Producto Móvil del 14-08-2026, que solo lista Plan 500, Plan 800 y Plan 1000. Confírmalos con el Plan Comercial vigente antes de ofrecerlos.</div>
     <p style="margin-bottom:14px"><button class="btn dark" id="o-todos">📸 Capturar planes de portabilidad</button></p>
     <div class="plans" id="o-grid"></div>
   </section>
@@ -371,6 +391,7 @@ footer a,footer button{color:inherit;background:none;border:0;padding:0;text-dec
       </div>
       <div class="card sc">
         <h2><i>4</i> Confirmación del Plan y Condiciones</h2>
+        <div class="note" style="margin-bottom:10px"><b>Planes sin verificar.</b> Los nombres y precios de esta lista vienen del sitio antiguo y no aparecen en el documento Producto Móvil del 14-08-2026 (Plan 500, Plan 800 y Plan 1000). Confirma el plan y sus valores con el Plan Comercial vigente antes de leerlos al cliente.</div>
         <label for="sc-plan">Plan Contratado</label>
         <select id="sc-plan"></select>
         <div id="sc-detalle"></div>
@@ -416,6 +437,16 @@ footer a,footer button{color:inherit;background:none;border:0;padding:0;text-dec
     <input type="search" id="g-q" placeholder="Buscar dispositivo" autocomplete="off" style="margin-bottom:12px">
     <div class="gal" id="g-grid"></div>
     <div class="empty" id="g-none" hidden>Sin resultados</div>
+  </section>
+
+  <!-- PREGUNTAS Y RESPUESTAS -->
+  <section id="v-faq" class="view" hidden>
+    <h1 class="h">Preguntas y Respuestas</h1>
+    <p class="sub">Respuestas rápidas sobre productos y procesos, tomadas de los documentos de entrenamiento. Cada respuesta indica su fuente.</p>
+    <input type="search" id="f-q" placeholder="Buscar: roaming, boleta, recambio, deuda…" autocomplete="off" style="margin-bottom:10px">
+    <div class="chips" id="f-chips"></div>
+    <div id="f-list"></div>
+    <div class="empty" id="f-none" hidden>No hay preguntas que coincidan con la búsqueda.</div>
   </section>
 
   <!-- TUTORIALES -->
@@ -511,8 +542,21 @@ const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 // Excepciones de Boletas
 const EXCEPCIONES = [['1','Hasta $18.000'],['2','Hasta $27.000'],['3','Hasta $36.000'],['4','Hasta $45.000'],['5','Hasta $54.000'],['6 o más','Hasta $63.000']];
 
-// Oferta Personas
-const ADICIONAL_NORMAL = 9743;            // valor de cada línea adicional desde el mes 7
+// Planes Libres vigentes. Cargo fijo normal, sin descuentos.
+// Fuente: PRODUCTO MÓVIL 14082026.pdf (Entrenamiento Técnico Comercial), láminas 11 a 13. Cargado el 12-11-2026.
+const FUENTE_PLANES = 'Producto Móvil 14-08-2026, Entrenamiento Técnico Comercial';
+const PV_MIN = 'Libres a 300 números', PV_SMS = '500 SMS';
+const PLANES_VIGENTES = [
+ {id:'v500',title:'Plan 500',data:'500 GB a alta velocidad',roaming:'40 Min + 2 GB + 40 SMS',ldi:'40 minutos',price:9990,puj:'Al usar la cuota baja a 256 kbps. Sobre 600 GB baja a 64 kbps.'},
+ {id:'v800',title:'Plan 800',data:'800 GB a alta velocidad',roaming:'60 Min + 3 GB + 60 SMS',ldi:'60 minutos',price:12990,puj:'Al usar la cuota baja a 256 kbps. Sobre 900 GB baja a 64 kbps.'},
+ {id:'v1000',title:'Plan 1000',data:'1000 GB de alta velocidad',roaming:'100 Min + 5 GB + 100 SMS',ldi:'100 minutos',price:17990,puj:'Al usar la cuota baja a 256 kbps hasta el siguiente ciclo.'},
+ {id:'v500n',title:'Plan 500 + Netflix',data:'500 GB a alta velocidad',roaming:'40 Min + 2 GB + 40 SMS',ldi:'40 minutos',price:17990,netflix:true,puj:'Al usar la cuota baja a 256 kbps. Sobre 600 GB baja a 64 kbps.'},
+ {id:'v800n',title:'Plan 800 + Netflix',data:'800 GB a alta velocidad',roaming:'60 Min + 3 GB + 60 SMS',ldi:'60 minutos',price:20990,netflix:true,puj:'Al usar la cuota baja a 256 kbps. Sobre 900 GB baja a 64 kbps.'},
+ {id:'v1000n',title:'Plan 1000 + Netflix',data:'1000 GB libres',roaming:'100 Min + 5 GB + 100 SMS',ldi:'100 minutos',price:25990,netflix:true,puj:'Al usar la cuota baja a 256 kbps hasta el siguiente ciclo.'}
+];
+
+// Oferta anterior del portal (sin verificar con el Plan Comercial vigente)
+const ADICIONAL_NORMAL = 9743;           // valor de cada línea adicional desde el mes 7
 const SIN_ADICIONAL = 'No Aplica Adicional';
 const SIN_DCTO_PERMANENTE = ['module-mayor','module-maxm-linea','module-maxl-linea','module-maxm-prepago','module-maxl-prepago'];
 const CAPTURA_GENERAL = ['module1','module2','module3'];
@@ -598,6 +642,7 @@ const MENU = [
  {v:'venta',t:'Ingreso de Venta',i:'<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>'},
  {v:'enlaces',t:'Enlaces',i:'<path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>'},
  {v:'galeria',t:'Galería',i:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>'},
+ {v:'faq',t:'Preguntas y Respuestas',badge:'Nuevo',i:'<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>'},
  {m:'dlg-exc',t:'Excepciones de Boletas',i:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/>'},
  {v:'tutoriales',t:'Tutoriales',badge:'Nuevo',i:'<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>'},
  {m:'dlg-audios',t:'Audios',badge:'Próximamente',soon:true,i:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'}
@@ -682,8 +727,8 @@ const abrir = id => { const d = $('#' + id); if (!d.open) d.showModal(); };
 /* ════════════════════════════════════════════════════════════════
    NAVEGACIÓN
    ════════════════════════════════════════════════════════════════ */
-const VIEWS = ['inicio', 'stock', 'oferta', 'png', 'script', 'venta', 'enlaces', 'galeria', 'tutoriales'];
-const INIT = { stock: initStock, oferta: initOferta, png: initPng, script: initScript, venta: initVenta, enlaces: initEnlaces, galeria: initGaleria, tutoriales: initTutoriales };
+const VIEWS = ['inicio', 'stock', 'oferta', 'png', 'script', 'venta', 'enlaces', 'galeria', 'faq', 'tutoriales'];
+const INIT = { faq: initFaq, stock: initStock, oferta: initOferta, png: initPng, script: initScript, venta: initVenta, enlaces: initEnlaces, galeria: initGaleria, tutoriales: initTutoriales };
 const listo = {};
 function route() {
   let v = location.hash.slice(1) || 'inicio';
@@ -1006,7 +1051,36 @@ function oMensaje(p) {
   const detalle = n > 0 ? `- *Líneas adicionales:* ${etiquetaAdic(n)}` + c.filas.map(f => `\n  • ${f[0]} ${f[1]}`).join('') : '';
   return `📲 *Plan Principal: ${p.title}*\n- *Datos:* ${p.data}\n${social}\n- *Precio Oferta:* ${precio}\n- *Descuento:* ${p.discount}\n- *Siguiente Precio:* ${despues}\n\n➕ *Plan Adicional: ${p.additionalTitle}*\n- *Datos:* ${p.additionalData}\n- *Precio:* ${p.additionalPrice}\n${detalle}\n*Total Planes: ${limpio(c.totalTxt)}*`;
 }
+// Planes vigentes (cargo fijo normal)
+const vFilas = p => [['Minutos', PV_MIN], ['Mensajes', PV_SMS], ['Roaming', p.roaming], ['Larga Distancia Internacional', p.ldi]];
+function vTarjeta(p) {
+  return `<div class="plan-h">${esc(p.title)}</div><div class="plan-b">
+    <div class="plan-data" style="font-size:1.2rem">${esc(p.data)}</div>
+    <div class="plan-price"><b>${clp(p.price)}</b><span>Mensual · cargo fijo normal</span></div>
+    ${p.netflix ? '<small><b>Incluye Netflix Estándar</b></small>' : ''}
+    <div class="plan-rows">${vFilas(p).map(f => `<div><span>${f[0]}</span><span>${esc(f[1])}</span></div>`).join('')}</div>
+    <small>${esc(p.puj)}</small>
+  </div><div class="plan-btns"><button class="btn" data-vcap="${p.id}">📸 Capturar</button><button class="btn red" data-vmsg="${p.id}">📋 Copiar mensaje</button></div>`;
+}
+function vBloques(p) {
+  const b = [{ t: 'head', text: p.title }, T(p.data, 18, 800, '#e60000', { gap: 8 }),
+    { t: 'grp', bg: '#f3f4f6', items: [T(clp(p.price), 32, 800, '#1f2937'), T('Mensual', 13, 600, '#4b5563')] }];
+  if (p.netflix) b.push(T('Incluye Netflix Estándar', 12, 700, '#1f2937', { gap: 8 }));
+  b.push({ t: 'hr' });
+  vFilas(p).forEach(f => b.push(T(f[0], 10, 600, '#9ca3af', { gap: 0 }), T(f[1], 12, 600, '#374151', { gap: 6 })));
+  b.push(T('', 1, 400, '', { gap: 4 }));
+  return b;
+}
+const vMensaje = p => `*${p.title}*\n- *Datos:* ${p.data}\n- *Minutos:* ${PV_MIN}\n- *Mensajes:* ${PV_SMS}\n- *Roaming:* ${p.roaming}\n- *Larga Distancia Internacional:* ${p.ldi}${p.netflix ? '\n- *Incluye:* Netflix Estándar' : ''}\n- *Cargo fijo mensual:* ${clp(p.price)}`;
+
 function initOferta() {
+  $('#ov-fuente').textContent = FUENTE_PLANES;
+  $('#ov-grid').innerHTML = PLANES_VIGENTES.map(p => `<article class="card plan">${vTarjeta(p)}</article>`).join('');
+  $('#ov-grid').addEventListener('click', e => {
+    const c = e.target.closest('[data-vcap]'), m = e.target.closest('[data-vmsg]'), pv = id => PLANES_VIGENTES.find(p => p.id === id);
+    if (c) { const p = pv(c.dataset.vcap); copyCanvas(tarjetaCanvas(vBloques(p)), p.id + '.png', `Imagen del ${p.title} copiada. Pégala en el chat.`); }
+    if (m) copyText(vMensaje(pv(m.dataset.vmsg)), 'Mensaje copiado. Pégalo con Ctrl+V.');
+  });
   const grid = $('#o-grid');
   grid.innerHTML = PLANES.map(p => `<article class="card plan" id="o-${p.id}">${oTarjeta(p)}</article>`).join('');
   const plan = id => PLANES.find(p => p.id === id);
@@ -1214,6 +1288,112 @@ function initTutoriales() {
     if (t.phone) { $('#ph-frame').src = t.file; abrir('dlg-phone'); } else window.open(t.file, '_blank', 'noopener');
   });
   $('#dlg-phone').addEventListener('close', () => $('#ph-frame').src = 'about:blank');
+  pinta();
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PREGUNTAS Y RESPUESTAS
+   Cada entrada: [categoría, fuente, pregunta, respuesta en HTML]
+   ════════════════════════════════════════════════════════════════ */
+const FAQ_FUENTES = {
+  PM: 'Producto Móvil 14-08-2026 (Entrenamiento Técnico Comercial)',
+  GEN: 'Inducción VR Fijo y Móvil, Genesys (resumen de apoyo)',
+  FRONT: 'Inducción VR Móvil, Sistema Front Comercial (resumen de apoyo)',
+  TALLER: 'Resumen del Taller de Ventas (resumen de apoyo)'
+};
+const FAQ = [
+ // Planes
+ ['Planes','PM','¿Qué planes postpago se ofrecen?','Los <b>Planes Libres</b>: Plan 500 ($9.990), Plan 800 ($12.990) y Plan 1000 ($17.990). También existen con Netflix Estándar incluido: Plan 500 + Netflix ($17.990), Plan 800 + Netflix ($20.990) y Plan 1000 + Netflix ($25.990).<br>Estos valores son el cargo fijo normal. No incluyen descuentos ni promociones: para eso revisa el Plan Comercial vigente.'],
+ ['Planes','PM','¿Qué incluye cada Plan Libre?','Todos traen minutos libres a 300 números y 500 SMS a todo destino.<ul><li><b>Plan 500:</b> 500 GB, roaming de 40 min + 2 GB + 40 SMS y 40 minutos de larga distancia internacional.</li><li><b>Plan 800:</b> 800 GB, roaming de 60 min + 3 GB + 60 SMS y 60 minutos de larga distancia internacional.</li><li><b>Plan 1000:</b> 1000 GB, roaming de 100 min + 5 GB + 100 SMS y 100 minutos de larga distancia internacional.</li></ul>'],
+ ['Planes','PM','¿Qué pasa cuando el cliente consume todos sus minutos o SMS?','El servicio no se corta. El consumo adicional se cobra en la boleta mensual: <b>$60 el minuto</b> y <b>$50 el SMS</b>.'],
+ ['Planes','PM','¿Qué es la Política de Uso Justo (PUJ)?','La navegación es libre y no se corta, pero al alcanzar la cuota del plan la velocidad baja hasta el siguiente ciclo de facturación.<ul><li><b>Plan 500:</b> baja a 256 kbps. Sobre 600 GB baja a 64 kbps.</li><li><b>Plan 800:</b> baja a 256 kbps. Sobre 900 GB baja a 64 kbps.</li><li><b>Plan 1000:</b> baja a 256 kbps y se mantiene así hasta el inicio del siguiente ciclo.</li></ul>'],
+ ['Planes','PM','¿El cliente puede contratar los servicios por separado?','Sí. Puede contratar los servicios por separado o como oferta conjunta, y también puede contratar o dar de baja cada servicio de forma independiente (Decreto 18 de Subtel).'],
+ ['Planes','PM','¿Para qué tipo de cliente es un Plan Libre?','Para clientes hiperconectados, que se interesan en especificaciones técnicas, conectividad y cobertura, y que privilegian el uso de internet: teletrabajo, streaming, juegos, redes sociales y videos.'],
+ ['Planes','PM','¿Qué atributos puedo usar como argumento de venta?','<ul><li>La oferta más atractiva del mercado.</li><li>Equipos con las cuotas más convenientes.</li><li>La mejor tasa de resolutividad de reclamos.</li><li>Pioneros en incluir servicios internacionales, con roaming los 365 días del año.</li><li>100 GB gratuitos en la nube con Claro Drive.</li></ul>'],
+ // Roaming y LDI
+ ['Roaming y LDI','PM','¿En qué países funciona el roaming incluido?','En 51 países de los cinco continentes.<ul><li><b>América (17):</b> Canadá, Colombia, Costa Rica, Ecuador, El Salvador, Guatemala, Honduras, México, Nicaragua, Panamá, Paraguay, Perú, Puerto Rico, República Dominicana, Trinidad y Tobago, Uruguay y Estados Unidos.</li><li><b>Europa (26):</b> Albania, Alemania, Austria, Bélgica, Bielorrusia, Bulgaria, Croacia, Eslovenia, España, Estonia, Francia, Grecia, Irlanda, Italia, Letonia, Lituania, Luxemburgo, Macedonia, Malta, Países Bajos, Reino Unido, República Checa, Rumania, Serbia, Turquía y Ucrania.</li><li><b>Oceanía (2):</b> Australia y Nueva Zelanda.</li><li><b>Asia (5):</b> Arabia Saudita, Kuwait, Omán, Pakistán y Qatar.</li><li><b>África (1):</b> Ghana.</li></ul>En Reino Unido incluye Escocia, Inglaterra, Gales e Irlanda del Norte.'],
+ ['Roaming y LDI','PM','¿El cliente tiene que activar el roaming?','No. Los Planes Libres incluyen una bolsa de roaming y el servicio ya viene activo. Solo debe activar la itinerancia de datos en su teléfono y estar en un país con convenio.'],
+ ['Roaming y LDI','PM','¿Se cobra roaming en Argentina y Brasil?','No. En Argentina y Brasil no hay cobro de roaming: el plan funciona igual que en territorio nacional.'],
+ ['Roaming y LDI','PM','¿Cuánto cuesta el roaming cuando se acaba la bolsa?','A granel, con tarifa "Sin Fronteras Plus" en los 51 países: <b>$60</b> el minuto adicional, <b>$60</b> el SMS adicional y <b>$20</b> el MB adicional.<br>En el resto del mundo: <b>$1.600</b> el minuto, <b>$1.600</b> el SMS y <b>$3.990</b> el MB.'],
+ ['Roaming y LDI','PM','¿Qué bolsas adicionales de roaming existen?','<ul><li>500 MB por $3.990, vigencia 1 día.</li><li>1 GB por $7.990, vigencia 3 días.</li><li>2 GB por $15.990, vigencia 7 días.</li><li>4 GB por $19.990, vigencia 15 días.</li><li>6 GB por $22.990, vigencia 30 días.</li></ul>Aplican en los 51 países con convenio.'],
+ ['Roaming y LDI','PM','¿El roaming funciona en cruceros y aviones?','No con las tarifas del plan. El tráfico por sistemas satelitales o marítimos (cruceros y vuelos con convenio) se cobra a granel: <b>$13.210</b> el MB, <b>$2.870</b> el minuto y <b>$600</b> el SMS. Hay que recomendar al cliente que desactive los datos o ponga el equipo en modo avión para evitar cobros.'],
+ ['Roaming y LDI','PM','¿Qué es la Larga Distancia Internacional (LDI) y cómo se marca?','Es el servicio para llamar desde Chile al extranjero. Tiene tarifa preferente a 17 países en convenio: Argentina, Brasil, Colombia, Costa Rica, Ecuador, El Salvador, Estados Unidos, Guatemala, Honduras, México, Nicaragua, Panamá, Paraguay, Perú, Puerto Rico, República Dominicana y Uruguay.<br>Siempre se marca anteponiendo el carrier de Claro: <b>171 + 0 + código de país + código de ciudad + teléfono</b>.'],
+ ['Roaming y LDI','PM','¿Cuánto cuesta la LDI fuera de los minutos del plan?','A granel, con tarifa "LDI Sin Fronteras": <b>$120</b> el minuto adicional a los 17 países en convenio, <b>$240</b> a Bolivia y Venezuela, <b>$360</b> al resto del mundo y <b>$690</b> a Cuba.<br>También hay bolsas de 20, 40 o 60 minutos para los 17 países, y de 20 y 40 minutos para Bolivia y Venezuela.'],
+ ['Roaming y LDI','PM','¿Cómo activa el cliente la LDI?','Tiene cuatro caminos: llamando al <b>103</b> opción 2 "Asistencia Comercial", en la Sucursal Virtual, en la App Mi Claro o en un CAC. La activación toma hasta 2 horas y debe pedirse con 24 horas de anticipación.'],
+ // Streaming
+ ['Streaming','PM','¿Qué aplicaciones de streaming se pueden vender con el plan móvil?','TNT Sports, Netflix, Storytel, Crunchyroll y Disney+. Se venden como servicio adicional (OTT a la carta). Los valores están en el Plan Comercial.'],
+ ['Streaming','PM','¿Cuántas aplicaciones puede contratar un cliente y cuándo?','Máximo <b>2 aplicaciones por RUT</b>, previa validación del motor de crédito. Se pueden vender en la misma venta (Front de Ventas) o después, como postventa (Front de Postventa).'],
+ ['Streaming','PM','¿Cómo presento Netflix al cliente?','Con cinco argumentos:<ul><li>Es la plataforma de streaming líder del mercado.</li><li>Tiene las series, películas y documentales que todos quieren ver.</li><li>Ofrece contenido exclusivo.</li><li>Es para toda la familia, con opciones para cada edad y gusto.</li><li>Se ve en el televisor, el celular, el computador o la tablet.</li></ul>'],
+ // Servicios adicionales
+ ['Servicios adicionales','PM','¿Qué es Claro Drive y cuánto cuesta?','Es almacenamiento en la nube para clientes postpago activos. Incluye <b>100 GB gratis</b>. Si necesita más: 200 GB por $750 al mes, 1 TB por $1.490 al mes o 5 TB por $6.490 al mes, con cobro en la boleta.<br>Para entrar: clarodrive.com/login/chile, ingresar el número, luego el correo y el código que llega por SMS.'],
+ ['Servicios adicionales','PM','¿Qué es Google Carrier Billing y cómo se activa?','Es un medio de pago para compras en Google Play con equipos Android: el cobro se carga a la boleta (o al saldo prepago), con un límite de crédito mensual.<br>Para activarlo: Google Play Store, cuenta (arriba a la derecha), Pagos y suscripciones, Formas de pago, Agregar facturación de Claro, aceptar términos y presionar Habilitar.'],
+ ['Servicios adicionales','PM','¿Qué es Claro Club?','Un programa de beneficios para clientes con servicio móvil. En la App Mi Claro, opción Beneficios, el cliente presiona "Obtener" y recibe un código que presenta en la tienda o ingresa en la web del comercio.'],
+ ['Servicios adicionales','PM','¿Qué puede hacer el cliente en Mi Claro o la Sucursal Virtual?','Entre otras cosas: pagar y recargar en línea, ver consumos y detalle del plan, revisar deudas, activar boleta electrónica, activar o desactivar LDI y roaming, comprar bolsas, cambiar de plan, agendar visita a sucursal y consultar el estado de un equipo en servicio técnico.'],
+ // Acreditación
+ ['Acreditación','PM','¿Qué se le pide a un cliente para contratar?','Cédula de identidad vigente y ser mayor de 18 años. Además, toda venta requiere validación de identidad al momento de la evaluación comercial.'],
+ ['Acreditación','PM','¿Cómo se valida la identidad en una venta remota?','Con validación facial: el cliente hace una prueba de vida desde su teléfono mediante captura facial.'],
+ ['Acreditación','PM','¿Se le puede vender a un cliente extranjero?','Sí, con cédula vigente.<ul><li><b>Permanencia definitiva:</b> mismas reglas que una cédula chilena. El reverso debe decir DEFINITIVA.</li><li><b>Temporaria o sujeta a contrato:</b> puede contratar, con las restricciones que indique la acreditación de ingresos.</li><li><b>Temporaria vencida:</b> debe presentar además la "Ampliación de Certificado de Residencia Definitiva en Trámite", vigente.</li></ul>'],
+ ['Acreditación','PM','¿Qué pasa si no se puede validar la identidad de un extranjero con cédula temporaria?','Si no está enrolado para huella, no se obtiene un cuestionario válido y tampoco funciona la biometría facial, la venta solo puede ingresarse con <b>plan diferido, una línea y sin equipo</b>. Solo se permite equipo a valor full.'],
+ ['Acreditación','PM','¿Qué tipos de acreditación de ingresos existen?','<ul><li><b>Cliente Competencia:</b> solo para portabilidad de postpago a postpago. Biometría obligatoria. La boleta de la competencia se descarga en PDF desde el sitio web de la compañía donante.</li><li><b>Cliente Claro:</b> para clientes activos que contratan otro servicio (portabilidad, migración o línea nueva). Biometría obligatoria y al menos 60 días de antigüedad.</li><li><b>Sin acreditación con biometría:</b> el sistema evalúa al cliente y define su límite de endeudamiento según riesgo y capacidad de pago.</li></ul>'],
+ ['Acreditación','PM','¿Qué es la venta sin papeleo?','Una persona natural puede contratar sin requisitos ni documentos comerciales, con o sin DICOM. Aplica solo para <b>portabilidad con equipo propio</b>: postpago a postpago (sin pedir boleta de la competencia, seleccionando la acreditación "cliente competencia"), prepago a postpago y migración.<br>Si quiere equipo, solo puede comprarlo al contado o con tarjeta de crédito en hasta 24 cuotas. No aplica para pymes, empresas ni ventas con mandato.'],
+ // Deudas
+ ['Deudas','PM','¿Puede contratar un cliente con deuda en Claro?','Si tiene una deuda vencida con Claro mayor a <b>$50.000</b>, debe pagarla antes de contratar. En los demás casos manda el sistema: las liberaciones de clientes con deuda ya están cargadas en los sistemas de venta y no hay que validarlas en otra plataforma.'],
+ ['Deudas','PM','¿Cuál es la diferencia entre deuda vencida y deuda histórica?','La <b>deuda vencida</b> nace cuando una boleta vence y no se paga. La <b>deuda histórica</b> es una deuda vencida que ya tiene años de antigüedad.'],
+ ['Deudas','PM','¿Qué es la campaña Winback?','Son campañas para que ex clientes vuelvan a Claro. Permiten que ciertos clientes con deuda contraten de nuevo, según el tipo de venta y su nivel de riesgo. Si el cliente no cumple la política, el sistema avisa que tiene una situación comercial pendiente y la venta no puede continuar.'],
+ ['Deudas','PM','¿Tengo que respetar el resultado de la evaluación?','Sí, es obligatorio. Hay que ofrecer lo que indica el motor de crédito: tipo de plan (diferido o inmediato), tipo de adquisición (equipo propio o arriendo) y tipo de financiamiento (cuotas o contado).'],
+ // Equipos
+ ['Equipos y pagos','PM','¿De qué formas puede pagar el equipo el cliente?','<ul><li><b>Valor full:</b> paga el total con efectivo, débito o tarjeta de crédito. Es más barato que en boleta, el equipo es del cliente y no hay contrato de arriendo. Con tarjetas en convenio llega hasta 24 cuotas sin interés.</li><li><b>Pie + cuotas con cargo a la boleta:</b> Claro financia el equipo con contrato de arriendo. Solo para portabilidad y solo si la evaluación dice explícitamente "Pie + cuotas c/ cargo a la boleta".</li></ul>Siempre conviene ofrecer primero el valor full.'],
+ ['Equipos y pagos','PM','¿Qué requisitos hay para llevar la cuota inicial en la boleta?','Solo para portabilidad de postpago a postpago con equipo en arriendo, en 12 o 18 cuotas, cumpliendo todo esto: vía de ingreso FC/ONE, biometría obligatoria, acreditación "Cliente competencia", 24 años o más y un modelo de equipo definido en la opción Financiamiento.<br>En línea nueva, migración y portabilidad de prepago a postpago la cuota inicial se paga al contado.'],
+ ['Equipos y pagos','PM','¿Qué es la cuota de arriendo y cuánto vale?','Es un cobro mensual por 18 meses, adicional al cargo de activación, que se descuenta mientras el cliente se mantenga en la compañía.<ul><li>Equipos con valor full inferior a $249.999: $4.000.</li><li>Equipos iPhone: $11.500.</li><li>Equipos con valor full superior a $249.999: $16.500.</li></ul>Al terminar el contrato y los pagos, el equipo pasa a ser del cliente.'],
+ ['Equipos y pagos','PM','¿Cuántos equipos puede llevar un cliente en boleta?','Desde el 25-07-2025 el máximo es <b>3 equipos en boleta por RUT titular</b>, en todos los canales. En alta gama (iPhone 15 en adelante y Samsung S24 y S25) el máximo es <b>1 equipo</b>.<br>Para superar esos límites existe un flujo de excepción: el cliente debe comprobar el pago de las últimas 6 boletas consecutivas en la compañía donante y la línea debe venir de una portabilidad de postpago a postpago.'],
+ ['Equipos y pagos','PM','¿Qué pasa si el cliente deja de pagar o se porta con cuotas pendientes?','<ul><li>Con una boleta vencida: bloqueo temporal del equipo (IMEI).</li><li>Con dos boletas vencidas: se cobran por adelantado, en la boleta siguiente, todas las cuotas pendientes.</li><li>Con tres boletas vencidas: se emite un pagaré por la deuda total más intereses y gastos de cobranza.</li></ul>'],
+ ['Equipos y pagos','PM','¿Cuándo puede el cliente hacer recambio de equipo y qué debo advertirle?','Puede pedirlo después de <b>6 meses</b> desde la contratación. Si todavía tiene cuotas en la boleta, hay que informarle dos cosas de forma explícita:<ul><li>Se aplica un <b>cargo adicional</b>, que depende del tipo de equipo, el tipo de oferta y los meses que le quedan.</li><li>Se <b>aceleran las cuotas</b>: todas las cuotas pendientes del equipo anterior se cobran juntas en la próxima boleta.</li></ul>Para saber si tiene un equipo cargado en boleta, revisa en FPV el casillero "EQUIPO EN ARRIENDO VIGENTE".'],
+ ['Equipos y pagos','PM','¿Se cobran cargos fijos por adelantado cuando el cliente compra el equipo a valor full?','No. Las ventas con equipo en modalidad compra, pagado al contado, están liberadas del cobro de abono. Si el sistema muestra cargos fijos por adelantado, no se cobran al cliente. En ONE se elimina generando un caso de excepción.'],
+ ['Equipos y pagos','PM','¿Dónde veo los precios de los equipos?','En la Planilla de Precios (Planilla de Cargos de Activación), que llega por correo desde Comunicados. Siempre hay que usar la última versión. Los distribuidores (canal DAC) usan las columnas "Valor full contratando un plan" y "Financiamiento".'],
+ // Boleta
+ ['Boleta y facturación','PM','¿Qué es el ciclo de facturación?','Es el período de uso del plan que se cobra en cada boleta. Se asigna según la fecha de habilitación del servicio y el cobro es a <b>mes vencido</b>. Ejemplo: si contrata el 14 de marzo queda en ciclo 14, la boleta se emite el 14 de abril, vence el 5 de mayo y la fecha de corte es el 12 de mayo.'],
+ ['Boleta y facturación','PM','¿Cuándo llega la primera boleta si el cliente lleva equipo en arriendo?','Si es cliente nuevo con una cuenta de facturación nueva, la primera boleta llega a los 4 o 5 días de la venta. Trae el cobro proporcional de 1 o 2 días de cargo fijo más la primera cuota del equipo. La segunda boleta trae el cargo fijo completo y la segunda cuota.'],
+ ['Boleta y facturación','PM','¿Cómo se factura una línea adicional?','Las líneas adicionales no crean cuentas nuevas: se asocian a una cuenta con números activos. Como el ciclo ya está definido, la primera boleta trae cobros proporcionales.'],
+ ['Boleta y facturación','PM','¿A quién le puedo explicar una boleta?','Al titular o a un tercero que usa el servicio. Al tercero solo se le entrega información general: deuda, montos, formas de pago, fecha de vencimiento y ciclo. No se le dan detalles de los cobros ni datos del titular, y la boleta nunca se envía a un correo distinto al registrado.'],
+ ['Boleta y facturación','PM','¿Cuándo se corta el servicio por no pago?','Si el cliente pasa del quinto día desde el vencimiento de su boleta, Claro puede inhabilitar el servicio hasta que regularice. Por eso conviene informarle siempre el primer día del rango de vencimiento.'],
+ // Contratos
+ ['Contratos','PM','¿Qué contratos se entregan en una venta móvil?','<ul><li><b>Solicitud de Suministro de Servicio Telefónico Móvil (SSTM):</b> datos del cliente, servicios contratados, condiciones del plan y cláusulas de roaming y LDI.</li><li><b>Contrato de arriendo con opción de compra:</b> si lleva equipo en arriendo. Dura 18 meses.</li><li><b>Anexo de equipo propio:</b> si contrata con su propio equipo. Se registran el IMEI, el código del chip (ICCID) y el número habilitado.</li><li><b>Autorización de consulta y solicitud de portabilidad.</b></li></ul>'],
+ ['Contratos','PM','¿Qué documentos van en el expediente digital?','Los contratos electrónicos firmados con huella y, escaneados en ONE: fotocopia de la cédula (siempre en portabilidad o si el cliente es extranjero), cupón de pago y boleta de la competencia cuando corresponde. Si ONE no genera los contratos, se llenan los contratos físicos.'],
+ // Genesys
+ ['Genesys','GEN','¿Qué estados puedo usar en Genesys?','<ul><li><b>Productivos:</b> En cola (esperando o atendiendo llamadas), Disponible (llamando a clientes agendados) y Desconectado (fin de turno).</li><li><b>Improductivos:</b> Capacitación, Descanso y Comida.</li></ul>'],
+ ['Genesys','GEN','¿Cómo transfiero una llamada?','<ul><li><b>Transferencia instantánea:</b> pasa al cliente de inmediato a otro anexo o cola.</li><li><b>Transferencia con consulta:</b> presiona "Iniciar una consulta de voz", llama al anexo, conversa con el destinatario y luego completa con "Transferencia instantánea".</li></ul>'],
+ ['Genesys','GEN','¿Cuándo y cómo transfiero al audio de Subtel?','Solo en llamadas que terminan en <b>venta</b>. Primero se lee completo y sin cambios el script de transferencia. Después se marca el anexo <b>17016</b> (o se elige "IVR SUBTEL") y se presiona el botón de transferencia.'],
+ ['Genesys','GEN','¿Qué debo hacer al terminar cada llamada?','Tipificar: elegir el código de conclusión que corresponde exactamente a la llamada (por ejemplo buzón de voz, mudo o corta llamada, no molestar, venta), dentro del tiempo límite de la operación.'],
+ // Front
+ ['Front Comercial','FRONT','¿Cómo ingreso al Front Comercial?','Se digita RUT y clave, se presiona Ingresar, se elige el rol y se captura la huella del ejecutivo. Luego el sistema lleva al menú principal.'],
+ ['Front Comercial','FRONT','¿Cuáles son las etapas de una venta móvil en el Front?','<ul><li><b>1. Cliente:</b> datos, evaluación crediticia, cupo disponible y tipo de acreditación.</li><li><b>2. Servicios:</b> selección del plan y de la modalidad de equipo en el catálogo.</li><li><b>3. Facturación:</b> selección de cuenta, firma de contrato y registro de pago.</li><li><b>4. Finalización:</b> ingreso de series (IMEI y SIM) y cierre de la orden.</li></ul>'],
+ ['Front Comercial','FRONT','¿Cuánto demora el despacho del chip o del equipo?','<b>Despacho express</b> si la dirección está a menos de 6 km de una sucursal Claro. <b>Despacho normal</b>, hasta 3 días hábiles, en los demás casos. El sistema lo define al presionar "Validar tipo de despacho disponible".'],
+ // Técnicas de venta
+ ['Técnicas de venta','TALLER','¿Qué es la venta consultiva?','Es vender como asesor de confianza: entender las necesidades y problemas del cliente con buenas preguntas y proponer una solución a su medida, en vez de vender por vender.'],
+ ['Técnicas de venta','TALLER','¿Cómo adapto mi forma de hablar según el cliente?','<ul><li><b>Asertivo:</b> mensajes breves y directos, enfocados en eficiencia y ahorro de tiempo.</li><li><b>Amistoso:</b> empatía, tono cálido y construir relación antes del detalle.</li><li><b>Analítico:</b> datos concretos, especificaciones y comparaciones ordenadas.</li></ul>'],
+ ['Técnicas de venta','TALLER','¿Qué preguntas hago para detectar necesidades (SPIN)?','<ul><li><b>Situación:</b> cómo usa hoy su servicio.</li><li><b>Problema:</b> qué le molesta o le falta con su compañía actual.</li><li><b>Implicación:</b> qué le cuesta seguir con ese problema.</li><li><b>Necesidad de solución:</b> qué ganaría si lo resolviera.</li></ul>'],
+ ['Técnicas de venta','TALLER','¿Cómo presento el plan (modelo FAB)?','<ul><li><b>Característica:</b> lo que tiene el plan.</li><li><b>Ventaja:</b> lo que lo hace mejor que otras alternativas.</li><li><b>Beneficio:</b> lo que el cliente gana en concreto: comodidad, ahorro, entretenimiento o tranquilidad.</li></ul>'],
+ ['Técnicas de venta','TALLER','¿Cómo manejo una objeción?','Con calma, escucha activa y empatía, convirtiendo la objeción en una oportunidad de mostrar valor. Ejemplo: "Entiendo que el valor sea un factor clave para usted. Permítame mostrarle todo lo que incluye este plan".'],
+ ['Técnicas de venta','TALLER','¿Qué técnicas de cierre puedo usar?','Cierre directo, cierre alternativo, cierre por resumen de beneficios y cierre por escasez. Conviene cerrar de forma natural cuando aparecen señales de compra.']
+];
+function initFaq() {
+  const cats = ['Todas', ...new Set(FAQ.map(f => f[0]))]; let cat = 'Todas';
+  const plano = s => s.replace(/<[^>]+>/g, ' ').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const indice = FAQ.map(f => plano(f[2] + ' ' + f[3] + ' ' + f[0]));
+  const pinta = () => {
+    const q = plano($('#f-q').value.trim()), palabras = q.split(/\s+/).filter(Boolean);
+    $('#f-chips').innerHTML = cats.map(c => `<button class="chip${c === cat ? ' on' : ''}" data-cat="${c}">${c}</button>`).join('');
+    let html = '', ultima = '', n = 0;
+    FAQ.forEach((f, i) => {
+      if (cat !== 'Todas' && f[0] !== cat) return;
+      if (!palabras.every(p => indice[i].includes(p))) return;
+      if (f[0] !== ultima) { html += `<div class="lbl" style="margin-top:14px">${f[0]}</div>`; ultima = f[0]; }
+      html += `<details class="card faq"${palabras.length ? ' open' : ''}><summary>${f[2]}</summary><div class="a">${f[3]}<span class="src">Fuente: ${FAQ_FUENTES[f[1]]}</span></div></details>`; n++;
+    });
+    $('#f-list').innerHTML = html; $('#f-none').hidden = n > 0;
+  };
+  $('#f-q').addEventListener('input', pinta);
+  $('#f-chips').addEventListener('click', e => { const b = e.target.closest('[data-cat]'); if (b) { cat = b.dataset.cat; pinta(); } });
   pinta();
 }
 
