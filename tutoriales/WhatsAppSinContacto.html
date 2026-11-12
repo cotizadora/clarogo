@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>WhatsApp Web sin contacto — Windows PC</title>
+  <style>
+
+    :root {
+      --neon:   #00FFB2;
+      --wsp:    #25D366;
+      --wsp-dk: #128C7E;
+      --wsp-lt: #DCF8C6;
+      --wsp-bg: #efeae2;
+      --chrome: #1A73E8;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'Roboto', system-ui, sans-serif;
+      background: #1c1c1c;
+      color: #111;
+      height: 100vh;
+      overflow: hidden;
+      touch-action: manipulation;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ══ WINDOWS TASKBAR ══ */
+    .win-taskbar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 40px;
+      background: rgba(20,20,35,0.96);
+      backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      gap: 4px;
+      z-index: 300;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .win-start {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 4px; cursor: pointer;
+    }
+    .win-start svg { width: 18px; height: 18px; }
+    .win-taskbar-app {
+      height: 32px;
+      display: flex; align-items: center; gap: 6px;
+      padding: 0 10px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.12);
+      border-bottom: 2px solid var(--chrome);
+      font-size: 11px; color: #fff;
+    }
+    .win-taskbar-clock {
+      margin-left: auto;
+      font-size: 11px;
+      color: rgba(255,255,255,0.75);
+      text-align: center;
+      line-height: 1.3;
+      padding-right: 8px;
+    }
+
+    /* ══ DESKTOP ══ */
+    .desktop {
+      flex: 1;
+      margin-bottom: 40px;
+      overflow: hidden;
+      background: #1e1e2e;
+      position: relative;
+    }
+
+    /* ══ BROWSER WINDOW ══ */
+    .browser-window {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+    }
+
+    /* Title bar */
+    .win-titlebar {
+      height: 32px;
+      background: #dee1e6;
+      display: flex;
+      align-items: center;
+      padding: 0 12px 0 8px;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .titlebar-favicon {
+      width: 14px; height: 14px;
+      background: conic-gradient(#ea4335 0 25%, #fbbc05 25% 50%, #34a853 50% 75%, #4285f4 75%);
+      border-radius: 50%; flex-shrink: 0;
+    }
+    .titlebar-text {
+      font-size: 12px; color: #3c3c3c; flex: 1;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      font-weight: 500;
+    }
+    .win-controls { display: flex; margin-left: auto; }
+    .win-btn {
+      width: 28px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; color: #555;
+      cursor: pointer; border-radius: 3px;
+      transition: background 0.15s;
+    }
+    .win-btn:hover { background: rgba(0,0,0,0.1); }
+    .win-btn.close:hover { background: #e81123; color: #fff; }
+
+    /* Tab bar */
+    .chrome-tabs-bar {
+      height: 36px;
+      background: #dee1e6;
+      display: flex;
+      align-items: flex-end;
+      padding: 0 8px;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+    .browser-tab {
+      padding: 6px 14px 0;
+      border-radius: 8px 8px 0 0;
+      font-size: 11.5px;
+      display: flex; align-items: center; gap: 6px;
+      font-weight: 500; white-space: nowrap;
+      height: 32px; background: #f8f9fa; color: #202124;
+    }
+    .wsp-favicon {
+      width: 14px; height: 14px;
+      background: var(--wsp);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; color: #fff; flex-shrink: 0;
+    }
+
+    /* Omnibox */
+    .omnibox {
+      height: 44px;
+      background: #f8f9fa;
+      display: flex; align-items: center;
+      padding: 0 10px; gap: 8px;
+      border-bottom: 1px solid #dadce0;
+      flex-shrink: 0;
+    }
+    .omni-navbtn {
+      width: 28px; height: 28px;
+      border-radius: 50%; border: none;
+      background: none; cursor: pointer;
+      font-size: 14px; color: #5f6368;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .omni-navbtn:hover { background: rgba(0,0,0,0.06); }
+    .omni-bar {
+      flex: 1; background: #fff;
+      border: 1px solid #dadce0;
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px; color: #202124;
+      display: flex; align-items: center; gap: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .omni-bar.typing {
+      border-color: var(--chrome);
+      box-shadow: 0 0 0 3px rgba(26,115,232,0.2);
+    }
+    .omni-lock { color: #5f6368; font-size: 12px; flex-shrink: 0; }
+    .omni-url  { flex: 1; font-size: 12px; color: #202124; }
+
+    /* ══ SCREENS ══ */
+    .screen {
+      position: absolute;
+      top: 112px; left: 0; right: 0; bottom: 0;
+      display: none; flex-direction: column;
+      overflow: hidden;
+    }
+    .screen.active { display: flex; }
+
+    /* ══ STEP DOTS ══ */
+    .step-indicator {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; padding: 7px 0 5px; flex-shrink: 0;
+    }
+    .step-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #ccc; transition: all 0.3s;
+    }
+    .step-dot.active { background: var(--wsp); transform: scale(1.35); }
+    .step-dot.done   { background: var(--wsp-dk); }
+
+    /* ══ FOOTER ══ */
+    .footer {
+      font-size: 11px; color: #9e9e9e;
+      text-align: center; padding: 3px 0 5px; flex-shrink: 0;
+    }
+
+    /* ══ HIGHLIGHT / NEON ══ */
+    .highlight {
+      box-shadow: 0 0 0 3px rgba(0,255,178,0.5), 0 0 20px rgba(0,255,178,0.6) !important;
+      background: linear-gradient(90deg, #ffffff, #f0fff8) !important;
+      transform: scale(1.02);
+      animation: pulse-glow 1.8s infinite alternate;
+      cursor: pointer !important;
+    }
+    @keyframes pulse-glow {
+      0%   { box-shadow: 0 0 0 3px rgba(0,255,178,0.4), 0 0 18px rgba(0,255,178,0.55); }
+      100% { box-shadow: 0 0 0 7px rgba(0,255,178,0.15), 0 0 30px rgba(0,255,178,0.85); }
+    }
+    .neon-rect {
+      position: absolute; inset: -4px;
+      border: 2.5px solid var(--neon);
+      border-radius: 10px;
+      pointer-events: none;
+      animation: neon-blink 1.5s infinite alternate;
+    }
+    @keyframes neon-blink { from{opacity:0.7;} to{opacity:1;} }
+
+    /* ══════ S1 — INTRO / NUEVA PESTAÑA ══════ */
+    #s1 { background: #f8f9fa; }
+    .new-tab-body {
+      flex: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 20px 24px; text-align: center;
+    }
+    .new-tab-google {
+      font-size: 36px; font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .google-g { color: #4285f4; }
+    .google-o1 { color: #ea4335; }
+    .google-o2 { color: #fbbc05; }
+    .google-g2 { color: #4285f4; }
+    .google-l  { color: #34a853; }
+    .google-e  { color: #ea4335; }
+
+    .google-searchbar {
+      width: 100%; max-width: 480px;
+      background: #fff;
+      border-radius: 24px;
+      border: 1px solid #dfe1e5;
+      padding: 10px 18px;
+      font-size: 14px; color: #5f6368;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 24px;
+    }
+    .search-icon { font-size: 16px; color: #9aa0a6; }
+
+    .tip-box {
+      background: #e8f5e9;
+      border: 1px solid #a5d6a7;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 12px; color: #2e7d32;
+      line-height: 1.6; text-align: left;
+      max-width: 420px;
+      width: 100%;
+    }
+
+    .key-badge {
+      display: inline-block;
+      background: #e8eaed;
+      border: 1px solid #c0c4ca;
+      border-radius: 4px;
+      padding: 1px 7px;
+      font-size: 11px; font-weight: 600;
+      color: #202124;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.15);
+      font-family: monospace;
+    }
+
+    .start-btn {
+      background: var(--wsp);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 11px 28px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      transition: background 0.2s, transform 0.15s;
+      margin-top: 20px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .start-btn:hover { background: #1da851; transform: scale(1.04); }
+
+    /* ══════ S2 — WHATSAPP WEB ══════ */
+    #s2 { background: var(--wsp-bg); }
+
+    .wsp-layout {
+      flex: 1; display: flex; overflow: hidden;
+    }
+
+    /* Sidebar izquierdo de WAWeb */
+    .wsp-sidebar {
+      width: 100px;
+      background: #fff;
+      border-right: 1px solid #e0e0e0;
+      display: flex; flex-direction: column;
+      align-items: center; padding: 8px 0; gap: 4px;
+      flex-shrink: 0;
+    }
+    .wsp-sidebar-av {
+      width: 38px; height: 38px;
+      background: var(--wsp-dk);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: #fff; cursor: pointer;
+      margin-bottom: 6px;
+    }
+    .wsp-sidebar-icon {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; cursor: pointer;
+      transition: background 0.15s; color: #54656f;
+    }
+    .wsp-sidebar-icon:hover { background: #f0f0f0; }
+    .wsp-sidebar-icon.active { color: var(--wsp-dk); background: #f0f9f6; }
+    .wsp-sidebar-icon.highlight-icon {
+      box-shadow: 0 0 0 3px rgba(0,255,178,0.5), 0 0 20px rgba(0,255,178,0.6) !important;
+      background: #f0fff8 !important;
+      animation: pulse-glow 1.8s infinite alternate;
+      position: relative;
+    }
+
+    /* Panel de chats */
+    .wsp-panel {
+      width: 260px;
+      background: #fff;
+      border-right: 1px solid #e0e0e0;
+      display: flex; flex-direction: column;
+      flex-shrink: 0;
+    }
+    .wsp-panel-header {
+      height: 54px;
+      display: flex; align-items: center;
+      padding: 0 14px; gap: 10px;
+      border-bottom: 1px solid #e0e0e0;
+      flex-shrink: 0;
+    }
+    .wsp-panel-title { font-size: 17px; font-weight: 700; color: #111; flex: 1; }
+    .wsp-new-chat-btn {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; cursor: pointer;
+      transition: background 0.15s;
+      position: relative;
+    }
+    .wsp-new-chat-btn.highlight { border-radius: 50%; }
+
+    .wsp-search {
+      height: 44px;
+      display: flex; align-items: center;
+      background: #f0f2f5;
+      margin: 6px 10px;
+      border-radius: 8px;
+      padding: 0 12px; gap: 8px;
+      font-size: 13px; color: #8696a0;
+      flex-shrink: 0;
+    }
+    .wsp-contact {
+      display: flex; align-items: center;
+      padding: 8px 14px; gap: 10px;
+      cursor: pointer; transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    .wsp-contact:hover { background: #f5f5f5; }
+    .wsp-contact-av {
+      width: 42px; height: 42px;
+      border-radius: 50%; background: #d1d7db;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .wsp-contact-info { flex: 1; overflow: hidden; }
+    .wsp-contact-name { font-size: 14px; font-weight: 600; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .wsp-contact-sub  { font-size: 12px; color: #8696a0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Área principal de WAWeb */
+    .wsp-main {
+      flex: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: var(--wsp-bg);
+      padding: 16px;
+      text-align: center;
+    }
+    .wsp-main-icon { font-size: 48px; margin-bottom: 12px; color: var(--wsp-dk); }
+    .wsp-main-title { font-size: 18px; font-weight: 600; color: #41525d; margin-bottom: 6px; }
+    .wsp-main-sub   { font-size: 13px; color: #8696a0; line-height: 1.5; max-width: 220px; }
+
+    /* Instrucción bubble */
+    .instr-bubble {
+      background: #fffde7;
+      border: 1px solid #f9a825;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px; color: #5f4900;
+      line-height: 1.5; text-align: left;
+      margin-top: 12px;
+      max-width: 220px;
+    }
+
+    /* ══════ S3 — URL METHOD ══════ */
+    #s3 { background: #f8f9fa; }
+
+    .method-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      position: relative;
+      transition: all 0.2s;
+    }
+    .method-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px;
+      background: var(--wsp);
+      color: #fff; border-radius: 50%;
+      font-size: 12px; font-weight: 700;
+      margin-right: 8px; flex-shrink: 0;
+    }
+    .method-title {
+      font-size: 13px; font-weight: 600;
+      color: #111; margin-bottom: 8px;
+      display: flex; align-items: center;
+    }
+
+    .url-display {
+      background: #f1f3f4;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: monospace;
+      font-size: 14px;
+      color: #202124;
+      word-break: break-all;
+      border: 1px solid #e0e0e0;
+    }
+    .url-highlight { color: var(--wsp-dk); font-weight: 700; }
+
+    /* Omnibox demo */
+    .omni-demo {
+      background: #fff;
+      border: 2px solid var(--chrome);
+      border-radius: 24px;
+      padding: 8px 16px;
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; font-family: monospace;
+      box-shadow: 0 0 0 3px rgba(26,115,232,0.2);
+      margin: 8px 0;
+    }
+    .omni-demo-text { color: var(--chrome); font-weight: 600; font-size: 13px; }
+    .omni-demo-cursor { display: inline-block; width: 2px; height: 14px; background: var(--chrome); animation: blink 0.9s infinite; vertical-align: middle; }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+    /* ══════ S4 — CHAT ABIERTO ══════ */
+    #s4 { background: var(--wsp-bg); }
+    .wsp-chat-layout { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .wsp-chat-header {
+      height: 54px;
+      background: #f0f2f5;
+      display: flex; align-items: center;
+      padding: 0 16px; gap: 10px;
+      border-bottom: 1px solid #e0e0e0;
+      flex-shrink: 0;
+    }
+    .wsp-chat-av {
+      width: 38px; height: 38px;
+      border-radius: 50%; background: #d1d7db;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .wsp-chat-name   { font-size: 14px; font-weight: 600; color: #111; }
+    .wsp-chat-status { font-size: 12px; color: #8696a0; }
+    .wsp-chat-icons  { margin-left: auto; display: flex; gap: 14px; font-size: 18px; cursor: pointer; color: #54656f; }
+
+    .wsp-chat-msgs {
+      flex: 1; overflow-y: auto;
+      padding: 12px 16px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .wsp-bubble {
+      max-width: 75%;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 13px; line-height: 1.45;
+      position: relative;
+    }
+    .wsp-bubble-out {
+      background: var(--wsp-lt);
+      color: #111;
+      align-self: flex-end;
+      border-bottom-right-radius: 2px;
+    }
+    .wsp-bubble-time { font-size: 10px; color: #8696a0; text-align: right; margin-top: 3px; }
+
+    .wsp-lock-notice {
+      background: rgba(255,255,255,0.8);
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 11px; color: #8696a0;
+      text-align: center; align-self: center;
+      max-width: 90%;
+    }
+
+    .wsp-chat-input {
+      height: 54px;
+      background: #f0f2f5;
+      display: flex; align-items: center;
+      padding: 0 12px; gap: 10px;
+      border-top: 1px solid #e0e0e0;
+      flex-shrink: 0;
+    }
+    .wsp-input-box {
+      flex: 1; background: #fff;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px; color: #8696a0;
+      cursor: text;
+    }
+    .wsp-send-btn {
+      width: 40px; height: 40px;
+      background: var(--wsp);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 18px; color: #fff;
+      flex-shrink: 0; position: relative;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .wsp-send-btn:hover { background: #1da851; }
+    .wsp-send-btn.highlight { border-radius: 50%; }
+
+    /* ══════ S5 — ÉXITO ══════ */
+    #s5 {
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+      color: #fff;
+      align-items: center; justify-content: center;
+      text-align: center;
+    }
+    .success-icon { font-size: 52px; margin-bottom: 14px; }
+    .summary-box {
+      background: rgba(255,255,255,0.2);
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-size: 13px; line-height: 1.8;
+      text-align: left; max-width: 280px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="desktop">
+  <!-- ══ BROWSER WINDOW ══ -->
+  <div class="browser-window">
+
+    <!-- Title bar -->
+    <div class="win-titlebar">
+      <div class="titlebar-favicon"></div>
+      <span class="titlebar-text" id="win-title">Nueva pestaña — Google Chrome</span>
+      <div class="win-controls">
+        <div class="win-btn">─</div>
+        <div class="win-btn">⬜</div>
+        <div class="win-btn close">✕</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="chrome-tabs-bar">
+      <div class="browser-tab">
+        <div class="wsp-favicon" id="tab-favicon">G</div>
+        <span id="tab-title">Nueva pestaña</span>
+        <span style="margin-left:6px;font-size:10px;color:#80868b;">✕</span>
+      </div>
+    </div>
+
+    <!-- Omnibox -->
+    <div class="omnibox">
+      <button class="omni-navbtn">‹</button>
+      <button class="omni-navbtn">›</button>
+      <button class="omni-navbtn">↻</button>
+      <div class="omni-bar" id="omni-bar-el">
+        <span class="omni-lock" id="omni-lock">🔍</span>
+        <span class="omni-url" id="omni-url">Nueva pestaña</span>
+      </div>
+      <button class="omni-navbtn">⋮</button>
+    </div>
+
+    <!-- ══ S1: INTRO ══ -->
+    <div id="s1" class="screen active">
+      <div class="new-tab-body">
+        <div class="new-tab-google">
+          <span class="google-g">G</span><span class="google-o1">o</span><span class="google-o2">o</span><span class="google-g2">g</span><span class="google-l">l</span><span class="google-e">e</span>
+        </div>
+        <div class="google-searchbar">
+          <span class="search-icon">🔍</span>
+          <span style="color:#5f6368;font-size:14px;">Busca en Google o escribe una URL</span>
+        </div>
+        <div class="tip-box">
+          <strong>💡 Lo que aprenderás:</strong><br>
+          Cómo abrir un chat de WhatsApp con cualquier número de cliente <strong>desde tu PC con Windows</strong>, sin necesidad de guardar el contacto.<br><br>
+          Solo necesitas <strong>Chrome o Edge</strong> abierto y el número del cliente con código de país.
+        </div>
+        <button class="start-btn" onclick="show(2)">
+          ▶ &nbsp;Empezar tutorial
+        </button>
+      </div>
+      <div class="step-indicator">
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+      </div>
+      <div class="footer">Por Eduardo Pérez</div>
+    </div>
+
+    <!-- ══ S2: WHATSAPP WEB ══ -->
+    <div id="s2" class="screen">
+      <div class="wsp-layout">
+
+        <!-- Sidebar izquierdo (iconos) -->
+        <div class="wsp-sidebar">
+          <div class="wsp-sidebar-av">🧑</div>
+          <div class="wsp-sidebar-icon active">💬</div>
+          <div class="wsp-sidebar-icon">📞</div>
+          <div class="wsp-sidebar-icon">🌐</div>
+          <div class="wsp-sidebar-icon" style="margin-top:auto;">⚙️</div>
+          <!-- Botón nuevo chat resaltado -->
+          <div class="wsp-sidebar-icon highlight-icon" onclick="show(3)" title="Nuevo chat" style="position:relative;">
+            ✏️
+            <div class="neon-rect" style="border-radius:50%;inset:-3px;"></div>
+          </div>
+        </div>
+
+        <!-- Panel chats -->
+        <div class="wsp-panel">
+          <div class="wsp-panel-header">
+            <span class="wsp-panel-title">Chats</span>
+          </div>
+          <div class="wsp-search">🔍 &nbsp;Buscar o empezar un nuevo chat</div>
+          <div class="wsp-contact">
+            <div class="wsp-contact-av">😊</div>
+            <div class="wsp-contact-info">
+              <div class="wsp-contact-name">María González</div>
+              <div class="wsp-contact-sub">Hola! ¿Cuánto cuesta...?</div>
+            </div>
+          </div>
+          <div class="wsp-contact">
+            <div class="wsp-contact-av">👨</div>
+            <div class="wsp-contact-info">
+              <div class="wsp-contact-name">Carlos Riquelme</div>
+              <div class="wsp-contact-sub">Ok, confirmo mañana</div>
+            </div>
+          </div>
+          <div class="wsp-contact">
+            <div class="wsp-contact-av">👩</div>
+            <div class="wsp-contact-info">
+              <div class="wsp-contact-name">Ana Valdés</div>
+              <div class="wsp-contact-sub">Ya está activado ✓✓</div>
+            </div>
+          </div>
+
+          <div style="padding:10px 12px;margin-top:4px;">
+            <div class="instr-bubble">
+              👈 Haz click en el ícono <strong>✏️</strong> (arriba a la izquierda)<br>para ver cómo enviar un mensaje sin guardar el número.
+            </div>
+          </div>
+        </div>
+
+        <!-- Área principal -->
+        <div class="wsp-main">
+          <div class="wsp-main-icon">💬</div>
+          <div class="wsp-main-title">WhatsApp Web</div>
+          <div class="wsp-main-sub">Selecciona un chat o inicia una nueva conversación</div>
+          <div style="margin-top:14px;background:#f0f9f6;border-radius:8px;padding:10px 14px;font-size:12px;color:#128C7E;line-height:1.6;text-align:left;max-width:200px;">
+            🖥️ Estás usando<br><strong>WhatsApp Web en Windows</strong><br>desde Chrome
+          </div>
+        </div>
+
+      </div>
+      <div class="step-indicator">
+        <div class="step-dot done"></div>
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+      </div>
+      <div class="footer">Por Eduardo Pérez</div>
+    </div>
+
+    <!-- ══ S3: URL METHOD ══ -->
+    <div id="s3" class="screen">
+      <div style="flex:1;padding:14px 16px;overflow-y:auto;background:#f8f9fa;">
+
+        <div style="font-size:14px;font-weight:700;color:#202124;margin-bottom:12px;">
+          ✏️ Método directo desde la barra de direcciones
+        </div>
+
+        <div class="method-card">
+          <div class="method-title"><span class="method-num">1</span>Haz click en la barra de direcciones de Chrome</div>
+          <div style="font-size:12px;color:#5f6368;line-height:1.5;">
+            Arriba en el navegador. Selecciona todo el texto con <span class="key-badge">Ctrl</span>+<span class="key-badge">A</span> y bórralo.
+          </div>
+          <div class="omni-demo" style="margin-top:10px;">
+            <span style="color:#9aa0a6;font-size:12px;">🔒</span>
+            <span style="color:#5f6368;font-size:11px;">web.whatsapp.com</span>
+          </div>
+        </div>
+
+        <div class="method-card highlight" style="position:relative;" onclick="show(4)">
+          <div class="method-title"><span class="method-num">2</span>Escribe la URL especial de WhatsApp</div>
+          <div class="url-display">
+            wa.me/<span class="url-highlight">56912345678</span>
+          </div>
+          <div class="omni-demo" style="margin-top:10px;">
+            <span style="color:var(--chrome);font-size:12px;">🔒</span>
+            <span class="omni-demo-text">wa.me/56912345678</span><span class="omni-demo-cursor"></span>
+          </div>
+          <div style="margin-top:10px;background:#e8f5e9;border-radius:8px;padding:8px 12px;font-size:12px;color:#2e7d32;line-height:1.5;">
+            🇨🇱 Reemplaza <strong>56912345678</strong> con el número real del cliente.<br>
+            Siempre con código de país: <strong>56</strong> para Chile.<br>
+            Luego presiona <span class="key-badge">Enter</span>.
+          </div>
+          <div class="neon-rect"></div>
+        </div>
+
+        <div style="font-size:12px;color:#667781;text-align:center;padding:4px;">
+          👆 Haz click en el recuadro verde para continuar
+        </div>
+      </div>
+      <div class="step-indicator">
+        <div class="step-dot done"></div>
+        <div class="step-dot done"></div>
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+      </div>
+      <div class="footer">Por Eduardo Pérez</div>
+    </div>
+
+    <!-- ══ S4: CHAT ABIERTO ══ -->
+    <div id="s4" class="screen">
+      <div class="wsp-chat-layout">
+        <div class="wsp-chat-header">
+          <div class="wsp-chat-av">👤</div>
+          <div>
+            <div class="wsp-chat-name">+56 9 8765 4321</div>
+            <div class="wsp-chat-status">en línea</div>
+          </div>
+          <div class="wsp-chat-icons">
+            <span>🔍</span>
+            <span>📞</span>
+            <span>⋮</span>
+          </div>
+        </div>
+        <div class="wsp-chat-msgs" id="chat-msgs">
+          <div class="wsp-lock-notice">
+            🔒 Los mensajes están cifrados de extremo a extremo
+          </div>
+          <div class="wsp-bubble wsp-bubble-out" id="first-bubble" style="display:none;">
+            Hola! 😊 Le escribo de Claro. ¿Tiene un momento?
+            <div class="wsp-bubble-time">10:31 ✓✓</div>
+          </div>
+        </div>
+        <div class="wsp-chat-input">
+          <span style="font-size:20px;cursor:pointer;">😊</span>
+          <div class="wsp-input-box">Hola! 😊 Le escribo de Claro...</div>
+          <div class="wsp-send-btn highlight" onclick="sendMsg()" style="position:relative;">
+            ➤
+            <div class="neon-rect" style="border-radius:50%;inset:-3px;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="step-indicator">
+        <div class="step-dot done"></div>
+        <div class="step-dot done"></div>
+        <div class="step-dot done"></div>
+        <div class="step-dot active"></div>
+      </div>
+      <div class="footer">Por Eduardo Pérez</div>
+    </div>
+
+    <!-- ══ S5: ÉXITO ══ -->
+    <div id="s5" class="screen">
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 24px;text-align:center;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;">
+        <div class="success-icon">✅</div>
+        <h2 style="font-size:22px;margin-bottom:10px;">¡Mensaje enviado!</h2>
+        <p style="font-size:15px;opacity:0.95;line-height:1.6;">
+          Contactaste al cliente sin necesitar<br>
+          <strong>guardar su número</strong> en tus contactos.
+        </p>
+        <div class="summary-box">
+          <strong>🖥️ Resumen del método (Windows):</strong><br>
+          1. Abre <strong>Chrome o Edge</strong> en tu PC<br>
+          2. Click en la barra de URLs<br>
+          3. Escribe: <span style="font-family:monospace;background:rgba(255,255,255,0.25);padding:1px 7px;border-radius:4px;">wa.me/56XXXXXXXXX</span><br>
+          4. Presiona <span style="font-family:monospace;background:rgba(255,255,255,0.2);padding:1px 6px;border-radius:3px;">Enter</span> → chat listo ✓
+        </div>
+        <button onclick="restart()" style="margin-top:18px;background:rgba(255,255,255,0.25);border:2px solid rgba(255,255,255,0.6);color:#fff;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Roboto',sans-serif;">
+          ↩ Repetir tutorial
+        </button>
+      </div>
+      <div class="step-indicator" style="background:linear-gradient(135deg,#25D366,#128C7E);padding-bottom:6px;">
+        <div class="step-dot done"></div>
+        <div class="step-dot done"></div>
+        <div class="step-dot done"></div>
+        <div class="step-dot done" style="background:#fff;transform:scale(1.4);"></div>
+      </div>
+      <div class="footer" style="background:linear-gradient(135deg,#25D366,#128C7E);color:rgba(255,255,255,0.7);">Por Eduardo Pérez</div>
+    </div>
+
+  </div><!-- /browser-window -->
+</div><!-- /desktop -->
+
+<!-- ══ WINDOWS TASKBAR ══ -->
+<div class="win-taskbar">
+  <div class="win-start">
+    <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="1" y="1" width="7.5" height="7.5" fill="#f35325"/>
+      <rect x="9.5" y="1" width="7.5" height="7.5" fill="#81bc06"/>
+      <rect x="1" y="9.5" width="7.5" height="7.5" fill="#05a6f0"/>
+      <rect x="9.5" y="9.5" width="7.5" height="7.5" fill="#ffba08"/>
+    </svg>
+  </div>
+  <div class="win-taskbar-app">
+    <div style="width:14px;height:14px;background:conic-gradient(#ea4335 0 25%,#fbbc05 25% 50%,#34a853 50% 75%,#4285f4 75%);border-radius:50%;"></div>
+    Chrome
+  </div>
+  <div class="win-taskbar-clock" id="win-clock">10:30<br>25/03/2026</div>
+</div>
+
+<script>
+  var current = 1;
+  var msgSent = false;
+
+  // Reloj
+  function tick() {
+    var d = new Date();
+    var time = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+    var date = String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+    document.getElementById('win-clock').innerHTML = time + '<br>' + date;
+  }
+  tick(); setInterval(tick, 10000);
+
+  var OMNI_URLS = [
+    'Nueva pestaña',
+    'web.whatsapp.com',
+    'wa.me/56987654321',
+    'wa.me/56987654321',
+    'wa.me/56987654321'
+  ];
+  var TAB_TITLES = [
+    'Nueva pestaña — Google Chrome',
+    'WhatsApp Web — Google Chrome',
+    'wa.me/56987654321 — Google Chrome',
+    'WhatsApp Web — Google Chrome',
+    'WhatsApp Web — Google Chrome'
+  ];
+  var TAB_FAVICONS = ['G', 'W', '🌐', 'W', 'W'];
+  var OMNI_LOCKS = ['🔍', '🔒', '🔒', '🔒', '🔒'];
+
+  function show(n) {
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+    var s = document.getElementById('s' + n);
+    if (s) s.classList.add('active');
+    current = n;
+    var idx = Math.min(n - 1, OMNI_URLS.length - 1);
+    document.getElementById('omni-url').textContent = OMNI_URLS[idx];
+    document.getElementById('win-title').textContent = TAB_TITLES[idx];
+    document.getElementById('tab-title').textContent = TAB_TITLES[idx].split('—')[0].trim();
+    document.getElementById('tab-favicon').textContent = TAB_FAVICONS[idx];
+    document.getElementById('omni-lock').textContent = OMNI_LOCKS[idx];
+
+    // Efecto typing en step 3
+    var bar = document.getElementById('omni-bar-el');
+    if (n === 3) { bar.classList.add('typing'); }
+    else         { bar.classList.remove('typing'); }
+  }
+
+  function sendMsg() {
+    if (msgSent) return;
+    msgSent = true;
+    document.getElementById('first-bubble').style.display = 'block';
+    setTimeout(function(){ show(5); }, 800);
+  }
+
+  function restart() {
+    msgSent = false;
+    document.getElementById('first-bubble').style.display = 'none';
+    show(1);
+  }
+</script>
+</body>
+</html>

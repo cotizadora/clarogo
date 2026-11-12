@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Borrar Cookies — Chrome y Edge en Windows</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Segoe+UI:wght@400;600;700&display=swap');
+
+    :root {
+      --neon:        #00FFB2;
+      --chrome-blue: #1A73E8;
+      --edge-blue:   #0078D4;
+      --danger:      #ea4335;
+      --success:     #34a853;
+      --win-taskbar: #1a1a2e;
+      --win-title:   #2d2d2d;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'Roboto', system-ui, sans-serif;
+      background: #1c1c1c;
+      color: #202124;
+      height: 100vh;
+      overflow: hidden;
+      touch-action: manipulation;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ══ WINDOWS TASKBAR (bottom) ══ */
+    .win-taskbar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 40px;
+      background: rgba(20,20,35,0.96);
+      backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      gap: 4px;
+      z-index: 300;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .win-start {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .win-start:hover { background: rgba(255,255,255,0.1); }
+    .win-start svg { width: 18px; height: 18px; }
+
+    .win-taskbar-app {
+      height: 32px;
+      display: flex; align-items: center; gap: 6px;
+      padding: 0 10px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.12);
+      border-bottom: 2px solid var(--chrome-blue);
+      font-size: 11px;
+      color: #fff;
+      cursor: pointer;
+    }
+    .win-taskbar-app.edge-app { border-bottom-color: var(--edge-blue); }
+
+    .win-taskbar-clock {
+      margin-left: auto;
+      font-size: 11px;
+      color: rgba(255,255,255,0.75);
+      text-align: center;
+      line-height: 1.3;
+      padding-right: 8px;
+    }
+
+    /* ══ DESKTOP AREA ══ */
+    .desktop {
+      flex: 1;
+      margin-bottom: 40px;
+      position: relative;
+      background: #1e1e2e;
+      overflow: hidden;
+    }
+
+    /* ══ BROWSER WINDOW ══ */
+    .browser-window {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+    }
+
+    /* Title bar */
+    .win-titlebar {
+      height: 32px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px 0 8px;
+      flex-shrink: 0;
+      user-select: none;
+      gap: 8px;
+    }
+    .chrome-titlebar { background: #dee1e6; }
+    .edge-titlebar   { background: #d6dbe8; }
+
+    .titlebar-favicon {
+      width: 16px; height: 16px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+    }
+    .titlebar-text {
+      font-size: 12px;
+      color: #3c3c3c;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+    .win-controls {
+      display: flex; gap: 0; margin-left: auto;
+      flex-shrink: 0;
+    }
+    .win-btn {
+      width: 28px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; color: #555;
+      cursor: pointer; border-radius: 3px;
+      transition: background 0.15s;
+    }
+    .win-btn:hover { background: rgba(0,0,0,0.1); }
+    .win-btn.close:hover { background: #e81123; color: #fff; }
+
+    /* Tab bar */
+    .chrome-tabs-bar {
+      height: 36px;
+      background: #dee1e6;
+      display: flex;
+      align-items: flex-end;
+      padding: 0 8px;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+    .edge-tabs-bar {
+      height: 36px;
+      background: #d6dbe8;
+      display: flex;
+      align-items: flex-end;
+      padding: 0 8px;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .browser-tab {
+      padding: 6px 16px 0;
+      border-radius: 8px 8px 0 0;
+      font-size: 11.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      white-space: nowrap;
+      height: 32px;
+    }
+    .chrome-tab.active { background: #f8f9fa; color: #202124; }
+    .chrome-tab        { background: #c8cdd5; color: #5f6368; }
+    .edge-tab.active   { background: #fafbff; color: #202124; }
+    .edge-tab          { background: #c2c8d6; color: #5f6368; }
+
+    .tab-icon {
+      width: 14px; height: 14px;
+      border-radius: 2px;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .chrome-icon { background: conic-gradient(#ea4335 0 25%, #fbbc05 25% 50%, #34a853 50% 75%, #4285f4 75%); border-radius: 50%; }
+    .edge-icon   { background: linear-gradient(135deg, #0078D4, #50e6ff); border-radius: 3px; }
+
+    /* Omnibox */
+    .omnibox {
+      height: 44px;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      gap: 8px;
+      border-bottom: 1px solid #dadce0;
+      flex-shrink: 0;
+    }
+    .chrome-omnibox { background: #f8f9fa; }
+    .edge-omnibox   { background: #fafbff; border-bottom-color: #d0d5e0; }
+
+    .omni-navbtn {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 14px;
+      color: #5f6368;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .omni-navbtn:hover { background: rgba(0,0,0,0.06); }
+
+    .omni-bar {
+      flex: 1;
+      background: #fff;
+      border: 1px solid #dadce0;
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px;
+      color: #202124;
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .edge-omnibox .omni-bar { border-color: #c8d0e0; }
+    .omni-lock { color: #5f6368; font-size: 12px; flex-shrink: 0; }
+    .omni-url  { flex: 1; color: #202124; font-size: 12px; }
+    .omni-bookmark { color: #9aa0b4; font-size: 13px; flex-shrink: 0; }
+
+    /* ══ SCREENS ══ */
+    .screen {
+      position: absolute;
+      top: 112px; left: 0; right: 0; bottom: 0;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      background: #fff;
+    }
+    .screen.active { display: flex; }
+    .edge-screen { background: #fafbff; }
+
+    /* Adjust top for edge (titlebar same height) */
+    .chrome-screen { top: 112px; }
+    .edge-screen   { top: 112px; }
+
+    /* ══ SETTINGS SIDEBAR + CONTENT ══ */
+    .settings-layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .settings-sidebar {
+      width: 220px;
+      border-right: 1px solid #e0e0e0;
+      background: #f8f9fa;
+      padding: 12px 0;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+    .edge-settings-sidebar {
+      width: 220px;
+      border-right: 1px solid #d8dde8;
+      background: #f0f2f8;
+      padding: 12px 0;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+
+    .sidebar-item {
+      padding: 8px 20px;
+      font-size: 13px;
+      color: #5f6368;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.15s;
+      border-radius: 0 20px 20px 0;
+      margin-right: 8px;
+    }
+    .sidebar-item:hover { background: #e8eaed; }
+    .sidebar-item.active { background: #e8f0fe; color: var(--chrome-blue); font-weight: 600; }
+    .edge-sidebar-item {
+      padding: 8px 20px;
+      font-size: 13px;
+      color: #444;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.15s;
+    }
+    .edge-sidebar-item:hover { background: #e4e8f4; }
+    .edge-sidebar-item.active { background: #dce6f8; color: var(--edge-blue); font-weight: 600; }
+
+    .settings-content {
+      flex: 1;
+      padding: 20px 24px;
+      overflow-y: auto;
+    }
+
+    .settings-title {
+      font-size: 22px;
+      font-weight: 400;
+      color: #202124;
+      margin-bottom: 20px;
+    }
+    .edge-settings-content .settings-title { font-size: 20px; font-weight: 600; color: #111; }
+
+    /* Settings rows */
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 13.5px;
+      cursor: default;
+      position: relative;
+      transition: background 0.2s, transform 0.2s;
+      border-radius: 8px;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+    .setting-row.clickable { cursor: pointer; }
+    .setting-row.clickable:hover { background: #f8f9fa; }
+    .setting-row.highlight {
+      box-shadow: 0 0 0 3px rgba(0,255,178,0.5), 0 0 20px rgba(0,255,178,0.4) !important;
+      background: linear-gradient(90deg, #ffffff, #f0fff8) !important;
+      animation: pulse-glow 1.8s infinite alternate;
+      cursor: pointer !important;
+      transform: scale(1.01);
+    }
+    .setting-row.edge-highlight {
+      box-shadow: 0 0 0 3px rgba(0,255,178,0.5), 0 0 20px rgba(0,255,178,0.4) !important;
+      background: linear-gradient(90deg, #fafbff, #edfff8) !important;
+      animation: pulse-glow 1.8s infinite alternate;
+      cursor: pointer !important;
+      transform: scale(1.01);
+    }
+
+    @keyframes pulse-glow {
+      0%   { box-shadow: 0 0 0 3px rgba(0,255,178,0.4), 0 0 18px rgba(0,255,178,0.55); }
+      100% { box-shadow: 0 0 0 7px rgba(0,255,178,0.15), 0 0 28px rgba(0,255,178,0.8); }
+    }
+
+    .neon-rect {
+      position: absolute;
+      inset: -3px;
+      border: 2.5px solid var(--neon);
+      border-radius: 10px;
+      pointer-events: none;
+      animation: neon-blink 1.5s infinite alternate;
+    }
+    @keyframes neon-blink { from{opacity:0.7;} to{opacity:1;} }
+
+    .setting-label { font-size: 13.5px; color: #202124; }
+    .setting-desc  { font-size: 12px; color: #80868b; margin-top: 2px; }
+    .setting-arrow { color: #80868b; font-size: 16px; }
+    .setting-arrow-blue { color: var(--chrome-blue); font-size: 16px; }
+    .setting-arrow-edge { color: var(--edge-blue); font-size: 16px; }
+
+    /* ══ CLEAR DATA DIALOG ══ */
+    .clear-dialog {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .clear-dialog.open { display: flex; }
+
+    .dialog-box {
+      background: #fff;
+      border-radius: 8px;
+      width: min(420px, 90vw);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    .dialog-header {
+      padding: 20px 24px 12px;
+      font-size: 16px;
+      font-weight: 500;
+      color: #202124;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .dialog-body-inner {
+      padding: 16px 24px;
+    }
+    .dialog-range {
+      font-size: 13px;
+      color: #5f6368;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .range-badge {
+      background: #e8eaed;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-weight: 600;
+      color: #202124;
+      font-size: 12px;
+    }
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 0;
+      font-size: 13px;
+      color: #202124;
+      cursor: pointer;
+    }
+    .check-row input[type=checkbox] {
+      width: 15px; height: 15px;
+      accent-color: var(--chrome-blue);
+      cursor: pointer;
+    }
+    .check-row .check-sub {
+      font-size: 11px;
+      color: #80868b;
+    }
+    .check-highlight {
+      background: linear-gradient(90deg, #f0fff8, #e8fff4);
+      border-radius: 6px;
+      padding: 2px 6px;
+      box-shadow: 0 0 8px rgba(0,255,178,0.3);
+    }
+    .dialog-actions {
+      padding: 12px 16px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      border-top: 1px solid #e0e0e0;
+    }
+    .btn-cancel {
+      background: none;
+      border: none;
+      padding: 8px 20px;
+      font-size: 13px;
+      color: var(--chrome-blue);
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 4px;
+      font-family: 'Roboto', sans-serif;
+      transition: background 0.15s;
+    }
+    .btn-cancel:hover { background: #e8f0fe; }
+    .btn-clear {
+      background: var(--chrome-blue);
+      color: #fff;
+      border: none;
+      padding: 8px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      transition: background 0.15s;
+    }
+    .btn-clear:hover { background: #1558b0; }
+    .btn-clear-edge {
+      background: var(--edge-blue);
+      color: #fff;
+      border: none;
+      padding: 8px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+      transition: background 0.15s;
+    }
+    .btn-clear-edge:hover { background: #005ea6; }
+
+    /* Edge dialog */
+    .edge-dialog-box {
+      background: #fff;
+      border-radius: 8px;
+      width: min(400px, 90vw);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.3);
+      border-top: 3px solid var(--edge-blue);
+      overflow: hidden;
+    }
+
+    /* ══ SUCCESS SCREEN ══ */
+    .success-screen {
+      background: linear-gradient(135deg, #34a853 0%, #0f9647 100%) !important;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .edge-success { background: linear-gradient(135deg, #0078D4 0%, #005ea6 100%) !important; }
+    .success-icon { font-size: 52px; margin-bottom: 14px; }
+
+    /* ══ STEP DOTS ══ */
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 0 6px;
+      flex-shrink: 0;
+    }
+    .step-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #ccc;
+      transition: all 0.3s;
+    }
+    .step-dot.active { background: var(--chrome-blue); transform: scale(1.35); }
+    .step-dot.done   { background: var(--success); }
+
+    /* ══ BROWSER SWITCHER ══ */
+    #browser-switcher {
+      position: fixed;
+      bottom: 44px; left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      background: rgba(20,20,35,0.92);
+      border-radius: 12px;
+      padding: 4px;
+      z-index: 250;
+      gap: 4px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .switch-btn {
+      padding: 7px 18px;
+      border-radius: 8px;
+      border: none;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: 'Roboto', sans-serif;
+      cursor: pointer;
+      color: rgba(255,255,255,0.5);
+      background: transparent;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s;
+    }
+    .active-chrome {
+      background: #f8f9fa;
+      color: #202124 !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .active-edge {
+      background: #fafbff;
+      color: #202124 !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .tab-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .chrome-dot { background: conic-gradient(#ea4335 0 25%, #fbbc05 25% 50%, #34a853 50% 75%, #4285f4 75%); }
+    .edge-dot   { background: linear-gradient(135deg, #0078D4, #50e6ff); }
+
+    /* ══ FOOTER ══ */
+    .footer {
+      font-size: 11px;
+      color: #9e9e9e;
+      text-align: center;
+      padding: 3px 0 6px;
+      flex-shrink: 0;
+    }
+
+    /* Shortcut hint */
+    .shortcut-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #f1f3f4;
+      border: 1px solid #dadce0;
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 12px;
+      font-family: monospace;
+      color: #3c4043;
+      margin: 8px 0;
+    }
+    .key-badge {
+      background: #e8eaed;
+      border: 1px solid #c0c4ca;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #202124;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.15);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ CHROME BROWSER WINDOW ══ -->
+<div id="chrome-window" class="browser-window" style="display:flex;">
+
+  <!-- Title bar -->
+  <div class="win-titlebar chrome-titlebar">
+    <div class="titlebar-favicon chrome-icon" style="width:14px;height:14px;border-radius:50%;"></div>
+    <span class="titlebar-text" id="chrome-titlebar-text">Configuración — Chrome</span>
+    <div class="win-controls">
+      <div class="win-btn">─</div>
+      <div class="win-btn">⬜</div>
+      <div class="win-btn close">✕</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="chrome-tabs-bar">
+    <div class="browser-tab chrome-tab active">
+      <div class="tab-icon chrome-icon"></div>
+      <span id="chrome-tab-label">Configuración</span>
+      <span style="margin-left:6px;font-size:10px;color:#80868b;">✕</span>
+    </div>
+  </div>
+
+  <!-- Omnibox -->
+  <div class="omnibox chrome-omnibox">
+    <button class="omni-navbtn">‹</button>
+    <button class="omni-navbtn">›</button>
+    <button class="omni-navbtn">↻</button>
+    <div class="omni-bar">
+      <span class="omni-lock">🔒</span>
+      <span class="omni-url" id="chrome-omni-url">chrome://settings</span>
+      <span class="omni-bookmark">☆</span>
+    </div>
+    <button class="omni-navbtn">⋮</button>
+  </div>
+
+  <!-- Screen CS1: Configuración principal -->
+  <div id="cs1" class="screen chrome-screen">
+    <div class="settings-layout">
+      <div class="settings-sidebar">
+        <div class="sidebar-item">👤 &nbsp;Tú y Google</div>
+        <div class="sidebar-item active">🔒 &nbsp;Privacidad y seguridad</div>
+        <div class="sidebar-item">🎨 &nbsp;Apariencia</div>
+        <div class="sidebar-item">🔍 &nbsp;Motor de búsqueda</div>
+        <div class="sidebar-item">🖥️ &nbsp;Navegador predeter.</div>
+        <div class="sidebar-item">⚙️ &nbsp;Al iniciar Chrome</div>
+        <div class="sidebar-item">🧩 &nbsp;Extensiones</div>
+      </div>
+      <div class="settings-content">
+        <div class="settings-title">Privacidad y seguridad</div>
+
+        <div class="setting-row clickable" style="margin-bottom:4px;">
+          <div>
+            <div class="setting-label">Historial de Chrome</div>
+            <div class="setting-desc">Gestiona tu actividad de navegación</div>
+          </div>
+          <span class="setting-arrow">›</span>
+        </div>
+        <div class="setting-row clickable highlight" onclick="cn(2)" style="position:relative;margin-bottom:4px;">
+          <div>
+            <div class="setting-label" style="font-weight:600;">Borrar datos de navegación</div>
+            <div class="setting-desc">Elimina cookies, caché e historial</div>
+          </div>
+          <span class="setting-arrow-blue">›</span>
+          <div class="neon-rect"></div>
+        </div>
+        <div class="setting-row clickable" style="margin-bottom:4px;">
+          <div>
+            <div class="setting-label">Configuración de sitios</div>
+            <div class="setting-desc">Permisos de cámara, micrófono y más</div>
+          </div>
+          <span class="setting-arrow">›</span>
+        </div>
+        <div class="setting-row clickable" style="margin-bottom:4px;">
+          <div>
+            <div class="setting-label">Seguridad</div>
+            <div class="setting-desc">Navegación segura y protección avanzada</div>
+          </div>
+          <span class="setting-arrow">›</span>
+        </div>
+
+        <div style="margin-top:16px;background:#e8f0fe;border-radius:8px;padding:10px 14px;font-size:12px;color:#1a5db0;line-height:1.6;">
+          💡 <strong>Atajo rápido:</strong> también puedes abrir esta pantalla directamente pulsando
+          <span class="shortcut-hint"><span class="key-badge">Ctrl</span>+<span class="key-badge">Shift</span>+<span class="key-badge">Supr</span></span>
+          en Chrome.
+        </div>
+      </div>
+    </div>
+    <div class="step-indicator">
+      <div class="step-dot active"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+    </div>
+    <div class="footer">Por Eduardo Pérez</div>
+  </div>
+
+  <!-- Screen CS2: Borrar datos -->
+  <div id="cs2" class="screen chrome-screen" style="display:none;">
+    <div style="flex:1;overflow-y:auto;padding:20px 24px;">
+      <div style="font-size:18px;font-weight:400;color:#202124;margin-bottom:16px;">Borrar datos de navegación</div>
+
+      <!-- Tabs básico/avanzado -->
+      <div style="display:flex;border-bottom:2px solid #e0e0e0;margin-bottom:16px;gap:0;">
+        <div style="padding:8px 20px;font-size:13px;font-weight:600;color:var(--chrome-blue);border-bottom:2px solid var(--chrome-blue);margin-bottom:-2px;cursor:pointer;">Básico</div>
+        <div style="padding:8px 20px;font-size:13px;color:#5f6368;cursor:pointer;">Avanzado</div>
+      </div>
+
+      <div style="font-size:12px;color:#5f6368;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+        Intervalo de tiempo:
+        <div style="background:#f8f9fa;border:1px solid #dadce0;border-radius:4px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;">
+          Todo el tiempo <span style="font-size:10px;">▼</span>
+        </div>
+      </div>
+
+      <div class="check-row check-highlight" style="position:relative;border-radius:8px;padding:8px;margin-bottom:4px;">
+        <input type="checkbox" id="ck-cookies" checked>
+        <div>
+          <div style="font-weight:600;">Cookies y otros datos de sitios</div>
+          <div class="check-sub">Se cerrará la sesión en la mayoría de sitios</div>
+        </div>
+        <div class="neon-rect" style="inset:-1px;"></div>
+      </div>
+      <div class="check-row" style="padding:8px;margin-bottom:4px;" onclick="document.getElementById('ck-hist').click()">
+        <input type="checkbox" id="ck-hist">
+        <div>
+          <div>Historial de navegación</div>
+          <div class="check-sub">Elimina páginas visitadas</div>
+        </div>
+      </div>
+      <div class="check-row" style="padding:8px;margin-bottom:4px;" onclick="document.getElementById('ck-cache').click()">
+        <input type="checkbox" id="ck-cache">
+        <div>
+          <div>Imágenes y archivos en caché</div>
+          <div class="check-sub">Libera espacio del disco</div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px;padding-bottom:10px;">
+        <button class="btn-cancel" onclick="cn(1)">Cancelar</button>
+        <button class="btn-clear" onclick="openDialog('chrome')" style="position:relative;">
+          Borrar datos
+          <div class="neon-rect" style="border-radius:6px;"></div>
+        </button>
+      </div>
+    </div>
+    <div class="step-indicator">
+      <div class="step-dot done"></div>
+      <div class="step-dot active"></div>
+      <div class="step-dot"></div>
+    </div>
+    <div class="footer">Por Eduardo Pérez</div>
+
+    <!-- Dialog Chrome -->
+    <div class="clear-dialog" id="dlg-chrome">
+      <div class="dialog-box">
+        <div class="dialog-header">¿Borrar datos de navegación?</div>
+        <div class="dialog-body-inner">
+          <div class="dialog-range">Intervalo: <span class="range-badge">Todo el tiempo</span></div>
+          <p style="font-size:13px;color:#5f6368;line-height:1.6;">Se eliminarán las cookies y datos de sitios de <strong>Todo el tiempo</strong>. Tendrás que volver a iniciar sesión en los sitios que visites.</p>
+        </div>
+        <div class="dialog-actions">
+          <button class="btn-cancel" onclick="closeDialog('chrome')">Cancelar</button>
+          <button class="btn-clear" onclick="confirmClear('chrome')">Borrar datos</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen CS3: Éxito -->
+  <div id="cs3" class="screen chrome-screen success-screen" style="display:none;">
+    <div class="success-icon">🧹</div>
+    <h2 style="font-size:22px;margin-bottom:12px;">¡Cookies eliminadas!</h2>
+    <p style="font-size:15px;opacity:0.95;line-height:1.6;">Las cookies y datos de sitios se borraron<br>correctamente en <strong>Chrome para Windows</strong>.</p>
+    <div style="margin-top:28px;background:rgba(255,255,255,0.2);padding:14px 20px;border-radius:12px;font-size:13px;line-height:1.8;max-width:280px;text-align:left;">
+      💡 Si tenías sesiones abiertas,<br>deberás iniciar sesión nuevamente<br>en los sitios que visites.
+    </div>
+    <button onclick="cn(1)" style="margin-top:20px;background:rgba(255,255,255,0.25);border:2px solid rgba(255,255,255,0.6);color:#fff;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Roboto',sans-serif;">
+      ↩ Repetir tutorial
+    </button>
+    <div class="step-indicator" style="padding-top:20px;">
+      <div class="step-dot done"></div>
+      <div class="step-dot done"></div>
+      <div class="step-dot done" style="background:#fff;transform:scale(1.4);"></div>
+    </div>
+    <div class="footer" style="color:rgba(255,255,255,0.75);">Por Eduardo Pérez</div>
+  </div>
+
+</div><!-- /chrome-window -->
+
+<!-- ══ EDGE BROWSER WINDOW ══ -->
+<div id="edge-window" class="browser-window" style="display:none;">
+
+  <!-- Title bar -->
+  <div class="win-titlebar edge-titlebar">
+    <div class="titlebar-favicon edge-icon" style="width:14px;height:14px;"></div>
+    <span class="titlebar-text" id="edge-titlebar-text">Configuración — Microsoft Edge</span>
+    <div class="win-controls">
+      <div class="win-btn">─</div>
+      <div class="win-btn">⬜</div>
+      <div class="win-btn close">✕</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="edge-tabs-bar">
+    <div class="browser-tab edge-tab active">
+      <div class="tab-icon edge-icon"></div>
+      <span id="edge-tab-label">Configuración</span>
+      <span style="margin-left:6px;font-size:10px;color:#80868b;">✕</span>
+    </div>
+  </div>
+
+  <!-- Omnibox -->
+  <div class="omnibox edge-omnibox">
+    <button class="omni-navbtn">‹</button>
+    <button class="omni-navbtn">›</button>
+    <button class="omni-navbtn">↻</button>
+    <div class="omni-bar">
+      <span class="omni-lock">🔒</span>
+      <span class="omni-url" id="edge-omni-url">edge://settings/privacy</span>
+      <span class="omni-bookmark">☆</span>
+    </div>
+    <button class="omni-navbtn">⋮</button>
+  </div>
+
+  <!-- Screen ES1: Configuración Edge -->
+  <div id="es1" class="screen edge-screen">
+    <div class="settings-layout">
+      <div class="edge-settings-sidebar">
+        <div class="edge-sidebar-item">👤 &nbsp;Perfiles</div>
+        <div class="edge-sidebar-item active">🔒 &nbsp;Privacidad, búsqueda...</div>
+        <div class="edge-sidebar-item">🎨 &nbsp;Apariencia</div>
+        <div class="edge-sidebar-item">🔍 &nbsp;Barra de direcciones</div>
+        <div class="edge-sidebar-item">🖥️ &nbsp;Inicio, inicio y pestañas</div>
+        <div class="edge-sidebar-item">🧩 &nbsp;Extensiones</div>
+        <div class="edge-sidebar-item">⬇️ &nbsp;Descargas</div>
+      </div>
+      <div class="settings-content edge-settings-content">
+        <div class="settings-title">Privacidad, búsqueda y servicios</div>
+
+        <div class="setting-row clickable" style="margin-bottom:4px;">
+          <div>
+            <div class="setting-label">Prevención de seguimiento</div>
+            <div class="setting-desc">Bloquea rastreadores de sitios web</div>
+          </div>
+          <span class="setting-arrow">›</span>
+        </div>
+        <div class="setting-row clickable edge-highlight" onclick="en(2)" style="position:relative;margin-bottom:4px;">
+          <div>
+            <div class="setting-label" style="font-weight:600;">Borrar datos de exploración</div>
+            <div class="setting-desc">Cookies, historial de exploración, caché y más</div>
+          </div>
+          <span class="setting-arrow-edge">›</span>
+          <div class="neon-rect"></div>
+        </div>
+        <div class="setting-row clickable" style="margin-bottom:4px;">
+          <div>
+            <div class="setting-label">Contraseñas</div>
+            <div class="setting-desc">Administrar contraseñas guardadas</div>
+          </div>
+          <span class="setting-arrow">›</span>
+        </div>
+        <div class="setting-row clickable" style="margin-bottom:4px;">
+          <div>
+            <div class="setting-label">Permisos del sitio</div>
+            <div class="setting-desc">Cámara, micrófono, notificaciones...</div>
+          </div>
+          <span class="setting-arrow">›</span>
+        </div>
+
+        <div style="margin-top:16px;background:#dce6f8;border-radius:8px;padding:10px 14px;font-size:12px;color:#004c97;line-height:1.6;">
+          💡 <strong>Atajo rápido:</strong> también puedes abrir esta pantalla directamente pulsando
+          <span class="shortcut-hint" style="background:#e8eef8;border-color:#c0cce0;"><span class="key-badge">Ctrl</span>+<span class="key-badge">Shift</span>+<span class="key-badge">Supr</span></span>
+          en Edge.
+        </div>
+      </div>
+    </div>
+    <div class="step-indicator">
+      <div class="step-dot active" style="background:var(--edge-blue);"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+    </div>
+    <div class="footer">Por Eduardo Pérez</div>
+  </div>
+
+  <!-- Screen ES2: Borrar datos Edge -->
+  <div id="es2" class="screen edge-screen" style="display:none;">
+    <div style="flex:1;overflow-y:auto;padding:20px 24px;">
+      <div style="font-size:18px;font-weight:600;color:#111;margin-bottom:16px;">Borrar datos de exploración</div>
+
+      <!-- Tabs básico/avanzado -->
+      <div style="display:flex;border-bottom:2px solid #d0d5e0;margin-bottom:16px;gap:0;">
+        <div style="padding:8px 20px;font-size:13px;font-weight:600;color:var(--edge-blue);border-bottom:2px solid var(--edge-blue);margin-bottom:-2px;cursor:pointer;">Básico</div>
+        <div style="padding:8px 20px;font-size:13px;color:#5f6368;cursor:pointer;">Avanzado</div>
+      </div>
+
+      <div style="font-size:12px;color:#5f6368;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+        Intervalo de tiempo:
+        <div style="background:#fff;border:1px solid #d0d5e0;border-radius:4px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;color:#111;">
+          Todo el tiempo <span style="font-size:10px;">▼</span>
+        </div>
+      </div>
+
+      <div style="background:#edf3fc;border:1.5px solid rgba(0,255,178,0.4);border-radius:8px;padding:8px;margin-bottom:8px;box-shadow:0 0 12px rgba(0,255,178,0.25);position:relative;">
+        <div class="check-row">
+          <input type="checkbox" id="ek-cookies" checked style="accent-color:var(--edge-blue);">
+          <div>
+            <div style="font-weight:600;color:#111;">Cookies y datos de sitios guardados</div>
+            <div class="check-sub">Cerrarás sesión en la mayoría de sitios</div>
+          </div>
+        </div>
+        <div class="neon-rect" style="inset:-1px;"></div>
+      </div>
+      <div class="check-row" style="padding:8px;margin-bottom:4px;" onclick="document.getElementById('ek-hist').click()">
+        <input type="checkbox" id="ek-hist" style="accent-color:var(--edge-blue);">
+        <div>
+          <div>Historial de exploración</div>
+          <div class="check-sub">Elimina páginas visitadas</div>
+        </div>
+      </div>
+      <div class="check-row" style="padding:8px;margin-bottom:4px;" onclick="document.getElementById('ek-cache').click()">
+        <input type="checkbox" id="ek-cache" style="accent-color:var(--edge-blue);">
+        <div>
+          <div>Imágenes y archivos en caché</div>
+          <div class="check-sub">Libera espacio del disco</div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px;padding-bottom:10px;">
+        <button class="btn-cancel" style="color:var(--edge-blue);" onclick="en(1)">Cancelar</button>
+        <button class="btn-clear-edge" onclick="openDialog('edge')" style="position:relative;">
+          Borrar ahora
+          <div class="neon-rect" style="border-radius:6px;"></div>
+        </button>
+      </div>
+    </div>
+    <div class="step-indicator">
+      <div class="step-dot done" style="background:#34a853;"></div>
+      <div class="step-dot active" style="background:var(--edge-blue);"></div>
+      <div class="step-dot"></div>
+    </div>
+    <div class="footer">Por Eduardo Pérez</div>
+
+    <!-- Dialog Edge -->
+    <div class="clear-dialog" id="dlg-edge">
+      <div class="edge-dialog-box">
+        <div class="dialog-header" style="border-color:#d0d5e0;">¿Borrar datos de exploración?</div>
+        <div class="dialog-body-inner">
+          <div class="dialog-range">Intervalo: <span class="range-badge" style="background:#dce6f8;color:var(--edge-blue);">Todo el tiempo</span></div>
+          <p style="font-size:13px;color:#5f6368;line-height:1.6;">Se eliminarán las cookies y datos de sitios de <strong>Todo el tiempo</strong>. Tendrás que volver a iniciar sesión en los sitios que visites.</p>
+        </div>
+        <div class="dialog-actions" style="border-top-color:#d0d5e0;">
+          <button class="btn-cancel" style="color:var(--edge-blue);" onclick="closeDialog('edge')">Cancelar</button>
+          <button class="btn-clear-edge" onclick="confirmClear('edge')">Borrar ahora</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen ES3: Éxito -->
+  <div id="es3" class="screen edge-screen edge-success" style="display:none;">
+    <div class="success-icon">🧹</div>
+    <h2 style="font-size:22px;margin-bottom:12px;">¡Cookies eliminadas!</h2>
+    <p style="font-size:15px;opacity:0.95;line-height:1.6;">Las cookies y datos de sitios se borraron<br>correctamente en <strong>Edge para Windows</strong>.</p>
+    <div style="margin-top:28px;background:rgba(255,255,255,0.2);padding:14px 20px;border-radius:12px;font-size:13px;line-height:1.8;max-width:280px;text-align:left;">
+      💡 Si tenías sesiones abiertas,<br>deberás iniciar sesión nuevamente<br>en los sitios que visites.
+    </div>
+    <button onclick="en(1)" style="margin-top:20px;background:rgba(255,255,255,0.25);border:2px solid rgba(255,255,255,0.6);color:#fff;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Roboto',sans-serif;">
+      ↩ Repetir tutorial
+    </button>
+    <div class="step-indicator" style="padding-top:20px;">
+      <div class="step-dot done"></div>
+      <div class="step-dot done"></div>
+      <div class="step-dot done" style="background:#fff;transform:scale(1.4);"></div>
+    </div>
+    <div class="footer" style="color:rgba(255,255,255,0.75);">Por Eduardo Pérez</div>
+  </div>
+
+</div><!-- /edge-window -->
+
+<!-- ══ WINDOWS TASKBAR ══ -->
+<div class="win-taskbar">
+  <div class="win-start">
+    <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="1" y="1" width="7.5" height="7.5" fill="#f35325"/>
+      <rect x="9.5" y="1" width="7.5" height="7.5" fill="#81bc06"/>
+      <rect x="1" y="9.5" width="7.5" height="7.5" fill="#05a6f0"/>
+      <rect x="9.5" y="9.5" width="7.5" height="7.5" fill="#ffba08"/>
+    </svg>
+  </div>
+  <div class="win-taskbar-app" id="tb-chrome" onclick="switchBrowser('chrome')">
+    <div class="tab-dot chrome-dot"></div>
+    Chrome
+  </div>
+  <div class="win-taskbar-app edge-app" id="tb-edge" onclick="switchBrowser('edge')" style="border-bottom-color:rgba(255,255,255,0.1);opacity:0.5;">
+    <div class="tab-dot edge-dot"></div>
+    Edge
+  </div>
+  <div class="win-taskbar-clock" id="win-clock">10:30<br>25/03/2026</div>
+</div>
+
+<!-- ══ BROWSER SWITCHER ══ -->
+<div id="browser-switcher">
+  <button class="switch-btn active-chrome" id="sw-chrome" onclick="switchBrowser('chrome')">
+    <div class="tab-dot chrome-dot"></div> Chrome
+  </button>
+  <button class="switch-btn" id="sw-edge" onclick="switchBrowser('edge')">
+    <div class="tab-dot edge-dot"></div> Edge
+  </button>
+</div>
+
+<script>
+  var mode = 'chrome';
+  var cStep = 1, eStep = 1;
+
+  // Reloj
+  function tick() {
+    var d = new Date();
+    var time = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+    var date = String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+    document.getElementById('win-clock').innerHTML = time + '<br>' + date;
+  }
+  tick(); setInterval(tick, 10000);
+
+  var CHROME_URLS = ['chrome://settings/privacy', 'chrome://settings/clearBrowserData', 'chrome://settings/clearBrowserData'];
+  var EDGE_URLS   = ['edge://settings/privacy',   'edge://settings/clearBrowserData',   'edge://settings/clearBrowserData'];
+
+  function switchBrowser(b) {
+    mode = b;
+    if (b === 'chrome') {
+      document.getElementById('chrome-window').style.display = 'flex';
+      document.getElementById('edge-window').style.display   = 'none';
+      document.getElementById('sw-chrome').className = 'switch-btn active-chrome';
+      document.getElementById('sw-edge').className   = 'switch-btn';
+      document.getElementById('tb-chrome').style.opacity = '1';
+      document.getElementById('tb-edge').style.opacity   = '0.5';
+      document.getElementById('tb-chrome').style.borderBottomColor = 'var(--chrome-blue)';
+      document.getElementById('tb-edge').style.borderBottomColor   = 'rgba(255,255,255,0.1)';
+      cn(cStep);
+    } else {
+      document.getElementById('chrome-window').style.display = 'none';
+      document.getElementById('edge-window').style.display   = 'flex';
+      document.getElementById('sw-edge').className   = 'switch-btn active-edge';
+      document.getElementById('sw-chrome').className = 'switch-btn';
+      document.getElementById('tb-edge').style.opacity   = '1';
+      document.getElementById('tb-chrome').style.opacity = '0.5';
+      document.getElementById('tb-edge').style.borderBottomColor   = 'var(--edge-blue)';
+      document.getElementById('tb-chrome').style.borderBottomColor = 'rgba(255,255,255,0.1)';
+      en(eStep);
+    }
+  }
+
+  function cn(n) {
+    document.querySelectorAll('.chrome-screen').forEach(function(s){ s.style.display='none'; s.classList.remove('active'); });
+    var s = document.getElementById('cs' + n);
+    s.style.display = 'flex'; s.classList.add('active');
+    cStep = n;
+    document.getElementById('chrome-omni-url').textContent = CHROME_URLS[Math.min(n-1, CHROME_URLS.length-1)];
+  }
+
+  function en(n) {
+    document.querySelectorAll('.edge-screen').forEach(function(s){ s.style.display='none'; s.classList.remove('active'); });
+    var s = document.getElementById('es' + n);
+    s.style.display = 'flex'; s.classList.add('active');
+    eStep = n;
+    document.getElementById('edge-omni-url').textContent = EDGE_URLS[Math.min(n-1, EDGE_URLS.length-1)];
+  }
+
+  function openDialog(b)  { document.getElementById('dlg-' + b).classList.add('open'); }
+  function closeDialog(b) { document.getElementById('dlg-' + b).classList.remove('open'); }
+  function confirmClear(b) {
+    closeDialog(b);
+    if (b === 'chrome') { setTimeout(function(){ cn(3); }, 300); }
+    else                { setTimeout(function(){ en(3); }, 300); }
+  }
+
+  // Init
+  switchBrowser('chrome');
+</script>
+</body>
+</html>

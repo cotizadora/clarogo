@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClaroGo! — Accesos Rápidos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800;6..12,900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --red:    #E60000;
+            --red-dk: #B50000;
+            --bg:     #e8edf5;
+            --card:   rgba(255,255,255,0.78);
+            --border: rgba(255,255,255,0.95);
+            --text:   #1a1e2e;
+            --muted:  #5a6480;
+            --dim:    #9aa0b4;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 48px;
+        }
+
+        /* ── PAGE ── */
+        .page {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 28px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        /* ── PLANILLA ── */
+        .planilla {
+            background: linear-gradient(135deg, #0F9D58, #0b7a42);
+            border-radius: 18px;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-decoration: none;
+            color: #fff;
+            box-shadow: 0 6px 24px rgba(15,157,88,.28), inset 0 1px 0 rgba(255,255,255,.15);
+            transition: transform .15s, box-shadow .2s;
+            animation: glow 2.4s ease-in-out infinite;
+        }
+        @keyframes glow {
+            0%,100% { box-shadow: 0 6px 24px rgba(15,157,88,.28), inset 0 1px 0 rgba(255,255,255,.15); }
+            50%      { box-shadow: 0 6px 36px rgba(15,157,88,.5),  inset 0 1px 0 rgba(255,255,255,.15); }
+        }
+        .planilla:hover { transform: translateY(-3px); animation: none; box-shadow: 0 12px 36px rgba(15,157,88,.45), inset 0 1px 0 rgba(255,255,255,.2); }
+
+        .pl-icon {
+            width: 48px; height: 48px;
+            background: rgba(255,255,255,.15);
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; flex-shrink: 0;
+        }
+        .pl-copy { flex: 1; }
+        .pl-copy strong { font-size: .98rem; font-weight: 800; display: block; }
+        .pl-copy span   { font-size: .74rem; opacity: .8; margin-top: 2px; display: block; font-weight: 400; }
+        .pl-btn {
+            background: rgba(255,255,255,.18);
+            border: 1.5px solid rgba(255,255,255,.35);
+            border-radius: 10px;
+            padding: 9px 18px;
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: .8rem; font-weight: 800;
+            color: #fff;
+            display: flex; align-items: center; gap: 7px;
+            white-space: nowrap; flex-shrink: 0; text-decoration: none;
+            transition: background .2s;
+        }
+        .pl-btn:hover { background: rgba(255,255,255,.28); }
+
+        /* ── SECTION LABEL ── */
+        .sec-label {
+            font-size: .63rem;
+            font-weight: 800;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--dim);
+            margin-bottom: 10px;
+            padding-left: 2px;
+        }
+
+        /* ── GRID ── */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr;         gap: 12px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4,1fr);   gap: 12px; }
+
+        /* ── TILE — exactamente igual a w-tile de index.html ── */
+        .tile {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-top: 3px solid rgba(200,208,220,.6);
+            border-radius: 16px;
+            padding: 22px 12px 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(80,100,160,.08), inset 0 1px 0 rgba(255,255,255,1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: border-top-color .2s, transform .15s, box-shadow .2s, background .2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .tile::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(160deg, rgba(230,0,0,.04) 0%, transparent 55%);
+            opacity: 0;
+            transition: opacity .25s;
+        }
+
+        .tile:hover {
+            border-top-color: var(--red);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(230,0,0,.14), 0 2px 8px rgba(80,100,160,.1), inset 0 1px 0 rgba(255,255,255,1);
+            background: rgba(255,248,248,.92);
+        }
+        .tile:hover::before { opacity: 1; }
+        .tile:active { transform: translateY(-1px); }
+
+        /* ícono igual a w-tile-icon */
+        .tile-icon {
+            width: 56px; height: 56px;
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(145deg, #ffffff 0%, #f5e8e8 100%);
+            border: 1px solid rgba(230,0,0,.18);
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(230,0,0,.1), inset 0 1px 0 rgba(255,255,255,1), inset 0 -1px 0 rgba(230,0,0,.06);
+            font-size: 20px;
+            color: var(--red);
+            flex-shrink: 0;
+            transition: transform .2s, box-shadow .2s;
+        }
+        .tile:hover .tile-icon {
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: 0 8px 20px rgba(230,0,0,.2), inset 0 1px 0 rgba(255,255,255,1);
+        }
+
+        .tile-name {
+            font-size: .88rem;
+            font-weight: 800;
+            color: var(--muted);
+            line-height: 1.25;
+            transition: color .2s;
+        }
+        .tile:hover .tile-name { color: var(--red); }
+
+        .tile-desc {
+            font-size: .68rem;
+            color: var(--dim);
+            line-height: 1.35;
+            font-weight: 400;
+        }
+
+        /* tile grande para canales críticos */
+        .tile-lg { padding: 26px 16px 22px; }
+        .tile-lg .tile-icon { width: 64px; height: 64px; font-size: 24px; border-radius: 18px; }
+        .tile-lg .tile-name { font-size: 1rem; }
+        .tile-lg .tile-desc { font-size: .74rem; }
+
+        @media (max-width: 600px) {
+            .grid-4 { grid-template-columns: repeat(2,1fr); }
+            .pl-btn { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+
+    <!-- PLANILLA -->
+    <a href="#" class="planilla">
+        <div class="pl-icon"><i class="fa-solid fa-file-excel"></i></div>
+        <div class="pl-copy">
+            <strong>Planilla de Trabajo</strong>
+            <span>Descarga la planilla oficial — reemplaza href="#" con el enlace real</span>
+        </div>
+        <span class="pl-btn"><i class="fa-solid fa-download"></i> Descargar</span>
+    </a>
+
+    <!-- CANALES CRÍTICOS -->
+    <div>
+        <div class="sec-label">Canales Críticos</div>
+        <div class="grid-2">
+            <a href="https://login.sae1.pure.cloud/?rid=fmyewhEdV0_vPZjkIdnB5AjR9OKFPlbcdEDDTZQYAoc#/authenticate-adv/org/clarochilesa" target="_blank" rel="noopener noreferrer" class="tile tile-lg">
+                <div class="tile-icon"><i class="fa-solid fa-headset"></i></div>
+                <div class="tile-name">Genesys</div>
+                <div class="tile-desc">Llamadas salientes y omnicanalidad</div>
+            </a>
+            <a href="https://fvc-prod.clarovtrcloud.com/#/login" target="_blank" rel="noopener noreferrer" class="tile tile-lg">
+                <div class="tile-icon"><i class="fa-solid fa-rocket"></i></div>
+                <div class="tile-name">Front FVC</div>
+                <div class="tile-desc">Evaluaciones y cierre de ventas</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- GESTIÓN OPERATIVA -->
+    <div>
+        <div class="sec-label">Gestión Operativa</div>
+        <div class="grid-4">
+            <a href="https://cyg-phoenix.buk.cl/static_pages/portal" target="_blank" rel="noopener noreferrer" class="tile">
+                <div class="tile-icon"><i class="fa-solid fa-user-gear"></i></div>
+                <div class="tile-name">Buk</div>
+                <div class="tile-desc">RRHH y Liquidación</div>
+            </a>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSdpNdfAhUC3HAw_LjYj1oCV1Oq6veT_0YnnIq06xg6wxOGMwA/viewform" target="_blank" rel="noopener noreferrer" class="tile">
+                <div class="tile-icon"><i class="fa-solid fa-pen-to-square"></i></div>
+                <div class="tile-name">Ingreso Ventas</div>
+                <div class="tile-desc">Formulario Oficial</div>
+            </a>
+            <a href="https://phoenixservice1-my.sharepoint.com/:x:/g/personal/cortiz_phoenixservice_cl/IQAdDLYIfXiqRqqDz9Q4LaqRAcbsoheICDJ2Ru3HDvI1UGU" target="_blank" rel="noopener noreferrer" class="tile">
+                <div class="tile-icon"><i class="fa-solid fa-cloud"></i></div>
+                <div class="tile-name">Bandeja</div>
+                <div class="tile-desc">SharePoint Excel</div>
+            </a>
+            <a href="https://docs.google.com/forms/d/17SlUDnS9wXHYRbom3YatFv-qyP7RIYRrv1lqXmCosfI/edit" target="_blank" rel="noopener noreferrer" class="tile">
+                <div class="tile-icon"><i class="fa-solid fa-bullseye"></i></div>
+                <div class="tile-name">Prospectos</div>
+                <div class="tile-desc">Campaña Digital</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- CONSULTAS Y HERRAMIENTAS -->
+    <div>
+        <div class="sec-label">Consultas y Herramientas</div>
+        <div class="grid-4">
+            <a href="https://www.numerosportados.cl/" target="_blank" rel="noopener noreferrer" class="tile">
+                <div class="tile-icon"><i class="fa-solid fa-sim-card"></i></div>
+                <div class="tile-name">NPC</div>
+                <div class="tile-desc">Compañía Portados</div>
+            </a>
+            <a href="https://www.nombrerutyfirma.com/" target="_blank" rel="noopener noreferrer" class="tile">
+                <div class="tile-icon"><i class="fa-solid fa-fingerprint"></i></div>
+                <div class="tile-name">Rutificador</div>
+                <div class="tile-desc">Confirmación Identidad</div>
+            </a>
+            <a href="https://www.clarochile.cl/personas/" target="_blank" rel="noopener noreferrer" class="tile">
+                <div class="tile-icon"><i class="fa-solid fa-display"></i></div>
+                <div class="tile-name">Claro Oficial</div>
+                <div class="tile-desc">Portal Comercial</div>
+            </a>
+            <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" class="tile">
+                <div class="tile-icon"><i class="fa-solid fa-location-arrow"></i></div>
+                <div class="tile-name">Google Maps</div>
+                <div class="tile-desc">Buscador Direcciones</div>
+            </a>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

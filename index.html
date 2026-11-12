@@ -1,1663 +1,1274 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ClaroGo! — Equipos Claro con Portabilidad</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClaroGo! Portal de ventas</title>
+<meta name="description" content="ClaroGo! Herramienta de apoyo no oficial para ventas de equipos y planes con portabilidad.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://financiamiento.neocities.org/">
-<meta property="og:title" content="ClaroGo! — Equipos Claro con Portabilidad">
-<meta property="og:description" content="Trae tu número a Claro y llévate un equipo nuevo. Revisa el catálogo y escríbenos para coordinar tu portabilidad.">
-<meta property="og:image" content="https://financiamiento.neocities.org/og-preview.png">
-<meta property="og:image:type" content="image/png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
+<meta property="og:title" content="ClaroGo! Portal de ventas">
+<meta property="og:description" content="Stock de equipos, ofertas, script y herramientas de apoyo para ventas.">
+<meta property="og:image" content="https://cotizadora.github.io/clarogo/og-preview.png">
 <meta property="og:locale" content="es_CL">
 <meta property="og:site_name" content="ClaroGo!">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,600;0,6..12,700;0,6..12,800;0,6..12,900&display=swap" rel="stylesheet">
-
+<meta name="theme-color" content="#E60000">
 <style>
-    :root {
-        --red:    #E60000;
-        --red-dk: #B50000;
-        --bg:     #e8edf5;
-        --card:   #ffffff;
-        --border: #c8d0dc;
-        --text:   #1a1e2e;
-        --muted:  #5a6480;
-        --dim:    #9aa0b4;
-    }
+:root{
+  --red:#E60000; --red-dk:#B50000; --red-bg:#fff1f1;
+  --bg:#f2f4f8; --card:#fff; --border:#dde2ea;
+  --text:#1a1e2e; --muted:#5a6480; --dim:#8b93a7;
+  --green:#1e9e4a; --yellow:#f2b705;
+  --r:14px; --shadow:0 2px 10px rgba(30,40,80,.08);
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.45;min-height:100vh;display:flex;flex-direction:column}
+[hidden]{display:none!important}
+h1,h2,h3,p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit}
+main{flex:1;width:100%;max-width:1200px;margin:0 auto;padding:16px 12px 40px}
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* Barra superior */
+.top{position:sticky;top:0;z-index:20;background:var(--red);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.top-in{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:0 12px}
+.logo{font-weight:900;font-size:1.35rem;letter-spacing:-.01em;text-decoration:none;padding:10px 0;white-space:nowrap}
+#nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1}
+#nav::-webkit-scrollbar{display:none}
+#nav a,#nav button{background:none;border:0;color:#fff;text-decoration:none;font-size:.86rem;padding:14px 10px;white-space:nowrap;border-bottom:3px solid transparent;opacity:.88}
+#nav a:hover,#nav button:hover{opacity:1;background:rgba(0,0,0,.12)}
+#nav a.on{opacity:1;font-weight:700;border-bottom-color:#fff}
+body[data-view="inicio"] #nav{visibility:hidden}
 
-    html, body {
-        height: 100%;
-        font-family: 'Nunito Sans', sans-serif;
-        background: var(--bg);
-        color: var(--text);
-        overflow: hidden;
-    }
+/* Inicio */
+.hero{text-align:center;padding:26px 0 18px}
+.tag{display:inline-block;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);border:1px solid rgba(230,0,0,.3);padding:5px 14px;border-radius:999px;margin-bottom:14px}
+.hero h1{font-size:clamp(2.6rem,11vw,4.6rem);font-weight:900;line-height:1;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:var(--red)}
+.hero p{color:var(--muted);font-size:.9rem;margin-top:10px}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:780px;margin:0 auto}
+.tile{position:relative;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--border);border-radius:var(--r);padding:20px 10px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;text-decoration:none;box-shadow:var(--shadow);transition:transform .15s,border-color .15s,box-shadow .15s}
+.tile:hover{border-top-color:var(--red);transform:translateY(-3px);box-shadow:0 10px 24px rgba(230,0,0,.13)}
+.tile:hover .tile-t{color:var(--red)}
+.tile-i{width:52px;height:52px;border-radius:14px;background:linear-gradient(145deg,#fff,#fbeaea);border:1px solid rgba(230,0,0,.18);display:flex;align-items:center;justify-content:center;color:var(--red)}
+.tile-i svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.tile-t{font-weight:700;font-size:.95rem;color:var(--muted);line-height:1.25}
+.tile-b{position:absolute;top:8px;right:8px;background:var(--red);color:#fff;font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border-radius:999px}
+.tile.soon{opacity:.75}
+.tile.soon .tile-b{background:var(--muted)}
 
-    /* ── PANTALLA DE BIENVENIDA ─────────────────────────────── */
-    #welcome {
-        position: fixed; inset: 0; z-index: 9999;
-        display: none; flex-direction: column;
-        background: #ffffff; overflow: hidden;
-        padding-bottom: 44px;
-    }
-    #welcome.out {
-        animation: wOut 0.6s cubic-bezier(0.7,0,1,1) forwards;
-        pointer-events: none;
-    }
-    
-    @keyframes wOut {
-        to { opacity: 0; transform: scale(1.03); }
-    }
+/* Elementos comunes */
+.h{font-size:1.25rem;font-weight:800;margin-bottom:4px}
+.sub{color:var(--muted);font-size:.86rem;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow)}
+.btn{border:1px solid var(--border);background:#fff;border-radius:10px;padding:9px 14px;font-weight:600;font-size:.86rem;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:background .15s,border-color .15s}
+.btn:hover{border-color:var(--muted)}
+.btn.red{background:var(--red);border-color:var(--red);color:#fff}
+.btn.red:hover{background:var(--red-dk)}
+.btn.dark{background:#1f2430;border-color:#1f2430;color:#fff}
+.btn.green{background:#0f9d58;border-color:#0f9d58;color:#fff}
+.btn.sm{padding:6px 10px;font-size:.78rem;border-radius:8px}
+.btn.done{background:#e7f6ec;border-color:#b6dfc3;color:#1b7a3a}
+.btn:disabled{opacity:.5;cursor:default}
+input[type=text],input[type=email],input[type=search],select,textarea{border:1px solid var(--border);border-radius:10px;padding:9px 11px;background:#fff;width:100%;min-width:0}
+input:focus,select:focus,textarea:focus{outline:2px solid rgba(230,0,0,.25);border-color:var(--red)}
+label{font-size:.78rem;font-weight:600;color:var(--muted);display:block;margin-bottom:4px}
+.note{background:#fff8e1;border:1px solid #f3dc9a;border-radius:10px;padding:10px 12px;font-size:.84rem}
+.note.blue{background:#eef4ff;border-color:#c9daf8}
+.note.green{background:#e8f5e9;border-color:#bfe0c3}
+.note.red{background:var(--red-bg);border-color:#f5c2c2;color:#8a1010}
+.grid{display:grid;gap:12px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#1f2430;color:#fff;padding:11px 18px;border-radius:999px;font-size:.88rem;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:1000;max-width:92vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
 
-    /* ── ONDAS ANIMADAS DE FONDO ────────────────────────────── */
-    #w-waves {
-        position: absolute;
-        inset: 0;
-        z-index: 0;
-        pointer-events: none;
-        overflow: hidden;
-    }
-    #w-waves canvas {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-    }
+/* Diálogos */
+dialog{border:0;border-radius:16px;padding:0;width:100%;max-width:min(520px,94vw);max-height:92vh;color:var(--text);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+.d-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:16px 18px 12px;border-bottom:1px solid var(--border)}
+.d-head h2{font-size:1.1rem;font-weight:800}
+.d-head p{font-size:.78rem;color:var(--muted)}
+.d-x{background:#f1f3f5;border:0;width:32px;height:32px;border-radius:50%;font-size:1rem;flex-shrink:0;color:var(--muted)}
+.d-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:12px}
+.d-foot{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 
-    /* Línea roja top */
-    #w-topbar {
-        height: 3px;
-        background: var(--red);
-        transform-origin: left;
-        animation: growX 1s cubic-bezier(0.16,1,0.3,1) 0.05s both;
-        flex-shrink: 0;
-    }
-    @keyframes growX { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+/* Stock */
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px;margin-bottom:12px}
+.filters .full{grid-column:1/-1}
+.chk{display:flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:10px;padding:9px 11px;background:#fff;font-size:.86rem;font-weight:600;color:var(--text);margin:0;cursor:pointer}
+.chk input{width:16px;height:16px;accent-color:var(--red)}
+.f-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
+.s-meta{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-bottom:8px;padding:0 2px}
+#s-table{width:100%;border-collapse:collapse}
+#s-table thead{display:none}
+#s-table tr{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px}
+#s-table td{padding:0;font-size:.86rem}
+#s-table td::before{content:attr(data-l);display:block;font-size:.64rem;text-transform:uppercase;letter-spacing:.06em;color:var(--dim)}
+#s-table td.mod{grid-column:1/-1;font-weight:700;font-size:.95rem}
+#s-table td.mod::before,#s-table td.act::before{display:none}
+#s-table td.act{grid-column:1/-1}
+#s-table td.act .btn{width:100%}
+.sku{background:none;border:0;padding:0;font-family:ui-monospace,Consolas,monospace;font-size:.84rem;color:var(--muted);text-decoration:underline dotted}
+.tot{font-weight:700}
+.st{display:inline-block;min-width:38px;text-align:center;padding:2px 8px;border-radius:999px;color:#fff;font-weight:700;font-size:.78rem}
+.st-hi{background:var(--green)} .st-md{background:var(--yellow);color:#3a2d00} .st-lo{background:var(--red)}
+.empty{text-align:center;color:var(--muted);padding:28px 12px}
 
+/* Tarjetas de planes */
+.plans{display:grid;grid-template-columns:1fr;gap:14px}
+.plan{overflow:hidden;display:flex;flex-direction:column}
+.plan-h{background:linear-gradient(90deg,#e60000,#b00000);color:#fff;text-align:center;font-weight:700;font-size:1.05rem;padding:12px}
+.plan-b{padding:12px 14px;text-align:center;flex:1;display:flex;flex-direction:column;gap:6px}
+.plan-data{font-size:1.5rem;font-weight:800;color:var(--red)}
+.plan-price{background:#f5f6f8;border-radius:10px;padding:8px}
+.plan-price b{display:block;font-size:2rem;font-weight:800;line-height:1.1}
+.plan-price span{font-size:.82rem;font-weight:600;color:var(--muted)}
+.plan small{font-size:.76rem;color:var(--muted);display:block}
+.plan .strike{text-decoration:line-through;color:var(--dim)}
+.plan-add{border-top:1px solid var(--border);padding-top:6px;font-size:.78rem;font-weight:600}
+.plan-add b{color:var(--red)}
+.plan-sel{text-align:left}
+.plan-det{background:#f9fafb;border:1px solid #eef0f3;border-radius:8px;padding:8px;font-size:.76rem;text-align:left}
+.plan-det div{display:flex;justify-content:space-between;gap:8px}
+.plan-det .t{font-weight:700;color:var(--red);border-bottom:1px solid #f5c2c2;padding-bottom:4px;margin-bottom:4px;display:block}
+.plan-det .b{font-weight:700;border-top:1px solid var(--border);margin-top:3px;padding-top:3px}
+.plan-total{margin:0 14px 12px;background:var(--red-bg);color:var(--red);font-weight:800;text-align:center;border:2px dashed #f3a6a6;border-radius:10px;padding:10px}
+.plan-total.solid{background:linear-gradient(90deg,#e60000,#b00000);color:#fff;border:0;font-weight:600;font-size:.8rem}
+.plan-total.solid b{display:block;font-size:1.1rem;font-weight:800}
+.plan-btns{display:flex;gap:8px;padding:0 14px 14px}
+.plan-btns .btn{flex:1}
+.sec-t{font-size:1.05rem;font-weight:800;margin:18px 0 2px}
+.sec-t em{font-style:normal;color:var(--red)}
 
+/* Script */
+.sc{padding:16px;margin-bottom:12px}
+.sc h2{font-size:1rem;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sc h2 i{font-style:normal;background:var(--red);color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0}
+.sc p{margin-bottom:10px;line-height:1.9}
+.sc p:last-child{margin-bottom:0}
+.sc .in{display:inline-block;width:auto;min-width:9ch;max-width:100%;border:0;border-bottom:2px dashed var(--red);border-radius:0;padding:2px 4px;background:transparent;font-weight:700;color:var(--red-dk)}
+.sc select.in{border:1px solid var(--border);border-radius:8px;padding:4px 8px;color:var(--text)}
+.sc .ro{border-bottom-style:solid;border-bottom-color:var(--border);color:var(--text)}
+.form2{display:grid;grid-template-columns:1fr;gap:10px}
+.pd{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:12px}
+.pd-h{background:var(--red);color:#fff;font-weight:800;padding:10px 14px}
+.pd-g{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
+.pd-g div{background:#fff;padding:8px 12px;font-size:.84rem}
+.pd-g div.w{grid-column:1/-1}
+.pd-g b{display:block;font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--dim)}
+.pd-p{padding:12px 14px;font-size:.88rem;background:#fafbfc}
+.pd-p .row{display:flex;justify-content:space-between;padding:2px 0}
+.pd-p .promo{color:var(--red);font-weight:800;font-size:1.1rem}
 
-    /* Contenido centrado */
-    #w-body {
-        position: relative;
-        z-index: 2;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem 1.5rem;
-        gap: 24px;
-        text-align: center;
-    }
+/* Enlaces */
+.links{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px}
+.link{padding:16px 10px;text-align:center;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:6px;border-top:3px solid var(--border);transition:transform .15s,border-color .15s}
+.link:hover{border-top-color:var(--red);transform:translateY(-3px)}
+.link span{font-size:1.6rem}
+.link b{font-size:.92rem}
+.link small{font-size:.72rem;color:var(--dim)}
+.lbl{font-size:.66rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
 
-    /* Tag superior */
-    #w-tag {
-        font-family: 'Nunito Sans', sans-serif;
-        font-size: 0.65rem;
-        font-weight: 500;
-        letter-spacing: 0.4em;
-        text-transform: uppercase;
-        color: var(--red);
-        border: 1px solid rgba(230,0,0,0.3);
-        padding: 5px 14px;
-        border-radius: 999px;
-        margin-bottom: 20px;
-        opacity: 0;
-        animation: fadeUp 0.5s ease 0.1s forwards;
-    }
+/* Galería */
+.gal{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.gal button{padding:0;overflow:hidden;text-align:center}
+.gal img{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:#eef0f4}
+.gal span{display:block;padding:8px;font-size:.78rem;font-weight:700}
+#dlg-gal{max-width:min(640px,96vw);background:#111;color:#fff}
+#dlg-gal img{width:100%;max-height:62vh;object-fit:contain;display:block;background:#fff}
+.g-bar{display:flex;align-items:center;gap:8px;padding:10px 12px}
+.g-bar b{flex:1;font-size:.88rem;text-align:center}
+.g-nav{background:rgba(255,255,255,.14);border:0;color:#fff;width:38px;height:38px;border-radius:50%;font-size:1.2rem}
+.g-act{display:flex;gap:8px;padding:0 12px 12px}
+.g-act .btn{flex:1}
 
-    /* Logo */
-    #w-logo {
-        font-family: 'Nunito Sans', sans-serif;
-        font-size: clamp(3.8rem, 9vw, 7rem);
-        font-weight: 900;
-        line-height: 1;
-        letter-spacing: -0.02em;
-        color: var(--text);
-        opacity: 0;
-        animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;
-        user-select: none;
-    }
-    #w-logo em {
-        color: var(--red);
-        font-style: normal;
-        position: relative;
-    }
-    /* Subrayado rojo animado bajo el ! */
-    #w-logo em::after {
-        content: '';
-        position: absolute;
-        bottom: 6px; left: 0; right: 0;
-        height: 3px;
-        background: var(--red);
-        transform-origin: left;
-        animation: growX 0.5s ease 1.2s both;
-    }
+/* Tutoriales */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1px solid var(--border);background:#fff;border-radius:999px;padding:6px 14px;font-size:.8rem;font-weight:600}
+.chip.on{background:var(--red);border-color:var(--red);color:#fff}
+.tut{display:grid;grid-template-columns:1fr;gap:12px}
+.tcard{overflow:hidden;display:flex;flex-direction:column;text-align:left;padding:0}
+.tcard .th{height:86px;display:flex;align-items:center;justify-content:center;font-size:2.4rem}
+.tcard .tb{padding:12px 14px;flex:1}
+.tcard .tm{display:flex;justify-content:space-between;font-size:.72rem;color:var(--dim);margin-bottom:4px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.tcard h3{font-size:.98rem;margin-bottom:4px}
+.tcard p{font-size:.82rem;color:var(--muted)}
+.tcard .tf{padding:0 14px 14px}
+#dlg-phone{max-width:min(400px,94vw);background:#111;border-radius:28px;padding:10px}
+#dlg-phone iframe{width:100%;height:min(72vh,680px);border:0;border-radius:20px;background:#fff;display:block}
+#dlg-phone .btn{width:100%;margin-top:8px}
 
-    /* Subtítulo */
-    #w-sub {
-        font-size: clamp(0.75rem, 1.8vw, 0.9rem);
-        font-weight: 300;
-        color: var(--muted);
-        letter-spacing: 0.08em;
-        margin-top: 10px;
-        margin-bottom: 0px;
-        opacity: 0;
-        animation: fadeUp 0.6s ease 0.65s forwards;
-        user-select: none;
-    }
+/* Ingreso de venta */
+#venta-frame{width:100%;height:calc(100vh - 190px);min-height:520px;border:0;display:block;border-radius:var(--r);background:#fff}
 
-    /* Marco contenedor glass */
-    #w-frame {
-        background: rgba(255,255,255,0.65);
-        border: 1.5px solid rgba(255,255,255,0.95);
-        border-radius: 24px;
-        padding: 28px 24px 24px;
-        box-shadow: 0 12px 40px rgba(80,100,160,0.22), 0 2px 0 rgba(255,255,255,1) inset, 0 0 0 1px rgba(200,210,240,0.3);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        opacity: 0;
-        animation: fadeUp 0.6s ease 0.2s forwards;
-        width: min(760px, 94%);
-    }
+/* Sugerencias */
+#sugg-btn{position:fixed;right:16px;bottom:16px;z-index:15;width:50px;height:50px;border-radius:50%;border:0;background:#25D366;box-shadow:0 3px 14px rgba(37,211,102,.45);display:flex;align-items:center;justify-content:center}
+#sugg-btn svg{width:26px;height:26px;fill:#fff}
+.crumbs{font-size:.74rem;color:var(--muted)}
+.crumbs button{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;background:#f8f9fa;border:1px solid var(--border);border-radius:10px;padding:12px 14px;width:100%}
+.opt:hover{border-color:var(--red);background:var(--red-bg)}
+.opt span{font-size:1.2rem}
+.opt b{display:block;font-size:.88rem}
+.opt small{font-size:.74rem;color:var(--muted)}
 
-    /* Grid de tiles */
-    #w-tiles {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
-        width: 100%;
-        margin: 0 auto;
-    }
-    /* Último tile de fila incompleta: span para centrar */
-    .w-tile:last-child:nth-child(4n - 1) {
-        grid-column: 2 / span 2;
-    }
-    .w-tile:last-child:nth-child(4n - 2) {
-        grid-column: 2 / span 1;
-    }
-    /* 7 tiles: last 3 centered — override */
-    #w-tiles .w-tile:nth-child(5) { grid-column: auto; }
-    #w-tiles .w-tile:nth-child(6) { grid-column: auto; }
-    #w-tiles .w-tile:nth-child(7) { grid-column: auto; }
+/* Excepciones */
+.exc{width:100%;border-collapse:collapse;font-size:.95rem}
+.exc th{background:#1a1a1a;color:#fff;padding:12px;font-size:.84rem}
+.exc td{padding:11px 12px;text-align:center;border-bottom:1px solid #e8e8e8}
+.exc tr:nth-child(even) td{background:#f7f7f7}
 
-    /* 8 tiles: 2 filas de 4 — sin override necesario */
+footer{background:#fff;border-top:1px solid var(--border);text-align:center;padding:14px 12px 76px;font-size:.76rem;color:var(--muted)}
+footer a,footer button{color:inherit;background:none;border:0;padding:0;text-decoration:underline;font-size:inherit}
 
-    /* Badge "Próximamente" */
-    .w-tile-badge {
-        font-size: 0.58rem;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--muted);
-        background: rgba(90,100,128,0.1);
-        border: 1px solid rgba(90,100,128,0.2);
-        border-radius: 999px;
-        padding: 2px 9px;
-        margin-top: -4px;
-    }
-
-    /* Tile en construcción — aspecto levemente apagado */
-    .w-tile--pronto {
-        opacity: 0.72;
-        cursor: default;
-    }
-    .w-tile--pronto:hover {
-        border-top-color: var(--muted) !important;
-        box-shadow: 0 4px 16px rgba(80,100,160,0.1), inset 0 1px 0 rgba(255,255,255,1) !important;
-        background: rgba(255,255,255,0.75) !important;
-        transform: none !important;
-    }
-    .w-tile--pronto:hover .w-tile-label { color: var(--muted) !important; }
-    .w-tile--pronto:hover .w-tile-icon  { transform: none !important; box-shadow: 0 4px 12px rgba(80,100,160,0.08) !important; }
-
-    /* ── POPUP PRÓXIMAMENTE ─────────────────────────────────── */
-    #pronto-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 99999;
-        background: rgba(0,0,0,0.5);
-        backdrop-filter: blur(4px);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
-    }
-    #pronto-overlay.visible { display: flex; }
-    #pronto-modal {
-        background: #fff;
-        border-radius: 20px;
-        padding: 36px 32px 28px;
-        width: min(360px, 92%);
-        text-align: center;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-        animation: modalIn 0.25s cubic-bezier(0.16,1,0.3,1);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 14px;
-    }
-    #pronto-icon {
-        width: 72px; height: 72px;
-        background: linear-gradient(145deg, #fff5f5, #ffe0e0);
-        border: 1.5px solid rgba(230,0,0,0.2);
-        border-radius: 20px;
-        display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 6px 20px rgba(230,0,0,0.12);
-    }
-    #pronto-icon svg { width: 34px; height: 34px; stroke: var(--red); }
-    #pronto-modal h3 {
-        font-family: 'Nunito Sans', sans-serif;
-        font-size: 1.25rem;
-        font-weight: 900;
-        color: var(--text);
-        margin: 0;
-    }
-    #pronto-modal p {
-        font-size: 0.88rem;
-        color: var(--muted);
-        line-height: 1.6;
-        margin: 0;
-    }
-    #pronto-badge {
-        font-size: 0.65rem;
-        font-weight: 700;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: var(--red);
-        background: rgba(230,0,0,0.07);
-        border: 1px solid rgba(230,0,0,0.18);
-        border-radius: 999px;
-        padding: 4px 14px;
-    }
-    #pronto-close {
-        margin-top: 4px;
-        background: var(--red);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: 11px 28px;
-        font-family: 'Nunito Sans', sans-serif;
-        font-size: 0.88rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background 0.2s;
-        width: 100%;
-    }
-    #pronto-close:hover { background: var(--red-dk); }
-    @media (max-width: 640px) {
-        #w-tiles { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        #w-frame { padding: 18px 14px 18px; border-radius: 18px; }
-        .w-tile { padding: 22px 10px 16px; border-radius: 14px; }
-        .w-tile-icon { width: 54px; height: 54px; border-radius: 14px; }
-        .w-tile-icon svg { width: 26px; height: 26px; }
-        .w-tile-label { font-size: 0.9rem; }
-        #w-logo { font-size: clamp(2.8rem, 12vw, 4.5rem); }
-        #w-tag { font-size: 0.58rem; letter-spacing: 0.25em; }
-        #btn-inicio-flotante { padding: 10px 16px 10px 14px; font-size: 0.8rem; bottom: 54px; left: 16px; }
-        .sh-nav { gap: 6px; padding: 8px 10px; overflow-x: auto; flex-wrap: nowrap; }
-        .sh-nav-btn { font-size: 0.75rem; padding: 7px 12px; white-space: nowrap; flex-shrink: 0; }
-        #sugg-modal { border-radius: 12px; }
-    }
-    @media (max-width: 400px) {
-        #w-tiles { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-        .w-tile-label { font-size: 0.82rem; }
-        #w-logo { font-size: clamp(2.4rem, 14vw, 3.5rem); }
-    }
-
-    .w-tile {
-        background: rgba(255,255,255,0.75);
-        border: 1px solid rgba(255,255,255,0.95);
-        border-top: 3px solid rgba(200,208,220,0.6);
-        border-radius: 16px;
-        padding: 28px 14px 22px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 12px;
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 4px 16px rgba(80,100,160,0.1), inset 0 1px 0 rgba(255,255,255,1);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        transition: border-top-color 0.2s, transform 0.15s, box-shadow 0.2s, background 0.2s;
-        user-select: none;
-        -webkit-tap-highlight-color: transparent;
-    }
-    .w-tile::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(160deg, rgba(230,0,0,0.04) 0%, transparent 55%);
-        opacity: 0;
-        transition: opacity 0.25s;
-    }
-    .w-tile:hover {
-        border-top-color: var(--red);
-        transform: translateY(-4px);
-        box-shadow: 0 12px 32px rgba(230,0,0,0.14), 0 2px 8px rgba(80,100,160,0.1), inset 0 1px 0 rgba(255,255,255,1);
-        background: rgba(255,248,248,0.9);
-    }
-    .w-tile:hover::before { opacity: 1; }
-    .w-tile:active { transform: translateY(-1px); }
-
-    /* Línea de acento top al hover ya manejada por border-top */
-    .w-tile::after { display: none; }
-
-    .w-tile-icon {
-        width: 64px;
-        height: 64px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(145deg, #ffffff 0%, #f5e8e8 100%);
-        border: 1px solid rgba(230,0,0,0.18);
-        border-radius: 18px;
-        box-shadow: 0 4px 12px rgba(230,0,0,0.12), inset 0 1px 0 rgba(255,255,255,1), inset 0 -1px 0 rgba(230,0,0,0.06);
-        transition: transform 0.2s, box-shadow 0.2s;
-        flex-shrink: 0;
-    }
-    .w-tile-icon svg {
-        width: 30px;
-        height: 30px;
-        stroke: var(--red);
-    }
-    .w-tile:hover .w-tile-icon {
-        transform: scale(1.1) translateY(-2px);
-        box-shadow: 0 8px 20px rgba(230,0,0,0.2), inset 0 1px 0 rgba(255,255,255,1);
-    }
-
-    .w-tile-label {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: var(--muted);
-        text-align: center;
-        line-height: 1.35;
-        transition: color 0.2s;
-    }
-    .w-tile:hover .w-tile-label { color: var(--red); }
-
-    /* Tile próximamente */
-    .w-tile--pronto { opacity: 0.75; }
-    .w-tile--pronto:hover { opacity: 1; }
-    .w-tile-badge {
-        position: absolute;
-        top: 8px; right: 8px;
-        background: var(--red);
-        color: #fff;
-        font-size: 0.52rem;
-        font-weight: 700;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        padding: 3px 7px;
-        border-radius: 999px;
-    }
-
-    /* Modal próximamente */
-    #pronto-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 999999;
-        background: rgba(0,0,0,0.55);
-        backdrop-filter: blur(4px);
-        display: none;
-        align-items: center;
-        justify-content: center;
-    }
-    #pronto-overlay.visible { display: flex; }
-    #pronto-modal {
-        background: #fff;
-        border-radius: 20px;
-        padding: 36px 32px 28px;
-        width: min(340px, 88vw);
-        text-align: center;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-        animation: modalIn 0.25s cubic-bezier(0.16,1,0.3,1);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 12px;
-    }
-    #pronto-icon {
-        width: 64px; height: 64px;
-        background: linear-gradient(145deg, #fff5f5, #ffe0e0);
-        border: 1px solid rgba(230,0,0,0.18);
-        border-radius: 18px;
-        display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 4px 14px rgba(230,0,0,0.14);
-        margin-bottom: 4px;
-    }
-    #pronto-icon svg { width: 30px; height: 30px; stroke: var(--red); }
-    #pronto-modal h3 {
-        font-family: 'Nunito Sans', sans-serif;
-        font-size: 1.2rem;
-        font-weight: 900;
-        color: var(--text);
-    }
-    #pronto-modal p {
-        font-size: 0.85rem;
-        color: var(--muted);
-        line-height: 1.55;
-    }
-    #pronto-badge {
-        background: rgba(230,0,0,0.08);
-        color: var(--red);
-        font-size: 0.65rem;
-        font-weight: 700;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        padding: 5px 14px;
-        border-radius: 999px;
-        border: 1px solid rgba(230,0,0,0.2);
-        margin-top: 4px;
-    }
-    #pronto-close {
-        margin-top: 8px;
-        background: var(--red);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: 11px 28px;
-        font-family: 'Nunito Sans', sans-serif;
-        font-size: 0.88rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background 0.2s;
-        width: 100%;
-    }
-    #pronto-close:hover { background: var(--red-dk); }
-
-    /* Hint inferior */
-    #w-hint {
-        font-size: 0.6rem;
-        letter-spacing: 0.3em;
-        text-transform: uppercase;
-        color: #555555;
-        white-space: nowrap;
-        opacity: 0;
-        animation: fadeUp 0.5s ease 1.1s forwards;
-        flex-shrink: 0;
-        padding: 16px 0 8px;
-    }
-
-    /* Pie */
-    #w-foot { display:none !important; }
-    #w-foot a { color: inherit; text-decoration: none; }
-    #w-foot a:hover { color: var(--border); }
-
-    @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(10px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── OVERLAY DE LIMPIEZA ────────────────────────────────── */
-    #clean-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 99999;
-        background: var(--bg);
-        display: none;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-    #clean-overlay.visible { display: flex; }
-    #clean-overlay.out { animation: wOut 0.4s ease forwards; pointer-events: none; }
-
-    #clean-card {
-        width: min(320px, 88vw);
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
-    }
-    #clean-title {
-        font-family: 'Nunito Sans', sans-serif;
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.3em;
-        text-transform: uppercase;
-        color: var(--red);
-    }
-    #clean-target {
-        font-size: 1rem;
-        font-weight: 500;
-        color: var(--text);
-    }
-    #clean-log {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-    .cl-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 0.75rem;
-        color: #333;
-        font-weight: 400;
-        transition: color 0.2s;
-    }
-    .cl-row.active { color: var(--red); }
-    .cl-row.done   { color: #28a745; }
-    .cl-icon { width: 14px; text-align: center; flex-shrink: 0; font-size: 0.7rem; }
-
-    #clean-bar-wrap { display: flex; flex-direction: column; gap: 6px; }
-    #clean-bar-labels { display: flex; justify-content: space-between; font-size: 0.68rem; color: #333; }
-    #clean-pct { font-weight: 600; color: var(--red); font-variant-numeric: tabular-nums; }
-    #clean-track {
-        height: 3px;
-        background: var(--border);
-        border-radius: 99px;
-        overflow: hidden;
-    }
-    #clean-bar {
-        height: 100%;
-        width: 0%;
-        background: var(--red);
-        border-radius: 99px;
-        transition: width 0.3s ease;
-    }
-
-    /* ── MARCO PRINCIPAL (oculto hasta que se elige sección) ── */
-    #shell {
-        display: none;
-        flex-direction: column;
-        height: 100%;
-        width: 100%;
-    }
-    #shell.visible { display: flex; }
-
-    .sh-header {
-        background: #E60000;
-        color: #fff;
-        padding: 12px 18px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-shrink: 0;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.25);
-    }
-    .sh-title { font-family: 'Nunito Sans', sans-serif; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.01em; }
-    .sh-back {
-        background: rgba(0,0,0,0.25);
-        border: none;
-        color: #fff;
-        font-family: 'Nunito Sans', sans-serif;
-        font-size: 0.8rem;
-        font-weight: 500;
-        padding: 7px 14px;
-        border-radius: 6px;
-        cursor: pointer;
-        letter-spacing: 0.05em;
-        transition: background 0.2s;
-        flex-shrink: 0;
-    }
-    .sh-back:hover { background: rgba(0,0,0,0.4); }
-
-    .sh-nav {
-        display: flex;
-        flex-wrap: wrap;
-        background: #fff;
-        border-bottom: 1px solid #e0e0e0;
-        flex-shrink: 0;
-    }
-    .sh-nav-btn {
-        background: #E60000;
-        color: #fff;
-        border: none;
-        padding: 11px 14px;
-        font-size: 0.88rem;
-        font-family: 'Nunito Sans', sans-serif;
-        cursor: pointer;
-        flex-grow: 1;
-        text-align: center;
-        transition: background 0.2s;
-    }
-    .sh-nav-btn:hover { background: #B50000; }
-    .sh-nav-btn.active { background: #B50000; border-bottom: 3px solid #fff; font-weight: 600; }
-
-    #main-frame {
-        flex: 1;
-        border: none;
-        width: 100%;
-        display: block;
-        background: #fff;
-    }
-
-    .sh-foot {
-        background: #fff;
-        border-top: 1px solid #e0e0e0;
-        text-align: center;
-        padding: 5px;
-        font-size: 0.75rem;
-        color: var(--muted);
-        flex-shrink: 0;
-    }
-    .sh-foot a { color: inherit; text-decoration: none; }
-
-    /* ── BOTÓN FLOTANTE SUGERENCIAS ─────────────────────────── */
-    #sugg-btn {
-        position: fixed;
-        bottom: 100px;
-        right: 18px;
-        z-index: 9999999;
-        background: #25D366;
-        color: #fff;
-        border: none;
-        border-radius: 50%;
-        width: 48px;
-        height: 48px;
-        padding: 0;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 3px 14px rgba(37,211,102,0.45);
-        transition: transform 0.18s, box-shadow 0.18s, opacity 0.18s;
-        opacity: 0.88;
-    }
-    #sugg-btn:hover  { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(37,211,102,0.6); opacity: 1; }
-    #sugg-btn:active { transform: scale(0.94); opacity: 1; }
-    #sugg-btn svg { width: 24px; height: 24px; fill: #fff; flex-shrink: 0; }
-
-    /* ── MODAL OVERLAY ──────────────────────────────────────── */
-    #sugg-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 99999;
-        background: rgba(0,0,0,0.65);
-        backdrop-filter: blur(4px);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
-    }
-    #sugg-overlay.visible { display: flex; }
-
-    #sugg-modal {
-        background: #fff;
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        width: min(420px, 100%);
-        max-height: 90vh;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        animation: modalIn 0.25s cubic-bezier(0.16,1,0.3,1);
-    }
-    @keyframes modalIn { from { opacity:0; transform: scale(0.93) translateY(10px); } to { opacity:1; transform: none; } }
-
-    #sugg-header {
-        padding: 20px 20px 14px;
-        border-bottom: 1px solid #333;
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 10px;
-        flex-shrink: 0;
-    }
-    #sugg-header-text {}
-    #sugg-header h2 {
-        font-family: 'Nunito Sans', sans-serif;
-        font-size: 1.1rem;
-        font-weight: 900;
-        color: var(--text);
-        margin-bottom: 3px;
-    }
-    #sugg-header p {
-        font-size: 0.78rem;
-        color: var(--muted);
-        font-weight: 400;
-    }
-    #sugg-close {
-        background: #f1f3f5;
-        border: none;
-        color: var(--muted);
-        width: 30px; height: 30px;
-        border-radius: 50%;
-        font-size: 1rem;
-        cursor: pointer;
-        display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0;
-        transition: background 0.15s, color 0.15s;
-    }
-    #sugg-close:hover { background: #e9ecef; color: var(--text); }
-
-    #sugg-body { padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 10px; }
-
-    /* Breadcrumb */
-    #sugg-breadcrumb {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.72rem;
-        color: var(--muted);
-        flex-wrap: wrap;
-        min-height: 18px;
-    }
-    .sugg-crumb { color: var(--muted); cursor: pointer; transition: color 0.15s; }
-    .sugg-crumb:hover { color: var(--red); }
-    .sugg-crumb-sep { color: var(--border); }
-    .sugg-crumb.current { color: var(--dim); cursor: default; }
-
-    /* Step title */
-    #sugg-step-title {
-        font-size: 0.82rem;
-        font-weight: 700;
-        color: var(--text);
-        letter-spacing: 0.03em;
-    }
-
-    /* Options */
-    .sugg-option {
-        background: #f8f9fa;
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 13px 15px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        transition: border-color 0.18s, background 0.18s, transform 0.12s;
-        text-align: left;
-    }
-    .sugg-option:hover { border-color: var(--red); background: #fff5f5; transform: translateX(3px); }
-    .sugg-option:active { transform: translateX(1px); }
-    .sugg-option-icon { font-size: 1.2rem; flex-shrink: 0; }
-    .sugg-option-text {}
-    .sugg-option-label { font-size: 0.88rem; font-weight: 700; color: var(--text); display: block; }
-    .sugg-option-desc  { font-size: 0.74rem; color: var(--muted); display: block; margin-top: 2px; }
-
-    /* Back button */
-    #sugg-back {
-        background: none;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        color: var(--muted);
-        font-family: 'Nunito Sans', sans-serif;
-        font-size: 0.8rem;
-        padding: 8px 14px;
-        cursor: pointer;
-        display: none;
-        align-items: center;
-        gap: 6px;
-        width: fit-content;
-        transition: border-color 0.15s, color 0.15s;
-    }
-    #sugg-back.visible { display: flex; }
-    #sugg-back:hover { border-color: var(--muted); color: var(--text); }
-
-    /* Final WSP card */
-    #sugg-wsp-card {
-        display: none;
-        flex-direction: column;
-        gap: 14px;
-    }
-    #sugg-wsp-card.visible { display: flex; }
-    #sugg-wsp-preview { display: none; }
-    #sugg-wsp-send {
-        background: #25D366;
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: 14px;
-        font-family: 'Nunito Sans', sans-serif;
-        font-size: 0.92rem;
-        font-weight: 700;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        transition: background 0.2s, transform 0.15s;
-        letter-spacing: 0.02em;
-    }
-    #sugg-wsp-send:hover { background: #1ebe5d; transform: translateY(-1px); }
-    #sugg-wsp-send svg { width: 18px; height: 18px; fill: #fff; }
-
-    /* ── BOTÓN FLOTANTE INICIO ───────────────────────────────── */
-    #btn-inicio-flotante {
-        position: fixed;
-        bottom: 22px;
-        left: 22px;
-        z-index: 99998;
-        background: var(--red);
-        color: #fff;
-        border: none;
-        border-radius: 50px;
-        padding: 12px 20px 12px 16px;
-        font-family: 'Nunito Sans', sans-serif;
-        font-size: 0.85rem;
-        font-weight: 700;
-        cursor: pointer;
-        display: none;
-        align-items: center;
-        gap: 8px;
-        box-shadow: 0 4px 20px rgba(230,0,0,0.35);
-        transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-        letter-spacing: 0.02em;
-    }
-    #btn-inicio-flotante.visible { display: flex; }
-    #btn-inicio-flotante:hover { background: var(--red-dk); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(230,0,0,0.45); }
-    #btn-inicio-flotante:active { transform: translateY(0); }
-    #btn-inicio-flotante svg { width: 18px; height: 18px; fill: #fff; flex-shrink: 0; }
-
-
+@media (min-width:640px){
+  main{padding:20px 20px 48px}
+  .tiles{grid-template-columns:repeat(4,1fr);gap:12px}
+  .plans{grid-template-columns:repeat(2,1fr)}
+  .filters{grid-template-columns:2fr 1fr 1fr auto}
+  .filters .full{grid-column:auto}
+  .form2{grid-template-columns:1fr 1fr}
+  .links{grid-template-columns:repeat(4,1fr)}
+  .links.two{grid-template-columns:repeat(2,1fr)}
+  .gal{grid-template-columns:repeat(4,1fr)}
+  .tut{grid-template-columns:repeat(3,1fr)}
+  footer{padding-bottom:18px}
+}
+@media (min-width:860px){
+  #s-table thead{display:table-header-group}
+  #s-table tr{display:table-row;border:0;border-radius:0;padding:0;margin:0}
+  #s-table{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;border-collapse:separate;border-spacing:0}
+  #s-table th{background:#1f2430;color:#fff;text-align:left;padding:10px 12px;font-size:.78rem;cursor:pointer;user-select:none;white-space:nowrap}
+  #s-table th.on{background:var(--red)}
+  #s-table td{padding:9px 12px;border-bottom:1px solid #eef0f3;font-size:.88rem;vertical-align:middle}
+  #s-table td::before{display:none}
+  #s-table td.mod{font-size:.88rem;font-weight:600}
+  #s-table td.act .btn{width:auto}
+  #s-table tbody tr:hover td{background:#fff7f7}
+}
+@media (min-width:1000px){ .plans{grid-template-columns:repeat(3,1fr)} .plans.four{grid-template-columns:repeat(4,1fr)} }
+@media (prefers-reduced-motion:reduce){ *{transition:none!important} }
 </style>
 </head>
-<body>
+<body data-view="inicio">
 
-<!-- ════════════════════════════════════════════════════════════
-     PANTALLA DE BIENVENIDA
-════════════════════════════════════════════════════════════ -->
+<header class="top">
+  <div class="top-in">
+    <a class="logo" href="#inicio" title="Inicio">ClaroGo!</a>
+    <nav id="nav" aria-label="Secciones"></nav>
+  </div>
+</header>
 
-
-<div id="welcome">
-    <div id="w-topbar"></div>
-    <div id="w-waves"><canvas id="wave-canvas"></canvas></div>
-
-    <div id="w-body">
-        <div id="w-tag">Portal de ventas Claro</div>
-        <div id="w-logo">Claro<em>Go!</em></div>
-
-        <div id="w-frame">
-        <div id="w-tiles">
-            <div class="w-tile" onclick="entrar('https://financiamiento.neocities.org/Stock', 'Stock de Equipos', 'btn-stock')">
-                <div class="w-tile-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-                </div>
-                <div class="w-tile-label">Stock de Equipos</div>
-            </div>
-            <div class="w-tile" onclick="entrar('https://financiamiento.neocities.org/oferta', 'Oferta Personas', 'btn-oferta')">
-                <div class="w-tile-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                </div>
-                <div class="w-tile-label">Oferta Personas</div>
-            </div>
-            <div class="w-tile" onclick="entrar('https://financiamiento.neocities.org/oferta_png', 'Oferta PNG', 'btn-oferta-png')">
-                <div class="w-tile-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h12v10a2 2 0 01-2 2H8a2 2 0 01-2-2V6z"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/><path d="M3 18c0 1.1.9 2 2 2h14a2 2 0 002-2"/><path d="M5 14c-1.5.5-2 1-2 2"/><path d="M19 14c1.5.5 2 1 2 2"/><line x1="6" y1="11" x2="18" y2="11"/></svg>
-                </div>
-                <div class="w-tile-label">Oferta PNG</div>
-            </div>
-            <div class="w-tile" onclick="entrar('https://financiamiento.neocities.org/Script', 'Ver Script', 'btn-script')">
-                <div class="w-tile-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
-                </div>
-                <div class="w-tile-label">Ver Script</div>
-            </div>
-            <div class="w-tile" onclick="entrar('https://docs.google.com/forms/d/e/1FAIpQLSdpNdfAhUC3HAw_LjYj1oCV1Oq6veT_0YnnIq06xg6wxOGMwA/viewform', 'Ingreso de Venta', 'btn-venta')">
-                <div class="w-tile-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
-                </div>
-                <div class="w-tile-label">Ingreso de Venta</div>
-            </div>
-            <div class="w-tile" onclick="entrar('https://claro-catalogo.neocities.org/Link', 'Enlaces', 'btn-enlaces')">
-                <div class="w-tile-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-                </div>
-                <div class="w-tile-label">Enlaces</div>
-            </div>
-            <div class="w-tile" onclick="entrar('https://financiamiento.neocities.org/Galeria', 'Galería', 'btn-galeria')">
-                <div class="w-tile-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                </div>
-                <div class="w-tile-label">Galería</div>
-            </div>
-            <div class="w-tile" onclick="abrirExcepciones()">
-                <div class="w-tile-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
-                </div>
-                <div class="w-tile-label">Excepciones de Boletas</div>
-            </div>
-            <div class="w-tile" onclick="entrar('Tutoriales.html', 'Tutoriales', 'btn-tutorial')">
-                <div class="w-tile-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"/><path d="M12 12v.01"/><path d="M8 8v8"/><path d="M16 8v8"/><circle cx="12" cy="12" r="1"/><circle cx="8" cy="12" r="1"/><circle cx="16" cy="12" r="1"/></svg>
-                </div>
-                <div class="w-tile-label">Tutoriales</div>
-                <span class="w-tile-badge">Nuevo</span>
-            </div>
-            <div class="w-tile w-tile--pronto" onclick="mostrarProximo()">
-                <div class="w-tile-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-                </div>
-                <div class="w-tile-label">Audios</div>
-                <span class="w-tile-badge">Próximamente</span>
-            </div>
-        </div>
-        </div>
-        <div id="w-hint">Elige una sección para iniciar</div>
+<main>
+  <!-- INICIO -->
+  <section id="v-inicio" class="view">
+    <div class="hero">
+      <div class="tag" id="hoy">Portal de ventas</div>
+      <h1>Claro<em>Go!</em></h1>
+      <p>Elige una sección para comenzar</p>
     </div>
+    <div class="tiles" id="tiles"></div>
+  </section>
 
-    <div id="w-foot">
-        <a href="https://wa.me/56927690949" target="_blank">Desarrollado por Eduardo Pérez</a>
-        &nbsp;·&nbsp; ClaroGo! v2025
-    </div>
-</div>
-
-<!-- ════════════════════════════════════════════════════════════
-     OVERLAY DE LIMPIEZA DE CACHÉ
-════════════════════════════════════════════════════════════ -->
-<div id="clean-overlay">
-    <div id="clean-card">
-        <div id="clean-title">Limpieza de caché</div>
-        <div id="clean-target">Cargando…</div>
-        <div id="clean-log">
-            <div class="cl-row" id="cl-1"><span class="cl-icon">·</span>Cookies</div>
-            <div class="cl-row" id="cl-2"><span class="cl-icon">·</span>localStorage</div>
-            <div class="cl-row" id="cl-3"><span class="cl-icon">·</span>sessionStorage</div>
-            <div class="cl-row" id="cl-4"><span class="cl-icon">·</span>Cache API &amp; Service Workers</div>
-            <div class="cl-row" id="cl-5"><span class="cl-icon">·</span>IndexedDB</div>
-        </div>
-        <div id="clean-bar-wrap">
-            <div id="clean-bar-labels">
-                <span>Progreso</span>
-                <span id="clean-pct">0%</span>
-            </div>
-            <div id="clean-track"><div id="clean-bar"></div></div>
-        </div>
-    </div>
-</div>
-
-<!-- ════════════════════════════════════════════════════════════
-     MARCO PRINCIPAL (aparece tras la limpieza)
-════════════════════════════════════════════════════════════ -->
-<div id="shell" class="visible">
-    <div class="sh-header">
-        <span class="sh-title">ClaroGo!</span>
-        <button class="sh-back" onclick="volverInicio()">← Inicio</button>
-    </div>
-    <nav class="sh-nav" id="sh-nav">
-        <button class="sh-nav-btn active" id="btn-stock"      onclick="cambiarSeccion('https://financiamiento.neocities.org/Stock','btn-stock')">Stock de Equipos</button>
-        <button class="sh-nav-btn" id="btn-oferta"     onclick="cambiarSeccion('https://financiamiento.neocities.org/oferta','btn-oferta')">Oferta Personas</button>
-        <button class="sh-nav-btn" id="btn-oferta-png" onclick="cambiarSeccion('https://financiamiento.neocities.org/oferta_png','btn-oferta-png')">Oferta PNG</button>
-        <button class="sh-nav-btn" id="btn-script"     onclick="cambiarSeccion('https://financiamiento.neocities.org/Script','btn-script')">Ver Script</button>
-        <button class="sh-nav-btn" id="btn-venta"      onclick="cambiarSeccion('https://docs.google.com/forms/d/e/1FAIpQLSdpNdfAhUC3HAw_LjYj1oCV1Oq6veT_0YnnIq06xg6wxOGMwA/viewform','btn-venta')">Ingreso de Venta</button>
-        <button class="sh-nav-btn" id="btn-enlaces"    onclick="cambiarSeccion('https://claro-catalogo.neocities.org/Link','btn-enlaces')">Enlaces</button>
-        <button class="sh-nav-btn" id="btn-galeria"    onclick="cambiarSeccion('https://financiamiento.neocities.org/Galeria','btn-galeria')">Galería</button>
-        <button class="sh-nav-btn" id="btn-excepciones" onclick="abrirExcepciones()">Excepciones de Boletas</button>
-        <button class="sh-nav-btn" id="btn-tutorial"   onclick="cambiarSeccion('Tutoriales.html','btn-tutorial')">Tutoriales</button>
-    </nav>
-    <iframe id="main-frame" src="https://financiamiento.neocities.org/Stock"></iframe>
-    <div class="sh-foot">
-        <a href="https://wa.me/56927690949" target="_blank">Desarrollado por Eduardo Pérez</a>
-    </div>
-</div>
-
-<!-- ════════════════════════════════════════════════════════════
-     BOTÓN FLOTANTE + MODAL SUGERENCIAS
-════════════════════════════════════════════════════════════ -->
-<button id="sugg-btn" onclick="abrirSugerencias()" title="Enviar sugerencia">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.532 5.859L.054 23.077a.75.75 0 00.91.91l5.26-1.487A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.703-.504-5.254-1.385l-.372-.217-3.863 1.093 1.107-3.77-.237-.386A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-</button>
-
-<div id="sugg-overlay" onclick="cerrarSiOverlay(event)">
-    <div id="sugg-modal">
-        <div id="sugg-header">
-            <div id="sugg-header-text">
-                <h2>💡 Mejorar ClaroGo!</h2>
-                <p>Tu opinión ayuda a mejorar el portal</p>
-            </div>
-            <button id="sugg-close" onclick="cerrarSugerencias()">✕</button>
-        </div>
-        <div id="sugg-body">
-            <div id="sugg-breadcrumb"></div>
-            <div id="sugg-step-title"></div>
-            <div id="sugg-options"></div>
-            <div id="sugg-wsp-card">
-                <div id="sugg-wsp-preview"><strong>Vista previa del mensaje</strong><span id="sugg-msg-text"></span></div>
-                <button id="sugg-wsp-send" onclick="enviarWsp()">
-                    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.532 5.859L.054 23.077a.75.75 0 00.91.91l5.26-1.487A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.703-.504-5.254-1.385l-.372-.217-3.863 1.093 1.107-3.77-.237-.386A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-                    Enviar por WhatsApp
-                </button>
-            </div>
-            <button id="sugg-back" onclick="retrocederSugerencia()">← Volver</button>
-        </div>
-    </div>
-</div>
-
-<script>
-// ══════════════════════════════════════════════════════════════
-//  ÁRBOL DE SUGERENCIAS (sin cambios)
-// ══════════════════════════════════════════════════════════════
-var ARBOL = {
-    titulo: '¿Qué quieres mejorar?',
-    opciones: [
-        {
-            icon: '📦', label: 'Contenido / Secciones',
-            desc: 'Stock, ofertas, scripts u otras secciones',
-            hijos: {
-                titulo: '¿Qué sección quieres mejorar?',
-                opciones: [
-                    { icon: '📦', label: 'Stock de Equipos', desc: 'Info de productos, precios o disponibilidad',
-                      hijos: { titulo: '¿Qué falta o está mal?', opciones: [
-                        { icon: '🔍', label: 'Falta un equipo', msg: '📦 *Stock de Equipos*\n\nHola Eduardo! Noté que falta un equipo en el stock. Me gustaría que lo agregues:\n\n→ Equipo: [escribe el nombre aquí]\n\nGracias por mejorar ClaroGo! 🚀' },
-                        { icon: '💰', label: 'Precio incorrecto', msg: '📦 *Stock de Equipos*\n\nHola Eduardo! Hay un precio incorrecto en el stock:\n\n→ Equipo: [nombre del equipo]\n→ Precio actual: [precio]\n→ Precio correcto: [precio correcto]\n\nGracias por mejorar ClaroGo! 🚀' },
-                        { icon: '❌', label: 'Equipo descontinuado', msg: '📦 *Stock de Equipos*\n\nHola Eduardo! Un equipo ya no está disponible y debería removerse:\n\n→ Equipo: [nombre del equipo]\n\nGracias por mejorar ClaroGo! 🚀' },
-                        { icon: '✏️', label: 'Otro error', msg: '📦 *Stock de Equipos*\n\nHola Eduardo! Quiero reportar un problema en el Stock de Equipos:\n\n→ Descripción: [describe el problema]\n\nGracias por mejorar ClaroGo! 🚀' }
-                      ]}
-                    },
-                    { icon: '📋', label: 'Oferta Personas', desc: 'Planes, precios o condiciones',
-                      hijos: { titulo: '¿Qué quieres reportar?', opciones: [
-                        { icon: '📄', label: 'Oferta desactualizada', msg: '📋 *Oferta Personas*\n\nHola Eduardo! La oferta de personas está desactualizada:\n\n→ Detalle: [describe qué cambió]\n\nGracias por mejorar ClaroGo! 🚀' },
-                        { icon: '➕', label: 'Falta un plan', msg: '📋 *Oferta Personas*\n\nHola Eduardo! Falta un plan en la oferta:\n\n→ Plan: [nombre o descripción del plan]\n\nGracias por mejorar ClaroGo! 🚀' },
-                        { icon: '✏️', label: 'Otro error', msg: '📋 *Oferta Personas*\n\nHola Eduardo! Quiero reportar un problema en Oferta Personas:\n\n→ Descripción: [describe el problema]\n\nGracias por mejorar ClaroGo! 🚀' }
-                      ]}
-                    },
-                    { icon: '📝', label: 'Script de ventas', desc: 'Guiones, respuestas o argumentos',
-                      hijos: { titulo: '¿Qué mejorarías?', opciones: [
-                        { icon: '💬', label: 'Falta una objeción', msg: '📝 *Script de Ventas*\n\nHola Eduardo! Falta una objeción frecuente en el script:\n\n→ Objeción: [describe la objeción]\n→ Sugerencia de respuesta: [tu sugerencia]\n\nGracias por mejorar ClaroGo! 🚀' },
-                        { icon: '🔄', label: 'Texto desactualizado', msg: '📝 *Script de Ventas*\n\nHola Eduardo! Hay texto desactualizado en el script:\n\n→ Sección: [nombre o ubicación]\n→ Cambio sugerido: [tu sugerencia]\n\nGracias por mejorar ClaroGo! 🚀' },
-                        { icon: '➕', label: 'Agregar nuevo guión', msg: '📝 *Script de Ventas*\n\nHola Eduardo! Me gustaría agregar un nuevo guión al script:\n\n→ Tema: [de qué trata]\n→ Contenido sugerido: [escribe tu guión]\n\nGracias por mejorar ClaroGo! 🚀' }
-                      ]}
-                    },
-                    { icon: '🔗', label: 'Otro contenido', desc: 'Galería, enlaces u otra sección',
-                      msg: '📂 *Contenido General*\n\nHola Eduardo! Quiero sugerir una mejora de contenido en ClaroGo!:\n\n→ Sección: [indica la sección]\n→ Sugerencia: [describe tu idea]\n\nGracias por mejorar ClaroGo! 🚀'
-                    }
-                ]
-            }
-        },
-        {
-            icon: '🎨', label: 'Diseño / Visual',
-            desc: 'Colores, orden, tipografía o layout',
-            hijos: {
-                titulo: '¿Qué aspecto visual quieres mejorar?',
-                opciones: [
-                    { icon: '🎨', label: 'Colores o contraste', msg: '🎨 *Diseño Visual*\n\nHola Eduardo! Tengo una sugerencia sobre los colores o contraste de ClaroGo!:\n\n→ Sección: [¿dónde?]\n→ Sugerencia: [describe el cambio]\n\nGracias por mejorar ClaroGo! 🚀' },
-                    { icon: '📱', label: 'Se ve mal en móvil', msg: '📱 *Diseño Responsivo*\n\nHola Eduardo! Algo no se ve bien en celular en ClaroGo!:\n\n→ Sección: [¿dónde?]\n→ Dispositivo: [modelo aprox.]\n→ Descripción: [qué está mal]\n\nGracias por mejorar ClaroGo! 🚀' },
-                    { icon: '🗂️', label: 'Mejor organización', msg: '🗂️ *Organización del Portal*\n\nHola Eduardo! Creo que ClaroGo! podría organizarse mejor:\n\n→ Sugerencia: [describe cómo reorganizarías]\n\nGracias por mejorar ClaroGo! 🚀' },
-                    { icon: '✏️', label: 'Otra mejora visual', msg: '🎨 *Diseño Visual*\n\nHola Eduardo! Tengo una sugerencia visual para ClaroGo!:\n\n→ Detalle: [describe tu idea]\n\nGracias por mejorar ClaroGo! 🚀' }
-                ]
-            }
-        },
-        {
-            icon: '⚡', label: 'Rendimiento / Velocidad',
-            desc: 'Carga lenta, errores o bugs',
-            hijos: {
-                titulo: '¿Qué problema de rendimiento tienes?',
-                opciones: [
-                    { icon: '🐌', label: 'Carga muy lenta', msg: '⚡ *Rendimiento*\n\nHola Eduardo! ClaroGo! carga muy lento:\n\n→ Sección: [¿cuál sección?]\n→ Dispositivo/Red: [describe tu contexto]\n\nGracias por mejorar ClaroGo! 🚀' },
-                    { icon: '🐛', label: 'Hay un bug o error', msg: '🐛 *Bug Reportado*\n\nHola Eduardo! Encontré un error en ClaroGo!:\n\n→ Sección: [¿dónde ocurre?]\n→ Descripción: [qué pasa exactamente]\n→ Pasos para reproducir: [cómo llegaste ahí]\n\nGracias por mejorar ClaroGo! 🚀' },
-                    { icon: '🔄', label: 'Algo no funciona', msg: '🔧 *Funcionalidad*\n\nHola Eduardo! Algo no funciona bien en ClaroGo!:\n\n→ Qué no funciona: [describe el problema]\n→ Qué esperabas que hiciera: [comportamiento esperado]\n\nGracias por mejorar ClaroGo! 🚀' }
-                ]
-            }
-        },
-        {
-            icon: '➕', label: 'Nueva función / sección',
-            desc: 'Ideas que no existen aún',
-            hijos: {
-                titulo: '¿Qué tipo de función nueva propones?',
-                opciones: [
-                    { icon: '📊', label: 'Nueva sección de contenido', msg: '➕ *Nueva Sección*\n\nHola Eduardo! Propongo agregar una nueva sección a ClaroGo!:\n\n→ Nombre sugerido: [nombre]\n→ Para qué sirve: [descripción]\n→ Contenido que tendría: [detalla]\n\nGracias por mejorar ClaroGo! 🚀' },
-                    { icon: '🔧', label: 'Nueva herramienta', msg: '🔧 *Nueva Herramienta*\n\nHola Eduardo! Propongo una nueva herramienta para ClaroGo!:\n\n→ Herramienta: [nombre o descripción]\n→ Para qué ayudaría: [caso de uso]\n\nGracias por mejorar ClaroGo! 🚀' },
-                    { icon: '💡', label: 'Otra idea', msg: '💡 *Idea Nueva*\n\nHola Eduardo! Tengo una idea para mejorar ClaroGo!:\n\n→ Idea: [describe tu propuesta]\n→ Beneficio: [cómo ayudaría al equipo]\n\nGracias por mejorar ClaroGo! 🚀' }
-                ]
-            }
-        },
-        {
-            icon: '💬', label: 'Feedback general',
-            desc: 'Comentario libre sobre el portal',
-            msg: '💬 *Feedback General*\n\nHola Eduardo! Quiero darte mi opinión sobre ClaroGo!:\n\n→ [Escribe tu comentario aquí]\n\nGracias por mejorar ClaroGo! 🚀'
-        }
-    ]
-};
-
-var _suggMsgPendiente = '';
-var _suggStack  = [];   // historial de nodos para volver atrás
-var _suggActual = null; // nodo actual
-
-function abrirSugerencias() {
-    _suggStack  = [];
-    _suggActual = ARBOL;
-    document.getElementById('sugg-overlay').classList.add('visible');
-    renderSugerencias();
-}
-function cerrarSugerencias() {
-    document.getElementById('sugg-overlay').classList.remove('visible');
-}
-function cerrarSiOverlay(e) {
-    if (e.target === document.getElementById('sugg-overlay')) cerrarSugerencias();
-}
-
-function renderSugerencias() {
-    var nodo = _suggActual;
-
-    // Breadcrumb
-    var bc = document.getElementById('sugg-breadcrumb');
-    bc.innerHTML = '';
-    var crumbs = [{ label: 'Inicio', idx: -1 }];
-    _suggStack.forEach(function(n, i) { crumbs.push({ label: n.label || n.titulo, idx: i }); });
-    crumbs.forEach(function(c, i) {
-        var span = document.createElement('span');
-        span.className = 'sugg-crumb' + (i === crumbs.length - 1 ? ' current' : '');
-        span.textContent = c.label;
-        if (i < crumbs.length - 1) {
-            span.onclick = (function(idx) { return function() { navegarCrumb(idx); }; })(c.idx);
-        }
-        bc.appendChild(span);
-        if (i < crumbs.length - 1) {
-            var sep = document.createElement('span');
-            sep.className = 'sugg-crumb-sep';
-            sep.textContent = ' › ';
-            bc.appendChild(sep);
-        }
-    });
-
-    // Título del paso
-    document.getElementById('sugg-step-title').textContent = nodo.titulo || '';
-
-    // Opciones
-    var cont = document.getElementById('sugg-options');
-    cont.innerHTML = '';
-    document.getElementById('sugg-wsp-card').classList.remove('visible');
-
-    if (nodo.opciones) {
-        nodo.opciones.forEach(function(op) {
-            var btn = document.createElement('button');
-            btn.className = 'sugg-option';
-            btn.innerHTML =
-                '<span class="sugg-option-icon">' + op.icon + '</span>' +
-                '<span class="sugg-option-text">' +
-                    '<span class="sugg-option-label">' + op.label + '</span>' +
-                    (op.desc ? '<span class="sugg-option-desc">' + op.desc + '</span>' : '') +
-                '</span>';
-            btn.onclick = (function(o) { return function() { elegirOpcion(o); }; })(op);
-            cont.appendChild(btn);
-        });
-    }
-
-    // Botón volver
-    var backBtn = document.getElementById('sugg-back');
-    if (_suggStack.length > 0) backBtn.classList.add('visible');
-    else backBtn.classList.remove('visible');
-}
-
-function elegirOpcion(op) {
-    if (op.msg) {
-        _suggMsgPendiente = op.msg;
-        _suggStack.push(_suggActual);
-        _suggActual = { titulo: op.label, label: op.label };
-        document.getElementById('sugg-step-title').textContent = '✅ Tu mensaje está listo';
-        document.getElementById('sugg-options').innerHTML = '';
-        document.getElementById('sugg-msg-text').textContent = op.msg;
-        document.getElementById('sugg-wsp-card').classList.add('visible');
-        document.getElementById('sugg-back').classList.add('visible');
-        // Breadcrumb
-        var bc = document.getElementById('sugg-breadcrumb');
-        bc.innerHTML = '';
-        var crumbs = [{ label: 'Inicio', idx: -1 }];
-        _suggStack.forEach(function(n, i) { crumbs.push({ label: n.label || n.titulo, idx: i }); });
-        crumbs.push({ label: op.label, idx: _suggStack.length });
-        crumbs.forEach(function(c, i) {
-            var span = document.createElement('span');
-            span.className = 'sugg-crumb' + (i === crumbs.length - 1 ? ' current' : '');
-            span.textContent = c.label;
-            if (i < crumbs.length - 1) {
-                span.onclick = (function(idx) { return function() { navegarCrumb(idx); }; })(c.idx);
-            }
-            bc.appendChild(span);
-            if (i < crumbs.length - 1) {
-                var sep = document.createElement('span');
-                sep.className = 'sugg-crumb-sep';
-                sep.textContent = ' › ';
-                bc.appendChild(sep);
-            }
-        });
-    } else if (op.hijos) {
-        _suggStack.push(_suggActual);
-        _suggActual = op.hijos;
-        _suggActual.label = op.label;
-        renderSugerencias();
-    }
-}
-
-function retrocederSugerencia() {
-    if (_suggStack.length > 0) {
-        _suggActual = _suggStack.pop();
-        renderSugerencias();
-    }
-}
-
-function navegarCrumb(idx) {
-    if (idx === -1) {
-        _suggStack  = [];
-        _suggActual = ARBOL;
-    } else {
-        _suggActual = _suggStack[idx];
-        _suggStack  = _suggStack.slice(0, idx);
-    }
-    renderSugerencias();
-}
-
-function enviarWsp() {
-    var msg = _suggMsgPendiente || document.getElementById('sugg-msg-text').textContent || '';
-    if (!msg) return;
-    var url = 'https://wa.me/56927690949?text=' + encodeURIComponent(msg);
-    window.open(url, '_blank');
-}
-</script>
-
-<script>
-// ══════════════════════════════════════════════════════════════
-//  LÓGICA PRINCIPAL
-// ══════════════════════════════════════════════════════════════
-
-var _urlPendiente   = '';
-var _btnPendiente   = '';
-var _labelPendiente = '';
-
-// ── Helpers de limpieza ──────────────────────────────────────
-function cl(id, estado) {
-    var el = document.getElementById(id);
-    if (!el) return;
-    el.className = 'cl-row ' + estado;
-    var ic = el.querySelector('.cl-icon');
-    if (ic) ic.textContent = estado === 'done' ? '✓' : '›';
-}
-function pct(v) {
-    document.getElementById('clean-pct').textContent = v + '%';
-    document.getElementById('clean-bar').style.width  = v + '%';
-}
-
-// ── Limpieza real multi-navegador ────────────────────────────
-function limpiarCookies() {
-    try {
-        document.cookie.split(';').forEach(function(c) {
-            var name = c.split('=')[0].trim();
-            if (!name) return;
-            var exp  = 'expires=Thu, 01 Jan 1970 00:00:00 GMT';
-            var host = location.hostname;
-            ['/', ''].forEach(function(path) {
-                [host, '.' + host, ''].forEach(function(domain) {
-                    var base = name + '=;' + exp + ';path=' + (path || '/');
-                    if (domain) base += ';domain=' + domain;
-                    document.cookie = base;
-                    try { document.cookie = base + ';SameSite=Lax'; }         catch(e){}
-                    try { document.cookie = base + ';SameSite=None;Secure'; } catch(e){}
-                    try { document.cookie = base + ';SameSite=Strict'; }      catch(e){}
-                });
-            });
-        });
-    } catch(e) {}
-}
-function limpiarStorage() {
-    try { localStorage.clear(); }   catch(e) {}
-    try { sessionStorage.clear(); } catch(e) {}
-}
-function limpiarCacheAPI() {
-    var p1 = (typeof caches !== 'undefined')
-        ? caches.keys().then(function(ns){ return Promise.all(ns.map(function(n){ return caches.delete(n); })); }).catch(function(){})
-        : Promise.resolve();
-    var p2 = ('serviceWorker' in navigator)
-        ? navigator.serviceWorker.getRegistrations().then(function(rs){ return Promise.all(rs.map(function(r){ return r.unregister(); })); }).catch(function(){})
-        : Promise.resolve();
-    return Promise.all([p1, p2]);
-}
-function limpiarIndexedDB() {
-    if (!window.indexedDB || typeof indexedDB.databases !== 'function') return Promise.resolve();
-    return indexedDB.databases().then(function(dbs) {
-        return Promise.all(dbs.map(function(db) {
-            return new Promise(function(res) {
-                var r = indexedDB.deleteDatabase(db.name);
-                r.onsuccess = r.onerror = r.onblocked = res;
-            });
-        }));
-    }).catch(function(){});
-}
-
-// ── Secuencia de limpieza con log visual ─────────────────────
-function ejecutarLimpieza(cb) {
-    pct(0);
-
-    // Paso 1 — Cookies
-    cl('cl-1', 'active');
-    setTimeout(function() {
-        limpiarCookies();
-        cl('cl-1', 'done'); pct(20);
-
-        // Paso 2 — Storage
-        cl('cl-2', 'active');
-        setTimeout(function() {
-            try { localStorage.clear(); } catch(e) {}
-            cl('cl-2', 'done'); pct(40);
-            cl('cl-3', 'active');
-            setTimeout(function() {
-                try { sessionStorage.clear(); } catch(e) {}
-                cl('cl-3', 'done'); pct(60);
-
-                // Paso 3 — Cache API
-                cl('cl-4', 'active');
-                limpiarCacheAPI().then(function() {
-                    cl('cl-4', 'done'); pct(80);
-
-                    // Paso 4 — IndexedDB
-                    cl('cl-5', 'active');
-                    limpiarIndexedDB().then(function() {
-                        cl('cl-5', 'done'); pct(100);
-                        setTimeout(cb, 200);
-                    });
-                });
-            }, 120);
-        }, 120);
-    }, 80);
-}
-
-// ── ENTRAR — desde el tile de bienvenida ─────────────────────
-function entrar(url, label, btnId) {
-    // Bloquear doble clic
-    document.querySelectorAll('.w-tile').forEach(function(t){ t.style.pointerEvents = 'none'; });
-
-    _urlPendiente   = url;
-    _btnPendiente   = btnId;
-    _labelPendiente = label;
-
-    // Mostrar overlay de limpieza
-    var co = document.getElementById('clean-overlay');
-    document.getElementById('clean-target').textContent = label;
-    // Resetear log
-    ['cl-1','cl-2','cl-3','cl-4','cl-5'].forEach(function(id){
-        var el = document.getElementById(id);
-        el.className = 'cl-row';
-        el.querySelector('.cl-icon').textContent = '·';
-    });
-    pct(0);
-    co.classList.add('visible');
-
-    // Desvanecer pantalla de bienvenida
-    setTimeout(function() {
-        document.getElementById('welcome').classList.add('out');
-    }, 80);
-
-    // Ejecutar limpieza
-    ejecutarLimpieza(function() {
-        // Ocultar overlay
-        co.classList.add('out');
-        setTimeout(function() {
-            co.classList.remove('visible', 'out');
-
-            // Mostrar shell
-            var shell = document.getElementById('shell');
-            shell.classList.add('visible');
-
-            // Marcar botón activo
-            document.querySelectorAll('.sh-nav-btn').forEach(function(b){ b.classList.remove('active'); });
-            var btn = document.getElementById(_btnPendiente);
-            if (btn) btn.classList.add('active');
-
-            // Cargar iframe desde cero con anti-cache
-            var frame = document.getElementById('main-frame');
-            frame.src = 'about:blank';
-            setTimeout(function() {
-                var sep = _urlPendiente.indexOf('?') === -1 ? '?' : '&';
-                frame.src = _urlPendiente + sep + 'v=' + Date.now();
-            }, 60);
-
-        }, 450);
-    });
-}
-
-// ── CAMBIAR SECCIÓN — desde el navbar interno ─────────────────
-function cambiarSeccion(url, btnId) {
-    document.querySelectorAll('.sh-nav-btn').forEach(function(b){ b.classList.remove('active'); });
-    var btn = document.getElementById(btnId);
-    if (btn) btn.classList.add('active');
-
-    var frame = document.getElementById('main-frame');
-    frame.src = 'about:blank';
-    setTimeout(function() {
-        var sep = url.indexOf('?') === -1 ? '?' : '&';
-        frame.src = url + sep + 'v=' + Date.now();
-    }, 40);
-}
-
-// ── CARGAR TUTORIAL (desde navbar) ───────────────────────────
-function cargarTutorial() {
-    // Si el shell ya está visible, solo cambiamos la URL
-    var shell = document.getElementById('shell');
-    if (shell.classList.contains('visible')) {
-        cambiarSeccion('Permisos.html', 'btn-tutorial');
-    } else {
-        // Si no está visible (caso excepcional), usamos entrar con la misma URL
-        entrar('Permisos.html', 'Tutorial: Permisos de cámara', 'btn-tutorial');
-    }
-}
-
-// ── VOLVER AL INICIO ─────────────────────────────────────────
-function volverInicio() {
-    // Limpiar iframe
-    document.getElementById('main-frame').src = 'about:blank';
-    // Ocultar shell
-    document.getElementById('shell').classList.remove('visible');
-    document.getElementById('btn-inicio-flotante').classList.remove('visible');
-    // Restaurar bienvenida
-    var w = document.getElementById('welcome');
-    w.classList.remove('out');
-    w.style.animation = 'none';
-    void w.offsetWidth;
-    w.style.animation = '';
-    // Rehabilitar tiles
-    document.querySelectorAll('.w-tile').forEach(function(t){ t.style.pointerEvents = ''; });
-}
-
-// ── Fecha en el header ───────────────────────────────────────
-(function() {
-    var now = new Date();
-    var tag = document.getElementById('w-tag');
-    if (tag) tag.textContent = 'Portal de ventas · ' + now.toLocaleDateString('es-CL', { weekday:'long', day:'numeric', month:'long' });
-})();
-</script>
-
-<!-- Modal próximamente -->
-<div id="pronto-overlay" onclick="cerrarProximo(event)">
-    <div id="pronto-modal">
-        <div id="pronto-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-        </div>
-        <h3>Audios — Ejemplos</h3>
-        <p>Grabaciones de ejemplo para ejecutivos con los mejores argumentos y cierres de venta.</p>
-        <div id="pronto-badge">🚧 Próximamente disponible</div>
-        <button id="pronto-close" onclick="cerrarProximo()">Entendido</button>
-    </div>
-</div>
-
-<script>
-function mostrarProximo() {
-    document.getElementById('pronto-overlay').classList.add('visible');
-}
-function cerrarProximo(e) {
-    if (!e || e.target === document.getElementById('pronto-overlay')) {
-        document.getElementById('pronto-overlay').classList.remove('visible');
-    }
-}
-</script>
-
-<!-- Botón flotante volver al inicio -->
-<button id="btn-inicio-flotante" onclick="volverInicio()">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-    Inicio
-</button>
-
-<script>
-// ══════════════════════════════════════════════════════════════
-//  ONDAS ANIMADAS DE FONDO
-// ══════════════════════════════════════════════════════════════
-(function() {
-    var canvas = document.getElementById('wave-canvas');
-    var ctx    = canvas.getContext('2d');
-    var W, H, raf;
-
-    var waves = [
-        { amp: 42,  period: 0.0016, speed: 0.0007, phase: 0,    y: 0.38, color: 'rgba(230,0,0,0.08)'    },
-        { amp: 32,  period: 0.0021, speed: 0.0011, phase: 1.2,  y: 0.52, color: 'rgba(230,0,0,0.13)'    },
-        { amp: 52,  period: 0.0012, speed: 0.0005, phase: 2.5,  y: 0.65, color: 'rgba(200,0,0,0.18)'    },
-        { amp: 28,  period: 0.0025, speed: 0.0014, phase: 0.7,  y: 0.74, color: 'rgba(230,0,0,0.22)'    },
-        { amp: 60,  period: 0.0010, speed: 0.0004, phase: 3.8,  y: 0.85, color: 'rgba(180,0,0,0.28)'    },
-    ];
-
-    function resize() {
-        W = canvas.width  = canvas.offsetWidth;
-        H = canvas.height = canvas.offsetHeight;
-    }
-
-    var t = 0;
-    function draw() {
-        ctx.clearRect(0, 0, W, H);
-        t += 1;
-        waves.forEach(function(w) {
-            w.phase += w.speed;
-            var baseY = H * w.y;
-            ctx.beginPath();
-            ctx.moveTo(0, H);
-            for (var x = 0; x <= W; x += 3) {
-                var y = baseY + Math.sin(x * w.period + w.phase) * w.amp
-                              + Math.sin(x * w.period * 1.7 + w.phase * 0.6) * (w.amp * 0.4);
-                ctx.lineTo(x, y);
-            }
-            ctx.lineTo(W, H);
-            ctx.closePath();
-            ctx.fillStyle = w.color;
-            ctx.fill();
-        });
-        raf = requestAnimationFrame(draw);
-    }
-
-    resize();
-    draw();
-    window.addEventListener('resize', function() {
-        cancelAnimationFrame(raf);
-        resize();
-        draw();
-    });
-})();
-</script>
-
-<!-- ══ MODAL EXCEPCIONES DE BOLETAS ══ -->
-<div id="_exc-ov" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999998;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;">
-  <div id="_exc-box" style="background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.22);max-width:500px;width:100%;transform:scale(0.92);opacity:0;transition:transform 260ms ease,opacity 260ms ease;overflow:hidden;">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:20px 22px 14px;">
-      <div>
-        <div style="font-family:Arial,Helvetica,sans-serif;font-size:19px;font-weight:700;color:#111;">Excepciones de Boletas</div>
-        <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#888;margin-top:4px;">Monto máximo de deuda según líneas portadas</div>
+  <!-- STOCK -->
+  <section id="v-stock" class="view" hidden>
+    <h1 class="h">Stock de Equipos</h1>
+    <p class="sub">Busca por modelo, marca o SKU. Toca un SKU para copiarlo.</p>
+    <div class="card filters">
+      <input class="full" type="search" id="s-q" placeholder="Buscar modelo, marca o SKU" autocomplete="off">
+      <select id="s-marca"><option value="">Todas las marcas</option></select>
+      <select id="s-pie">
+        <option value="">Cualquier pie</option>
+        <option value="0-0">Pie $0</option>
+        <option value="1-15000">Hasta $15.000</option>
+        <option value="15001-30000">$15.001 a $30.000</option>
+        <option value="30001-9999999">$30.001 o más</option>
+      </select>
+      <label class="chk full"><input type="checkbox" id="s-solo"> Solo con stock</label>
+      <div class="f-actions">
+        <button class="btn red sm" id="s-rapido">Filtro rápido (Pie $0 + stock)</button>
+        <button class="btn sm" id="s-limpiar">Limpiar</button>
+        <button class="btn sm" id="s-copiar">Copiar lista filtrada</button>
+        <button class="btn dark sm" id="s-actualizar">Actualizar stock</button>
       </div>
-      <button onclick="cerrarExcepciones()" style="background:none;border:none;cursor:pointer;font-size:20px;color:#aaa;padding:2px 6px;border-radius:5px;line-height:1;" onmouseover="this.style.color='#333'" onmouseout="this.style.color='#aaa'">✕</button>
     </div>
-    <div style="padding:0 22px 20px;">
-      <table style="width:100%;border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;font-size:15px;">
-        <thead>
-          <tr><th style="background:#1a1a1a;color:#fff;padding:14px 18px;text-align:center;font-weight:700;font-size:14px;">N° de Líneas Portadas</th><th style="background:#1a1a1a;color:#fff;padding:14px 18px;text-align:center;font-weight:700;font-size:14px;">Monto de Deuda</th>  </tr>
-        </thead>
-        <tbody>
-          <tr style="border-bottom:1px solid #e8e8e8;"><td style="padding:13px 18px;text-align:center;color:#222;font-weight:500;">1</td><td style="padding:13px 18px;text-align:center;color:#222;font-weight:500;">Hasta $18.000</td></tr>
-          <tr style="border-bottom:1px solid #e8e8e8;background:#f7f7f7;"><td style="padding:13px 18px;text-align:center;color:#222;font-weight:500;">2</td><td style="padding:13px 18px;text-align:center;color:#222;font-weight:500;">Hasta $27.000</td></tr>
-          <tr style="border-bottom:1px solid #e8e8e8;"><td style="padding:13px 18px;text-align:center;color:#222;font-weight:500;">3</td><td style="padding:13px 18px;text-align:center;color:#222;font-weight:500;">Hasta $36.000</td></tr>
-          <tr style="border-bottom:1px solid #e8e8e8;background:#f7f7f7;"><td style="padding:13px 18px;text-align:center;color:#222;font-weight:500;">4</td><td style="padding:13px 18px;text-align:center;color:#222;font-weight:500;">Hasta $45.000</td></tr>
-          <tr style="border-bottom:1px solid #e8e8e8;"><td style="padding:13px 18px;text-align:center;color:#222;font-weight:500;">5</td><td style="padding:13px 18px;text-align:center;color:#222;font-weight:500;">Hasta $54.000</td></tr>
-          <tr style="background:#f7f7f7;"><td style="padding:13px 18px;text-align:center;color:#222;font-weight:500;">6 o más</td><td style="padding:13px 18px;text-align:center;color:#222;font-weight:500;">Hasta $63.000</td></tr>
-        </tbody>
-      </table>
+    <div class="s-meta"><span id="s-count"></span><span id="s-fecha"></span></div>
+    <table id="s-table">
+      <thead><tr>
+        <th data-col="modelo">Modelo</th><th data-col="sku">SKU</th><th data-col="marca">Marca</th>
+        <th data-col="pie">Pie inicial</th><th data-col="cuotas">18 cuotas</th><th data-col="total">Precio total</th>
+        <th data-col="stock">Stock</th><th>Acción</th>
+      </tr></thead>
+      <tbody id="s-body"></tbody>
+    </table>
+    <div id="s-msg" class="empty">Cargando stock…</div>
+  </section>
+
+  <!-- OFERTA PERSONAS -->
+  <section id="v-oferta" class="view" hidden>
+    <h1 class="h">Oferta Personas</h1>
+    <p class="sub">Planes y ofertas. Captura la tarjeta como imagen o copia el mensaje para WhatsApp.</p>
+    <p style="margin-bottom:14px"><button class="btn dark" id="o-todos">📸 Capturar planes de portabilidad</button></p>
+    <div class="plans" id="o-grid"></div>
+  </section>
+
+  <!-- OFERTA PNG -->
+  <section id="v-png" class="view" hidden>
+    <h1 class="h">Oferta PNG</h1>
+    <p class="sub">Planes PNG Móvil. Los valores con IVA se calculan con 19%.</p>
+    <div class="sec-t">📱 Planes <em>Individuales</em></div>
+    <p class="sub">Un plan por línea</p>
+    <div class="plans four" id="p-ind"></div>
+    <div class="sec-t">📲 Planes <em>Multilínea</em></div>
+    <p class="sub">Precio por línea, elige la cantidad</p>
+    <div class="plans" id="p-mul"></div>
+  </section>
+
+  <!-- SCRIPT -->
+  <section id="v-script" class="view" hidden>
+    <h1 class="h">Script de Validación de Venta</h1>
+    <p class="sub">Completa los datos y lee el texto al cliente.</p>
+    <form id="sc-form" autocomplete="off">
+      <div class="card sc">
+        <button type="button" class="btn green" id="sc-planilla" style="width:100%">📋 Obtener Planilla Personal (Google Sheets)</button>
+        <p style="font-size:.8rem;color:var(--muted);text-align:center;margin-top:8px;line-height:1.4">Se creará una copia exclusiva para ti en tu Google Drive, compatible con este script y lista para usar.</p>
+      </div>
+      <div class="card sc">
+        <h2><i>0</i> Carga rápida desde Excel</h2>
+        <div class="note blue" style="margin-bottom:10px">
+          <b>Instrucciones:</b> en tu planilla haz clic en el número de la fila completa, copia con Ctrl+C, pega aquí con Ctrl+V y presiona "Mapear datos".
+        </div>
+        <label for="sc-paste">Datos copiados de Excel (fila completa)</label>
+        <textarea id="sc-paste" rows="3" placeholder="Pega aquí la fila copiada de Excel"></textarea>
+        <div class="d-foot" style="margin-top:10px;justify-content:flex-start">
+          <button type="button" class="btn red" id="sc-map">Mapear datos al formulario</button>
+          <button type="button" class="btn" id="sc-reset">Limpiar</button>
+        </div>
+      </div>
+      <div class="card sc">
+        <h2><i>1</i> Inicio y Contratación</h2>
+        <p>Don/Sra. <input type="text" class="in nm" placeholder="Nombre del Cliente">, con fecha de hoy <input type="text" class="in ro" id="sc-fecha" readonly size="22">, siendo las <input type="text" class="in ro" id="sc-hora" readonly size="5"> horas, usted ha contratado con <strong>CLARO CHILE</strong> un servicio de
+          <select class="in" id="sc-tipo"><option>Portabilidad</option><option>Línea Nueva</option><option>Migración</option></select><span id="sc-port"> de un número proveniente de la empresa <input type="text" class="in" id="sc-donante" placeholder="Empresa de origen"></span>.</p>
+      </div>
+      <div class="card sc">
+        <h2><i>2</i> Información Específica del Servicio</h2>
+        <div class="note" id="sc-nota" style="margin-bottom:12px"></div>
+        <p><strong>Emisión de Boleta:</strong> Le informamos que el pago de su servicio es a mes vencido. La primera boleta se emitirá aproximadamente dentro de 40 días. Le recuerdo que su boleta llegará de manera electrónica a su email.</p>
+        <div class="note red">⚠️ Su contrato de servicio está sujeto a la <strong>VARIACIÓN POSITIVA TRIMESTRAL DEL ÍNDICE DE PRECIOS AL CONSUMIDOR (IPC)</strong>, valor que verá reflejado mensualmente en su boleta.</div>
+      </div>
+      <div class="card sc">
+        <h2><i>3</i> Validación de Datos del Cliente</h2>
+        <p><input type="text" class="in nm" placeholder="Nombre del Cliente">, mi nombre es <input type="text" class="in" id="sc-agente" placeholder="Tu Nombre">, ejecutivo de ventas de Claro Chile. A continuación, validaré la aceptación del servicio que acaba de adquirir, para ello le pido que me confirme su nombre completo y número de RUT.</p>
+        <div class="form2">
+          <div><label for="sc-nombre">Nombre Completo</label><input type="text" id="sc-nombre" class="nm" placeholder="Nombre completo del cliente"></div>
+          <div><label for="sc-rut">RUT <span id="sc-rut-ok"></span></label><input type="text" id="sc-rut" placeholder="12.345.678-9"></div>
+          <div><label for="sc-nac">Fecha de Nacimiento</label><input type="text" id="sc-nac" placeholder="DD-MM-AAAA"></div>
+          <div><label for="sc-mail">Correo Electrónico</label><input type="email" id="sc-mail" placeholder="email@ejemplo.com"></div>
+          <div><label for="sc-fono">Número de Teléfono a Portar</label><input type="text" id="sc-fono" placeholder="9 XXXX XXXX"></div>
+          <div><label for="sc-dir">Dirección de Entrega</label><input type="text" id="sc-dir" placeholder="Dirección completa"></div>
+        </div>
+      </div>
+      <div class="card sc">
+        <h2><i>4</i> Confirmación del Plan y Condiciones</h2>
+        <label for="sc-plan">Plan Contratado</label>
+        <select id="sc-plan"></select>
+        <div id="sc-detalle"></div>
+        <div class="note red" style="margin-top:12px">Don/Sra. <input type="text" class="in nm" placeholder="Nombre del Cliente">, <strong>¿acepta las condiciones del plan contratado?</strong></div>
+        <div class="note" style="margin-top:10px">🎙️ <strong>Acción requerida:</strong> esperar y registrar un <strong>"Sí, acepto"</strong> claro y sin dudas del cliente.</div>
+      </div>
+      <div class="card sc">
+        <h2><i>5</i> Cierre de la Venta</h2>
+        <label for="sc-pedido">Número de Pedido (Transacción FVC)</label>
+        <input type="text" id="sc-pedido" placeholder="Ingresar número de transacción FVC" style="margin-bottom:12px">
+        <p>Sr(a). <input type="text" class="in nm" placeholder="Nombre del Cliente">, ¿Tiene alguna duda adicional?</p>
+        <p>Le doy la más cordial bienvenida a Claro Chile. Recuerde que habló con <strong id="sc-agente2" style="color:var(--red)">[Nombre del Ejecutivo]</strong>.</p>
+        <p>Tenga un excelente día y muchas gracias por su preferencia.</p>
+        <div class="note green" style="margin:12px 0;line-height:1.6">
+          <strong>Beneficio adicional:</strong><br>
+          Antes de despedirnos, le comento un beneficio útil para evitar llamadas molestas: el <strong>bloqueo de llamadas 809</strong>. Con esto, deja de recibir llamadas SPAM o no deseadas que vienen desde números que comienzan con 809, así tiene más tranquilidad y menos interrupciones.<br>
+          Si le interesa activarlo, puede hacerlo llamando al <strong>103</strong> o directamente desde la <strong>App MiClaro</strong>.
+        </div>
+        <p>Si tiene algún familiar, amigo o persona cercana que también quiera portarse a Claro, quedo a su disposición para poder gestionarlo, que tenga muy buen día.</p>
+        <p>Me despido y le dejo con una grabación muy corta de parte de la <strong>Subtel</strong> la cual le indicará algunos aspectos relacionados con la portabilidad, una vez que se corte el proceso estará finalizado.</p>
+      </div>
+    </form>
+  </section>
+
+  <!-- INGRESO DE VENTA -->
+  <section id="v-venta" class="view" hidden>
+    <h1 class="h">Ingreso de Venta</h1>
+    <p class="sub">Formulario de Google. <a id="venta-link" target="_blank" rel="noopener">Abrir en una pestaña nueva</a> si no carga aquí.</p>
+    <iframe id="venta-frame" title="Formulario de ingreso de venta" loading="lazy"></iframe>
+  </section>
+
+  <!-- ENLACES -->
+  <section id="v-enlaces" class="view" hidden>
+    <h1 class="h">Enlaces</h1>
+    <p class="sub">Accesos rápidos a las plataformas de trabajo. Se abren en una pestaña nueva.</p>
+    <div id="e-grid"></div>
+  </section>
+
+  <!-- GALERÍA -->
+  <section id="v-galeria" class="view" hidden>
+    <h1 class="h">Galería</h1>
+    <p class="sub">Imágenes de equipos para compartir con el cliente.</p>
+    <input type="search" id="g-q" placeholder="Buscar dispositivo" autocomplete="off" style="margin-bottom:12px">
+    <div class="gal" id="g-grid"></div>
+    <div class="empty" id="g-none" hidden>Sin resultados</div>
+  </section>
+
+  <!-- TUTORIALES -->
+  <section id="v-tutoriales" class="view" hidden>
+    <h1 class="h">Tutoriales</h1>
+    <p class="sub">Guías paso a paso para configurar permisos en Android, limpiar cookies en PC y enviar WhatsApp sin contactos.</p>
+    <div class="chips" id="t-chips"></div>
+    <div class="tut" id="t-grid"></div>
+  </section>
+</main>
+
+<footer>
+  ClaroGo! es una herramienta de apoyo no oficial. No es un sitio de Claro Chile.<br>
+  <a href="https://wa.me/56927690949" target="_blank" rel="noopener">Desarrollado por Eduardo Pérez</a> · <button id="cache-btn">Limpiar caché</button>
+</footer>
+
+<button id="sugg-btn" title="Enviar sugerencia" aria-label="Enviar sugerencia por WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.532 5.859L.054 23.077a.75.75 0 00.91.91l5.26-1.487A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.703-.504-5.254-1.385l-.372-.217-3.863 1.093 1.107-3.77-.237-.386A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+</button>
+
+<!-- DIÁLOGOS -->
+<dialog id="dlg-exc">
+  <div class="d-head"><div><h2>Excepciones de Boletas</h2><p>Monto máximo de deuda según líneas portadas</p></div><button class="d-x" data-close>✕</button></div>
+  <div class="d-body">
+    <table class="exc"><thead><tr><th>N° de Líneas Portadas</th><th>Monto de Deuda</th></tr></thead><tbody id="exc-body"></tbody></table>
+    <div class="d-foot"><button class="btn" id="exc-copy">Copiar imagen</button><button class="btn red" id="exc-dl">Descargar imagen</button></div>
+  </div>
+</dialog>
+
+<dialog id="dlg-audios">
+  <div class="d-head"><div><h2>Audios de ejemplo</h2><p>Próximamente disponible</p></div><button class="d-x" data-close>✕</button></div>
+  <div class="d-body"><p>Grabaciones de ejemplo para ejecutivos con los mejores argumentos y cierres de venta.</p><button class="btn red" data-close>Entendido</button></div>
+</dialog>
+
+<dialog id="dlg-sugg">
+  <div class="d-head"><div><h2>💡 Mejorar ClaroGo!</h2><p>Tu opinión ayuda a mejorar el portal</p></div><button class="d-x" data-close>✕</button></div>
+  <div class="d-body">
+    <div class="crumbs" id="sg-crumbs"></div>
+    <b id="sg-title"></b>
+    <div class="grid" id="sg-opts" style="gap:8px"></div>
+    <button class="btn green" id="sg-send" hidden>Enviar por WhatsApp</button>
+    <button class="btn sm" id="sg-back" hidden style="align-self:flex-start">← Volver</button>
+  </div>
+</dialog>
+
+<dialog id="dlg-stock" style="max-width:min(620px,96vw)">
+  <div class="d-head"><div><h2>Actualizar stock</h2><p>Pega la tabla desde Excel o elige un archivo CSV</p></div><button class="d-x" data-close>✕</button></div>
+  <div class="d-body">
+    <div class="note blue">
+      <b>1.</b> En Excel selecciona las columnas <b>SKU, Marca, Modelo, Stock, Pie y Cuotas</b> con su fila de títulos y copia.<br>
+      <b>2.</b> Pega aquí y presiona "Revisar".<br>
+      <b>3.</b> Descarga <b>stock.csv</b> y súbelo a GitHub. El sitio se actualiza solo en uno o dos minutos.
     </div>
-    <div style="display:flex;gap:10px;padding:0 22px 20px;justify-content:flex-end;">
-      <button id="_exc-copy-btn" onclick="excCopiar()" style="display:flex;align-items:center;gap:7px;background:#f0f0f0;border:none;border-radius:7px;padding:10px 18px;font-family:Arial,sans-serif;font-size:13px;font-weight:600;color:#333;cursor:pointer;" onmouseover="this.style.background='#e0e0e0'" onmouseout="this.style.background='#f0f0f0'">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        Copiar imagen
-      </button>
-      <button id="_exc-dl-btn" onclick="excDescargar()" style="display:flex;align-items:center;gap:7px;background:#B50000;border:none;border-radius:7px;padding:10px 18px;font-family:Arial,sans-serif;font-size:13px;font-weight:600;color:#fff;cursor:pointer;" onmouseover="this.style.background='#8a0000'" onmouseout="this.style.background='#B50000'">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Descargar imagen
-      </button>
+    <textarea id="u-text" rows="6" placeholder="Pega aquí las filas copiadas de Excel"></textarea>
+    <div class="d-foot" style="justify-content:flex-start">
+      <button class="btn red" id="u-check">Revisar</button>
+      <label class="btn" style="margin:0;color:var(--text)">Elegir archivo<input type="file" id="u-file" accept=".csv,.txt,.tsv" hidden></label>
+    </div>
+    <div id="u-result"></div>
+    <div class="d-foot" id="u-actions" hidden>
+      <button class="btn" id="u-preview">Ver en la tabla</button>
+      <button class="btn red" id="u-download">Descargar stock.csv</button>
+      <a class="btn dark" id="u-github" target="_blank" rel="noopener">Abrir GitHub para subirlo</a>
     </div>
   </div>
-</div>
+</dialog>
+
+<dialog id="dlg-gal">
+  <img id="g-img" alt="">
+  <div class="g-bar"><button class="g-nav" id="g-prev" aria-label="Anterior">‹</button><b id="g-name"></b><button class="g-nav" id="g-next" aria-label="Siguiente">›</button></div>
+  <div class="g-act"><button class="btn" id="g-copy">Copiar imagen</button><button class="btn" id="g-dl">Descargar</button><button class="btn dark" data-close>Cerrar</button></div>
+</dialog>
+
+<dialog id="dlg-phone">
+  <iframe id="ph-frame" title="Tutorial"></iframe>
+  <button class="btn" data-close>Cerrar tutorial</button>
+</dialog>
+
+<div id="toast" role="status"></div>
+
 <script>
-(function(){
-  'use strict';
-  var ov=document.getElementById('_exc-ov'),box=document.getElementById('_exc-box');
-  window.abrirExcepciones=function(){ov.style.display='flex';requestAnimationFrame(function(){requestAnimationFrame(function(){box.style.transform='scale(1)';box.style.opacity='1';});});};
-  window.cerrarExcepciones=function(){box.style.transform='scale(0.92)';box.style.opacity='0';setTimeout(function(){ov.style.display='none';},270);};
-  ov.addEventListener('click',function(e){if(e.target===ov)window.cerrarExcepciones();});
-  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&ov.style.display==='flex')window.cerrarExcepciones();});
-  function generarCanvas(){
-    var S=2.5,M=32,W=500;
-    var rows=[['1','Hasta $18.000'],['2','Hasta $27.000'],['3','Hasta $36.000'],['4','Hasta $45.000'],['5','Hasta $54.000'],['6 o más','Hasta $63.000']];
-    var titleAreaH=72,headerH=48,rowH=46,TW=W-M*2,TH=titleAreaH+headerH+rowH*rows.length,CH=TH+M*2;
-    var c=document.createElement('canvas');c.width=W*S;c.height=CH*S;
-    var ctx=c.getContext('2d');ctx.scale(S,S);
-    ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,CH);
-    ctx.save();ctx.shadowColor='rgba(0,0,0,0.13)';ctx.shadowBlur=18;ctx.shadowOffsetY=4;ctx.fillStyle='#ffffff';rrect(ctx,M,M,TW,TH,10);ctx.fill();ctx.restore();
-    ctx.strokeStyle='#e0e0e0';ctx.lineWidth=1;rrect(ctx,M+.5,M+.5,TW-1,TH-1,10);ctx.stroke();
-    ctx.fillStyle='#111';ctx.font='bold 17px Arial,Helvetica,sans-serif';ctx.textAlign='left';ctx.fillText('Excepciones de Boletas',M+20,M+32);
-    ctx.fillStyle='#888';ctx.font='12px Arial,Helvetica,sans-serif';ctx.fillText('Monto máximo de deuda según líneas portadas',M+20,M+52);
-    var tY=M+titleAreaH;
-    ctx.fillStyle='#1a1a1a';rrect(ctx,M,tY,TW,headerH,0);ctx.fill();
-    ctx.fillStyle='#fff';ctx.font='bold 13px Arial,Helvetica,sans-serif';ctx.textAlign='center';
-    ctx.fillText('N° de Líneas Portadas',M+TW/4,tY+30);ctx.fillText('Monto de Deuda',M+TW*3/4,tY+30);
-    ctx.strokeStyle='#333';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(M+TW/2,tY);ctx.lineTo(M+TW/2,tY+headerH);ctx.stroke();
-    rows.forEach(function(r,i){
-      var y=tY+headerH+i*rowH;
-      ctx.fillStyle=i%2===0?'#fff':'#f7f7f7';ctx.fillRect(M,y,TW,rowH);
-      ctx.fillStyle='#e8e8e8';ctx.fillRect(M,y+rowH-1,TW,1);ctx.fillRect(M+TW/2-.5,y,1,rowH);
-      ctx.fillStyle='#222';ctx.font='15px Arial,Helvetica,sans-serif';ctx.textAlign='center';
-      ctx.fillText(r[0],M+TW/4,y+rowH/2+6);ctx.fillText(r[1],M+TW*3/4,y+rowH/2+6);
+'use strict';
+/* ════════════════════════════════════════════════════════════════
+   DATOS COMERCIALES
+   Todo lo que cambia con la oferta está en este bloque.
+   El stock de equipos NO está aquí: vive en datos/stock.csv
+   ════════════════════════════════════════════════════════════════ */
+const WSP = '56927690949';
+const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSdpNdfAhUC3HAw_LjYj1oCV1Oq6veT_0YnnIq06xg6wxOGMwA/viewform';
+const PLANILLA_URL = 'https://docs.google.com/spreadsheets/d/1KnWZ-M0LeIIrwQq5CuGLJkHHAANNq_MUKoaTXR8K6Ck/copy';
+const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
+
+// Excepciones de Boletas
+const EXCEPCIONES = [['1','Hasta $18.000'],['2','Hasta $27.000'],['3','Hasta $36.000'],['4','Hasta $45.000'],['5','Hasta $54.000'],['6 o más','Hasta $63.000']];
+
+// Oferta Personas
+const ADICIONAL_NORMAL = 9743;            // valor de cada línea adicional desde el mes 7
+const SIN_ADICIONAL = 'No Aplica Adicional';
+const SIN_DCTO_PERMANENTE = ['module-mayor','module-maxm-linea','module-maxl-linea','module-maxm-prepago','module-maxl-prepago'];
+const CAPTURA_GENERAL = ['module1','module2','module3'];
+const PLANES = [
+ {id:'module-mayor',title:'Plan Persona Mayor',data:'50 GIGAS',price:'$3.990',priceDuration:'x 12 meses',discount:'Oferta Portabilidad PosPos',afterDiscount:'Luego $6.990 al mes',normalPrice:'Cargo Fijo Normal $6.990',vigencia:'Para titulares desde 70 años.',additionalTitle:SIN_ADICIONAL,additionalPrice:'Gratis',additionalData:'0 GB',totalPrice:'¡1 plan x $3.990!',callsInfo:'1000 minutos de llamadas'},
+ {id:'module0',title:'Max M',data:'200 GIGAS',price:'$6.495',priceDuration:'x 6 meses',discount:'50% de Dcto',afterDiscount:'Desde 7º mes $9.743',normalPrice:'Cargo Fijo Normal $12.990',additionalTitle:SIN_ADICIONAL,additionalPrice:'Gratis',additionalData:'0 GB',totalPrice:'¡1 plan x $6.495!',callsInfo:'Llamadas ilimitadas hasta 300 contactos'},
+ {id:'module1',title:'Max L Libre',data:'600 GIGAS',price:'$7.495',priceDuration:'x 6 meses',discount:'50% de Dcto',afterDiscount:'Desde 7º mes $11.243',normalPrice:'Cargo Fijo Normal $14.990',additionalTitle:'Max M Adicional',additionalPrice:'$4.990 x 6 meses',additionalData:'400 GB',totalPrice:'¡2 planes x $12.485!',vigencia:'por 1 año',callsInfo:'Llamadas ilimitadas hasta 300 contactos'},
+ {id:'module2',title:'Max XL Libre',data:'1.000 GIGAS',price:'$8.495',priceDuration:'x 6 meses',discount:'50% de Dcto',afterDiscount:'Desde 7º mes $12.743',normalPrice:'Cargo Fijo Normal $16.990',additionalTitle:'Max M Adicional',additionalPrice:'$2.990 x 6 meses',additionalData:'400 GB',totalPrice:'¡2 planes x $11.485!',vigencia:'por 1 año',callsInfo:'Llamadas ilimitadas hasta 300 contactos'},
+ {id:'module3',title:'Max Libre Pro',data:'GIGAS Libres',price:'$10.495',priceDuration:'x 6 meses',discount:'50% de Dcto',afterDiscount:'Desde 7º mes $15.743',normalPrice:'Cargo Fijo Normal $20.990',additionalTitle:'Max M Adicional',additionalPrice:'$2.990 x 6 meses',additionalData:'400 GB',totalPrice:'¡2 planes x $13.485!',callsInfo:'Llamadas ilimitadas hasta 300 contactos'},
+ {id:'module-maxm-linea',title:'MAX M — Línea Nueva',data:'200 GIGAS',price:'$8.444',priceDuration:'x 6 meses (30% Dcto)',discount:'30% de Dcto',afterDiscount:'Desde 7º mes $12.990',normalPrice:'Cargo Fijo Normal $12.990',additionalTitle:SIN_ADICIONAL,additionalPrice:'Gratis',additionalData:'0 GB',totalPrice:'1 plan x $8.444',callsInfo:'Llamadas ilimitadas hasta 300 contactos'},
+ {id:'module-maxl-linea',title:'MAX L LIBRE — Línea Nueva',data:'300 GIGAS',price:'$9.744',priceDuration:'x 6 meses',discount:'Oferta Línea Nueva',afterDiscount:'Desde 7º mes $14.990',normalPrice:'Cargo Fijo Normal $14.990',additionalTitle:SIN_ADICIONAL,additionalPrice:'Gratis',additionalData:'0 GB',totalPrice:'1 plan x $9.744',callsInfo:'Llamadas ilimitadas hasta 300 contactos'},
+ {id:'module-maxm-prepago',title:'MAX M — Port. Prepago',data:'200 GIGAS',price:'$8.444',priceDuration:'x 6 meses (30% Dcto)',discount:'30% de Dcto',afterDiscount:'Desde 7º mes $12.990',normalPrice:'Cargo Fijo Normal $12.990',additionalTitle:SIN_ADICIONAL,additionalPrice:'Gratis',additionalData:'0 GB',totalPrice:'1 plan x $8.444',callsInfo:'Portabilidad desde Prepago'},
+ {id:'module-maxl-prepago',title:'MAX L LIBRE — Port. Prepago',data:'300 GIGAS',price:'$9.744',priceDuration:'x 6 meses',discount:'Oferta Port. Prepago',afterDiscount:'Desde 7º mes $14.990',normalPrice:'Cargo Fijo Normal $14.990',additionalTitle:SIN_ADICIONAL,additionalPrice:'Gratis',additionalData:'0 GB',totalPrice:'1 plan x $9.744',callsInfo:'Portabilidad desde Prepago'}
+];
+
+// Oferta PNG
+const IVA = 0.19;
+const PNG_IND = [
+ {id:'s',title:'Plan S',data:'100 Gigas',price:6990,dur:'x 12 meses',old:'$9.990',after:'Luego $9.990/mes'},
+ {id:'ml',title:'Plan Max L Libre',data:'300 Gigas',price:7990,dur:'x 12 meses',old:'$14.990',after:'Luego $14.990/mes'},
+ {id:'mxl',title:'Plan Max XL Libre',data:'500 Gigas',price:9590,dur:'x 12 meses',old:'$16.990',after:'Luego $16.990/mes'},
+ {id:'pro',title:'Plan Max Libre Pro',data:'Gigas Libres',price:12990,dur:'x 12 meses',old:'$20.990',after:'Luego $20.990/mes'}
+];
+const PNG_MUL = [
+ {id:'mml',title:'Plan Max L',data:'300 Gigas',ppl:4554,oldVal:14990,dur:'x 12 meses/línea',old:'$14.990',after:'Luego $14.990/mes'},
+ {id:'mmxl',title:'Plan Max XL',data:'500 Gigas',ppl:5370,oldVal:16990,dur:'x 12 meses/línea',old:'$16.990',after:'Luego $16.990/mes'},
+ {id:'mpro',title:'Plan Max Libre Pro',data:'Gigas Libres',ppl:7145,oldVal:20990,dur:'x 12 meses/línea',old:'$20.990',after:'Luego $20.990/mes'}
+];
+
+// Script de validación
+const SCRIPT_PLANES = {
+ 'Plan Max M':{internet:'200 GB',minutos:'Libres a 300 números',roaming:'20 min + 1 GB + 20 SMS',ldi:'20 minutos',rrss:'WhatsApp, Facebook, Instagram, Telegram, TikTok, X (Libres)',sms:'500 SMS',via_ingreso:'Todas',cargo_fijo_normal:'$12.990',cargo_promo:'$6.495',cargo_mes_7:'$9.743',dscto:'50%',promo_detalle:'Oferta out. 50% x 6 meses, luego 25% permanente',vigencia_dcto:'6 meses al 50%'},
+ 'Plan Max L Libre':{internet:'300 GB alta velocidad',minutos:'Libres a 300 números',roaming:'40 min + 2 GB + 40 SMS',ldi:'40 minutos',rrss:'WhatsApp, Facebook, Instagram, Telegram, TikTok, X (Libres)',sms:'500 SMS',via_ingreso:'Todas',cargo_fijo_normal:'$14.990',cargo_promo:'$7.495',cargo_mes_7:'$11.243',dscto:'50%',promo_detalle:'Oferta out. 50% x 6 meses, luego 25% permanente',vigencia_dcto:'6 meses al 50%'},
+ 'Plan Max XL Libre':{internet:'500 GB alta velocidad',minutos:'Libres a 300 números',roaming:'60 min + 3 GB + 60 SMS',ldi:'60 minutos',rrss:'WhatsApp, Facebook, Instagram, Telegram, TikTok, X (Libres)',sms:'500 SMS',via_ingreso:'Portabilidad y Línea Nueva (Pos a Pos)',cargo_fijo_normal:'$16.990',cargo_promo:'$8.495',cargo_mes_7:'$12.743',dscto:'50%',promo_detalle:'Oferta out. 50% x 6 meses, luego 25% permanente',vigencia_dcto:'6 meses al 50%'},
+ 'Plan Max Libre Pro':{internet:'GB libres (Ilimitado)',minutos:'Libres a 300 números',roaming:'100 min + 5 GB + 100 SMS',ldi:'100 minutos',rrss:'WhatsApp, Facebook, Instagram, Telegram, TikTok, X (Libres)',sms:'500 SMS',via_ingreso:'Portabilidad y Línea Nueva (Pos a Pos)',cargo_fijo_normal:'$20.990',cargo_promo:'$10.495',cargo_mes_7:'$15.743',dscto:'50%',promo_detalle:'Oferta out. 50% x 6 meses, luego 25% permanente',vigencia_dcto:'6 meses al 50%'},
+ 'Plan Persona Mayor':{internet:'50 GB',minutos:'1000 minutos de llamadas',roaming:'No incluido',ldi:'No incluido',rrss:'Instagram, Facebook, X, WhatsApp, TikTok (Ilimitadas)',sms:'No incluido',via_ingreso:'Portabilidad PosPos',cargo_fijo_normal:'$6.990',cargo_promo:'$3.990',cargo_mes_7:'$6.990',dscto:'43%',promo_detalle:'Oferta Portabilidad PosPos. 43% x 12 meses',vigencia_dcto:'12 meses al 43%',restriccion:'Para titulares desde 70 años'}
+};
+// Precios que reemplazan a los anteriores cuando el servicio es Línea Nueva o Migración
+const SCRIPT_OVERRIDE = {
+ 'Plan Max M':{cargo_promo:'$8.444',cargo_mes_7:'$12.990',dscto:'35%',vigencia_dcto:'6 meses al 35%',promo_detalle:'35% de descuento por 6 meses, luego precio normal. No aplica descuento permanente.'},
+ 'Plan Max L Libre':{cargo_promo:'$9.744',cargo_mes_7:'$14.990',dscto:'35%',vigencia_dcto:'6 meses al 35%',promo_detalle:'35% de descuento por 6 meses, luego precio normal. No aplica descuento permanente.'}
+};
+const SCRIPT_PLANES_POR_TIPO = {
+ 'Portabilidad':['Plan Max M','Plan Max L Libre','Plan Max XL Libre','Plan Max Libre Pro','Plan Persona Mayor'],
+ 'Línea Nueva':['Plan Max M','Plan Max L Libre'],
+ 'Migración':['Plan Max M','Plan Max L Libre']
+};
+const SCRIPT_NOTAS = {
+ 'Portabilidad':'📱 <strong>Para Portabilidad:</strong> El número quedará habilitado al día siguiente desde la fecha en que recibe el chip. <strong>Importante:</strong> No cambie el chip antes de haber perdido la señal con su compañía de origen.',
+ 'Línea Nueva':'➕ <strong>Para Línea Nueva:</strong> Su nuevo número de Claro quedará activo en los próximos minutos una vez que inserte el chip en su equipo.',
+ 'Migración':'🔀 <strong>Para Migración:</strong> Su plan actual será actualizado a las nuevas condiciones. El cambio se verá reflejado al inicio de su próximo ciclo de facturación.'
+};
+
+/* ════════════════════════════════════════════════════════════════
+   CONTENIDO (enlaces, galería, tutoriales, menú)
+   ════════════════════════════════════════════════════════════════ */
+const ENLACES = [
+ {t:'Canales Críticos',two:true,items:[
+  ['🎧','Genesys','Llamadas salientes y omnicanalidad','https://login.sae1.pure.cloud/?rid=fmyewhEdV0_vPZjkIdnB5AjR9OKFPlbcdEDDTZQYAoc#/authenticate-adv/org/clarochilesa'],
+  ['🚀','Front FVC','Evaluaciones y cierre de ventas','https://fvc-prod.clarovtrcloud.com/#/login']]},
+ {t:'Gestión Operativa',items:[
+  ['👤','Buk','RRHH y Liquidación','https://cyg-phoenix.buk.cl/static_pages/portal'],
+  ['📝','Ingreso Ventas','Formulario Oficial',FORM_VENTA],
+  ['☁️','Bandeja','SharePoint Excel','https://phoenixservice1-my.sharepoint.com/:x:/g/personal/cortiz_phoenixservice_cl/IQAdDLYIfXiqRqqDz9Q4LaqRAcbsoheICDJ2Ru3HDvI1UGU'],
+  ['🎯','Prospectos','Campaña Digital','https://docs.google.com/forms/d/17SlUDnS9wXHYRbom3YatFv-qyP7RIYRrv1lqXmCosfI/edit']]},
+ {t:'Consultas y Herramientas',items:[
+  ['📶','NPC','Compañía Portados','https://www.numerosportados.cl/'],
+  ['🪪','Rutificador','Confirmación Identidad','https://www.nombrerutyfirma.com/'],
+  ['🖥️','Claro Oficial','Portal Comercial','https://www.clarochile.cl/personas/'],
+  ['📍','Google Maps','Buscador Direcciones','https://www.google.com/maps']]}
+];
+const GALERIA = [['01','HONOR 400 SMART 5G 256GB'],['02','HONOR MAGIC 8 LITE 5G 256GB'],['03','HONOR X6B 5G 256GB'],['04','SAMSUNG GALAXY A06 5G 128GB'],['05','XIAOMI REDMI 15C 128GB'],['06','XIAOMI REDMI 15C 256GB'],['07','MOTOROLA G56 5G 256GB'],['08','ZTE BLADE V70 MAX 256GB'],['09','ZTE NUBIA NEO 3 GT 5G 256GB'],['10','Redmi Note 15 Pro 5G 512GB Titanio Buds 6 Play'],['11','S25 FE 5G 128GB Black']];
+const TUTORIALES = [
+ {title:'Permitir cámara en Android',desc:'Habilita el permiso de cámara en Chrome paso a paso, con guía visual interactiva. Necesario para escanear QR, videollamadas y validaciones biométricas.',cat:'Permisos',dur:'2 min',emoji:'📷',color:'#d4f7e8',file:'tutoriales/Permisos.html',phone:true},
+ {title:'Borrar cookies en Chrome y Edge',desc:'Elimina cookies y datos de sitios en Chrome y Edge desde tu PC. Soluciona problemas de sesión, carga lenta y errores en plataformas. Tutorial interactivo con ambos navegadores.',cat:'Navegador',dur:'3 min',emoji:'🧹',color:'#e8f0fd',file:'tutoriales/Cookies.html'},
+ {title:'Enviar WhatsApp sin guardar el número',desc:'Escribe a cualquier cliente por WhatsApp Web desde tu PC sin necesidad de agregar su número a los contactos. Método rápido con enlace wa.me.',cat:'Plataforma',dur:'3 min',emoji:'💬',color:'#dcf8e0',file:'tutoriales/WhatsAppSinContacto.html'}
+];
+const MENU = [
+ {v:'stock',t:'Stock de Equipos',i:'<path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>'},
+ {v:'oferta',t:'Oferta Personas',i:'<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>'},
+ {v:'png',t:'Oferta PNG',i:'<path d="M6 6h12v10a2 2 0 01-2 2H8a2 2 0 01-2-2V6z"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/><line x1="6" y1="11" x2="18" y2="11"/>'},
+ {v:'script',t:'Ver Script',i:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>'},
+ {v:'venta',t:'Ingreso de Venta',i:'<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>'},
+ {v:'enlaces',t:'Enlaces',i:'<path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>'},
+ {v:'galeria',t:'Galería',i:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>'},
+ {m:'dlg-exc',t:'Excepciones de Boletas',i:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/>'},
+ {v:'tutoriales',t:'Tutoriales',badge:'Nuevo',i:'<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>'},
+ {m:'dlg-audios',t:'Audios',badge:'Próximamente',soon:true,i:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'}
+];
+// Árbol de sugerencias que se envían por WhatsApp
+const FIN = '\n\nGracias por mejorar ClaroGo! 🚀';
+const ARBOL = { titulo:'¿Qué quieres mejorar?', opciones:[
+ {icon:'📦',label:'Contenido / Secciones',desc:'Stock, ofertas, scripts u otras secciones',hijos:{titulo:'¿Qué sección quieres mejorar?',opciones:[
+  {icon:'📦',label:'Stock de Equipos',desc:'Info de productos, precios o disponibilidad',hijos:{titulo:'¿Qué falta o está mal?',opciones:[
+   {icon:'🔍',label:'Falta un equipo',msg:'📦 *Stock de Equipos*\n\nHola Eduardo! Noté que falta un equipo en el stock. Me gustaría que lo agregues:\n\n→ Equipo: [escribe el nombre aquí]'+FIN},
+   {icon:'💰',label:'Precio incorrecto',msg:'📦 *Stock de Equipos*\n\nHola Eduardo! Hay un precio incorrecto en el stock:\n\n→ Equipo: [nombre del equipo]\n→ Precio actual: [precio]\n→ Precio correcto: [precio correcto]'+FIN},
+   {icon:'❌',label:'Equipo descontinuado',msg:'📦 *Stock de Equipos*\n\nHola Eduardo! Un equipo ya no está disponible y debería removerse:\n\n→ Equipo: [nombre del equipo]'+FIN},
+   {icon:'✏️',label:'Otro error',msg:'📦 *Stock de Equipos*\n\nHola Eduardo! Quiero reportar un problema en el Stock de Equipos:\n\n→ Descripción: [describe el problema]'+FIN}]}},
+  {icon:'📋',label:'Oferta Personas',desc:'Planes, precios o condiciones',hijos:{titulo:'¿Qué quieres reportar?',opciones:[
+   {icon:'📄',label:'Oferta desactualizada',msg:'📋 *Oferta Personas*\n\nHola Eduardo! La oferta de personas está desactualizada:\n\n→ Detalle: [describe qué cambió]'+FIN},
+   {icon:'➕',label:'Falta un plan',msg:'📋 *Oferta Personas*\n\nHola Eduardo! Falta un plan en la oferta:\n\n→ Plan: [nombre o descripción del plan]'+FIN},
+   {icon:'✏️',label:'Otro error',msg:'📋 *Oferta Personas*\n\nHola Eduardo! Quiero reportar un problema en Oferta Personas:\n\n→ Descripción: [describe el problema]'+FIN}]}},
+  {icon:'📝',label:'Script de ventas',desc:'Guiones, respuestas o argumentos',hijos:{titulo:'¿Qué mejorarías?',opciones:[
+   {icon:'💬',label:'Falta una objeción',msg:'📝 *Script de Ventas*\n\nHola Eduardo! Falta una objeción frecuente en el script:\n\n→ Objeción: [describe la objeción]\n→ Sugerencia de respuesta: [tu sugerencia]'+FIN},
+   {icon:'🔄',label:'Texto desactualizado',msg:'📝 *Script de Ventas*\n\nHola Eduardo! Hay texto desactualizado en el script:\n\n→ Sección: [nombre o ubicación]\n→ Cambio sugerido: [tu sugerencia]'+FIN},
+   {icon:'➕',label:'Agregar nuevo guión',msg:'📝 *Script de Ventas*\n\nHola Eduardo! Me gustaría agregar un nuevo guión al script:\n\n→ Tema: [de qué trata]\n→ Contenido sugerido: [escribe tu guión]'+FIN}]}},
+  {icon:'🔗',label:'Otro contenido',desc:'Galería, enlaces u otra sección',msg:'📂 *Contenido General*\n\nHola Eduardo! Quiero sugerir una mejora de contenido en ClaroGo!:\n\n→ Sección: [indica la sección]\n→ Sugerencia: [describe tu idea]'+FIN}]}},
+ {icon:'🎨',label:'Diseño / Visual',desc:'Colores, orden, tipografía o layout',hijos:{titulo:'¿Qué aspecto visual quieres mejorar?',opciones:[
+  {icon:'🎨',label:'Colores o contraste',msg:'🎨 *Diseño Visual*\n\nHola Eduardo! Tengo una sugerencia sobre los colores o contraste de ClaroGo!:\n\n→ Sección: [¿dónde?]\n→ Sugerencia: [describe el cambio]'+FIN},
+  {icon:'📱',label:'Se ve mal en móvil',msg:'📱 *Diseño Responsivo*\n\nHola Eduardo! Algo no se ve bien en celular en ClaroGo!:\n\n→ Sección: [¿dónde?]\n→ Dispositivo: [modelo aprox.]\n→ Descripción: [qué está mal]'+FIN},
+  {icon:'🗂️',label:'Mejor organización',msg:'🗂️ *Organización del Portal*\n\nHola Eduardo! Creo que ClaroGo! podría organizarse mejor:\n\n→ Sugerencia: [describe cómo reorganizarías]'+FIN},
+  {icon:'✏️',label:'Otra mejora visual',msg:'🎨 *Diseño Visual*\n\nHola Eduardo! Tengo una sugerencia visual para ClaroGo!:\n\n→ Detalle: [describe tu idea]'+FIN}]}},
+ {icon:'⚡',label:'Rendimiento / Velocidad',desc:'Carga lenta, errores o bugs',hijos:{titulo:'¿Qué problema de rendimiento tienes?',opciones:[
+  {icon:'🐌',label:'Carga muy lenta',msg:'⚡ *Rendimiento*\n\nHola Eduardo! ClaroGo! carga muy lento:\n\n→ Sección: [¿cuál sección?]\n→ Dispositivo/Red: [describe tu contexto]'+FIN},
+  {icon:'🐛',label:'Hay un bug o error',msg:'🐛 *Bug Reportado*\n\nHola Eduardo! Encontré un error en ClaroGo!:\n\n→ Sección: [¿dónde ocurre?]\n→ Descripción: [qué pasa exactamente]\n→ Pasos para reproducir: [cómo llegaste ahí]'+FIN},
+  {icon:'🔄',label:'Algo no funciona',msg:'🔧 *Funcionalidad*\n\nHola Eduardo! Algo no funciona bien en ClaroGo!:\n\n→ Qué no funciona: [describe el problema]\n→ Qué esperabas que hiciera: [comportamiento esperado]'+FIN}]}},
+ {icon:'➕',label:'Nueva función / sección',desc:'Ideas que no existen aún',hijos:{titulo:'¿Qué tipo de función nueva propones?',opciones:[
+  {icon:'📊',label:'Nueva sección de contenido',msg:'➕ *Nueva Sección*\n\nHola Eduardo! Propongo agregar una nueva sección a ClaroGo!:\n\n→ Nombre sugerido: [nombre]\n→ Para qué sirve: [descripción]\n→ Contenido que tendría: [detalla]'+FIN},
+  {icon:'🔧',label:'Nueva herramienta',msg:'🔧 *Nueva Herramienta*\n\nHola Eduardo! Propongo una nueva herramienta para ClaroGo!:\n\n→ Herramienta: [nombre o descripción]\n→ Para qué ayudaría: [caso de uso]'+FIN},
+  {icon:'💡',label:'Otra idea',msg:'💡 *Idea Nueva*\n\nHola Eduardo! Tengo una idea para mejorar ClaroGo!:\n\n→ Idea: [describe tu propuesta]\n→ Beneficio: [cómo ayudaría al equipo]'+FIN}]}},
+ {icon:'💬',label:'Feedback general',desc:'Comentario libre sobre el portal',msg:'💬 *Feedback General*\n\nHola Eduardo! Quiero darte mi opinión sobre ClaroGo!:\n\n→ [Escribe tu comentario aquí]'+FIN}
+]};
+
+/* ════════════════════════════════════════════════════════════════
+   UTILIDADES
+   ════════════════════════════════════════════════════════════════ */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const miles = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+const clp = n => '$' + miles(n);
+const dinero = s => { const m = String(s).match(/\$\s*([\d.]+)/); return m ? parseInt(m[1].replace(/\./g, ''), 10) : 0; };
+
+let toastT;
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2400);
+}
+async function copyText(text, msg) {
+  try { await navigator.clipboard.writeText(text); }
+  catch (e) {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;left:-9999px';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch (e2) { msg = 'No se pudo copiar'; }
+    ta.remove();
+  }
+  toast(msg || 'Copiado');
+}
+function downloadBlob(blob, name) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+const canvasBlob = c => new Promise(r => c.toBlob(r, 'image/png'));
+async function copyCanvas(canvas, name, msg) {
+  const blob = await canvasBlob(canvas);
+  try {
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+    toast(msg || 'Imagen copiada. Pégala en el chat.');
+  } catch (e) { downloadBlob(blob, name); toast('Imagen descargada (este dispositivo no permite copiarla)'); }
+}
+// Diálogos: cerrar con botón o tocando fuera
+$$('dialog').forEach(d => {
+  d.addEventListener('click', e => { if (e.target === d || e.target.closest('[data-close]')) d.close(); });
+});
+const abrir = id => { const d = $('#' + id); if (!d.open) d.showModal(); };
+
+/* ════════════════════════════════════════════════════════════════
+   NAVEGACIÓN
+   ════════════════════════════════════════════════════════════════ */
+const VIEWS = ['inicio', 'stock', 'oferta', 'png', 'script', 'venta', 'enlaces', 'galeria', 'tutoriales'];
+const INIT = { stock: initStock, oferta: initOferta, png: initPng, script: initScript, venta: initVenta, enlaces: initEnlaces, galeria: initGaleria, tutoriales: initTutoriales };
+const listo = {};
+function route() {
+  let v = location.hash.slice(1) || 'inicio';
+  if (!VIEWS.includes(v)) v = 'inicio';
+  $$('.view').forEach(s => s.hidden = s.id !== 'v-' + v);
+  document.body.dataset.view = v;
+  $$('#nav a').forEach(a => a.classList.toggle('on', a.dataset.v === v));
+  const on = $('#nav a.on'); if (on) on.scrollIntoView({ block: 'nearest', inline: 'center' });
+  if (INIT[v] && !listo[v]) { listo[v] = true; INIT[v](); }
+  window.scrollTo(0, 0);
+}
+function initMenu() {
+  $('#tiles').innerHTML = MENU.map(m => {
+    const inner = `<span class="tile-i"><svg viewBox="0 0 24 24">${m.i}</svg></span><span class="tile-t">${m.t}</span>${m.badge ? `<span class="tile-b">${m.badge}</span>` : ''}`;
+    return m.v ? `<a class="tile" href="#${m.v}">${inner}</a>` : `<a class="tile${m.soon ? ' soon' : ''}" href="#" data-modal="${m.m}">${inner}</a>`;
+  }).join('');
+  $('#nav').innerHTML = MENU.filter(m => !m.soon).map(m => m.v ? `<a href="#${m.v}" data-v="${m.v}">${m.t}</a>` : `<button data-modal="${m.m}">${m.t}</button>`).join('');
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-modal]'); if (!b) return;
+    e.preventDefault(); abrir(b.dataset.modal);
+  });
+  $('#hoy').textContent = 'Portal de ventas · ' + new Date().toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+
+/* ════════════════════════════════════════════════════════════════
+   STOCK
+   ════════════════════════════════════════════════════════════════ */
+let EQ = [], sFiltrados = [], sOrden = { col: 'marca', dir: 1 }, sTodo = false, sPendiente = null;
+const LIMITE = 200;
+let sCopiados = new Set();
+try { sCopiados = new Set(JSON.parse(sessionStorage.getItem('copiedEquipment') || '[]')); } catch (e) {}
+
+function partirLinea(line, sep) {
+  const out = []; let cur = '', q = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (q) { if (c === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += c; }
+    else if (c === '"') q = true;
+    else if (c === sep) { out.push(cur); cur = ''; }
+    else cur += c;
+  }
+  out.push(cur); return out.map(s => s.trim());
+}
+const normal = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+const numero = s => { const d = String(s).replace(/[.,]\d{1,2}$/, '').replace(/[^\d]/g, ''); return d === '' ? NaN : parseInt(d, 10); };
+const COLS = { sku: ['sku', 'codigo', 'material'], marca: ['marca'], modelo: ['modelo', 'descripcion', 'equipo', 'producto'], stock: ['stock', 'cantidad', 'disponible', 'unidades'], pie: ['pie'], cuotas: ['cuota'] };
+const ORDEN_COLS = ['sku', 'marca', 'modelo', 'stock', 'pie', 'cuotas'];
+
+// Lee texto pegado desde Excel (tabulaciones) o un CSV (; o ,). Devuelve filas válidas, errores y avisos.
+function leerStock(text) {
+  const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/).filter(l => l.trim());
+  const res = { rows: [], errores: [], avisos: [] };
+  if (!lines.length) { res.errores.push('No hay datos para revisar.'); return res; }
+  const sep = lines[0].includes('\t') ? '\t' : (lines[0].split(';').length >= lines[0].split(',').length ? ';' : ',');
+  const head = partirLinea(lines[0], sep).map(normal);
+  const idx = {};
+  for (const k of ORDEN_COLS) idx[k] = head.findIndex(h => COLS[k].some(a => h.includes(a)));
+  const conTitulos = idx.sku >= 0 && idx.modelo >= 0;
+  if (conTitulos) {
+    const faltan = ORDEN_COLS.filter(k => idx[k] < 0);
+    if (faltan.length) { res.errores.push('Faltan estas columnas: ' + faltan.join(', ') + '.'); return res; }
+  } else {
+    ORDEN_COLS.forEach((k, i) => idx[k] = i);
+    res.avisos.push('No encontré fila de títulos. Usé el orden SKU, Marca, Modelo, Stock, Pie, Cuotas.');
+  }
+  const vistos = new Set(); let dup = 0;
+  lines.slice(conTitulos ? 1 : 0).forEach((line, n) => {
+    const c = partirLinea(line, sep), fila = n + (conTitulos ? 2 : 1);
+    const r = { sku: c[idx.sku] || '', marca: (c[idx.marca] || '').toUpperCase(), modelo: c[idx.modelo] || '',
+      stock: c[idx.stock] ? numero(c[idx.stock]) : 0, pie: c[idx.pie] ? numero(c[idx.pie]) : 0, cuotas: numero(c[idx.cuotas] || '') };
+    const mal = [];
+    if (!r.sku) mal.push('sin SKU'); if (!r.modelo) mal.push('sin modelo'); if (!r.marca) mal.push('sin marca');
+    if (isNaN(r.stock)) mal.push('stock no es número'); if (isNaN(r.pie)) mal.push('pie no es número'); if (isNaN(r.cuotas)) mal.push('cuota no es número');
+    if (mal.length) { res.errores.push(`Fila ${fila}: ${mal.join(', ')}.`); return; }
+    if (vistos.has(r.sku)) { dup++; return; }
+    vistos.add(r.sku); res.rows.push(r);
+  });
+  if (dup) res.avisos.push(`${dup} SKU repetidos. Dejé solo la primera fila de cada uno.`);
+  if (!res.rows.length && !res.errores.length) res.errores.push('No encontré filas de equipos.');
+  return res;
+}
+function aCSV(rows) {
+  const q = s => /[;"\n]/.test(s) ? '"' + String(s).replace(/"/g, '""') + '"' : s;
+  return '\uFEFF' + 'sku;marca;modelo;stock;pie;cuotas\r\n' + rows.map(r => [q(r.sku), q(r.marca), q(r.modelo), r.stock, r.pie, r.cuotas].join(';')).join('\r\n') + '\r\n';
+}
+function usarStock(rows, etiqueta) {
+  EQ = rows;
+  const marcas = [...new Set(EQ.map(e => e.marca))].sort();
+  $('#s-marca').innerHTML = '<option value="">Todas las marcas</option>' + marcas.map(m => `<option>${esc(m)}</option>`).join('');
+  $('#s-fecha').textContent = etiqueta;
+  pintarStock();
+}
+async function cargarStock() {
+  $('#s-msg').hidden = false; $('#s-msg').textContent = 'Cargando stock…';
+  try {
+    const r = await fetch('datos/stock.csv?v=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const res = leerStock(await r.text());
+    if (!res.rows.length) throw new Error(res.errores[0] || 'archivo vacío');
+    const lm = r.headers.get('last-modified');
+    const f = lm ? new Date(lm).toLocaleString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+    usarStock(res.rows, f ? 'Stock actualizado el ' + f : '');
+  } catch (e) {
+    $('#s-body').innerHTML = ''; $('#s-count').textContent = '';
+    $('#s-msg').hidden = false;
+    $('#s-msg').innerHTML = 'No se pudo cargar el stock (' + esc(e.message) + '). <button class="btn sm" id="s-retry">Reintentar</button>';
+    $('#s-retry').onclick = cargarStock;
+  }
+}
+const tier = s => s >= 30 ? 1 : s >= 1 ? 2 : 3;
+const total = e => e.pie + e.cuotas * 18;
+function pintarStock() {
+  const q = $('#s-q').value.trim().toLowerCase(), marca = $('#s-marca').value, pie = $('#s-pie').value, solo = $('#s-solo').checked;
+  const [p0, p1] = pie ? pie.split('-').map(Number) : [0, 0];
+  let list = EQ.filter(e =>
+    (!q || e.sku.toLowerCase().includes(q) || e.marca.toLowerCase().includes(q) || e.modelo.toLowerCase().includes(q)) &&
+    (!marca || e.marca === marca) && (!pie || (e.pie >= p0 && e.pie <= p1)) && (!solo || e.stock > 0));
+  const { col, dir } = sOrden, porTotal = col === 'pie' || col === 'cuotas' || col === 'total';
+  list.sort((a, b) => {
+    const t = tier(a.stock) - tier(b.stock); if (t) return t;
+    const va = porTotal ? total(a) : typeof a[col] === 'string' ? a[col].toLowerCase() : a[col];
+    const vb = porTotal ? total(b) : typeof b[col] === 'string' ? b[col].toLowerCase() : b[col];
+    return va < vb ? -dir : va > vb ? dir : 0;
+  });
+  sFiltrados = list;
+  const conStock = list.filter(e => e.stock > 0).length;
+  $('#s-count').textContent = `${list.length} equipos · ${conStock} con stock`;
+  const ver = sTodo ? list : list.slice(0, LIMITE);
+  $('#s-body').innerHTML = ver.map(e => {
+    const st = e.stock >= 30 ? 'hi' : e.stock > 0 ? 'md' : 'lo';
+    return `<tr><td class="mod" data-l="Modelo">${esc(e.modelo)}</td><td data-l="SKU"><button class="sku" data-sku="${esc(e.sku)}" title="Copiar SKU">${esc(e.sku)}</button></td><td data-l="Marca">${esc(e.marca)}</td><td data-l="Pie inicial">${clp(e.pie)}</td><td data-l="18 cuotas de">${clp(e.cuotas)}</td><td class="tot" data-l="Precio total">${clp(total(e))}</td><td data-l="Stock"><span class="st st-${st}">${e.stock}</span></td><td class="act"><button class="btn sm${sCopiados.has(e.sku) ? ' done' : ''}" data-copy="${esc(e.sku)}">${sCopiados.has(e.sku) ? 'Copiado' : 'Copiar'}</button></td></tr>`;
+  }).join('');
+  const msg = $('#s-msg');
+  if (!list.length) { msg.hidden = false; msg.textContent = 'No se encontraron equipos con los filtros seleccionados.'; }
+  else if (ver.length < list.length) { msg.hidden = false; msg.innerHTML = `Mostrando ${ver.length} de ${list.length}. <button class="btn sm" id="s-mas">Mostrar todos</button>`; $('#s-mas').onclick = () => { sTodo = true; pintarStock(); }; }
+  else msg.hidden = true;
+  $$('#s-table th[data-col]').forEach(th => {
+    const on = th.dataset.col === col; th.classList.toggle('on', on);
+    th.textContent = th.textContent.replace(/ [▲▼]$/, '') + (on ? (dir > 0 ? ' ▲' : ' ▼') : '');
+  });
+}
+function initStock() {
+  // En escritorio la tabla muestra el modelo en tercera columna: se reordena con CSS de tabla normal
+  const repintar = () => { sTodo = false; pintarStock(); };
+  $('#s-q').addEventListener('input', repintar);
+  ['#s-marca', '#s-pie', '#s-solo'].forEach(s => $(s).addEventListener('change', repintar));
+  $('#s-limpiar').onclick = () => {
+    $('#s-q').value = ''; $('#s-marca').value = ''; $('#s-pie').value = ''; $('#s-solo').checked = false;
+    sCopiados.clear(); sessionStorage.removeItem('copiedEquipment'); sOrden = { col: 'marca', dir: 1 }; repintar();
+  };
+  $('#s-rapido').onclick = () => { $('#s-pie').value = '0-0'; $('#s-solo').checked = true; sOrden = { col: 'cuotas', dir: 1 }; repintar(); };
+  $('#s-copiar').onclick = () => {
+    const items = sFiltrados.filter(e => e.stock >= 30);
+    if (!items.length) return toast('No hay equipos con stock suficiente (30 o más) para copiar.');
+    copyText(items.map(e => `SKU: ${e.sku}\nMarca: ${e.marca}\nModelo: ${e.modelo}\nPie: ${clp(e.pie)}\nCuota: ${clp(e.cuotas)}\nTotal: ${clp(total(e))}\nStock: ${e.stock}\n----------------`).join('\n\n'),
+      `Lista de ${items.length} equipos (stock 30 o más) copiada`);
+  };
+  $('#s-table thead').addEventListener('click', e => {
+    const th = e.target.closest('th[data-col]'); if (!th) return;
+    sOrden = sOrden.col === th.dataset.col ? { col: sOrden.col, dir: -sOrden.dir } : { col: th.dataset.col, dir: 1 };
+    pintarStock();
+  });
+  $('#s-body').addEventListener('click', e => {
+    const s = e.target.closest('.sku'); if (s) return copyText(s.dataset.sku, 'SKU copiado');
+    const b = e.target.closest('[data-copy]'); if (!b) return;
+    const eq = EQ.find(x => x.sku === b.dataset.copy); if (!eq) return;
+    sCopiados.add(eq.sku); sessionStorage.setItem('copiedEquipment', JSON.stringify([...sCopiados]));
+    b.classList.add('done'); b.textContent = 'Copiado';
+    copyText(`*Financiamiento:* \n\n*SKU:* ${eq.sku}\n*MARCA:* ${eq.marca}\n*MODELO:* ${eq.modelo}\n*PIE:* ${clp(eq.pie)}\n*18 CUOTAS DE:* ${clp(eq.cuotas)}\n*PRECIO TOTAL:* ${clp(total(eq))}\n*STOCK:* ${eq.stock} unidades`, 'Información copiada');
+  });
+  // Actualizar stock
+  $('#s-actualizar').onclick = () => { $('#u-result').innerHTML = ''; $('#u-actions').hidden = true; abrir('dlg-stock'); };
+  $('#u-github').href = GITHUB_SUBIR;
+  $('#u-file').addEventListener('change', async e => { const f = e.target.files[0]; if (!f) return; $('#u-text').value = await f.text(); e.target.value = ''; revisarStock(); });
+  $('#u-check').onclick = revisarStock;
+  $('#u-download').onclick = () => { downloadBlob(new Blob([aCSV(sPendiente)], { type: 'text/csv;charset=utf-8' }), 'stock.csv'); toast('stock.csv descargado. Ahora súbelo a GitHub.'); };
+  $('#u-preview').onclick = () => { usarStock(sPendiente, 'Vista previa sin publicar'); $('#dlg-stock').close(); toast('Vista previa aplicada solo en este navegador'); };
+  cargarStock();
+}
+function revisarStock() {
+  const res = leerStock($('#u-text').value), out = $('#u-result');
+  let html = '';
+  if (res.rows.length) {
+    const viejo = new Map(EQ.map(e => [e.sku, e])), nuevo = new Set(res.rows.map(r => r.sku));
+    let nuevos = 0, cStock = 0, cPrecio = 0;
+    res.rows.forEach(r => { const o = viejo.get(r.sku); if (!o) nuevos++; else { if (o.stock !== r.stock) cStock++; if (o.pie !== r.pie || o.cuotas !== r.cuotas) cPrecio++; } });
+    const quitados = EQ.filter(e => !nuevo.has(e.sku)).length;
+    html += `<div class="note green"><b>${res.rows.length} equipos leídos correctamente.</b><br>Comparado con el stock publicado: ${nuevos} nuevos, ${quitados} que ya no vienen, ${cStock} con cambio de stock y ${cPrecio} con cambio de pie o cuota.</div>`;
+  }
+  if (res.avisos.length) html += `<div class="note" style="margin-top:8px">${res.avisos.map(esc).join('<br>')}</div>`;
+  if (res.errores.length) html += `<div class="note red" style="margin-top:8px"><b>${res.errores.length} filas con problemas (no se incluyen):</b><br>${res.errores.slice(0, 8).map(esc).join('<br>')}${res.errores.length > 8 ? '<br>…y ' + (res.errores.length - 8) + ' más.' : ''}</div>`;
+  out.innerHTML = html;
+  sPendiente = res.rows.length ? res.rows : null;
+  $('#u-actions').hidden = !sPendiente;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   IMÁGENES DE TARJETAS (canvas, sin librerías)
+   ════════════════════════════════════════════════════════════════ */
+const FONT = 'system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif', CW = 300, ESC = 3;
+function rrect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+function rojo(ctx, x, w) { const g = ctx.createLinearGradient(x, 0, x + w, 0); g.addColorStop(0, '#e60000'); g.addColorStop(1, '#b00000'); return g; }
+function envolver(ctx, text, maxW) {
+  const out = [];
+  for (const par of String(text).split('\n')) {
+    let line = '';
+    for (const w of par.split(' ')) { const t = line ? line + ' ' + w : w; if (line && ctx.measureText(t).width > maxW) { out.push(line); line = w; } else line = t; }
+    out.push(line);
+  }
+  return out;
+}
+// Dibuja (o solo mide) una lista de bloques apilados. Devuelve el alto usado.
+function apilar(ctx, bloques, x, y, w, pintar) {
+  const y0 = y; ctx.textBaseline = 'middle';
+  for (const b of bloques) {
+    if (b.t === 'head') {
+      ctx.font = `700 17px ${FONT}`; const ls = envolver(ctx, b.text, w - 24), h = ls.length * 22 + 26;
+      if (pintar) { ctx.fillStyle = rojo(ctx, x, w); ctx.fillRect(x, y, w, h); ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ls.forEach((l, i) => ctx.fillText(l, x + w / 2, y + 24 + i * 22)); }
+      y += h + 12;
+    } else if (b.t === 'txt') {
+      const sz = b.size || 12, lh = Math.round(sz * 1.3); ctx.font = `${b.w || 400} ${sz}px ${FONT}`;
+      const ls = envolver(ctx, b.text, w - 20);
+      if (pintar) { ctx.fillStyle = b.color || '#4b5563'; ctx.textAlign = 'center';
+        ls.forEach((l, i) => { const cy = y + lh / 2 + i * lh; ctx.fillText(l, x + w / 2, cy); if (b.strike) { const tw = ctx.measureText(l).width; ctx.fillRect(x + w / 2 - tw / 2, cy, tw, 1); } }); }
+      y += ls.length * lh + (b.gap ?? 4);
+    } else if (b.t === 'rows') {
+      b.rows.forEach(r => {
+        if (pintar) { ctx.font = `${r[2] ? 700 : 400} 11px ${FONT}`; ctx.fillStyle = r[3] || '#4b5563'; ctx.textAlign = 'left'; ctx.fillText(r[0], x + 8, y + 9); ctx.textAlign = 'right'; ctx.fillText(r[1], x + w - 8, y + 9); }
+        y += 18;
+      });
+    } else if (b.t === 'hr') { if (pintar) { ctx.fillStyle = '#e5e7eb'; ctx.fillRect(x + 12, y + 4, w - 24, 1); } y += 10; }
+    else if (b.t === 'grp') {
+      const mx = b.mx ?? 16, pd = b.pad ?? 10, ih = apilar(ctx, b.items, x + mx, y + pd, w - 2 * mx, false), h = ih + 2 * pd - 4;
+      if (pintar) {
+        rrect(ctx, x + mx, y, w - 2 * mx, h, 10); ctx.fillStyle = b.bg === 'rojo' ? rojo(ctx, x + mx, w - 2 * mx) : b.bg; ctx.fill();
+        if (b.dash) { ctx.setLineDash([5, 4]); ctx.strokeStyle = '#f3a6a6'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.setLineDash([]); }
+        apilar(ctx, b.items, x + mx, y + pd, w - 2 * mx, true);
+      }
+      y += h + (b.gap ?? 10);
+    }
+  }
+  return y - y0;
+}
+function tarjetaCanvas(bloques) {
+  const c = document.createElement('canvas'); let ctx = c.getContext('2d');
+  const h = Math.ceil(apilar(ctx, bloques, 0, 0, CW, false)) + 6;
+  c.width = CW * ESC; c.height = h * ESC; ctx = c.getContext('2d'); ctx.scale(ESC, ESC);
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, CW, h);
+  apilar(ctx, bloques, 0, 0, CW, true);
+  ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1; ctx.strokeRect(.5, .5, CW - 1, h - 1);
+  return c;
+}
+function variasCanvas(titulo, cards) {
+  const pad = 16, gap = 16, headH = 54, hs = cards.map(c => c.height / ESC);
+  const W = pad * 2 + cards.length * CW + (cards.length - 1) * gap, H = pad + headH + gap + Math.max(...hs) + pad;
+  const c = document.createElement('canvas'); c.width = W * ESC; c.height = H * ESC;
+  const ctx = c.getContext('2d'); ctx.scale(ESC, ESC);
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+  rrect(ctx, pad, pad, W - 2 * pad, headH, 12); ctx.fillStyle = rojo(ctx, pad, W - 2 * pad); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.font = `700 24px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(titulo, W / 2, pad + headH / 2);
+  cards.forEach((card, i) => ctx.drawImage(card, pad + i * (CW + gap), pad + headH + gap, CW, hs[i]));
+  return c;
+}
+const T = (text, size, w, color, extra) => Object.assign({ t: 'txt', text, size, w, color }, extra);
+
+/* ════════════════════════════════════════════════════════════════
+   OFERTA PERSONAS
+   ════════════════════════════════════════════════════════════════ */
+const oAdic = {};
+const etiquetaAdic = n => n === 0 ? '0 — Sin adicionales' : `${n} línea${n > 1 ? 's' : ''} adicional${n > 1 ? 'es' : ''}`;
+function oCalculo(p, n) {
+  const base = dinero(p.price), normal7 = dinero(p.afterDiscount), ad = dinero(p.additionalPrice);
+  const t6 = base + n * ad, t7 = normal7 + n * ADICIONAL_NORMAL;
+  return { totalTxt: n === 0 ? p.totalPrice : `${n + 1} Planes x ${clp(t6)}`,
+    filas: [['Base (6 meses):', clp(base)], ['Adicional c/u:', clp(ad)], [`Total adicionales (x${n}):`, clp(n * ad)], ['Total mes 1-6:', clp(t6)], ['Total desde mes 7:', clp(t7)]] };
+}
+const oDespues = p => SIN_DCTO_PERMANENTE.includes(p.id) ? [p.afterDiscount] : [p.afterDiscount, '(25% Dcto. permanente)'];
+function oTarjeta(p) {
+  const n = oAdic[p.id] || 0, tiene = p.additionalTitle !== SIN_ADICIONAL, mayor = p.id === 'module-mayor', c = oCalculo(p, n);
+  let h = `<div class="plan-h">${esc(p.title)}</div><div class="plan-b">
+    <div class="plan-data">${esc(p.data)}</div>
+    <div class="plan-price"><b>${esc(p.price)}</b><span>${esc(p.priceDuration)}</span></div>
+    <div><small>(${esc(mayor ? p.discount.replace('Oferta ', '') : p.discount)})</small>${oDespues(p).map(t => `<small>${esc(t)}</small>`).join('')}</div>
+    <small>Redes Sociales ilimitadas</small><small><b>${esc(p.callsInfo)}</b></small>`;
+  if (mayor) h += `<small><b>${esc(p.vigencia)}</b></small>`;
+  if (tiene) {
+    h += `<div class="plan-add"><b>+ ${esc(p.additionalTitle)}</b><br>${esc(p.additionalPrice)}<br>${esc(p.additionalData)}</div>
+      <div class="plan-sel"><label>Líneas adicionales</label><select data-adic="${p.id}">${[0,1,2,3,4,5,6,7,8,9,10].map(i => `<option value="${i}"${i === n ? ' selected' : ''}>${etiquetaAdic(i)}</option>`).join('')}</select></div>`;
+    if (n > 0) h += `<div class="plan-det"><span class="t">🧮 ${etiquetaAdic(n)} (${n + 1} planes en total)</span>${c.filas.map((f, i) => `<div${i > 2 ? ' class="b"' : ''}><span>${f[0]}</span><span>${f[1]}</span></div>`).join('')}</div>`;
+  }
+  h += `</div><div class="plan-total">${esc(c.totalTxt)}</div>
+    <div class="plan-btns"><button class="btn" data-ocap="${p.id}">📸 Capturar</button><button class="btn red" data-omsg="${p.id}">📋 Copiar mensaje</button></div>`;
+  return h;
+}
+function oBloques(p) {
+  const n = oAdic[p.id] || 0, tiene = p.additionalTitle !== SIN_ADICIONAL, mayor = p.id === 'module-mayor', c = oCalculo(p, n);
+  const b = [{ t: 'head', text: p.title }, T(p.data, 24, 800, '#e60000', { gap: 8 }),
+    { t: 'grp', bg: '#f3f4f6', items: [T(p.price, 32, 800, '#1f2937'), T(p.priceDuration, 13, 600, '#4b5563')] },
+    T('(' + (mayor ? p.discount.replace('Oferta ', '') : p.discount) + ')', 11, 400, '#6b7280', { gap: 0 }),
+    T(oDespues(p).join('\n'), 11, 400, '#6b7280', { gap: 10 }),
+    T('Redes Sociales ilimitadas', 11, 500, '#6b7280'), T(p.callsInfo, 11, 600, '#4b5563', { gap: 10 })];
+  if (mayor) b.push(T(p.vigencia, 13, 600, '#374151', { gap: 10 }));
+  if (tiene) {
+    b.push({ t: 'hr' }, T('+ ' + p.additionalTitle, 12, 700, '#e60000', { gap: 2 }), T(p.additionalPrice, 12, 600, '#1f2937', { gap: 2 }), T(p.additionalData, 12, 600, '#1f2937', { gap: 10 }));
+    if (n > 0) b.push({ t: 'grp', bg: '#f9fafb', pad: 8, items: [T(`${etiquetaAdic(n)} (${n + 1} planes en total)`, 11, 700, '#e60000', { gap: 6 }),
+      { t: 'rows', rows: c.filas.map((f, i) => [f[0], f[1], i > 2, i === 3 ? '#e60000' : i === 4 ? '#1f2937' : '']) }, T('', 1, 400, '', { gap: 0 })] });
+  }
+  b.push({ t: 'grp', bg: '#fff1f1', dash: true, items: [T(c.totalTxt, 15, 800, '#e60000')] });
+  return b;
+}
+function oMensaje(p) {
+  const n = oAdic[p.id] || 0, c = oCalculo(p, n), social = '- *Redes Sociales Ilimitadas:* (Instagram, Facebook, X, WhatsApp, TikTok)';
+  const precio = p.price + (p.priceDuration ? ` ${p.priceDuration}` : '');
+  const despues = SIN_DCTO_PERMANENTE.includes(p.id) ? p.afterDiscount : `${p.afterDiscount} (25% Dcto. permanente)`;
+  const limpio = s => s.replace('¡', '').replace('!', '');
+  if (p.id === 'module-mayor')
+    return `*${p.title}*\n- *Datos:* ${p.data}\n${social}\n- *Precio Oferta:* ${precio}\n- *Descuento:* ${p.discount}\n- *Siguiente Precio:* ${despues}${p.vigencia ? `\n- *Vigencia:* ${p.vigencia}` : ''}\n- *Total:* ${p.totalPrice}`;
+  if (p.additionalTitle === SIN_ADICIONAL)
+    return `*${p.title}*\n- *Datos:* ${p.data}\n${social}\n- *Precio Oferta:* ${precio}\n- *Descuento:* ${p.discount}\n- *Siguiente Precio:* ${despues}\n- *Total:* ${limpio(p.totalPrice)}`;
+  const detalle = n > 0 ? `- *Líneas adicionales:* ${etiquetaAdic(n)}` + c.filas.map(f => `\n  • ${f[0]} ${f[1]}`).join('') : '';
+  return `📲 *Plan Principal: ${p.title}*\n- *Datos:* ${p.data}\n${social}\n- *Precio Oferta:* ${precio}\n- *Descuento:* ${p.discount}\n- *Siguiente Precio:* ${despues}\n\n➕ *Plan Adicional: ${p.additionalTitle}*\n- *Datos:* ${p.additionalData}\n- *Precio:* ${p.additionalPrice}\n${detalle}\n*Total Planes: ${limpio(c.totalTxt)}*`;
+}
+function initOferta() {
+  const grid = $('#o-grid');
+  grid.innerHTML = PLANES.map(p => `<article class="card plan" id="o-${p.id}">${oTarjeta(p)}</article>`).join('');
+  const plan = id => PLANES.find(p => p.id === id);
+  grid.addEventListener('change', e => { const s = e.target.closest('[data-adic]'); if (!s) return; oAdic[s.dataset.adic] = +s.value; $('#o-' + s.dataset.adic).innerHTML = oTarjeta(plan(s.dataset.adic)); });
+  grid.addEventListener('click', e => {
+    const c = e.target.closest('[data-ocap]'), m = e.target.closest('[data-omsg]');
+    if (c) { const p = plan(c.dataset.ocap); copyCanvas(tarjetaCanvas(oBloques(p)), p.id + '.png', `Imagen del plan ${p.title} copiada. Pégala en el chat.`); }
+    if (m) copyText(oMensaje(plan(m.dataset.omsg)), 'Mensaje copiado. Pégalo con Ctrl+V.');
+  });
+  $('#o-todos').onclick = () => copyCanvas(variasCanvas('Planes y Ofertas Claro Chile', CAPTURA_GENERAL.map(id => tarjetaCanvas(oBloques(plan(id))))), 'planes.png', 'Captura copiada. Pégala en el chat.');
+}
+
+/* ════════════════════════════════════════════════════════════════
+   OFERTA PNG
+   ════════════════════════════════════════════════════════════════ */
+const conIva = n => clp(Math.round(n * (1 + IVA)));
+const pLineas = {};
+function pIndHTML(p) {
+  return `<div class="plan-h">${esc(p.title)}</div><div class="plan-b">
+    <div class="plan-data">${esc(p.data)}</div>
+    <div class="plan-price"><b>${clp(p.price)}</b><span>${esc(p.dur)}</span></div>
+    <div><small>(Oferta PNG Móvil)</small><small>${esc(p.after)}</small></div>
+    <div><small>Con IVA (19%): <b>${conIva(p.price)}</b></small><small class="strike">Cargo normal ${esc(p.old)}</small></div>
+  </div><div class="plan-total">1 plan × ${clp(p.price)}</div>
+  <div class="plan-btns"><button class="btn" data-pcap="${p.id}">📸 Capturar</button><button class="btn red" data-pmsg="${p.id}">📋 Copiar mensaje</button></div>`;
+}
+function pMulHTML(p) {
+  const n = pLineas[p.id], L = n + 1;
+  return `<div class="plan-h">Multilínea ${esc(p.title)}</div><div class="plan-b">
+    <div class="plan-data">${esc(p.data)}</div>
+    <div class="plan-price"><small>PRECIO POR LÍNEA</small><b>${clp(p.ppl)}</b><span>${esc(p.dur)}</span></div>
+    <div><small>Con IVA (19%): <b>${conIva(p.ppl)}</b></small><small class="strike">Cargo normal ${esc(p.old)}</small></div>
+    <div class="plan-sel"><label>➕ Líneas adicionales</label><select data-plin="${p.id}">${[1,2,3,4,5,6,7,8].map(i => `<option value="${i}"${i === n ? ' selected' : ''}>${i} adicional${i > 1 ? 'es' : ''} (${i + 1} en total)</option>`).join('')}</select></div>
+  </div><div class="plan-total solid">TOTAL A PAGAR<b>${L} líneas = ${clp(p.ppl * L)}</b>Con IVA: ${conIva(p.ppl * L)}<br><br>DESPUÉS DEL AÑO<b>${clp(p.oldVal * L)}</b>Con IVA: ${conIva(p.oldVal * L)}</div>
+  <div class="plan-btns"><button class="btn" data-pcap="${p.id}">📸 Capturar</button><button class="btn red" data-pmsg="${p.id}">📋 Copiar mensaje</button></div>`;
+}
+function pBloques(p, multi) {
+  const B = '#fff';
+  if (!multi) return [{ t: 'head', text: p.title }, T(p.data, 24, 800, '#e60000', { gap: 8 }),
+    { t: 'grp', bg: '#f3f4f6', items: [T(clp(p.price), 32, 800, '#1f2937'), T(p.dur, 13, 600, '#4b5563')] },
+    T('(Oferta PNG Móvil)', 11, 400, '#6b7280', { gap: 0 }), T(p.after, 11, 400, '#6b7280', { gap: 8 }),
+    T('Con IVA (19%): ' + conIva(p.price), 11, 600, '#374151', { gap: 0 }), T('Cargo normal ' + p.old, 11, 400, '#9ca3af', { strike: true, gap: 12 }),
+    { t: 'grp', bg: '#fff1f1', dash: true, items: [T('1 plan × ' + clp(p.price), 15, 800, '#e60000')] }];
+  const L = pLineas[p.id] + 1;
+  return [{ t: 'head', text: 'Multilínea ' + p.title }, T(p.data, 20, 800, '#e60000', { gap: 8 }),
+    { t: 'grp', bg: '#f3f4f6', items: [T('PRECIO POR LÍNEA', 10, 600, '#9ca3af'), T(clp(p.ppl), 32, 800, '#1f2937'), T(p.dur, 11, 400, '#6b7280')] },
+    T('Con IVA (19%): ' + conIva(p.ppl), 11, 600, '#374151', { gap: 0 }), T('Cargo normal ' + p.old, 11, 400, '#9ca3af', { strike: true, gap: 12 }),
+    { t: 'grp', bg: 'rojo', items: [T('TOTAL A PAGAR', 10, 700, B), T(`${L} líneas = ${clp(p.ppl * L)}`, 20, 800, B), T('Con IVA: ' + conIva(p.ppl * L), 11, 400, B, { gap: 10 }),
+      T('DESPUÉS DEL AÑO', 10, 700, B), T(clp(p.oldVal * L), 16, 700, B), T('Con IVA: ' + conIva(p.oldVal * L), 11, 400, B)] }];
+}
+function initPng() {
+  PNG_MUL.forEach(p => pLineas[p.id] = 1);
+  $('#p-ind').innerHTML = PNG_IND.map(p => `<article class="card plan">${pIndHTML(p)}</article>`).join('');
+  $('#p-mul').innerHTML = PNG_MUL.map(p => `<article class="card plan" id="p-${p.id}">${pMulHTML(p)}</article>`).join('');
+  const busca = id => { const m = PNG_MUL.find(p => p.id === id); return m ? [m, true] : [PNG_IND.find(p => p.id === id), false]; };
+  $('#v-png').addEventListener('change', e => { const s = e.target.closest('[data-plin]'); if (!s) return; pLineas[s.dataset.plin] = +s.value; $('#p-' + s.dataset.plin).innerHTML = pMulHTML(busca(s.dataset.plin)[0]); });
+  $('#v-png').addEventListener('click', e => {
+    const c = e.target.closest('[data-pcap]'), m = e.target.closest('[data-pmsg]');
+    if (c) { const [p, multi] = busca(c.dataset.pcap); copyCanvas(tarjetaCanvas(pBloques(p, multi)), 'png-' + p.id + '.png', 'Captura copiada. Pégala en el chat.'); }
+    if (m) { const [p, multi] = busca(m.dataset.pmsg), n = pLineas[p.id];
+      copyText(multi
+        ? `📲 Multilínea — ${p.title}\n\nDatos: ${p.data}\nPrecio/línea: ${clp(p.ppl)} ${p.dur}\nCon IVA: ${conIva(p.ppl)}\n\nLíneas adicionales: ${n}\nTotal líneas: ${n + 1}\nTotal: ${clp(p.ppl * (n + 1))}`
+        : `📱 PNG Móvil — ${p.title}\n\nDatos: ${p.data}\nPrecio promo: ${clp(p.price)} ${p.dur}\nCon IVA (19%): ${conIva(p.price)}\n\nCargo normal: ${p.old}\n${p.after}`, 'Mensaje copiado'); }
+  });
+}
+
+/* ════════════════════════════════════════════════════════════════
+   EXCEPCIONES DE BOLETAS
+   ════════════════════════════════════════════════════════════════ */
+function excCanvas() {
+  const S = 2.5, M = 32, W = 500, rows = EXCEPCIONES, titleH = 72, headH = 48, rowH = 46, TW = W - M * 2, TH = titleH + headH + rowH * rows.length, CH = TH + M * 2;
+  const c = document.createElement('canvas'); c.width = W * S; c.height = CH * S;
+  const ctx = c.getContext('2d'); ctx.scale(S, S);
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, CH);
+  ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.13)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 4; ctx.fillStyle = '#fff'; rrect(ctx, M, M, TW, TH, 10); ctx.fill(); ctx.restore();
+  ctx.fillStyle = '#111'; ctx.font = 'bold 17px Arial,Helvetica,sans-serif'; ctx.textAlign = 'left'; ctx.fillText('Excepciones de Boletas', M + 20, M + 32);
+  ctx.fillStyle = '#888'; ctx.font = '12px Arial,Helvetica,sans-serif'; ctx.fillText('Monto máximo de deuda según líneas portadas', M + 20, M + 52);
+  const tY = M + titleH;
+  ctx.fillStyle = '#1a1a1a'; ctx.fillRect(M, tY, TW, headH);
+  ctx.fillStyle = '#fff'; ctx.font = 'bold 13px Arial,Helvetica,sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('N° de Líneas Portadas', M + TW / 4, tY + 30); ctx.fillText('Monto de Deuda', M + TW * 3 / 4, tY + 30);
+  rows.forEach((r, i) => {
+    const y = tY + headH + i * rowH;
+    ctx.fillStyle = i % 2 ? '#f7f7f7' : '#fff'; ctx.fillRect(M, y, TW, rowH);
+    ctx.fillStyle = '#e8e8e8'; ctx.fillRect(M, y + rowH - 1, TW, 1); ctx.fillRect(M + TW / 2 - .5, y, 1, rowH);
+    ctx.fillStyle = '#222'; ctx.font = '15px Arial,Helvetica,sans-serif'; ctx.fillText(r[0], M + TW / 4, y + rowH / 2 + 6); ctx.fillText(r[1], M + TW * 3 / 4, y + rowH / 2 + 6);
+  });
+  ctx.strokeStyle = '#d8d8d8'; ctx.lineWidth = 1; rrect(ctx, M + .5, M + .5, TW - 1, TH - 1, 10); ctx.stroke();
+  return c;
+}
+function initExcepciones() {
+  $('#exc-body').innerHTML = EXCEPCIONES.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
+  $('#exc-copy').onclick = () => copyCanvas(excCanvas(), 'excepciones-boletas.png', 'Tabla copiada. Pégala en el chat.');
+  $('#exc-dl').onclick = async () => { downloadBlob(await canvasBlob(excCanvas()), 'excepciones-boletas.png'); toast('Imagen descargada'); };
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SCRIPT DE VALIDACIÓN
+   ════════════════════════════════════════════════════════════════ */
+function rutValido(rut) {
+  const c = rut.replace(/[^0-9kK]/g, ''); if (c.length < 2) return false;
+  const cuerpo = c.slice(0, -1), dv = c.slice(-1).toLowerCase(); let sum = 0, mul = 2;
+  for (let i = cuerpo.length - 1; i >= 0; i--) { sum += parseInt(cuerpo[i]) * mul; mul = mul === 7 ? 2 : mul + 1; }
+  const e = 11 - (sum % 11); return dv === (e === 11 ? '0' : e === 10 ? 'k' : String(e));
+}
+function rutFormato(v) {
+  const c = v.replace(/[^0-9kK]/g, '').replace(/^0+/, ''); if (c.length <= 1) return c;
+  return c.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '-' + c.slice(-1).toUpperCase();
+}
+function initScript() {
+  const tipo = $('#sc-tipo'), plan = $('#sc-plan'), rut = $('#sc-rut'), agente = $('#sc-agente'), nombres = $$('#v-script .nm');
+  const ancho = () => $$('#v-script .in:not(select):not(.ro)').forEach(i => i.style.width = Math.max((i.value || i.placeholder).length + 2, 9) + 'ch');
+  const reloj = () => {
+    const d = new Date(), p = n => String(n).padStart(2, '0');
+    $('#sc-fecha').value = `${d.toLocaleDateString('es-CL', { weekday: 'long' })} ${p(d.getDate())}-${p(d.getMonth() + 1)}-${d.getFullYear()}`;
+    $('#sc-hora').value = `${p(d.getHours())}:${p(d.getMinutes())}`;
+  };
+  const validarRut = () => {
+    rut.value = rutFormato(rut.value); const ok = $('#sc-rut-ok');
+    if (rut.value.length > 4) { const v = rutValido(rut.value); ok.textContent = v ? '✓ Válido' : '✗ Inválido'; ok.style.color = rut.style.borderColor = v ? 'var(--green)' : 'var(--red)'; }
+    else { ok.textContent = ''; rut.style.borderColor = ''; }
+  };
+  const detalle = () => {
+    const base = SCRIPT_PLANES[plan.value]; if (!base) return;
+    const d = Object.assign({}, base, tipo.value !== 'Portabilidad' ? SCRIPT_OVERRIDE[plan.value] : null);
+    $('#sc-detalle').innerHTML = `<div class="pd"><div class="pd-h">📶 ${esc(plan.value)}</div>
+      <div class="pd-g"><div><b>Internet</b>${esc(d.internet)}</div><div><b>Minutos</b>${esc(d.minutos)}</div><div><b>SMS</b>${esc(d.sms)}</div><div><b>LDI</b>${esc(d.ldi)}</div><div class="w"><b>Redes Sociales</b>${esc(d.rrss)}</div><div class="w"><b>Roaming</b>${esc(d.roaming)}</div></div>
+      <div class="pd-p"><div class="row"><span>Precio Normal:</span><span style="text-decoration:line-through;opacity:.6">${esc(d.cargo_fijo_normal)}</span></div>
+        <div class="row"><span>Precio Promocional:</span><span class="promo">${esc(d.cargo_promo)}</span></div>
+        <div class="row"><span>Desde mes 7:</span><b>${esc(d.cargo_mes_7)}</b></div>
+        <div style="margin-top:8px;font-size:.84rem;color:var(--muted)"><b>Descuento:</b> ${esc(d.dscto)} (${esc(d.vigencia_dcto)})<br><b>Vía de ingreso:</b> ${esc(d.via_ingreso)}<br><em>${esc(d.promo_detalle)}</em></div>
+        ${d.restriccion ? `<div class="note red" style="margin-top:10px"><b>${esc(d.restriccion)}</b></div>` : ''}</div></div>`;
+  };
+  const cambioTipo = () => {
+    const t = tipo.value, permitidos = SCRIPT_PLANES_POR_TIPO[t], pref = t === 'Portabilidad' ? '' : t + ' - ';
+    const actual = permitidos.includes(plan.value) ? plan.value : (permitidos.includes('Plan Max L Libre') && !plan.value ? 'Plan Max L Libre' : permitidos[0]);
+    plan.innerHTML = permitidos.map(p => `<option value="${p}"${p === actual ? ' selected' : ''}>${pref}${p}</option>`).join('');
+    $('#sc-port').hidden = t !== 'Portabilidad'; $('#sc-nota').innerHTML = SCRIPT_NOTAS[t]; detalle();
+  };
+  const ponerAgente = v => { agente.value = v; $('#sc-agente2').textContent = v || '[Nombre del Ejecutivo]'; };
+  nombres.forEach(f => f.addEventListener('input', () => { nombres.forEach(o => { if (o !== f) o.value = f.value; }); ancho(); }));
+  $('#v-script').addEventListener('input', e => { if (e.target.classList.contains('in')) ancho(); });
+  rut.addEventListener('input', validarRut);
+  tipo.addEventListener('change', cambioTipo); plan.addEventListener('change', detalle);
+  agente.addEventListener('input', () => { $('#sc-agente2').textContent = agente.value || '[Nombre del Ejecutivo]'; try { localStorage.setItem('agentName', agente.value); } catch (e) {} });
+  $('#sc-planilla').onclick = () => window.open(PLANILLA_URL, '_blank', 'noopener');
+  $('#sc-map').onclick = () => {
+    const data = $('#sc-paste').value.trim(); if (!data) return toast('Pega primero la fila copiada de Excel');
+    // Columnas de la planilla: 1 nombre, 2 RUT, 4 número a portar, 5 email, 7 nacimiento, 8 donante, 10 dirección, 12 transacción
+    const col = data.split('\t'), g = i => (col[i] || '').trim();
+    nombres.forEach(n => n.value = g(1)); rut.value = g(2); $('#sc-fono').value = g(4); $('#sc-mail').value = g(5);
+    $('#sc-nac').value = g(7); $('#sc-donante').value = g(8); $('#sc-dir').value = g(10); $('#sc-pedido').value = g(12);
+    validarRut(); if (g(8)) { tipo.value = 'Portabilidad'; cambioTipo(); }
+    $('#sc-paste').value = ''; ancho(); toast('Datos cargados');
+  };
+  $('#sc-reset').onclick = () => {
+    $('#sc-form').reset(); plan.innerHTML = ''; reloj(); validarRut(); cambioTipo();
+    let n = ''; try { n = localStorage.getItem('agentName') || ''; } catch (e) {} ponerAgente(n); ancho();
+  };
+  let guardado = ''; try { guardado = localStorage.getItem('agentName') || ''; } catch (e) {}
+  ponerAgente(guardado); reloj(); setInterval(reloj, 15000); cambioTipo(); ancho();
+}
+
+/* ════════════════════════════════════════════════════════════════
+   INGRESO DE VENTA, ENLACES, GALERÍA, TUTORIALES
+   ════════════════════════════════════════════════════════════════ */
+function initVenta() { $('#venta-link').href = FORM_VENTA; $('#venta-frame').src = FORM_VENTA + '?embedded=true'; }
+function initEnlaces() {
+  $('#e-grid').innerHTML = `<a class="card link" href="${PLANILLA_URL}" target="_blank" rel="noopener" style="flex-direction:row;justify-content:center;gap:12px;margin-bottom:18px;border-top-color:#0f9d58"><span>📗</span><div style="text-align:left"><b>Planilla de Trabajo</b><br><small>Crea tu copia personal en Google Sheets</small></div></a>` +
+    ENLACES.map(g => `<div class="lbl">${g.t}</div><div class="links${g.two ? ' two' : ''}">${g.items.map(i => `<a class="card link" href="${esc(i[3])}" target="_blank" rel="noopener noreferrer"><span>${i[0]}</span><b>${i[1]}</b><small>${i[2]}</small></a>`).join('')}</div>`).join('');
+}
+let gIdx = 0;
+function gMostrar(i) { gIdx = (i + GALERIA.length) % GALERIA.length; $('#g-img').src = `galeria/${GALERIA[gIdx][0]}.jpg`; $('#g-img').alt = $('#g-name').textContent = GALERIA[gIdx][1]; }
+function initGaleria() {
+  $('#g-grid').innerHTML = GALERIA.map((g, i) => `<button class="card" data-g="${i}"><img src="galeria/mini/${g[0]}.jpg" alt="${esc(g[1])}" loading="lazy" width="480" height="480"><span>${esc(g[1])}</span></button>`).join('');
+  $('#g-grid').addEventListener('click', e => { const b = e.target.closest('[data-g]'); if (!b) return; gMostrar(+b.dataset.g); abrir('dlg-gal'); });
+  $('#g-q').addEventListener('input', e => {
+    const q = e.target.value.trim().toLowerCase(); let n = 0;
+    $$('#g-grid [data-g]').forEach(b => { const ok = GALERIA[+b.dataset.g][1].toLowerCase().includes(q); b.hidden = !ok; if (ok) n++; });
+    $('#g-none').hidden = n > 0;
+  });
+  $('#g-prev').onclick = () => gMostrar(gIdx - 1); $('#g-next').onclick = () => gMostrar(gIdx + 1);
+  const dlg = $('#dlg-gal'); let x0 = 0;
+  dlg.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') gMostrar(gIdx - 1); if (e.key === 'ArrowRight') gMostrar(gIdx + 1); });
+  dlg.addEventListener('touchstart', e => x0 = e.changedTouches[0].clientX, { passive: true });
+  dlg.addEventListener('touchend', e => { const d = x0 - e.changedTouches[0].clientX; if (Math.abs(d) >= 50) gMostrar(gIdx + (d > 0 ? 1 : -1)); }, { passive: true });
+  const nombre = () => GALERIA[gIdx][1] + '.jpg';
+  $('#g-dl').onclick = async () => { downloadBlob(await (await fetch($('#g-img').src)).blob(), nombre()); toast('Descargando imagen'); };
+  $('#g-copy').onclick = async () => {
+    const img = $('#g-img'); if (!img.complete || !img.naturalWidth) return toast('La imagen todavía se está cargando');
+    const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight;
+    const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(img, 0, 0);
+    copyCanvas(c, GALERIA[gIdx][1] + '.png', 'Imagen copiada al portapapeles');
+  };
+}
+function initTutoriales() {
+  const cats = ['Todos', ...new Set(TUTORIALES.map(t => t.cat))]; let filtro = 'Todos';
+  const pinta = () => {
+    $('#t-chips').innerHTML = cats.map(c => `<button class="chip${c === filtro ? ' on' : ''}" data-cat="${c}">${c}</button>`).join('');
+    $('#t-grid').innerHTML = TUTORIALES.map((t, i) => filtro === 'Todos' || t.cat === filtro ? `<article class="card tcard"><div class="th" style="background:${t.color}">${t.emoji}</div><div class="tb"><div class="tm"><span>${t.cat}</span><span>${t.dur}</span></div><h3>${esc(t.title)}</h3><p>${esc(t.desc)}</p></div><div class="tf"><button class="btn red" data-tut="${i}" style="width:100%">▶ Ver tutorial</button></div></article>` : '').join('');
+  };
+  $('#t-chips').addEventListener('click', e => { const b = e.target.closest('[data-cat]'); if (b) { filtro = b.dataset.cat; pinta(); } });
+  $('#t-grid').addEventListener('click', e => {
+    const b = e.target.closest('[data-tut]'); if (!b) return; const t = TUTORIALES[+b.dataset.tut];
+    if (t.phone) { $('#ph-frame').src = t.file; abrir('dlg-phone'); } else window.open(t.file, '_blank', 'noopener');
+  });
+  $('#dlg-phone').addEventListener('close', () => $('#ph-frame').src = 'about:blank');
+  pinta();
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SUGERENCIAS POR WHATSAPP
+   ════════════════════════════════════════════════════════════════ */
+function initSugerencias() {
+  let pila = [], actual = ARBOL, mensaje = '';
+  const pinta = () => {
+    const ruta = [{ label: 'Inicio' }, ...pila.slice(1).map(n => ({ label: n.label })), ...(pila.length ? [{ label: actual.label }] : [])];
+    $('#sg-crumbs').innerHTML = ruta.map((c, i) => i < ruta.length - 1 ? `<button data-crumb="${i}">${esc(c.label)}</button> › ` : esc(c.label)).join('');
+    $('#sg-title').textContent = mensaje ? '✅ Tu mensaje está listo' : actual.titulo;
+    $('#sg-opts').innerHTML = mensaje ? '' : actual.opciones.map((o, i) => `<button class="opt" data-opt="${i}"><span>${o.icon}</span><div><b>${esc(o.label)}</b>${o.desc ? `<small>${esc(o.desc)}</small>` : ''}</div></button>`).join('');
+    $('#sg-send').hidden = !mensaje; $('#sg-back').hidden = !pila.length;
+  };
+  const volver = hasta => { while (pila.length > hasta) actual = pila.pop(); mensaje = ''; pinta(); };
+  $('#sugg-btn').onclick = () => { pila = []; actual = ARBOL; mensaje = ''; pinta(); abrir('dlg-sugg'); };
+  $('#sg-opts').addEventListener('click', e => {
+    const b = e.target.closest('[data-opt]'); if (!b) return; const o = actual.opciones[+b.dataset.opt];
+    pila.push(actual);
+    if (o.msg) { mensaje = o.msg; actual = { label: o.label }; } else actual = Object.assign({ label: o.label }, o.hijos);
+    pinta();
+  });
+  $('#sg-crumbs').addEventListener('click', e => { const b = e.target.closest('[data-crumb]'); if (b) volver(+b.dataset.crumb); });
+  $('#sg-back').onclick = () => volver(pila.length - 1);
+  $('#sg-send').onclick = () => window.open('https://wa.me/' + WSP + '?text=' + encodeURIComponent(mensaje), '_blank', 'noopener');
+}
+
+/* ════════════════════════════════════════════════════════════════
+   LIMPIEZA DE CACHÉ (manual, desde el pie de página)
+   Borra cookies, localStorage, sessionStorage, Cache API, Service Workers e IndexedDB de este sitio.
+   ════════════════════════════════════════════════════════════════ */
+async function limpiarCache() {
+  if (!confirm('Esto borra los datos que este sitio guardó en tu navegador (cookies, almacenamiento local y caché) y recarga la página. También se borra tu nombre guardado en el Script. ¿Continuar?')) return;
+  try {
+    document.cookie.split(';').forEach(c => {
+      const name = c.split('=')[0].trim(); if (!name) return;
+      [location.hostname, '.' + location.hostname, ''].forEach(dom => { document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/' + (dom ? ';domain=' + dom : ''); });
     });
-    ctx.strokeStyle='#d8d8d8';ctx.lineWidth=1;rrect(ctx,M+.5,M+.5,TW-1,TH-1,10);ctx.stroke();
-    return c;
-  }
-  function rrect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
-  window.excCopiar=function(){
-    var btn=document.getElementById('_exc-copy-btn');btn.textContent='⏳ Copiando...';btn.disabled=true;
-    generarCanvas().toBlob(function(blob){
-      var ok=function(){btn.textContent='✓ ¡Copiado!';setTimeout(function(){btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copiar imagen';btn.disabled=false;},2500);};
-      var fail=function(){var a=document.createElement('a');a.download='excepciones-boletas.png';a.href=generarCanvas().toDataURL('image/png');a.click();btn.textContent='↓ Guardada';setTimeout(function(){btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copiar imagen';btn.disabled=false;},3000);};
-      try{navigator.clipboard.write([new ClipboardItem({'image/png':blob})]).then(ok).catch(fail);}catch(e){fail();}
-    },'image/png');
-  };
-  window.excDescargar=function(){
-    var btn=document.getElementById('_exc-dl-btn');
-    var a=document.createElement('a');a.download='excepciones-boletas.png';a.href=generarCanvas().toDataURL('image/png');a.click();
-    btn.textContent='✓ Descargado';setTimeout(function(){btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Descargar imagen';btn.disabled=false;},2500);
-  };
-})();
-</script>
+  } catch (e) {}
+  try { localStorage.clear(); } catch (e) {}
+  try { sessionStorage.clear(); } catch (e) {}
+  try { if (window.caches) await Promise.all((await caches.keys()).map(k => caches.delete(k))); } catch (e) {}
+  try { if ('serviceWorker' in navigator) await Promise.all((await navigator.serviceWorker.getRegistrations()).map(r => r.unregister())); } catch (e) {}
+  try { if (window.indexedDB && indexedDB.databases) await Promise.all((await indexedDB.databases()).map(db => new Promise(res => { const r = indexedDB.deleteDatabase(db.name); r.onsuccess = r.onerror = r.onblocked = res; }))); } catch (e) {}
+  location.reload();
+}
 
-<!-- ══ BARRA INFERIOR — fuentes más grandes ══ -->
-<div id="_bar" style="position:fixed;bottom:0;left:0;width:100%;height:44px;background:#fff;border-top:1px solid #e0e0e0;box-shadow:0 -1px 4px rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center;z-index:999999;box-sizing:border-box;">
-  <span id="_cd" style="position:absolute;left:14px;font-family:'Courier New',Courier,monospace;font-size:14px;font-weight:600;letter-spacing:1.2px;color:#333;white-space:nowrap;cursor:default;user-select:none;"></span>
-  <span style="font-family:'Courier New',Courier,monospace;font-size:14px;font-weight:600;letter-spacing:1.5px;color:#222;pointer-events:none;text-transform:uppercase;">Desarrollado por Eduardo Pérez</span>
-</div>
-<div id="_sp" style="position:fixed;bottom:52px;left:14px;background:#000;color:#fff;padding:18px 24px;border-radius:5px;box-shadow:0 4px 16px rgba(0,0,0,0.5);font-family:'Courier New',Courier,monospace;font-size:13px;letter-spacing:1px;text-align:center;line-height:1.6;z-index:9999999;pointer-events:none;opacity:0;transform:translateY(8px);transition:opacity 260ms ease,transform 260ms ease;white-space:nowrap;">
-  TIEMPO EXACTO RESTANTE PARA EL TÉRMINO<br>DE ESTE CICLO POLÍTICO
-</div>
-<script>
-(function(){
-  'use strict';
-  var TARGET=new Date(2030,2,11,0,0,0,0).getTime();
-  var cd=document.getElementById('_cd'),sp=document.getElementById('_sp'),bar=document.getElementById('_bar');
-  function pad(n,w){return String(n).padStart(w,'0');}
-  function tick(){
-    var diff=TARGET-Date.now();if(diff<=0){cd.textContent='0000D:00H:00M:00S:000MS:000000000000NS';return;}
-    var d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000),ms=diff%1000,ns=ms*1000000;
-    cd.textContent=pad(d,4)+'D:'+pad(h,2)+'H:'+pad(m,2)+'M:'+pad(s,2)+'S:'+pad(ms,3)+'MS:'+pad(ns,12)+'NS';
-    requestAnimationFrame(tick);
-  }
-  tick();
-  var timer=null,visible=false;
-  function show(){visible=true;sp.style.opacity='1';sp.style.transform='translateY(0)';}
-  function hide(){visible=false;sp.style.opacity='0';sp.style.transform='translateY(8px)';}
-  function start(){if(timer||visible)return;timer=setTimeout(show,5000);}
-  function stop(){clearTimeout(timer);timer=null;hide();}
-  bar.addEventListener('mousemove',function(ev){ev.clientX<bar.getBoundingClientRect().width*0.4?start():stop();});
-  bar.addEventListener('mouseleave',stop);
-})();
+/* ════════════════════════════════════════════════════════════════
+   INICIO
+   ════════════════════════════════════════════════════════════════ */
+initMenu(); initExcepciones(); initSugerencias();
+$('#cache-btn').onclick = limpiarCache;
+window.addEventListener('hashchange', route);
+route();
 </script>
-
 </body>
 </html>
