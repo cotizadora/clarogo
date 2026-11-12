@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Acceso a Cámara en Android</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        
+        :root {
+            --primary: #1A73E8;
+            --neon: #00FFB2;
+        }
+        
+        * { margin:0; padding:0; box-sizing:border-box; }
+        
+        body {
+            font-family: 'Roboto', system-ui, sans-serif;
+            background:#f8f9fa;
+            color:#202124;
+            height:100vh;
+            overflow:hidden;
+            touch-action:manipulation;
+        }
+        
+        .status-bar {
+            height:32px;
+            background:#f8f9fa;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding:0 16px;
+            font-size:13px;
+            color:#5f6368;
+            position:fixed;
+            top:0;
+            left:0;
+            right:0;
+            z-index:100;
+            border-bottom:1px solid #dadce0;
+        }
+        
+        .screen {
+            position:absolute;
+            top:32px;
+            left:0;
+            right:0;
+            bottom:0;
+            background:#fff;
+            display:none;
+            flex-direction:column;
+            transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
+        
+        .screen.active {
+            display:flex;
+        }
+        
+        .header {
+            height:56px;
+            background:#f8f9fa;
+            display:flex;
+            align-items:center;
+            padding:0 16px;
+            font-size:20px;
+            font-weight:500;
+            border-bottom:1px solid #dadce0;
+        }
+        
+        .header span {
+            cursor:pointer;
+            margin-right:12px;
+            font-size:26px;
+        }
+        
+        .content {
+            flex:1;
+            padding:16px;
+            overflow:hidden;
+        }
+        
+        .list-item {
+            background:#fff;
+            border-radius:12px;
+            margin-bottom:8px;
+            padding:16px 20px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            box-shadow:0 1px 3px rgba(0,0,0,0.08);
+            font-size:16px;
+            position:relative;
+            transition:all 0.25s;
+        }
+        
+        .highlight {
+            box-shadow:0 0 0 4px rgba(0,255,178,0.5), 0 0 25px rgba(0,255,178,0.7) !important;
+            background:linear-gradient(90deg,#ffffff,#f0fff8);
+            transform:scale(1.02);
+            animation:pulse-glow 1.8s infinite alternate;
+        }
+        
+        @keyframes pulse-glow {
+            0% { box-shadow:0 0 0 4px rgba(0,255,178,0.4), 0 0 20px rgba(0,255,178,0.6); }
+            100% { box-shadow:0 0 0 8px rgba(0,255,178,0.25), 0 0 35px rgba(0,255,178,0.9); }
+        }
+        
+        .neon-rect {
+            position:absolute;
+            inset:-6px;
+            border:3px solid var(--neon);
+            border-radius:16px;
+            pointer-events:none;
+            animation:neon-border 1.5s infinite alternate;
+        }
+        
+        @keyframes neon-border {
+            from { opacity:0.8; }
+            to { opacity:1; }
+        }
+        
+        .item-text { flex:1; }
+        
+        .permission-status {
+            font-size:14px;
+            color:#ea4335;
+        }
+        
+        .permission-allowed { color:#34a853; }
+        
+        .option {
+            background:#fff;
+            border:2px solid #dadce0;
+            border-radius:12px;
+            padding:18px 20px;
+            margin-bottom:12px;
+            font-size:16px;
+            transition:all 0.3s;
+        }
+        
+        .option.highlight {
+            border-color:#00FFB2;
+            background:#f0fff8;
+            animation:pulse-glow 1.8s infinite alternate;
+        }
+        
+        .success-screen {
+            background:linear-gradient(135deg,#34a853,#1e8e3e);
+            color:white;
+            text-align:center;
+        }
+        
+        .success-icon {
+            width:110px;
+            height:110px;
+            background:white;
+            color:#34a853;
+            border-radius:50%;
+            margin:60px auto 24px;
+            font-size:64px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            box-shadow:0 8px 25px rgba(0,0,0,0.25);
+        }
+        
+        .footer {
+            padding:12px;
+            text-align:center;
+            font-size:13px;
+            color:#9e9e9e;
+            opacity:0.75;
+            position:absolute;
+            bottom:8px;
+            left:0;
+            right:0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div>10:30</div>
+        <div style="display:flex;gap:10px;align-items:center;">
+            <span>▲</span>
+            <span>Wi‑Fi</span>
+            <span>92%</span>
+        </div>
+    </div>
+
+    <!-- Pantalla 1 -->
+    <div id="s1" class="screen active">
+        <div class="header">Ajustes</div>
+        <div class="content">
+            <div class="list-item"><div class="item-text">Red e Internet</div><span style="color:#9aa0a6;">›</span></div>
+            <div class="list-item"><div class="item-text">Dispositivos conectados</div><span style="color:#9aa0a6;">›</span></div>
+            <div class="list-item"><div class="item-text">Apps</div><span style="color:#9aa0a6;">›</span></div>
+            <div id="p1" class="list-item highlight" onclick="next(2)">
+                <div class="item-text">Privacidad</div><span style="color:#9aa0a6;">›</span>
+                <div class="neon-rect"></div>
+            </div>
+        </div>
+        <div class="footer">Por Eduardo Pérez</div>
+    </div>
+
+    <!-- Pantalla 2 -->
+    <div id="s2" class="screen">
+        <div class="header"><span onclick="prev()">←</span> Privacidad</div>
+        <div class="content">
+            <div class="list-item"><div class="item-text">Panel de privacidad</div><span style="color:#9aa0a6;">›</span></div>
+            <div id="p2" class="list-item highlight" onclick="next(3)">
+                <div class="item-text">Administrador de permisos</div><span style="color:#9aa0a6;">›</span>
+                <div class="neon-rect"></div>
+            </div>
+        </div>
+        <div class="footer">Por Eduardo Pérez</div>
+    </div>
+
+    <!-- Pantalla 3 -->
+    <div id="s3" class="screen">
+        <div class="header"><span onclick="prev()">←</span> Administrador de permisos</div>
+        <div class="content">
+            <div class="list-item"><div class="item-text">Ubicación</div><span style="color:#9aa0a6;">›</span></div>
+            <div class="list-item"><div class="item-text">Micrófono</div><span style="color:#9aa0a6;">›</span></div>
+            <div id="p3" class="list-item highlight" onclick="next(4)">
+                <div class="item-text">Cámara</div><span style="color:#9aa0a6;">›</span>
+                <div class="neon-rect"></div>
+            </div>
+        </div>
+        <div class="footer">Por Eduardo Pérez</div>
+    </div>
+
+    <!-- Pantalla 4 -->
+    <div id="s4" class="screen">
+        <div class="header"><span onclick="prev()">←</span> Cámara</div>
+        <div class="content">
+            <div style="margin:8px 0 20px;font-size:14px;color:#5f6368;">Apps con acceso a la cámara</div>
+            <div id="chrome4" class="list-item highlight" onclick="next(5)">
+                <div>
+                    <div class="item-text">Chrome</div>
+                    <div id="status4" class="permission-status">No permitido</div>
+                </div>
+                <span style="color:#9aa0a6;">›</span>
+                <div class="neon-rect"></div>
+            </div>
+        </div>
+        <div class="footer">Por Eduardo Pérez</div>
+    </div>
+
+    <!-- Pantalla 5 -->
+    <div id="s5" class="screen">
+        <div class="header"><span onclick="prev()">←</span> Chrome</div>
+        <div class="content">
+            <div style="margin-bottom:32px;">
+                <div style="font-size:18px;font-weight:500;">Permitir que Chrome use la cámara</div>
+                <div style="margin-top:8px;color:#5f6368;line-height:1.4;">
+                    Necesario para escanear códigos QR,<br>videollamadas y funciones biométricas.
+                </div>
+            </div>
+            <div class="option" onclick="dummy()">Permitir todo el tiempo</div>
+            <div id="uso" class="option highlight" onclick="grant()">
+                Permitir solo mientras se usa la app
+                <div class="neon-rect"></div>
+            </div>
+            <div class="option" onclick="dummy()">No permitir</div>
+        </div>
+        <div class="footer">Por Eduardo Pérez</div>
+    </div>
+
+    <!-- Pantalla 6 -->
+    <div id="s6" class="screen success-screen">
+        <div style="padding:40px 24px 0;">
+            <div class="success-icon">✓</div>
+            <h2 style="font-size:26px;margin-bottom:16px;">Permiso concedido</h2>
+            <p style="font-size:17px;opacity:0.95;">
+                Chrome puede usar la cámara<br>
+                <strong>solo mientras se usa la app</strong>
+            </p>
+            <div style="margin-top:70px;background:rgba(255,255,255,0.25);padding:20px;border-radius:16px;font-size:15px;">
+                Ahora puedes escanear códigos QR,<br>
+                hacer videollamadas y usar<br>
+                validaciones en el navegador.
+            </div>
+        </div>
+        <div class="footer" style="color:rgba(255,255,255,0.85);">Por Eduardo Pérez</div>
+    </div>
+
+    <script>
+        let current = 1;
+        let granted = false;
+        
+        function show(n) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('s'+n).classList.add('active');
+            current = n;
+        }
+        
+        function next(n) {
+            if (current === 5 && !granted) return;
+            show(n);
+        }
+        
+        function prev() {
+            if (current > 1) show(current - 1);
+        }
+        
+        function grant() {
+            granted = true;
+            document.getElementById('status4').textContent = "Permitido solo en uso";
+            document.getElementById('status4').classList.add('permission-allowed');
+            setTimeout(() => show(6), 320);
+        }
+        
+        function dummy() {}
+        
+        window.onload = () => {
+            show(1);
+        };
+    </script>
+</body>
+</html>

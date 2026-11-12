@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- CÓDIGO CLAVE: Se añade initial-scale=0.75 para forzar el zoom de inicio -->
+    <meta name="viewport" content="width=device-width, initial-scale=0.75"> 
+    
+    <!-- Metadatos de caché se mantienen para funcionalidad de la página interna -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
+    <!-- El <title> se mantiene, pero será invisible dentro del iframe -->
+    <title>Contenido de Ofertas</title>
+    <!-- Se mantiene Tailwind y dependencias JS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS se mantiene para el estilo de las tarjetas de oferta */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #dcdcdc; /* Fondo gris claro para contrastar con las láminas blancas */
+            min-height: 100vh;
+            padding: 0; /* Eliminamos el padding principal */
+            margin: 0;
+            box-sizing: border-box;
+        } 
+
+        .claro-red-gradient {
+            background-image: linear-gradient(to right, #e60000, #b00000);
+        }
+
+        .claro-text-red {
+            color: #e60000;
+        }
+        .no-print {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        /* Función de timing para transiciones suaves */
+        .ease-out-quad {
+            transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* ======================================= */
+        /* ANIMACIÓN NEON PLATA DE PULSO (Palpitar) */
+        /* ======================================= */
+
+        @keyframes neon-pulse {
+            0%, 100% {
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), 
+                            0 0 8px 1px rgba(220, 220, 220, 0.7); 
+            }
+            50% {
+                box-shadow: 0 4px 30px rgba(0, 0, 0, 0.6), 
+                            0 0 35px 8px rgba(255, 255, 255, 1.0); 
+            }
+        }
+
+        /* Clase aplicada a TODOS los botones de Captura */
+        .neon-silver {
+            animation: neon-pulse 1.8s infinite ease-in-out; 
+            color: #1a1a1a; 
+        }
+        
+        /* ======================================= */
+        /* BOTONES DE PROPUESTA */
+        /* ======================================= */
+        
+        /* 1. Botón "📸 Capturar" (Gris/Plata elegante) */
+        .elegant-3d-button {
+            background-image: linear-gradient(to bottom right, #e0e0e0, #cccccc);
+            color: #222222; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+            transition: all 0.3s ease-out-quad; 
+            border: 1px solid #bbbbbb;
+        }
+
+        .elegant-3d-button:hover {
+            background-image: linear-gradient(to bottom right, #cccccc, #e0e0e0);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px); 
+        }
+        
+        .elegant-3d-button.neon-silver:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), 
+                        0 0 15px 3px rgba(255, 255, 255, 0.9); 
+        }
+
+        .elegant-3d-button:active {
+            background-image: linear-gradient(to bottom right, #e0e0e0, #cccccc);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transform: translateY(1px); 
+        }
+        
+        /* 2. Botón "📋 Copiar Mensaje" (Rojo Claro) */
+        .message-copy-button {
+            background-color: #dc2626; /* red-600 */
+            color: white; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease-out-quad;
+        }
+        .message-copy-button:hover {
+            background-color: #b91c1c; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* ======================================= */
+        
+        /* Asegura que el contenedor de la captura se centre y tenga el mismo ancho que sus hijos si son flexibles */
+        #offer-frame {
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            width: 100%;
+        }
+
+        /* Flex wrap para centrar tarjetas automáticamente en todas las filas */
+        .offers-grid {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .offers-grid .module {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .offers-grid .module {
+                flex: 0 0 calc(33.333% - 0.75rem);
+                max-width: 260px;
+            }
+        }
+
+        @media (min-width: 1300px) {
+            .offers-grid .module {
+                flex: 0 0 calc(20% - 0.85rem);
+                max-width: 240px;
+            }
+        }
+
+        /* El Header de la captura ahora toma el ancho máximo del contenedor de la grilla */
+        #capture-header {
+            width: 100%; 
+            max-width: 1280px; 
+        }
+        /* Ajuste de padding/margin para ocupar todo el espacio del iframe */
+        main {
+            padding: 0 !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+        }
+
+        /* ======================================= */
+        /* ESTILOS PARA FORZAR CAPTURA MÓVIL (NUEVO Y MEJORADO) */
+        /* ======================================= */
+        
+        /* Asegura que el contenedor de la captura se centre y tenga el mismo ancho que sus hijos si son flexibles */
+        #offer-frame {
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            width: 100%;
+            /* ======================================= */
+            /* CAMBIO: Se añade max-width y se centra */
+            max-width: 1280px;
+            margin-left: auto;
+            margin-right: auto;
+            /* ======================================= */
+        }
+
+        /* Grid de tarjetas para 5 columnas en pantallas grandes */
+        }
+        
+        /* 2. Cuando el #offer-frame se mueve al wrapper temporal */
+        /* ESTA REGLA YA NO SE USA, PERO SE MANTIENE POR SI ACASO */
+        #capture-wrapper #offer-frame {
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-sizing: border-box;
+        }
+
+        /* 3. Forzar el Header a tomar el ancho completo del wrapper */
+        /* ESTA REGLA YA NO SE USA */
+        #capture-wrapper #capture-header {
+            width: 100% !important; 
+            max-width: 100% !important;
+            box-sizing: border-box; 
+        }
+        
+        /* 4. Forzar el Grid a 1 columna */
+        /* ESTA REGLA YA NO SE USA */
+        #capture-wrapper .offers-grid {
+            /* Esto sobreescribe todos los media queries */
+            grid-template-columns: repeat(1, minmax(0, 1fr)) !important; 
+            width: 100% !important; 
+            max-width: 100% !important;
+            padding: 0 !important; 
+            box-sizing: border-box;
+        }
+        
+        /* 5. REGLA CLAVE: Cuando un .module se mueve al wrapper, se ajusta */
+        #capture-wrapper .module {
+            width: 100% !important;
+            max-width: 400px; /* Ancho máximo del plan dentro del wrapper */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+    </style>
+    <!-- Los metadatos de OG se mantienen -->
+    <meta property="og:title" content="Ofertas Claro del Mes">
+    <meta property="og:description" content="Consulta y comparte las mejores ofertas de planes Claro de forma rápida y sencilla.">
+    <meta property="og:image" content="https://placehold.co/1200x630/e60000/ffffff?text=OFERTAS+CLARO">
+    <meta property="og:url" content="https://tu_dominio.com/tu_pagina.html">
+    <meta property="og:type" content="website">
+</head>
+
+<!-- ELIMINAMOS: class="min-h-screen p-4 sm:p-8" para que el body ocupe el 100% del iframe -->
+<body class="p-0 m-0">
+
+    <!-- Elemento flash se mantiene -->
+    <div id="capture-flash" class="fixed inset-0 z-[100] bg-white opacity-0 pointer-events-none transition-opacity duration-75"></div>
+
+    <!-- ELIMINAMOS: max-w-7xl mx-auto bg-white rounded-xl shadow-lg mb-8 -->
+    <main class="w-full">
+        <!-- ELIMINAMOS: p-4 md:p-6 -->
+        <div class="p-0 m-0">
+            <!-- Botón de Captura General SE MANTIENE, pero se ajusta su posición si es necesario -->
+            <div id="capture-all-button-container" class="mt-4 p-4 text-center">
+                 <button onclick="copyAllModulesToClipboard('offer-frame')" 
+                        class="font-bold py-2 px-6 rounded-xl text-sm whitespace-nowrap elegant-3d-button neon-silver mx-auto">
+                    📸 Capturar Todos los Planes
+                </button>
+            </div>
+            
+            <!-- CONTENEDOR TEMPORAL PARA FORZAR CAPTURA MÓVIL (AHORA USADO POR CAPTURA INDIVIDUAL) -->
+            <div id="capture-wrapper"></div>
+
+
+            <div id="offer-frame">
+                <!-- Se mantiene el Header de la captura, ya que es parte del contenido a capturar -->
+                <header id="capture-header" class="claro-red-gradient rounded-xl shadow-lg py-3 px-6 text-white text-3xl font-bold tracking-wide mb-6 relative flex items-center justify-center mx-auto">
+                    Planes y Ofertas Claro Chile
+                </header>
+
+                <!-- La cuadrícula de ofertas se mantiene -->
+                <div class="offers-grid p-4" id="offers-container">
+                    <!-- Las ofertas se renderizan aquí -->
+                </div>
+            </div>
+            </div>
+    </main>
+    
+    <!-- Modales y Banners de Feedback se mantienen para la funcionalidad de captura y deuda -->
+    <div id="debt-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70 opacity-0 transition-opacity duration-300 pointer-events-none">
+        <div id="debt-modal-content" class="bg-white rounded-xl shadow-lg w-full max-w-md transform scale-95 transition-transform duration-300 overflow-hidden">
+            <div class="claro-red-gradient text-white px-4 py-3 flex justify-between items-center rounded-t-xl">
+                <h2 class="text-lg font-bold">Excepciones de Deuda</h2>
+                <button id="close-debt-modal" class="text-white text-2xl font-bold leading-none transition-transform hover:scale-110">&times;</button>
+            </div>
+            
+            <div class="p-4 md:p-6">
+                <h3 class="text-md font-semibold text-gray-800 mb-4 text-center">Monto de Deuda Máximo por Líneas Portadas</h3>
+                <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                                    Nº de Líneas Portadas
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                                    Monto de Deuda
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">1</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Hasta $18.000</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">2</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Hasta $27.000</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">3</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Hasta $36.000</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">4</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Hasta $45.000</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">5</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Hasta $54.000</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">6 o más</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Hasta $63.000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="debt-capture-button-container" class="mt-6 flex flex-col items-center">
+                    <button onclick="copyDebtTableToClipboard()" 
+                            class="font-bold py-2 px-6 rounded-xl text-sm whitespace-nowrap elegant-3d-button neon-silver w-full max-w-xs">
+                        📸 Capturar Tabla
+                    </button>
+                    <span id="debt-copy-feedback" class="text-center text-xs mt-2 transition-opacity duration-300 h-4"></span>
+                </div>
+                </div>
+        </div>
+    </div>
+    <div id="copy-feedback-banner" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-80 opacity-0 transition-opacity duration-200 cursor-pointer pointer-events-none">
+        <div class="bg-black text-white p-6 rounded-xl shadow-2xl transition-all duration-300 transform w-full max-w-xs mx-auto text-center">
+            <span id="banner-message" class="block text-2xl font-bold text-white"></span>
+        </div>
+    </div>
+    
+    <script>
+        // Source of truth for offer data
+        const initialClaroPlans = [{
+            id: 'module-mayor',
+            title: 'Plan Persona Mayor',
+            data: '50 GIGAS',
+            price: '$3.990', // MODIFICADO
+            priceDuration: 'x 12 meses', // NUEVO
+            discount: 'Oferta Portabilidad PosPos',
+            afterDiscount: 'Luego $6.990 al mes',
+            normalPrice: 'Cargo Fijo Normal $6.990',
+            vigencia: 'Para titulares desde 70 años.',
+            additionalTitle: 'No Aplica Adicional',
+            additionalPrice: 'Gratis',
+            additionalData: '0 GB',
+            totalPrice: '¡1 plan x $3.990!',
+            callsInfo: '1000 minutos de llamadas' // NUEVO AGREGADO
+        }, {
+            id: 'module0',
+            title: 'Max M',
+            data: '200 GIGAS', // MODIFICADO
+            price: '$6.495', // MODIFICADO
+            priceDuration: 'x 6 meses', // NUEVO
+            discount: '50% de Dcto',
+            afterDiscount: 'Desde 7º mes $9.743',
+            normalPrice: 'Cargo Fijo Normal $12.990',
+            additionalTitle: 'No Aplica Adicional', 
+            additionalPrice: 'Gratis',
+            additionalData: '0 GB',
+            totalPrice: '¡1 plan x $6.495!',
+            callsInfo: 'Llamadas ilimitadas hasta 300 contactos' // NUEVO AGREGADO
+        }, {
+            id: 'module1',
+            title: 'Max L Libre',
+            data: '600 GIGAS', 
+            price: '$7.495', // MODIFICADO
+            priceDuration: 'x 6 meses', // NUEVO
+            discount: '50% de Dcto',
+            afterDiscount: 'Desde 7º mes $11.243',
+            normalPrice: 'Cargo Fijo Normal $14.990',
+            additionalTitle: 'Max M Adicional',
+            additionalPrice: '$4.990 x 6 meses',
+            additionalData: '400 GB',
+            totalPrice: '¡2 planes x $12.485!',
+            vigencia: 'por 1 año',
+            callsInfo: 'Llamadas ilimitadas hasta 300 contactos' // NUEVO AGREGADO
+        }, {
+            id: 'module2',
+            title: 'Max XL Libre',
+            data: '1.000 GIGAS', 
+            price: '$8.495', // MODIFICADO
+            priceDuration: 'x 6 meses', // NUEVO
+            discount: '50% de Dcto',
+            afterDiscount: 'Desde 7º mes $12.743',
+            normalPrice: 'Cargo Fijo Normal $16.990',
+            additionalTitle: 'Max M Adicional',
+            additionalPrice: '$2.990 x 6 meses',
+            additionalData: '400 GB',
+            totalPrice: '¡2 planes x $11.485!',
+            vigencia: 'por 1 año',
+            callsInfo: 'Llamadas ilimitadas hasta 300 contactos' // NUEVO AGREGADO
+        }, {
+            id: 'module3',
+            title: 'Max Libre Pro',
+            data: 'GIGAS Libres',
+            price: '$10.495', // MODIFICADO
+            priceDuration: 'x 6 meses', // NUEVO
+            discount: '50% de Dcto',
+            afterDiscount: 'Desde 7º mes $15.743',
+            normalPrice: 'Cargo Fijo Normal $20.990',
+            additionalTitle: 'Max M Adicional',
+            additionalPrice: '$2.990 x 6 meses',
+            additionalData: '400 GB',
+            totalPrice: '¡2 planes x $13.485!',
+            callsInfo: 'Llamadas ilimitadas hasta 300 contactos' // NUEVO AGREGADO
+        }, {
+            id: 'module-maxm-linea',
+            title: 'MAX M — Línea Nueva',
+            data: '200 GIGAS',
+            price: '$8.444',
+            priceDuration: 'x 6 meses (30% Dcto)',
+            discount: '30% de Dcto',
+            afterDiscount: 'Desde 7º mes $12.990',
+            normalPrice: 'Cargo Fijo Normal $12.990',
+            additionalTitle: 'No Aplica Adicional',
+            additionalPrice: 'Gratis',
+            additionalData: '0 GB',
+            totalPrice: '1 plan x $8.444',
+            callsInfo: 'Llamadas ilimitadas hasta 300 contactos'
+        }, {
+            id: 'module-maxl-linea',
+            title: 'MAX L LIBRE — Línea Nueva',
+            data: '300 GIGAS',
+            price: '$9.744',
+            priceDuration: 'x 6 meses',
+            discount: 'Oferta Línea Nueva',
+            afterDiscount: 'Desde 7º mes $14.990',
+            normalPrice: 'Cargo Fijo Normal $14.990',
+            additionalTitle: 'No Aplica Adicional',
+            additionalPrice: 'Gratis',
+            additionalData: '0 GB',
+            totalPrice: '1 plan x $9.744',
+            callsInfo: 'Llamadas ilimitadas hasta 300 contactos'
+        }, {
+            id: 'module-maxm-prepago',
+            title: 'MAX M — Port. Prepago',
+            data: '200 GIGAS',
+            price: '$8.444',
+            priceDuration: 'x 6 meses (30% Dcto)',
+            discount: '30% de Dcto',
+            afterDiscount: 'Desde 7º mes $12.990',
+            normalPrice: 'Cargo Fijo Normal $12.990',
+            additionalTitle: 'No Aplica Adicional',
+            additionalPrice: 'Gratis',
+            additionalData: '0 GB',
+            totalPrice: '1 plan x $8.444',
+            callsInfo: 'Portabilidad desde Prepago'
+        }, {
+            id: 'module-maxl-prepago',
+            title: 'MAX L LIBRE — Port. Prepago',
+            data: '300 GIGAS',
+            price: '$9.744',
+            priceDuration: 'x 6 meses',
+            discount: 'Oferta Port. Prepago',
+            afterDiscount: 'Desde 7º mes $14.990',
+            normalPrice: 'Cargo Fijo Normal $14.990',
+            additionalTitle: 'No Aplica Adicional',
+            additionalPrice: 'Gratis',
+            additionalData: '0 GB',
+            totalPrice: '1 plan x $9.744',
+            callsInfo: 'Portabilidad desde Prepago'
+        }];
+
+        let claroPlans = []; 
+
+        // ---------------------------------------------------------------------
+        // FUNCIONES DE FEEDBACK VISUAL Y AUDITIVO
+        // ---------------------------------------------------------------------
+
+        function playShutterSound() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                const audioCtx = new AudioContext();
+                const now = audioCtx.currentTime;
+                const click = audioCtx.createOscillator();
+                const clickGain = audioCtx.createGain();
+                click.type = 'triangle'; 
+                click.frequency.setValueAtTime(1500, now); 
+                click.connect(clickGain);
+                clickGain.connect(audioCtx.destination);
+                clickGain.gain.setValueAtTime(0.3, now); 
+                clickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03); 
+                click.start(now);
+                click.stop(now + 0.03);
+                const clack = audioCtx.createOscillator();
+                const clackGain = audioCtx.createGain();
+                clack.type = 'triangle';
+                clack.frequency.setValueAtTime(800, now + 0.02); 
+                clack.connect(clackGain);
+                clackGain.connect(audioCtx.destination);
+                clackGain.gain.setValueAtTime(0.2, now + 0.02); 
+                clackGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.06); 
+                clack.start(now + 0.02);
+                clack.stop(now + 0.06);
+            } catch (e) {
+                console.warn("Web Audio API no compatible o falló al reproducir sonido:", e);
+            }
+        }
+
+        function animateFlash() {
+            const flashElement = document.getElementById('capture-flash');
+            if (!flashElement) return;
+            flashElement.classList.remove('opacity-0');
+            flashElement.classList.add('opacity-100');
+            setTimeout(() => {
+                flashElement.classList.remove('opacity-100');
+                flashElement.classList.add('opacity-0');
+            }, 75); 
+        }
+
+        // ---------------------------------------------------------------------
+        // FUNCIONES DE UTILIDAD
+        // ---------------------------------------------------------------------
+        
+        let bannerTimeout;
+
+        function showBanner(message, isSuccess) {
+            const banner = document.getElementById('copy-feedback-banner');
+            const bannerMessage = document.getElementById('banner-message');
+            const messageBox = banner.querySelector('div');
+            clearTimeout(bannerTimeout);
+            bannerMessage.innerText = message;
+            banner.classList.remove('opacity-0', 'pointer-events-none');
+            banner.classList.add('opacity-100');
+            messageBox.classList.remove('scale-95');
+            messageBox.classList.add('scale-100');
+            bannerTimeout = setTimeout(() => {
+                banner.classList.remove('opacity-100');
+                banner.classList.add('opacity-0', 'pointer-events-none'); 
+                messageBox.classList.remove('scale-100');
+                messageBox.classList.add('scale-95');
+            }, 800); 
+        }
+
+        document.getElementById('copy-feedback-banner').addEventListener('click', () => {
+            document.getElementById('copy-feedback-banner').classList.remove('opacity-100');
+            document.getElementById('copy-feedback-banner').classList.add('opacity-0', 'pointer-events-none');
+            clearTimeout(bannerTimeout);
+        });
+        
+        // ======================================================
+        // LÓGICA DEL MODAL DE EXCEPCIONES DE DEUDA
+        // ======================================================
+        
+        const debtModal = document.getElementById('debt-modal');
+        const debtModalContent = document.getElementById('debt-modal-content');
+        // El botón para abrir el modal ya no está en esta página. La lógica de apertura debe estar en index.html, pero se mantiene la lógica interna.
+        const closeModalButton = document.getElementById('close-debt-modal');
+
+        function openDebtModal() {
+            if (!debtModal || !debtModalContent) return;
+            debtModal.classList.remove('opacity-0', 'pointer-events-none');
+            debtModal.classList.add('opacity-100');
+            debtModalContent.classList.remove('scale-95');
+            debtModalContent.classList.add('scale-100');
+        }
+
+        function closeDebtModal() {
+            if (!debtModal || !debtModalContent) return;
+            debtModal.classList.remove('opacity-100');
+            debtModal.classList.add('opacity-0', 'pointer-events-none');
+            debtModalContent.classList.remove('scale-100');
+            debtModalContent.classList.add('scale-95');
+        }
+
+        // Se remueve el listener de openModalButton
+        if (closeModalButton) {
+            closeModalButton.addEventListener('click', closeDebtModal);
+        }
+        if (debtModal) {
+            debtModal.addEventListener('click', function(event) {
+                if (event.target === debtModal) {
+                    closeDebtModal();
+                }
+            });
+        }
+
+        // ======================================================
+        // FUNCIÓN DE CAPTURA DE MODAL
+        // ======================================================
+        async function copyDebtTableToClipboard() {
+            const element = document.getElementById('debt-modal-content');
+            const feedbackElement = document.getElementById('debt-copy-feedback');
+            const buttonContainer = document.getElementById('debt-capture-button-container');
+
+            if (!element || !feedbackElement || !buttonContainer) return;
+
+            feedbackElement.innerText = "Copiando al portapapeles...";
+            playShutterSound();
+            animateFlash();
+            
+            // Ocultar el contenedor del botón antes de capturar
+            buttonContainer.classList.add('no-print');
+
+            try {
+                // *** NUEVO: Esperar a que las fuentes estén listas ***
+                await document.fonts.ready;
+                
+                // Esperar a que el DOM se actualice (botón oculto)
+                await new Promise(resolve => setTimeout(resolve, 100)); // Ligeramente aumentado
+
+                if (!navigator.clipboard || !navigator.clipboard.write) {
+                    throw new Error("Clipboard API no compatible. Actualice su navegador.");
+                }
+
+                const canvas = await html2canvas(element, { useCORS: true, scale: 3 });
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                await navigator.clipboard.write([ new ClipboardItem({ 'image/png': blob }) ]);
+                
+                showBanner("¡Tabla de excepciones copiada! Pégala en el chat. ✅", true);
+                feedbackElement.innerText = "";
+
+            } catch (err) {
+                showBanner("Error al copiar tabla: " + err.message, false);
+                feedbackElement.innerText = "";
+                console.error('Failed to copy debt table:', err);
+            } finally {
+                // Volver a mostrar el contenedor del botón, incluso si hay error
+                buttonContainer.classList.remove('no-print');
+            }
+        }
+        // ======================================================
+        // FIN FUNCIÓN DE CAPTURA DE MODAL
+        // ======================================================
+
+
+        // ======================================================
+        // FUNCIÓN DE CAPTURA INDIVIDUAL MODIFICADA (FUERZA VISTA MÓVIL)
+        // ======================================================
+        async function copyImageToClipboard(elementId) {
+            const element = document.getElementById(elementId); // El contenido a capturar (ej: #capture-content-module1)
+            const planId = elementId.replace('capture-content-', '');
+            const planData = claroPlans.find(plan => plan.id === planId);
+            const moduleToMove = element.closest('.module'); // El módulo entero (ej: #module1)
+            const feedbackElement = moduleToMove.querySelector('.individual-buttons > span');
+            
+            if (!element || !planData || !feedbackElement || !moduleToMove) return;
+
+            // Elementos para la manipulación del DOM
+            const wrapper = document.getElementById('capture-wrapper');
+            const originalParent = moduleToMove.parentNode; // #offers-container
+            const originalNextSibling = moduleToMove.nextSibling; // El siguiente módulo en el grid
+            const buttonsToHide = moduleToMove.querySelector('.individual-buttons');
+
+            feedbackElement.innerText = "Copiando (modo móvil)...";
+            playShutterSound();
+            animateFlash();
+
+            // 1. Ocultar botones y controles del selector (pero NO el desglose de cálculo)
+            buttonsToHide.classList.add('no-print');
+            const selectorDisplay = moduleToMove.querySelector('[id^="adicionales-display-"]');
+            const selectorPicker = moduleToMove.querySelector('[id^="adicionales-picker-"]');
+            const selectorWrapper = moduleToMove.querySelector('.adicionales-selector');
+            // Ocultar solo el label + display + picker, dejar visible el desglose
+            const selectorLabel = selectorWrapper ? selectorWrapper.querySelector('.text-xs.font-medium') : null;
+            if (selectorDisplay) selectorDisplay.style.display = 'none';
+            if (selectorPicker) selectorPicker.style.display = 'none';
+            if (selectorLabel) selectorLabel.style.display = 'none';
+            wrapper.appendChild(moduleToMove); // Mover el módulo al wrapper
+            wrapper.style.display = 'flex'; // Mostrar el wrapper (que tiene ancho fijo de 420px)
+
+            try {
+                // Esperar a que las fuentes y el nuevo layout (forzado por .module-wrapper) se apliquen
+                await document.fonts.ready;
+                await new Promise(resolve => setTimeout(resolve, 100)); // Espera para reflow
+                
+                if (!navigator.clipboard || !navigator.clipboard.write) {
+                    throw new Error("Clipboard API no compatible. Actualice su navegador.");
+                }
+                
+                // 2. Capturar el CONTENIDO (element) que ahora está dentro del wrapper
+                const canvas = await html2canvas(element, { useCORS: true, scale: 3 });
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                await navigator.clipboard.write([ new ClipboardItem({ 'image/png': blob }) ]);
+                
+                showBanner(`¡Listo! La imagen del plan ${planData.title} (compacta) ya está copiada, ahora pégala. ✅`, true);
+                feedbackElement.innerText = "";
+            
+            } catch (err) {
+                showBanner("Error al copiar: " + err.message, false);
+                feedbackElement.innerText = "";
+                console.error('Failed to copy image:', err);
+            
+            } finally {
+                // 3. RESTAURAR el estado original
+                wrapper.style.display = 'none'; // Ocultar el wrapper
+                // Devolver el módulo a su lugar original en el grid
+                originalParent.insertBefore(moduleToMove, originalNextSibling); 
+                buttonsToHide.classList.remove('no-print'); // Volver a mostrar botones
+                // Restaurar controles del selector
+                if (selectorDisplay) selectorDisplay.style.display = '';
+                if (selectorLabel) selectorLabel.style.display = '';
+            }
+        }
+        // ======================================================
+        // FIN FUNCIÓN DE CAPTURA INDIVIDUAL
+        // ======================================================
+
+
+        // ======================================================
+        // FUNCIÓN DE CAPTURA GENERAL — CONTENEDOR TEMPORAL
+        // ======================================================
+        async function copyAllModulesToClipboard(sourceId) {
+            const sourceContainer = document.getElementById(sourceId);
+            const buttonContainer = document.getElementById('capture-all-button-container');
+            if (!sourceContainer) return;
+
+            showBanner("Preparando captura...", true);
+            playShutterSound();
+            animateFlash();
+
+            // 1. OCULTAR BOTONES Y SELECTORES
+            if (buttonContainer) buttonContainer.classList.add('no-print');
+            document.querySelectorAll('.individual-buttons').forEach(btn => btn.classList.add('no-print'));
+            document.querySelectorAll('[id^="adicionales-display-"]').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('[id^="adicionales-picker-"]').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.adicionales-selector .text-xs.font-medium').forEach(el => el.style.display = 'none');
+
+            // 2. IDs A INCLUIR (solo portabilidad)
+            const idsIncluir = ['module1', 'module2', 'module3'];
+
+            // 3. CREAR CONTENEDOR TEMPORAL FUERA DE PANTALLA
+            const tmpWrap = document.createElement('div');
+            tmpWrap.style.cssText = [
+                'position:fixed', 'top:0', 'left:-9999px',
+                'background:#ffffff', 'padding:16px',
+                'display:flex', 'flex-direction:column', 'align-items:center',
+                'gap:0', 'z-index:-1', 'box-sizing:border-box'
+            ].join(';');
+
+            // Header clonado
+            const headerOrig = document.getElementById('capture-header');
+            let headerClone = null;
+            if (headerOrig) {
+                headerClone = headerOrig.cloneNode(true);
+                headerClone.style.width = '';
+                headerClone.style.maxWidth = '';
+                tmpWrap.appendChild(headerClone);
+            }
+
+            // Grid temporal con los 4 módulos clonados
+            const gridTmp = document.createElement('div');
+            gridTmp.style.cssText = 'display:flex;flex-wrap:nowrap;gap:16px;padding:16px;box-sizing:border-box;';
+
+            const modClones = [];
+            idsIncluir.forEach(function(id) {
+                const mod = document.getElementById(id);
+                if (mod) {
+                    const clone = mod.cloneNode(true);
+                    // Ancho fijo igual al módulo original
+                    clone.style.width = mod.offsetWidth + 'px';
+                    clone.style.flex = '0 0 auto';
+                    clone.style.maxWidth = 'none';
+                    gridTmp.appendChild(clone);
+                    modClones.push(clone);
+                }
+            });
+
+            tmpWrap.appendChild(gridTmp);
+            document.body.appendChild(tmpWrap);
+
+            // Ajustar header al ancho del grid
+            await new Promise(resolve => setTimeout(resolve, 60));
+            if (headerClone) {
+                headerClone.style.width = gridTmp.offsetWidth + 'px';
+                headerClone.style.maxWidth = 'none';
+                headerClone.style.boxSizing = 'border-box';
+            }
+            // Ancho final del wrapper = ancho del grid + padding
+            tmpWrap.style.width = (gridTmp.offsetWidth + 32) + 'px';
+
+            await document.fonts.ready;
+            await new Promise(resolve => setTimeout(resolve, 60));
+
+            try {
+                if (!navigator.clipboard || !navigator.clipboard.write) {
+                    throw new Error("Clipboard API no compatible.");
+                }
+                const SCALE = 3;
+                const canvas = await html2canvas(tmpWrap, {
+                    useCORS: true,
+                    scale: SCALE,
+                    backgroundColor: '#ffffff',
+                    width: tmpWrap.offsetWidth,
+                    height: tmpWrap.offsetHeight,
+                });
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                showBanner("¡Captura copiada! Pégala. ✅", true);
+
+            } catch (err) {
+                showBanner("Error: " + err.message, false);
+                console.error(err);
+
+            } finally {
+                document.body.removeChild(tmpWrap);
+                if (buttonContainer) buttonContainer.classList.remove('no-print');
+                document.querySelectorAll('.individual-buttons').forEach(btn => btn.classList.remove('no-print'));
+                document.querySelectorAll('[id^="adicionales-display-"]').forEach(el => el.style.display = '');
+                document.querySelectorAll('.adicionales-selector .text-xs.font-medium').forEach(el => el.style.display = '');
+            }
+        }
+        // ======================================================
+        // FIN DE FUNCIÓN MODIFICADA
+        // ======================================================
+
+
+        // ======================================================
+        // FUNCIÓN DE COPIA DE TEXTO MODIFICADA (SE ESCRIBEN NOMBRES COMPLETOS)
+        // ======================================================
+        async function copyTextToClipboard(planId) {
+            const planData = claroPlans.find(plan => plan.id === planId);
+            const feedbackElement = document.querySelector(`#${planId}`).closest('.module').querySelector('.individual-buttons > span');
+            if (!planData) return;
+
+            feedbackElement.innerText = "Copiando mensaje...";
+            try {
+                let whatsappMessage = "";
+                
+                // Texto de Redes Sociales Ilimitadas (NOMBRES COMPLETOS)
+                const socialMediaText = "- *Redes Sociales Ilimitadas:* (Instagram, Facebook, X, WhatsApp, TikTok)";
+
+                const isSinglePlan = planData.additionalTitle === 'No Aplica Adicional';
+                
+                // Reconstruir el precio completo para el mensaje
+                const fullPrice = planData.price + (planData.priceDuration ? ` ${planData.priceDuration}` : '');
+
+                // Construir texto de descuento
+                const noDiscountIdsList = ['module-mayor', 'module-maxm-linea', 'module-maxl-linea', 'module-maxm-prepago', 'module-maxl-prepago'];
+                const afterDiscountText = noDiscountIdsList.includes(planData.id)
+                    ? planData.afterDiscount 
+                    : `${planData.afterDiscount} (25% Dcto. permanente)`;
+                
+                // Construir texto de vigencia (se mantiene eliminado)
+                const vigenciaText = ""; 
+
+                if (planId === 'module-mayor') {
+                    // Caso especial: Persona Mayor
+                    const mayorVigencia = planData.vigencia ? `\n- *Vigencia:* ${planData.vigencia}` : "";
+                    whatsappMessage = `
+*${planData.title}*
+- *Datos:* ${planData.data}
+${socialMediaText}
+- *Precio Oferta:* ${fullPrice}
+- *Descuento:* ${planData.discount}
+- *Siguiente Precio:* ${afterDiscountText}${mayorVigencia}
+- *Total:* ${planData.totalPrice}
+`.trim();
+                } else if (isSinglePlan) {
+                    // Caso: Plan Único (como Max M / module0)
+                    whatsappMessage = `
+*${planData.title}*
+- *Datos:* ${planData.data}
+${socialMediaText}
+- *Precio Oferta:* ${fullPrice}
+- *Descuento:* ${planData.discount}
+- *Siguiente Precio:* ${afterDiscountText}${vigenciaText}
+- *Total:* ${planData.totalPrice}
+`.trim().replace('¡', '').replace('!', '');
+                } else {
+                    // Caso: Plan Principal + Adicional
+                    // Leer estado dinámico actual del selector y total visible
+                    const labelEl = document.getElementById('adicionales-label-' + planId);
+                    const totalBloqueEl = document.getElementById('total-bloque-' + planId);
+                    const cantidadTexto = labelEl ? labelEl.textContent.trim() : '0 — Sin adicionales';
+                    const totalActual = totalBloqueEl ? totalBloqueEl.textContent.trim().replace('¡','').replace('!','') : planData.totalPrice.replace('¡','').replace('!','');
+                    const cantidadNum = parseInt(cantidadTexto) || 0;
+                    const hayAdicionales = cantidadNum > 0;
+
+                    // Leer desglose si existe
+                    const detalleEl = document.getElementById('adicionales-detalle-' + planId);
+                    let detalleTexto = '';
+                    if (hayAdicionales && detalleEl && detalleEl.style.display !== 'none') {
+                        const rows = detalleEl.querySelectorAll('tr');
+                        rows.forEach(row => {
+                            const cells = row.querySelectorAll('td');
+                            if (cells.length === 2 && cells[0].textContent.trim()) {
+                                detalleTexto += `\n  • ${cells[0].textContent.trim()} ${cells[1].textContent.trim()}`;
+                            }
+                        });
+                    }
+
+                    whatsappMessage = `
+📲 *Plan Principal: ${planData.title}*
+- *Datos:* ${planData.data}
+${socialMediaText}
+- *Precio Oferta:* ${fullPrice}
+- *Descuento:* ${planData.discount}
+- *Siguiente Precio:* ${afterDiscountText}${vigenciaText}
+
+➕ *Plan Adicional: ${planData.additionalTitle}*
+- *Datos:* ${planData.additionalData}
+- *Precio:* ${planData.additionalPrice}
+${hayAdicionales ? `- *Líneas adicionales:* ${cantidadTexto}${detalleTexto}` : ''}
+*Total Planes: ${totalActual}*
+`.trim();
+                }
+
+                await navigator.clipboard.writeText(whatsappMessage);
+                showBanner("¡Mensaje copiado! Ahora pega con Ctrl+V. ✅", true);
+                feedbackElement.innerText = "";
+            } catch (err) {
+                showBanner("Error al copiar: no se pudo copiar el mensaje.", false);
+                feedbackElement.innerText = "";
+                console.error('Failed to copy message:', err);
+            }
+        }
+        // ======================================================
+        // FIN FUNCIÓN DE COPIA DE TEXTO MODIFICADA
+        // ======================================================
+
+
+        /* ======================================================
+         ELIMINADA LA FUNCIÓN DE ESCALADO AUTOMÁTICO (YA NO ES NECESARIA)
+           ====================================================== */
+
+        function renderOffers(data) {
+            const container = document.getElementById('offers-container');
+            container.innerHTML = ''; 
+            data.forEach(plan => {
+                
+                // Reducimos el margen vertical de las redes sociales para compactar
+                const socialMediaHtml = `
+                    <!-- Redes Sociales Ilimitadas -->
+                    <div class="my-2 text-center">
+                        <div class="flex justify-center items-center space-x-5">
+                            <!-- Instagram (CORREGIDO) -->
+                            <img class="w-5 h-5" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%239CA3AF' viewBox='0 0 16 16'%3E%3Cpath d='M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.703.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.298c-.04-.851-.175-1.433-.372-1.943a3.926 3.926 0 0 0-.923-1.417A3.917 3.917 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0H8zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485C1.45 10.443 1.442 10.173 1.442 8s.008-2.388.047-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z'/%3E%3C/svg%3E" alt="Instagram">
+                            <!-- Facebook -->
+                            <img class="w-5 h-5" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%239CA3AF' viewBox='0 0 16 16'%3E%3Cpath d='M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0 0 3.603 0 8.049c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z'/%3E%3C/svg%3E" alt="Facebook">
+                            <!-- X (Twitter) -->
+                            <img class="w-5 h-5" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%239CA3AF' viewBox='0 0 16 16'%3E%3Cpath d='M12.6.75h2.454l-5.36%206.142L16%2015.25h-4.937l-3.867-5.07-4.425%205.07H.316l5.733-6.57L0%20.75h5.063l3.495%204.633L12.601.75Zm-.86%2013.028h1.36L4.323%202.145H2.865l8.875%2011.633Z'/%3E%3C/svg%3E" alt="X">
+                            <!-- WhatsApp -->
+                            <img class="w-5 h-5" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%239CA3AF' viewBox='0 0 16 16'%3E%3Cpath d='M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z'/%3E%3C/svg%3E" alt="WhatsApp">
+                            <!-- TikTok -->
+                            <img class="w-5 h-5" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%239CA3AF' viewBox='0 0 16 16'%3E%3Cpath d='M9 0h1.98c.144.715.54 1.617.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3V0Z'/%3E%3C/svg%3E" alt="TikTok">
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1 font-medium">
+                            Redes Sociales ilimitadas
+                        </div>
+                    </div>
+                    <!-- Fin Redes Sociales -->
+                `;
+                
+                if (plan.id === 'module-mayor') {
+                    const htmlMayor = `
+                    <div id="${plan.id}" class="module bg-white rounded-xl shadow-lg overflow-hidden flex flex-col transition-transform hover:scale-[1.02] duration-300">
+                        <div id="capture-content-${plan.id}" class="flex flex-col flex-grow">
+                            <div class="claro-red-gradient text-white text-center text-xl font-bold p-3">
+                                ${plan.title}
+                            </div>
+                            <!-- COMPACTADO: p-4 a py-3 px-4 -->
+                            <div class="py-3 px-4 flex-grow flex flex-col justify-between items-center">
+                                <div>
+                                    <!-- Datos GB -->
+                                    <div class="text-center text-3xl font-bold claro-text-red mb-2">${plan.data}</div>
+                                    
+                                    <!-- BLOQUE DE PRECIO COMPACTO (Ajustado) -->
+                                    <div class="bg-gray-50 p-2 rounded-lg mb-2">
+                                        <div id="plan-${plan.id}" class="text-center text-4xl font-extrabold text-gray-800 leading-none">${plan.price}</div>
+                                        <div class="text-center text-sm font-semibold text-gray-600">${plan.priceDuration}</div>
+                                    </div>
+                                    <!-- Descuentos y Vigencia -->
+                                    <div class="text-center text-xs text-gray-500 leading-tight">
+                                        <div>(${plan.discount.replace('Oferta ', '')})</div>
+                                        <div>${plan.afterDiscount}</div>
+                                    </div>
+                                    
+                                </div>
+                                <!-- INICIO INSERCIÓN REDES SOCIALES -->
+                                ${socialMediaHtml}
+                                <!-- FIN INSERCIÓN REDES SOCIALES -->
+
+                                <!-- NUEVO: INSERCIÓN LLAMADAS -->
+                                <div class="text-center text-xs font-medium text-gray-600 mt-1">
+                                    ${plan.callsInfo}
+                                </div>
+                                <!-- FIN NUEVO -->
+                                
+                                <!-- Placeholder fijo para alinear el pie de página (altura ajustada) -->
+                                <div class="h-20 flex-shrink-0 text-center text-sm font-semibold text-gray-700 pt-4">
+                                    ${plan.vigencia}
+                                </div>
+                            </div>
+                            <div class="bg-red-50 claro-text-red font-bold text-center border-t-2 border-dashed border-red-300 p-3 mx-4 mb-4 rounded-lg">
+                                ${plan.totalPrice}
+                            </div>
+                        </div>
+                        <div class="p-4 flex flex-col space-y-2 individual-buttons">
+                            <div class="flex space-x-2">
+                                <button onclick="copyImageToClipboard('capture-content-${plan.id}')" 
+                                    class="flex-1 font-semibold p-2 rounded-lg shadow-md elegant-3d-button neon-silver">
+                                    📸 Capturar
+                                </button>
+                                <button onclick="copyTextToClipboard('${plan.id}')" 
+                                    class="flex-1 text-white font-semibold p-2 rounded-lg shadow-md message-copy-button">
+                                    📋 Copiar Mensaje
+                                </button>
+                            </div>
+                            <span class="text-center text-xs mt-2 transition-opacity duration-300 h-4"></span>
+                        </div>
+                    </div>
+                    `;
+                    container.innerHTML += htmlMayor;
+                    return;
+                }
+                
+                const isSinglePlan = plan.additionalTitle === 'No Aplica Adicional';
+                
+                // Placeholder para planes individuales, manteniendo la altura fija del bloque Adicional
+                const additionalSectionHtmlFix = isSinglePlan ?
+                    // Placeholder h-20 (aprox 5rem) para igualar el espacio del plan adicional + separador.
+                    `<div class="h-20 flex-shrink-0"></div>` : 
+                    `
+                    <div class="flex-shrink-0 mt-1">
+                        <!-- Símbolo de adición. -->
+                        <div class="text-center text-xl font-bold claro-text-red my-0.5">+</div>
+                        <!-- Contenedor con la línea divisoria arriba. -->
+                        <div class="extra text-center pt-0.5 border-t border-gray-200"> 
+                            <div class="text-xs font-semibold claro-text-red">${plan.additionalTitle}</div>
+                            <div class="text-xs font-semibold text-gray-800">${plan.additionalPrice}</div>
+                            <div class="text-xs font-semibold text-gray-800">${plan.additionalData}</div>
+                        </div>
+                    </div>
+                    `;
+                
+                const vigenciaText = ''; // Vigencia eliminada según solicitud previa
+
+                const noDiscountIds = ['module-mayor', 'module-maxm-linea', 'module-maxl-linea', 'module-maxm-prepago', 'module-maxl-prepago'];
+                let afterDiscountHtml = plan.afterDiscount;
+                if (!noDiscountIds.includes(plan.id)) {
+                     afterDiscountHtml = `${plan.afterDiscount} <br>(25% Dcto. permanente)`;
+                }
+
+                const html = `
+                <div id="${plan.id}" class="module bg-white rounded-xl shadow-lg overflow-hidden flex flex-col transition-transform hover:scale-[1.02] duration-300">
+                    <div id="capture-content-${plan.id}" class="flex flex-col flex-grow">
+                        <div class="claro-red-gradient text-white text-center text-xl font-bold p-3">
+                            ${plan.title}
+                        </div>
+                        <!-- COMPACTADO: p-4 a py-3 px-4 -->
+                        <div class="py-3 px-4 flex-grow">
+                            <!-- Datos GB -->
+                            <div class="text-center text-3xl font-bold claro-text-red mb-2">${plan.data}</div>
+                            
+                            <!-- BLOQUE DE PRECIO COMPACTO y UNIFICADO -->
+                            <div class="bg-gray-50 p-2 rounded-lg mb-2">
+                                <div id="plan-${plan.id}" class="text-center text-4xl font-extrabold text-gray-800 leading-none">${plan.price}</div>
+                                <div class="text-center text-sm font-semibold text-gray-600">${plan.priceDuration}</div>
+                            </div>
+                            
+                            <!-- Bloque de Descuento (compacto) -->
+                            <div class="text-center text-xs text-gray-500 leading-tight mb-2">
+                                <div>(${plan.discount})</div>
+                                <div>${afterDiscountHtml}</div>
+                            </div>
+                            
+                            <!-- INSERCIÓN REDES SOCIALES (margen reducido) -->
+                            ${socialMediaHtml}
+
+                            <!-- NUEVO: INSERCIÓN LLAMADAS -->
+                            <div class="text-center text-xs font-medium text-gray-600 mt-1">
+                                ${plan.callsInfo}
+                            </div>
+                            <!-- FIN NUEVO -->
+                            
+                            <!-- SECCIÓN ADICIONAL (Fija/Placeholder) -->
+                            ${additionalSectionHtmlFix}
+                            
+                            <!-- SELECTOR LÍNEAS ADICIONALES -->
+                            ${!isSinglePlan ? `
+                            <div class="adicionales-selector mt-2" data-plan-id="${plan.id}">
+                                <div class="text-xs font-medium text-gray-500 mb-1">Líneas adicionales</div>
+                                <div class="border border-gray-200 rounded-md px-3 bg-white text-xs text-gray-700 cursor-pointer flex justify-between items-center select-none"
+                                     id="adicionales-display-${plan.id}"
+                                     onclick="toggleAdicionalPicker('${plan.id}')"
+                                     style="min-height:28px; line-height:28px;">
+                                    <span id="adicionales-label-${plan.id}">0 — Sin adicionales</span>
+                                    <span style="color:#9ca3af; font-size:10px; margin-left:8px;">&#9660;</span>
+                                </div>
+                                <div id="adicionales-picker-${plan.id}" style="display:none; margin-top:2px; border:1px solid #e5e7eb; border-radius:6px; background:#fff; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+                                    ${[0,1,2,3,4,5,6,7,8,9,10].map(i => `
+                                    <div style="padding:5px 12px; font-size:11px; cursor:pointer; font-family:inherit; color:#374151;"
+                                         onmouseover="this.style.background='#fef2f2';this.style.color='#e60000'"
+                                         onmouseout="this.style.background='';this.style.color='#374151'"
+                                         onclick="seleccionarAdicional('${plan.id}', ${i})">
+                                        ${i === 0 ? '0 — Sin adicionales' : i + ' línea' + (i>1?'s':'') + ' adicional' + (i>1?'es':'')}
+                                    </div>`).join('')}
+                                </div>
+                                <div id="adicionales-detalle-${plan.id}" class="adicionales-detalle" style="display:none; margin-top:6px; background:#f9fafb; border:1px solid #f3f4f6; border-radius:6px; padding:8px; font-size:11px; color:#4b5563; line-height:1.6; transition:opacity 0.25s ease; opacity:0;"></div>
+                            </div>
+                            ` : ''}
+                            
+                        </div>
+                        <div id="total-bloque-${plan.id}" class="bg-red-50 claro-text-red font-bold text-center border-t-2 border-dashed border-red-300 p-3 mx-4 mb-4 rounded-lg" style="transition:opacity 0.2s ease;">
+                            ${plan.totalPrice}
+                        </div>
+                    </div>
+                    <div class="p-4 flex flex-col space-y-2 individual-buttons">
+                        <div class="flex space-x-2">
+                            <button onclick="copyImageToClipboard('capture-content-${plan.id}')" 
+                                class="flex-1 font-semibold p-2 rounded-lg shadow-md elegant-3d-button neon-silver">
+                                📸 Capturar
+                            </button>
+                            <button onclick="copyTextToClipboard('${plan.id}')" 
+                                class="flex-1 text-white font-semibold p-2 rounded-lg shadow-md message-copy-button">
+                                📋 Copiar Mensaje
+                            </button>
+                        </div>
+                        <span class="text-center text-xs mt-2 transition-opacity duration-300 h-4"></span>
+                    </div>
+                </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+
+        // ======================================================
+        // SISTEMA DE LÍNEAS ADICIONALES
+        // ======================================================
+
+        // Cierra todos los pickers abiertos excepto el indicado
+        function cerrarTodosPickers(exceptPlanId) {
+            document.querySelectorAll('[id^="adicionales-picker-"]').forEach(el => {
+                if (!exceptPlanId || el.id !== 'adicionales-picker-' + exceptPlanId) {
+                    el.style.display = 'none';
+                }
+            });
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.adicionales-selector')) {
+                cerrarTodosPickers(null);
+            }
+        });
+
+        function toggleAdicionalPicker(planId) {
+            const picker = document.getElementById('adicionales-picker-' + planId);
+            if (!picker) return;
+            const isVisible = picker.style.display !== 'none';
+            cerrarTodosPickers(planId);
+            picker.style.display = isVisible ? 'none' : 'block';
+        }
+
+        function seleccionarAdicional(planId, cantidad) {
+            const label = document.getElementById('adicionales-label-' + planId);
+            const picker = document.getElementById('adicionales-picker-' + planId);
+            if (label) {
+                label.textContent = cantidad === 0 ? '0 — Sin adicionales' :
+                    cantidad + ' línea' + (cantidad > 1 ? 's' : '') + ' adicional' + (cantidad > 1 ? 'es' : '');
+            }
+            if (picker) picker.style.display = 'none';
+            calcularPlan(planId, cantidad);
+        }
+
+        function limpiarNumero(str) {
+            if (!str) return 0;
+            const match = String(str).match(/[\d]+(?:[.,]\d+)*/);
+            if (!match) return 0;
+            return parseInt(match[0].replace(/[.,]/g, ''), 10) || 0;
+        }
+
+        function extraerNumeroDesdeTexto(str) {
+            if (!str) return 0;
+            // Busca número precedido por $ primero, si no, el número más largo
+            const matchDollar = String(str).match(/\$\s*([\d]+(?:[.,]\d+)*)/);
+            if (matchDollar) return parseInt(matchDollar[1].replace(/[.,]/g, ''), 10) || 0;
+            const match = String(str).match(/[\d]+(?:[.,]\d+){1,}/);
+            if (match) return parseInt(match[0].replace(/[.,]/g, ''), 10) || 0;
+            return 0;
+        }
+
+        function calcularPlan(planId, cantidad) {
+            const plan = claroPlans.find(p => p.id === planId);
+            if (!plan) return;
+
+            const precioBaseOferta = limpiarNumero(plan.price);
+            const precioBaseNormal = extraerNumeroDesdeTexto(plan.afterDiscount);
+            const precioAdicionalOferta = limpiarNumero(plan.additionalPrice);
+            const precioAdicionalNormal = 9743;
+
+            const total6 = precioBaseOferta + (cantidad * precioAdicionalOferta);
+            const total7 = precioBaseNormal + (cantidad * precioAdicionalNormal);
+
+            actualizarVisualModulo(planId, {
+                cantidad,
+                precioBaseOferta,
+                precioBaseNormal,
+                precioAdicionalOferta,
+                precioAdicionalNormal,
+                total6,
+                total7,
+                originalTotal: plan.totalPrice
+            });
+        }
+
+        function actualizarVisualModulo(planId, datos) {
+            const fmt = n => new Intl.NumberFormat('es-CL').format(n);
+            const totalBloque = document.getElementById(`total-bloque-${planId}`);
+            const detalleBloque = document.getElementById(`adicionales-detalle-${planId}`);
+
+            if (!totalBloque) return;
+
+            // Fade out
+            totalBloque.style.opacity = '0';
+
+            setTimeout(() => {
+                if (datos.cantidad === 0) {
+                    totalBloque.textContent = datos.originalTotal;
+                    if (detalleBloque) {
+                        detalleBloque.innerHTML = '';
+                        detalleBloque.style.display = 'none';
+                        detalleBloque.style.opacity = '0';
+                    }
+                } else {
+                    const lineasTotales = 1 + datos.cantidad;
+                    totalBloque.textContent = `${lineasTotales} Planes x $${fmt(datos.total6)}`;
+
+                    if (detalleBloque) {
+                        detalleBloque.style.display = 'block';
+                        detalleBloque.innerHTML = `
+                            <div style="font-size:11px; font-weight:700; color:#e60000; margin-bottom:5px; padding-bottom:4px; border-bottom:1px solid #fca5a5; font-family:inherit;">
+                                🧮 ${datos.cantidad} línea${datos.cantidad > 1 ? 's' : ''} adicional${datos.cantidad > 1 ? 'es' : ''} (${lineasTotales} planes en total)
+                            </div>
+                            <table style="width:100%; border-collapse:collapse; font-size:11px; color:#4b5563; font-family:inherit;">
+                            <tr><td>Base (6 meses):</td><td style="text-align:right; font-weight:600;">$${fmt(datos.precioBaseOferta)}</td></tr>
+                            <tr><td>Adicional c/u:</td><td style="text-align:right; font-weight:600;">$${fmt(datos.precioAdicionalOferta)}</td></tr>
+                            <tr><td>Total adicionales (x${datos.cantidad}):</td><td style="text-align:right; font-weight:600;">$${fmt(datos.cantidad * datos.precioAdicionalOferta)}</td></tr>
+                            <tr><td colspan="2" style="border-top:1px solid #e5e7eb; padding:2px 0;"></td></tr>
+                            <tr><td style="font-weight:600; color:#374151;">Total mes 1-6:</td><td style="text-align:right; font-weight:700; color:#e60000;">$${fmt(datos.total6)}</td></tr>
+                            <tr><td style="font-weight:600; color:#374151;">Total desde mes 7:</td><td style="text-align:right; font-weight:700; color:#1f2937;">$${fmt(datos.total7)}</td></tr>
+                        </table>`;
+                        detalleBloque.style.opacity = '0';
+                        setTimeout(() => { detalleBloque.style.opacity = '1'; }, 10);
+                    }
+                }
+                // Fade in
+                totalBloque.style.opacity = '1';
+            }, 150);
+        }
+
+        // ======================================================
+        // FIN SISTEMA DE LÍNEAS ADICIONALES
+        // ======================================================
+
+        window.onload = function() {
+            claroPlans = initialClaroPlans; 
+            localStorage.removeItem('claro-offers');
+            renderOffers(claroPlans); 
+            
+            /* --- ELIMINADOS LOS LISTENERS DE 'adjustViewportScale' --- */
+            
+            // ELIMINAMOS: la lógica de actualización de fecha global, ya que está en index.html
+        };
+    </script>
+    
+    <!-- ================================================== -->
+    <!-- MODIFICACIÓN SOLICITADA: BOTÓN ACTUALIZAR + DEDO -->
+    <!-- ================================================== -->
+    <div id="refresh-area" class="w-full flex justify-center py-6 no-print" style="margin-top: 20px; padding-bottom: 40px;">
+        <button id="btn-force-refresh" 
+                style="background-color: #333; color: white; font-weight: bold; padding: 12px 24px; border-radius: 30px; border: 2px solid #555; box-shadow: 0 4px 6px rgba(0,0,0,0.3); cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-size: 14px; z-index: 50;">
+            ACTUALIZAR PÁGINA
+        </button>
+    </div>
+
+    <script>
+        (function() {
+            var btn = document.getElementById('btn-force-refresh');
+            var storageKey = 'claro_refresh_done_v1';
+
+            btn.addEventListener('click', function() {
+                document.cookie.split(";").forEach(function(c) { 
+                    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+                });
+                localStorage.clear();
+                if ('caches' in window) {
+                    caches.keys().then(function(names) {
+                        names.forEach(function(name) { caches.delete(name); });
+                    });
+                }
+                sessionStorage.clear();
+                sessionStorage.setItem(storageKey, 'true');
+                var url = new URL(window.location.href);
+                url.searchParams.set('force_update', new Date().getTime());
+                window.location.href = url.toString();
+            });
+        })();
+    </script>
+</body>
+
+</html>

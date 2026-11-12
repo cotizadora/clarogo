@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Tutoriales — ClaroGo!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,600;0,6..12,700;0,6..12,800;0,6..12,900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --red:      #E60000;
+      --red-dk:   #B50000;
+      --red-lt:   #fff0f0;
+      --bg:       #eef1f7;
+      --card:     #ffffff;
+      --border:   #d0d7e4;
+      --text:     #1a1e2e;
+      --muted:    #5a6480;
+      --dim:      #9aa0b4;
+      --accent:   #1A73E8;
+      --green:    #34a853;
+      --yellow:   #f9ab00;
+      --neon:     #00FFB2;
+      --radius:   16px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Nunito Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* ── PAGE SHELL ───────────────────────── */
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── TOPBAR ────────────────────────────── */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 56px;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(80,100,160,0.08);
+    }
+
+    .topbar-back {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--red);
+      font-size: 1.4rem;
+      line-height: 1;
+      padding: 4px 8px;
+      border-radius: 8px;
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Nunito Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+    .topbar-back:hover { background: var(--red-lt); }
+    .topbar-back svg { width: 18px; height: 18px; stroke: var(--red); }
+
+    .topbar-title {
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .topbar-brand {
+      margin-left: auto;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--red);
+      background: rgba(230,0,0,0.07);
+      border: 1px solid rgba(230,0,0,0.18);
+      border-radius: 999px;
+      padding: 4px 12px;
+    }
+
+    /* ── HERO BANNER ───────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, #fff 0%, #fff5f5 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 32px 24px 28px;
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .hero-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(145deg, #fff, #ffe0e0);
+      border: 1.5px solid rgba(230,0,0,0.2);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 20px rgba(230,0,0,0.14);
+      flex-shrink: 0;
+    }
+    .hero-icon svg { width: 28px; height: 28px; stroke: var(--red); }
+
+    .hero-text h1 {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+    .hero-text p {
+      font-size: 0.84rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* ── FILTER TABS ───────────────────────── */
+    .filters {
+      padding: 16px 20px 0;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover { border-color: var(--red); color: var(--red); }
+    .filter-btn.active {
+      background: var(--red);
+      border-color: var(--red);
+      color: #fff;
+    }
+
+    /* ── GRID ──────────────────────────────── */
+    .grid-section {
+      padding: 20px 20px 32px;
+    }
+
+    .section-label {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    /* ── TUTORIAL CARD ─────────────────────── */
+    .tcard {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--border);
+      box-shadow: 0 2px 12px rgba(80,100,160,0.07);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.18s, box-shadow 0.18s, border-top-color 0.2s;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tcard:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(80,100,160,0.14);
+    }
+    .tcard:active { transform: translateY(-1px); }
+    .tcard.is-real { border-top-color: var(--green); }
+    .tcard.is-real:hover { box-shadow: 0 10px 30px rgba(52,168,83,0.18); }
+
+    .tcard-thumb {
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .tcard-thumb-icon {
+      font-size: 2.4rem;
+      z-index: 1;
+    }
+
+    .tcard-body {
+      padding: 14px 16px 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tcard-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .tcard-cat {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    .cat-permisos  { background: rgba(52,168,83,0.1);  color: #2d8a47; border: 1px solid rgba(52,168,83,0.2); }
+    .cat-navegador { background: rgba(26,115,232,0.1); color: #1558b0; border: 1px solid rgba(26,115,232,0.2); }
+    .cat-plataforma{ background: rgba(230,0,0,0.09);   color: var(--red); border: 1px solid rgba(230,0,0,0.2); }
+
+    .tcard-duration {
+      margin-left: auto;
+      font-size: 0.68rem;
+      color: var(--dim);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .tcard-duration svg { width: 11px; height: 11px; stroke: var(--dim); }
+
+    .tcard-title {
+      font-size: 0.96rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+
+    .tcard-desc {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    .tcard-footer {
+      padding: 10px 16px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #f0f2f5;
+    }
+
+    .tcard-badge {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+    .badge-real  { background: rgba(52,168,83,0.1);  color: #2d8a47; border: 1px solid rgba(52,168,83,0.2); }
+    .badge-new   { background: var(--red); color: #fff; }
+
+    .tcard-cta {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .tcard-cta:hover { background: #2a8e45; transform: scale(1.05); }
+    .tcard-cta svg { width: 13px; height: 13px; stroke: #fff; fill: none; }
+
+    /* ══════════════════════════════════════════
+       PHONE-FRAME MODAL (solo para tutorial de permisos)
+    ══════════════════════════════════════════ */
+    #modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(10, 12, 20, 0.82);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn 0.25s ease;
+    }
+    #modal-overlay.open { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    #phone-shell {
+      position: relative;
+      width: min(390px, 94vw);
+      height: min(760px, 85vh);
+      background: #111;
+      border-radius: 44px;
+      box-shadow:
+        0 0 0 2px #333,
+        0 0 0 4px #1a1a1a,
+        0 40px 80px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: phoneIn 0.35s cubic-bezier(0.16,1,0.3,1);
+    }
+    @keyframes phoneIn {
+      from { opacity: 0; transform: scale(0.92) translateY(20px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .phone-notch {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 28px;
+      background: #111;
+      border-radius: 0 0 18px 18px;
+      z-index: 10;
+    }
+
+    .phone-topbar {
+      flex-shrink: 0;
+      height: 44px;
+      background: #1c1c1e;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 44px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .phone-url {
+      flex: 1;
+      background: rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 5px 12px;
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.6);
+      font-family: monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #phone-iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+      background: #f8f9fa;
+    }
+
+    #modal-close {
+      position: absolute;
+      top: -12px;
+      right: -12px;
+      width: 40px;
+      height: 40px;
+      background: #fff;
+      border: none;
+      border-radius: 50%;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      transition: all 0.2s;
+      z-index: 2;
+    }
+    #modal-close:hover {
+      background: var(--red-lt);
+      transform: scale(1.08);
+    }
+
+    .phone-label {
+      position: absolute;
+      bottom: -32px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.5);
+      white-space: nowrap;
+      font-weight: 500;
+    }
+
+    /* ── FOOTER ───────────────────────────── */
+    .page-footer {
+      margin-top: auto;
+      padding: 20px;
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--dim);
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 600px) {
+      .hero { padding: 24px 16px; gap: 14px; }
+      .hero-text h1 { font-size: 1.25rem; }
+      .grid { grid-template-columns: 1fr; }
+      #phone-shell {
+        width: 100vw;
+        height: 100dvh;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      #modal-overlay { padding: 0; }
+      #modal-close { top: 12px; right: 12px; }
+      .phone-label { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <button class="topbar-back" onclick="history.back()">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Inicio
+    </button>
+    <span class="topbar-title">Tutoriales</span>
+    <span class="topbar-brand">ClaroGo!</span>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <div class="hero-text">
+      <h1>Guías paso a paso</h1>
+      <p>Tutoriales interactivos para configurar permisos en Android,<br>limpiar cookies en PC y enviar WhatsApp sin contactos.</p>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <button class="filter-btn active" onclick="filtrar('todos',this)">Todos</button>
+    <button class="filter-btn" onclick="filtrar('Permisos',this)">Permisos</button>
+    <button class="filter-btn" onclick="filtrar('Navegador',this)">Navegador</button>
+    <button class="filter-btn" onclick="filtrar('Plataforma',this)">Plataforma</button>
+  </div>
+
+  <!-- GRID -->
+  <div class="grid-section">
+    <div class="section-label">Tutoriales disponibles</div>
+    <div class="grid" id="tgrid"></div>
+  </div>
+
+  <div class="page-footer">Desarrollado por Eduardo Pérez · ClaroGo! v2025</div>
+</div>
+
+<!-- ══ PHONE-FRAME MODAL (solo para el tutorial de permisos) ══ -->
+<div id="modal-overlay" onclick="handleOverlayClick(event)">
+  <div style="position:relative;">
+    <div id="phone-shell">
+      <div class="phone-notch"></div>
+      <div class="phone-topbar">
+        <span class="phone-url" id="phone-url-label">Permisos.html</span>
+      </div>
+      <iframe id="phone-iframe" title="Tutorial Android" allow="camera; microphone"></iframe>
+    </div>
+    <button id="modal-close" onclick="cerrarModal()" title="Cerrar tutorial">✕</button>
+    <div class="phone-label">Simulación Android · Paso a paso</div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  DATOS DE TUTORIALES
+// ══════════════════════════════════════════════════════
+var TUTORIALES = [
+  {
+    id: 'permisos-camara',
+    title: 'Permitir cámara en Android',
+    desc: 'Habilita el permiso de cámara en Chrome paso a paso, con guía visual interactiva. Necesario para escanear QR, videollamadas y validaciones biométricas.',
+    cat: 'Permisos',
+    duration: '2 min',
+    emoji: '📷',
+    thumbColor: '#d4f7e8',
+    real: true,
+    new: false,
+    file: 'Permisos.html',
+    mobileFrame: true   // Este se muestra dentro del teléfono simulado
+  },
+  {
+    id: 'borrar-cookies',
+    title: 'Borrar cookies en Chrome y Edge',
+    desc: 'Elimina cookies y datos de sitios en Chrome y Edge desde tu PC. Soluciona problemas de sesión, carga lenta y errores en plataformas. Tutorial interactivo con ambos navegadores.',
+    cat: 'Navegador',
+    duration: '3 min',
+    emoji: '🧹',
+    thumbColor: '#e8f0fd',
+    real: true,
+    new: true,
+    file: 'Cookies.html',
+    mobileFrame: false  // Se abre en nueva pestaña (PC)
+  },
+  {
+    id: 'wsp-sin-contacto',
+    title: 'Enviar WhatsApp sin guardar el número',
+    desc: 'Escribe a cualquier cliente por WhatsApp Web desde tu PC sin necesidad de agregar su número a los contactos. Método rápido con enlace wa.me.',
+    cat: 'Plataforma',
+    duration: '3 min',
+    emoji: '💬',
+    thumbColor: '#dcf8e0',
+    real: true,
+    new: true,
+    file: 'WhatsAppSinContacto.html',
+    mobileFrame: false  // Se abre en nueva pestaña (PC)
+  }
+];
+
+// ── RENDER CARDS ──────────────────────────────────────
+var currentFilter = 'todos';
+
+function getCatClass(cat) {
+  var map = {
+    'Permisos':   'cat-permisos',
+    'Navegador':  'cat-navegador',
+    'Plataforma': 'cat-plataforma'
+  };
+  return map[cat] || 'cat-plataforma';
+}
+
+function renderGrid(filter) {
+  var grid = document.getElementById('tgrid');
+  var list = filter === 'todos' ? TUTORIALES : TUTORIALES.filter(function(t){ return t.cat === filter; });
+
+  if (list.length === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);font-size:0.88rem;">No hay tutoriales en esta categoría aún.</div>';
+    return;
+  }
+
+  grid.innerHTML = list.map(function(t) {
+    var badgeHtml = t.real
+      ? (t.new ? '<span class="tcard-badge badge-new">Nuevo ✦</span>' : '<span class="tcard-badge badge-real">Disponible</span>')
+      : '<span class="tcard-badge badge-soon">Próximamente</span>';
+
+    var ctaHtml = t.real
+      ? '<button class="tcard-cta" onclick="abrirTutorial(\'' + t.file + '\',\'' + t.title + '\',' + t.mobileFrame + ')">'
+        + '<svg viewBox="0 0 24 24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>'
+        + 'Ver tutorial'
+        + '</button>'
+      : '';
+
+    var cardClass = 'tcard is-real';
+    var clickAttr = t.real
+      ? 'onclick="abrirTutorial(\'' + t.file + '\',\'' + t.title + '\',' + t.mobileFrame + ')"'
+      : '';
+
+    return '<div class="' + cardClass + '" ' + clickAttr + ' data-cat="' + t.cat + '">'
+      + '<div class="tcard-thumb" style="background:' + t.thumbColor + ';">'
+      + '<div class="tcard-thumb-icon">' + t.emoji + '</div>'
+      + '</div>'
+      + '<div class="tcard-body">'
+      + '<div class="tcard-meta">'
+      + '<span class="tcard-cat ' + getCatClass(t.cat) + '">' + t.cat + '</span>'
+      + '<span class="tcard-duration">'
+      + '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+      + t.duration
+      + '</span>'
+      + '</div>'
+      + '<div class="tcard-title">' + t.title + '</div>'
+      + '<div class="tcard-desc">' + t.desc + '</div>'
+      + '</div>'
+      + '<div class="tcard-footer">'
+      + badgeHtml
+      + ctaHtml
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function filtrar(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderGrid(cat);
+}
+
+// ── ABRIR TUTORIAL (según si necesita marco de teléfono o no) ──
+function abrirTutorial(file, title, mobileFrame) {
+  if (mobileFrame === true) {
+    // Abrir dentro del modal con frame de teléfono (simulación Android)
+    var overlay = document.getElementById('modal-overlay');
+    var iframe  = document.getElementById('phone-iframe');
+    var label   = document.getElementById('phone-url-label');
+    iframe.src = '';
+    label.textContent = file;
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(function(){ iframe.src = file; }, 80);
+  } else {
+    // Abrir en nueva pestaña (tutorial para PC)
+    window.open(file, '_blank');
+  }
+}
+
+function cerrarModal() {
+  var overlay = document.getElementById('modal-overlay');
+  var iframe  = document.getElementById('phone-iframe');
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+  setTimeout(function(){ iframe.src = ''; }, 200);
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modal-overlay')) {
+    cerrarModal();
+  }
+}
+
+// ── ESC TO CLOSE MODAL ──────────────────────────────────────
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape') cerrarModal();
+});
+
+// ── INIT ──────────────────────────────────────────────
+renderGrid('todos');
+</script>
+</body>
+</html>

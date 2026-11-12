@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería Claro Chile - Smartphones</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a0505 0%, #2d0a0a 50%, #0d0d0d 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #fff;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(230, 0, 0, 0.05);
+            border: 1px solid rgba(230, 0, 0, 0.2);
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            aspect-ratio: 1 / 1;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(230, 0, 0, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(230, 0, 0, 0.3), 0 0 60px rgba(230, 0, 0, 0.1);
+            border-color: rgba(230, 0, 0, 0.5);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s;
+        }
+
+        .card:hover .card-image {
+            transform: scale(1.05);
+        }
+
+        .card-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(20,0,0,0.7), transparent);
+            z-index: 2;
+        }
+
+        .card-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fff;
+            text-align: center;
+            letter-spacing: 0.5px;
+            line-height: 1.3;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-image-container {
+            position: relative;
+            max-width: 90%;
+            max-height: 80%;
+            animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: scale(0.8) translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(230, 0, 0, 0.2);
+        }
+
+        .modal-title {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.3rem;
+            color: #fff;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        /* Controles */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(230, 0, 0, 0.8);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .nav-btn:hover {
+            background: #e60000;
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 0 20px rgba(230, 0, 0, 0.5);
+        }
+
+        .nav-btn.prev { left: 20px; }
+        .nav-btn.next { right: 20px; }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .close-btn:hover {
+            background: #e60000;
+            transform: rotate(90deg);
+        }
+
+        /* Botones de acción */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #e60000, #b30000);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(230, 0, 0, 0.3);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(230, 0, 0, 0.5);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        .action-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .action-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            padding: 15px 30px;
+            border-radius: 50px;
+            border: 1px solid #e60000;
+            opacity: 0;
+            transition: all 0.4s;
+            z-index: 2000;
+            font-weight: 500;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .gallery {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .gallery {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            /* 1. Imágenes adaptadas: sin proporción rígida */
+            .card {
+                aspect-ratio: auto;
+                height: auto;
+            }
+
+            .card-image {
+                width: 100%;
+                height: auto;
+                object-fit: contain;
+            }
+
+            /* 2. Modal fullscreen real en móvil */
+            .modal-content {
+                padding: 10px;
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            .modal-image-container {
+                max-width: 100%;
+                max-height: 100%;
+            }
+
+            .modal-image {
+                max-width: 100%;
+                max-height: 60vh;
+            }
+
+            .modal-title {
+                font-size: 1rem;
+                padding: 0 10px;
+            }
+
+            /* 3. Botones grandes y táctiles */
+            .nav-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+
+            .nav-btn.prev { left: 10px; }
+            .nav-btn.next { right: 10px; }
+
+            .close-btn {
+                width: 45px;
+                height: 45px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                width: 100%;
+                padding: 0 20px;
+            }
+
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 16px;
+                font-size: 1rem;
+                border-radius: 12px;
+            }
+
+            /* 6. Toast posición en móvil */
+            .toast {
+                width: 90%;
+                text-align: center;
+            }
+        }
+
+        /* Loading state */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ── BUSCADOR ── */
+        #search-bar {
+            max-width: 1400px;
+            margin: 0 auto 24px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        #search-icon {
+            position: absolute;
+            left: 14px;
+            font-size: 15px;
+            opacity: .5;
+            pointer-events: none;
+        }
+        #search-input {
+            width: 100%;
+            background: rgba(28, 8, 8, 0.85);
+            border: 1px solid rgba(230, 0, 0, 0.35);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 0.95rem;
+            font-family: inherit;
+            padding: 11px 38px 11px 38px;
+            outline: none;
+            transition: border-color .25s, box-shadow .25s;
+        }
+        #search-input::placeholder { color: rgba(255,255,255,.35); }
+        #search-input:focus {
+            border-color: rgba(230, 0, 0, 0.75);
+            box-shadow: 0 0 0 3px rgba(230,0,0,.12);
+        }
+        #search-clear {
+            position: absolute;
+            right: 10px;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,.4);
+            font-size: 15px;
+            cursor: pointer;
+            padding: 4px 7px;
+            border-radius: 50%;
+            display: none;
+            line-height: 1;
+            transition: color .2s;
+        }
+        #search-clear:hover { color: #e60000; }
+        #no-results {
+            display: none;
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255,255,255,.35);
+            font-size: 1rem;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div id="search-bar">
+        <span id="search-icon">🔍</span>
+        <input id="search-input" type="text" placeholder="Buscar dispositivo…" autocomplete="off" spellcheck="false">
+        <button id="search-clear" title="Limpiar">✕</button>
+    </div>
+
+    <div class="gallery" id="gallery"></div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">×</button>
+            <button class="nav-btn prev" onclick="changeImage(-1)">‹</button>
+            <button class="nav-btn next" onclick="changeImage(1)">›</button>
+            
+            <div class="modal-image-container">
+                <img class="modal-image" id="modalImage" src="" alt="">
+                <div class="modal-title" id="modalTitle"></div>
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="copyImage()" id="copyBtn">
+                        <span>📋</span> Copiar Imagen
+                    </button>
+                    <button class="action-btn secondary" onclick="downloadImage()">
+                        <span>⬇️</span> Descargar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Lista de imágenes
+        const images = [
+            "01_HONOR 400 SMART 5G 256GB.jpg",
+            "02_HONOR MAGIC 8 LITE 5G 256GB.jpg",
+            "03_HONOR X6B 5G 256GB.jpg",
+            "04_SAMSUNG GALAXY A06 5G 128GB.jpg",
+            "05_XIAOMI REDMI 15C 128GB.jpg",
+            "06_XIAOMI REDMI 15C 256GB.jpg",
+            "07_MOTOROLA G56 5G 256GB.jpg",
+            "08_ZTE BLADE V70 MAX 256GB.jpg",
+            "09_ZTE NUBIA NEO 3 GT 5G 256GB.jpg",
+            "10_Redmi Note 15 Pro 5G 512GB Titanio Buds 6 Play.jpg",
+            "11_S25 FE 5G 128GB Black.jpg"
+        ];
+
+        let currentIndex = 0;
+
+        // Función para limpiar nombre del archivo
+        function cleanName(filename) {
+            return filename
+                .replace(/^\d+_/, '')
+                .replace(/\.jpg$/i, '');
+        }
+
+        // Crear galería
+        function createGallery() {
+            const gallery = document.getElementById('gallery');
+            images.forEach((img, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => openModal(index);
+                
+                card.innerHTML = `
+                    <img class="card-image" src="${img}" alt="${cleanName(img)}" loading="lazy">
+                    <div class="card-info">
+                        <div class="card-title">${cleanName(img)}</div>
+                    </div>
+                `;
+                
+                gallery.appendChild(card);
+            });
+        }
+
+        // Abrir modal
+        function openModal(index) {
+            currentIndex = index;
+            const modal = document.getElementById('modal');
+            const modalImg = document.getElementById('modalImage');
+            const modalTitle = document.getElementById('modalTitle');
+            
+            modalImg.src = images[currentIndex];
+            modalTitle.textContent = cleanName(images[currentIndex]);
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Cerrar modal
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Cambiar imagen
+        function changeImage(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = images.length - 1;
+            if (currentIndex >= images.length) currentIndex = 0;
+            
+            const modalImg = document.getElementById('modalImage');
+            const modalTitle = document.getElementById('modalTitle');
+            
+            // Animación de transición
+            modalImg.style.opacity = '0';
+            setTimeout(() => {
+                modalImg.src = images[currentIndex];
+                modalTitle.textContent = cleanName(images[currentIndex]);
+                modalImg.style.opacity = '1';
+            }, 200);
+        }
+
+        // Copiar imagen al portapapeles (optimizada para WhatsApp)
+        async function copyImage() {
+            const btn = document.getElementById('copyBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="loading"></span> Procesando...';
+            btn.disabled = true;
+
+            try {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.src = images[currentIndex];
+                
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = reject;
+                });
+
+                // Crear canvas con resolución reducida (máx 1600px)
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                let width = img.width;
+                let height = img.height;
+                const maxSize = 1600;
+                
+                if (width > maxSize || height > maxSize) {
+                    if (width > height) {
+                        height = (height / width) * maxSize;
+                        width = maxSize;
+                    } else {
+                        width = (width / height) * maxSize;
+                        height = maxSize;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Dibujar con calidad moderada
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0, 0, width, height);
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Convertir a blob PNG
+                const blob = await new Promise(resolve => {
+                    canvas.toBlob(resolve, 'image/png', 0.8);
+                });
+                
+                // Escribir al clipboard
+                await navigator.clipboard.write([
+                    new ClipboardItem({
+                        'image/png': blob
+                    })
+                ]);
+                
+                showToast('✅ Imagen copiada al portapapeles');
+            } catch (error) {
+                console.error('Error al copiar:', error);
+                // ── FALLBACK MÓVIL: clipboard no soportado → descargar automáticamente ──
+                try {
+                    downloadImage();
+                    showToast('📥 Imagen descargada (copiado no soportado en este dispositivo)');
+                } catch (downloadError) {
+                    showToast('❌ Error al copiar la imagen');
+                }
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Descargar imagen
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.href = images[currentIndex];
+            link.download = images[currentIndex];
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('⬇️ Descargando imagen...');
+        }
+
+        // Mostrar toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Event listeners de teclado
+        document.addEventListener('keydown', (e) => {
+            const modal = document.getElementById('modal');
+            if (!modal.classList.contains('active')) return;
+            
+            if (e.key === 'Escape') closeModal();
+            if (e.key === 'ArrowLeft') changeImage(-1);
+            if (e.key === 'ArrowRight') changeImage(1);
+        });
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeModal();
+        });
+
+        // ── BUSCADOR ──
+        function initSearch() {
+            const input = document.getElementById('search-input');
+            const clearBtn = document.getElementById('search-clear');
+
+            input.addEventListener('input', function() {
+                const q = this.value.trim().toLowerCase();
+                clearBtn.style.display = q ? 'block' : 'none';
+                let visible = 0;
+                document.querySelectorAll('#gallery .card').forEach(card => {
+                    const title = card.querySelector('.card-title').textContent.toLowerCase();
+                    const show = title.includes(q);
+                    card.style.display = show ? '' : 'none';
+                    if (show) visible++;
+                });
+                let noRes = document.getElementById('no-results');
+                if (!noRes) {
+                    noRes = document.createElement('div');
+                    noRes.id = 'no-results';
+                    noRes.textContent = '🔍 Sin resultados';
+                    document.getElementById('gallery').appendChild(noRes);
+                }
+                noRes.style.display = visible === 0 ? 'block' : 'none';
+            });
+
+            clearBtn.addEventListener('click', function() {
+                input.value = '';
+                this.style.display = 'none';
+                document.querySelectorAll('#gallery .card').forEach(c => c.style.display = '');
+                const noRes = document.getElementById('no-results');
+                if (noRes) noRes.style.display = 'none';
+                input.focus();
+            });
+        }
+
+        // Inicializar
+        createGallery();
+        initSearch();
+
+        // ── MEJORAS EXCLUSIVAS MÓVIL ──────────────────────────────────────────────
+        (function() {
+            // Solo ejecutar en dispositivos táctiles / pantallas pequeñas
+            if (window.innerWidth > 600 && !('ontouchstart' in window)) return;
+
+            // 5. SWIPE táctil en el modal para cambiar imagen
+            let touchStartX = 0;
+            const SWIPE_THRESHOLD = 50; // px mínimos para considerar swipe
+
+            const modalContent = document.querySelector('.modal-content');
+
+            modalContent.addEventListener('touchstart', function(e) {
+                touchStartX = e.changedTouches[0].clientX;
+            }, { passive: true });
+
+            modalContent.addEventListener('touchend', function(e) {
+                const touchEndX = e.changedTouches[0].clientX;
+                const delta = touchStartX - touchEndX;
+
+                if (Math.abs(delta) >= SWIPE_THRESHOLD) {
+                    changeImage(delta > 0 ? 1 : -1);
+                }
+            }, { passive: true });
+
+            // 6. Scroll bloqueado en fondo al abrir modal; scroll interno permitido
+            const modalEl = document.getElementById('modal');
+            const observer = new MutationObserver(function() {
+                if (modalEl.classList.contains('active')) {
+                    document.body.style.overflow = 'hidden';
+                    document.body.style.position = 'fixed';
+                    document.body.style.width = '100%';
+                } else {
+                    document.body.style.overflow = '';
+                    document.body.style.position = '';
+                    document.body.style.width = '';
+                }
+            });
+            observer.observe(modalEl, { attributes: true, attributeFilter: ['class'] });
+
+            // 7. Texto dinámico del botón Copiar según plataforma móvil
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            if (isMobile) {
+                const copyBtn = document.getElementById('copyBtn');
+                if (copyBtn) {
+                    copyBtn.innerHTML = '<span>📋</span> Copiar / Descargar';
+                }
+            }
+        })();
+        // ── FIN MEJORAS MÓVIL ─────────────────────────────────────────────────────
+    </script>
+</body>
+</html>

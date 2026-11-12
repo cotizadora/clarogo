@@ -1,0 +1,2515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClaroGo! Catálogo de Equipos</title>
+
+    <meta property="og:title" content="ClaroGo! Catálogo de Equipos">
+    <meta property="og:description" content="Inventario de equipos móviles con stock y precios actualizados. ¡Encuentra tu próximo celular!">
+    <meta property="og:url" content="https://financiamiento.neocities.org/">
+    <meta property="og:type" content="website">
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="refresh" content="3600"> 
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --claro-red: #DA291C;
+            --claro-green: #28a745;
+            --claro-blue: #007bff;
+            --claro-cyan: #17a2b8;
+            --claro-yellow: #ffc107;
+            --background-color: #f8f9fa;
+            --card-background: #ffffff;
+            --text-color: #212529;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            /* AJUSTE DE COLUMNAS: Se añade una columna más para el Precio Total */
+            --grid-columns: 0.7fr 0.9fr 1.6fr 0.9fr 0.9fr 1fr 0.6fr 140px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 1.5rem;
+        }
+
+        .container {
+            max-width: 1250px; /* Un poco más ancho para que quepa la nueva columna */
+            margin: 0 auto;
+            background-color: var(--card-background);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            background-color: #f8f9fa;
+            align-items: center;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+
+        .filters input[type="text"],
+        .filters select,
+        .filters button {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .filters input[type="text"]:focus,
+        .filters select:focus {
+            outline: none;
+            border-color: var(--claro-red);
+            box-shadow: 0 0 0 3px rgba(218, 41, 28, 0.2);
+        }
+
+        /* --- CHECKBOX STOCK --- */
+        .stock-checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        
+        .stock-checkbox-container:hover {
+            background-color: #fff0f0;
+            border-color: #eecbc8;
+        }
+
+        .stock-checkbox-container input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+            accent-color: var(--claro-red);
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .stock-checkbox-container span {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* --- BOTONES DE ACCIÓN --- */
+        .reset-button {
+            background-color: var(--text-muted);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .reset-button:hover { background-color: #5a6268; }
+
+        .refresh-button {
+            background-color: var(--claro-red);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .refresh-button:hover { background-color: #b02015; }
+
+        .copy-all-button {
+            background-color: var(--claro-blue);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .copy-all-button:hover { background-color: #0056b3; }
+
+        /* Botón Filtro Rápido */
+        .quick-filter-button {
+            background-color: var(--claro-cyan);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .quick-filter-button:hover { background-color: #138496; }
+
+        /* --- BOTÓN BLACK SALE --- */
+        .black-sale-button {
+            background: linear-gradient(135deg, #1a1a1a 0%, #3a0000 50%, #DA291C 100%);
+            color: white;
+            border: 2px solid #DA291C;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            transition: all 0.25s;
+            box-shadow: 0 0 10px rgba(218, 41, 28, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .black-sale-button::before {
+            content: '🔥 ';
+        }
+        .black-sale-button:hover {
+            background: linear-gradient(135deg, #DA291C 0%, #3a0000 50%, #1a1a1a 100%);
+            box-shadow: 0 0 18px rgba(218, 41, 28, 0.7);
+            transform: translateY(-1px);
+        }
+        .black-sale-button.active {
+            background: linear-gradient(135deg, #DA291C, #b02015);
+            border-color: #ff4444;
+            box-shadow: 0 0 20px rgba(218, 41, 28, 0.8);
+        }
+
+        /* --- MODAL BLACK SALE --- */
+        .bs-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .bs-overlay.open { display: flex; }
+
+        .bs-modal {
+            background: #111;
+            border: 2px solid #DA291C;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 980px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 0 40px rgba(218,41,28,0.5);
+        }
+
+        .bs-header {
+            background: linear-gradient(135deg, #1a1a1a, #3a0000);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #DA291C;
+            border-radius: 14px 14px 0 0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .bs-header h2 {
+            margin: 0;
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+        .bs-header h2 span { color: #DA291C; }
+        .bs-close {
+            background: transparent;
+            border: 1px solid #555;
+            color: #aaa;
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+        .bs-close:hover { background: #DA291C; border-color: #DA291C; color: white; }
+
+        .bs-validity {
+            text-align: center;
+            color: #f5a623;
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 0.5rem 1.5rem;
+            background: rgba(245,166,35,0.08);
+            border-bottom: 1px solid #333;
+        }
+
+        /* --- TABS MODAL BLACK SALE --- */
+        .bs-tabs {
+            display: flex;
+            border-bottom: 2px solid #333;
+            background: #0d0d0d;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .bs-tabs::-webkit-scrollbar { display: none; }
+        .bs-tab-btn {
+            flex-shrink: 0;
+            padding: 0.75rem 1.25rem;
+            background: transparent;
+            border: none;
+            color: #888;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: color 0.2s, border-color 0.2s;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+        .bs-tab-btn:hover { color: #ccc; }
+        .bs-tab-btn.active { color: #DA291C; border-bottom-color: #DA291C; }
+
+        .bs-tab-panel { display: none; }
+        .bs-tab-panel.active { display: block; }
+
+        /* --- GUÍA COMERCIAL dentro del modal --- */
+        .guide-body {
+            padding: 1rem 1.5rem 1.5rem;
+            color: #ddd;
+        }
+        .guide-accordion { display: flex; flex-direction: column; gap: 8px; }
+
+        .guide-acc-item {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .guide-acc-item.open { border-color: #DA291C44; }
+
+        .guide-acc-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
+        }
+        .guide-acc-head:hover { background: #222; }
+
+        .guide-acc-icon {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+        .guide-acc-icon.red { background: rgba(218,41,28,0.15); }
+        .guide-acc-icon.blue { background: rgba(0,80,200,0.12); }
+        .guide-acc-icon.green { background: rgba(0,166,81,0.12); }
+        .guide-acc-icon.orange { background: rgba(245,166,35,0.12); }
+        .guide-acc-icon.purple { background: rgba(120,40,200,0.1); }
+
+        .guide-acc-label {
+            flex: 1;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #eee;
+        }
+        .guide-acc-label small {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: #888;
+            margin-top: 1px;
+        }
+        .guide-acc-arrow {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: #2a2a2a;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.6rem;
+            color: #888;
+            transition: transform 0.25s, background 0.2s;
+            flex-shrink: 0;
+        }
+        .guide-acc-item.open .guide-acc-arrow { transform: rotate(180deg); background: #DA291C; color: #fff; }
+
+        .guide-acc-body {
+            display: none;
+            padding: 16px 14px;
+            border-top: 1px solid #2a2a2a;
+            animation: fadeIn 0.2s ease;
+        }
+        .guide-acc-item.open .guide-acc-body { display: block; }
+
+        /* Content inside guide */
+        .g-section-title {
+            font-size: 0.62rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #DA291C;
+            margin-bottom: 10px;
+        }
+        .g-steps { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+        .g-steps li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: #222;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 0.82rem;
+            color: #ddd;
+            font-weight: 600;
+        }
+        .g-steps li .num {
+            min-width: 22px; height: 22px;
+            background: #DA291C;
+            color: #fff;
+            border-radius: 50%;
+            font-size: 0.68rem;
+            font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .g-steps li .step-detail {
+            font-weight: 400;
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 2px;
+        }
+        .g-rule-list { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        .g-rule-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: #ccc;
+            line-height: 1.5;
+        }
+        .g-rule-list li .dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+        .g-dot-red { background: #DA291C; }
+        .g-dot-green { background: #28a745; }
+        .g-dot-warn { background: #ffc107; }
+        .g-dot-blue { background: #4d8fff; }
+        .g-divider { height: 1px; background: #2a2a2a; margin: 14px 0; }
+        .g-alert {
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+        .g-alert .ico { font-size: 1rem; flex-shrink: 0; }
+        .g-alert.red { background: rgba(218,41,28,0.12); border: 1px solid rgba(218,41,28,0.3); color: #ffaaaa; }
+        .g-alert.green { background: rgba(40,167,69,0.1); border: 1px solid rgba(40,167,69,0.25); color: #90eab0; }
+        .g-alert.warn { background: rgba(255,193,7,0.1); border: 1px solid rgba(255,193,7,0.25); color: #ffd970; }
+        .g-alert.blue { background: rgba(77,143,255,0.1); border: 1px solid rgba(77,143,255,0.2); color: #aacfff; }
+
+        .g-channel-card {
+            background: #222;
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            border-left: 3px solid #DA291C;
+        }
+        .g-channel-card.blue { border-left-color: #4d8fff; }
+        .g-channel-title {
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: #eee;
+            margin-bottom: 6px;
+        }
+        .g-plan-card {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a0000 100%);
+            border: 1px solid rgba(218,41,28,0.25);
+            border-radius: 12px;
+            padding: 14px;
+            color: #fff;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .g-plan-name { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 3px; }
+        .g-plan-price { font-size: 1.4rem; font-weight: 900; color: #fff; letter-spacing: -0.02em; }
+        .g-plan-price sub { font-size: 0.85rem; font-weight: 400; color: rgba(255,255,255,0.5); }
+        .g-plan-regular { font-size: 0.66rem; color: rgba(255,255,255,0.3); text-decoration: line-through; margin-bottom: 8px; }
+        .g-plan-tag { position: absolute; top: 10px; right: 10px; background: #DA291C; color: #fff; font-size: 0.72rem; font-weight: 900; padding: 4px 9px; border-radius: 7px; }
+        .g-plan-features { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+        .g-plan-features li { font-size: 0.76rem; color: rgba(255,255,255,0.75); display: flex; align-items: center; gap: 5px; }
+        .g-plan-features li::before { content: '✓'; color: #DA291C; font-weight: 900; }
+
+        .bs-section-title {
+            color: #ccc;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 1rem 1.5rem 0.5rem;
+        }
+
+        .bs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 1rem;
+            padding: 0.5rem 1.5rem 1.5rem;
+        }
+
+        .bs-card {
+            background: #1c1c1c;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 1rem;
+            transition: border-color 0.2s, transform 0.15s;
+            position: relative;
+        }
+        .bs-card:hover {
+            border-color: #DA291C;
+            transform: translateY(-2px);
+        }
+        .bs-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.6rem;
+        }
+        .bs-card-model {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #eee;
+            line-height: 1.3;
+        }
+        .bs-card-badge {
+            background: #DA291C;
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            white-space: nowrap;
+            margin-left: 0.5rem;
+        }
+        .bs-card-ref {
+            font-size: 0.75rem;
+            color: #666;
+            text-decoration: line-through;
+            margin-bottom: 0.3rem;
+        }
+        .bs-card-prices {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.4rem;
+            margin-bottom: 0.75rem;
+        }
+        .bs-price-box {
+            background: #252525;
+            border-radius: 8px;
+            padding: 0.5rem 0.6rem;
+        }
+        .bs-price-box .label {
+            font-size: 0.65rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 0.2rem;
+        }
+        .bs-price-box .value {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .bs-price-box.highlight {
+            background: rgba(218,41,28,0.15);
+            border: 1px solid rgba(218,41,28,0.3);
+        }
+        .bs-price-box.highlight .value { color: #ff6b5b; }
+
+        .bs-copy-btn {
+            width: 100%;
+            background: #DA291C;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.55rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .bs-copy-btn:hover { background: #b02015; }
+        .bs-copy-btn.copied { background: #28a745; }
+        .bs-copy-btn.copied::after { content: ' ✓'; }
+
+        .bs-stock-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+        .bs-stock-info {
+            font-size: 0.72rem;
+            color: #777;
+            margin-bottom: 0.6rem;
+        }
+        .bs-no-stock { opacity: 0.45; }
+        .bs-no-stock .bs-card-model { color: #888; }
+
+        .bs-deadline-tag {
+            position: absolute;
+            top: 0.6rem;
+            right: 0.6rem;
+            background: #f5a623;
+            color: #000;
+            font-size: 0.62rem;
+            font-weight: 700;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+        }
+
+
+        .catalog-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: var(--grid-columns);
+            min-width: 1000px; /* Aumentado ligeramente para evitar colapso */
+        }
+
+        .catalog-header {
+            background-color: #f1f3f5;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .catalog-header > div {
+            padding: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s;
+        }
+
+        .catalog-header > div:hover {
+            background-color: #e9ecef;
+        }
+
+        .catalog-header .sort-indicator {
+            display: inline-block;
+            margin-left: 5px;
+            font-size: 1.2em;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+          .catalog-header .active .sort-indicator {
+            opacity: 1;
+        }
+
+        .catalog-row {
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.15s ease; /* Transición suave para el hover */
+            position: relative; /* Para contexto de z-index si fuera necesario */
+        }
+
+        .catalog-row:last-child {
+            border-bottom: none;
+        }
+
+        .catalog-row:hover {
+            background-color: #eff3f8; /* Color ligeramente más oscuro para resaltar */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); /* Sombra sutil autorizada */
+            z-index: 1; /* Asegura que la sombra se vea sobre bordes */
+        }
+
+        .catalog-row > div {
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Estilo para el precio total en negrita */
+        .total-price {
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .sku { 
+            color: var(--claro-red); 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: color 0.2s; 
+        }
+        .sku:hover {
+            color: #b02015; 
+        }
+
+        .stock-indicator {
+            padding: 0.25rem 0.6rem;
+            border-radius: 1rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: white;
+            text-align: center;
+        }
+        .stock-high { background-color: var(--claro-green); }
+        .stock-medium { background-color: var(--claro-yellow); color: #333; } 
+        .stock-low { background-color: var(--claro-red); }
+
+        .copy-button {
+            background-color: var(--claro-green);
+            color: white;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: background-color 0.2s, box-shadow 0.3s; /* Añadir box-shadow a la transición */
+            width: 100%;
+        }
+
+        .copy-button:hover {
+            background-color: #218838;
+        }
+        
+        /* Nuevo estilo para botones de Copiar ya presionados */
+        .copy-button.copied-button {
+            background-color: #1a7e44; /* Un verde más oscuro para indicar estado */
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.7); /* Efecto de brillo verde */
+            color: #e6e6e6;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            /* Opcional: Deshabilita temporalmente el hover para mantener la apariencia */
+            pointer-events: auto; /* Mantener clicable */
+        }
+        .copy-button.copied-button:hover {
+             background-color: #1a7e44; /* Mantener el mismo color al pasar el mouse */
+        }
+        .copy-button.copied-button::after {
+            content: ' ✓'; /* Añade un checkmark */
+            margin-left: 4px;
+            font-weight: 700;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #2c3e50;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -10px);
+        }
+
+        /* --- TOOLTIP FLOTANTE (Nuevo) --- */
+        .model-hover-tooltip {
+            position: fixed;
+            background-color: #212529; /* Color oscuro sobrio para consistencia */
+            color: #ffffff;
+            padding: 8px 14px; /* Un poco más de padding para mejor lectura */
+            border-radius: 4px;
+            font-size: 0.9rem; /* Ligeramente más grande */
+            font-weight: 500;
+            pointer-events: none; /* Crucial para no interferir con eventos */
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.1s ease; /* Transición más rápida */
+            display: none;
+            /* Asegurar que el tooltip esté siempre por encima */
+        }
+        .model-hover-tooltip.visible {
+            opacity: 1;
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .container {
+                border-radius: 0;
+            }
+
+            .filters {
+                grid-template-columns: 1fr 1fr; 
+                padding: 1rem;
+                border-top-left-radius: 0;
+                border-top-right-radius: 0;
+            }
+
+            .filters input[type="text"] {
+                grid-column: span 2; 
+            }
+            
+            .copy-all-button, .quick-filter-button {
+                grid-column: span 2;
+                margin-top: 0.5rem;
+            }
+
+            .catalog-wrapper {
+                overflow-x: hidden;
+            }
+
+            .catalog-grid {
+                min-width: 100%;
+            }
+
+            .catalog-header {
+                display: none;
+            }
+
+            .catalog-row {
+                display: block;
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                margin-bottom: 1rem;
+                padding: 0.5rem;
+            }
+
+            .catalog-row > div {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.8rem 0.5rem;
+                border-bottom: 1px solid #f1f3f5;
+                font-size: 1rem;
+                white-space: normal;
+                text-overflow: initial;
+                overflow: visible;
+            }
+
+            .catalog-row > div:last-child {
+                border-bottom: none;
+                padding-top: 1rem;
+            }
+            
+            .catalog-row > div::before {
+                font-weight: 600;
+                color: var(--text-muted);
+            }
+
+            /* AJUSTE PARA MÓVIL: Se agregan las etiquetas correspondientes a la nueva columna */
+            .catalog-row div:nth-of-type(1)::before { content: 'SKU'; }
+            .catalog-row div:nth-of-type(2)::before { content: 'Marca'; }
+            .catalog-row div:nth-of-type(3)::before { content: 'Modelo'; }
+            .catalog-row div:nth-of-type(4)::before { content: 'Pie Inicial'; }
+            .catalog-row div:nth-of-type(5)::before { content: '18 Cuotas'; }
+            .catalog-row div:nth-of-type(6)::before { content: 'Precio Total'; } /* Nueva etiqueta */
+            .catalog-row div:nth-of-type(7)::before { content: 'Stock'; }
+            .catalog-row div:nth-of-type(8)::before { content: ''; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="filters">
+            <input type="text" id="searchInput" placeholder="Buscar modelo, marca o SKU...">
+            <select id="brandFilter">
+                <option value="">Todas las marcas</option>
+            </select>
+            <select id="pieFilter">
+                <option value="">Cualquier pie</option>
+                <option value="0-0">Pie $0</option>
+                <option value="1-15000">Hasta $15.000</option>
+                <option value="15001-30000">$15.001 a $30.000</option>
+                <option value="30001-9999999">$30.001 o más</option>
+            </select>
+            
+            <label class="stock-checkbox-container">
+                <input type="checkbox" id="stockFilter">
+                <span>Solo Stock</span>
+            </label>
+
+            <button id="resetButton" class="reset-button" type="button">Limpiar</button>
+            <button id="hardRefreshButton" class="refresh-button" type="button">Forzar Actualización</button>
+            
+            <!-- BOTÓN DE FILTRO RÁPIDO -->
+            <button id="quickFilterButton" class="quick-filter-button" type="button">Filtro Rápido (Pie $0 + Stock)</button>
+
+            <button id="copyAllStockButton" class="copy-all-button" type="button">Copiar Lista Filtrada</button>
+            <button id="blackSaleButton" class="black-sale-button" type="button">BLACK SALE</button>
+        </div>
+
+        <!-- MODAL BLACK SALE -->
+        <div id="bsOverlay" class="bs-overlay">
+            <div class="bs-modal">
+                <div class="bs-header">
+                    <h2>🔥 <span>BLACK</span> SALE 2026</h2>
+                    <button id="bsClose" class="bs-close">✕ Cerrar</button>
+                </div>
+                <div class="bs-validity">⏰ Válido hasta el 5 de Abril de 2026 — Solo portabilidad primera línea</div>
+
+                <!-- PESTAÑAS -->
+                <div class="bs-tabs">
+                    <button class="bs-tab-btn active" data-tab="ofertas">📱 Ofertas & Stock</button>
+                    <button class="bs-tab-btn" data-tab="como">📋 ¿Cómo ofrecer?</button>
+                    <button class="bs-tab-btn" data-tab="comercial">📜 Condiciones Comer.</button>
+                    <button class="bs-tab-btn" data-tab="tecnico">⚙️ Condiciones Téc.</button>
+                    <button class="bs-tab-btn" data-tab="canales">📞 Canales</button>
+                    <button class="bs-tab-btn" data-tab="planes">📶 Planes Móvil</button>
+                </div>
+
+                <!-- PANEL 1: Ofertas (original) -->
+                <div id="bs-panel-ofertas" class="bs-tab-panel active">
+                    <div id="bsContent"><!-- generado por JS --></div>
+                </div>
+
+                <!-- PANEL 2: ¿Cómo ofrecer? -->
+                <div id="bs-panel-como" class="bs-tab-panel">
+                    <div class="guide-body">
+                        <div class="guide-accordion">
+                            <div class="guide-acc-item open" id="gacc-flujo">
+                                <div class="guide-acc-head" onclick="toggleGuide(this)">
+                                    <div class="guide-acc-icon red">📋</div>
+                                    <div class="guide-acc-label">Flujo de venta — Portabilidad con Equipo<small>Pasos para ofrecer correctamente</small></div>
+                                    <div class="guide-acc-arrow">▾</div>
+                                </div>
+                                <div class="guide-acc-body">
+                                    <div class="g-section-title">Flujo de venta</div>
+                                    <ol class="g-steps">
+                                        <li><span class="num">1</span><div>Verificar que el cliente viene de otro operador<div class="step-detail">La portabilidad es el requisito base. El equipo solo aplica si el cliente porta su número a Claro.</div></div></li>
+                                        <li><span class="num">2</span><div>Ofrecer el Plan antes que el Equipo<div class="step-detail">La venta se ancla en el plan. Los planes Black Sale tienen hasta 50% dcto por 6 meses. Primero engancha el plan, luego complementa con el equipo.</div></div></li>
+                                        <li><span class="num">3</span><div>Presentar el equipo según segmento del cliente<div class="step-detail">Todos los equipos en campaña son segmento High. Ofrece el modelo que calce con el presupuesto y el uso del cliente.</div></div></li>
+                                        <li><span class="num">4</span><div>Explicar las condiciones de financiamiento (RET-PET / PEB / REB)<div class="step-detail">Cada equipo tiene 3 vías de financiamiento. Explica claramente el precio contado, cuotas y total.</div></div></li>
+                                        <li><span class="num">5</span><div>Cerrar con el descuento de campaña visible<div class="step-detail">Mostrar el % de descuento respecto al precio de referencia genera urgencia y justifica la decisión de compra.</div></div></li>
+                                    </ol>
+                                    <div class="g-divider"></div>
+                                    <div class="g-section-title">Cuándo SÍ ofrecer equipo</div>
+                                    <ul class="g-rule-list">
+                                        <li><span class="dot g-dot-green"></span>El cliente viene de otro operador (portabilidad)</li>
+                                        <li><span class="dot g-dot-green"></span>El cliente necesita renovar o cambiar de equipo</li>
+                                        <li><span class="dot g-dot-green"></span>El cliente quiere un equipo de gama alta a precio rebajado</li>
+                                        <li><span class="dot g-dot-green"></span>El cliente puede comprometerse con un plan mensual</li>
+                                    </ul>
+                                    <div class="g-divider"></div>
+                                    <div class="g-section-title">Cuándo NO ofrecer equipo</div>
+                                    <ul class="g-rule-list">
+                                        <li><span class="dot g-dot-red"></span>El cliente ya es Claro y no está portando</li>
+                                        <li><span class="dot g-dot-red"></span>El cliente quiere comprar el equipo sin contratar plan</li>
+                                        <li><span class="dot g-dot-red"></span>El cliente requiere línea adicional (no aplica campaña de equipo)</li>
+                                        <li><span class="dot g-dot-red"></span>No hay stock disponible del modelo solicitado</li>
+                                    </ul>
+                                    <div class="g-alert warn"><span class="ico">⚠️</span><div>La campaña Black Sale de equipos está diseñada exclusivamente para portabilidad (primera línea). No corresponde ofrecerla a clientes Claro actuales que no aporten portabilidad.</div></div>
+                                    <div class="g-divider"></div>
+                                    <div class="g-section-title">Argumentos de venta por beneficio</div>
+                                    <ul class="g-rule-list">
+                                        <li><span class="dot g-dot-blue"></span><strong>Precio:</strong> Descuentos reales de hasta −70% sobre precio de referencia</li>
+                                        <li><span class="dot g-dot-blue"></span><strong>Flexibilidad:</strong> Hasta 24 cuotas mensuales disponibles</li>
+                                        <li><span class="dot g-dot-blue"></span><strong>Red:</strong> Portabilidad a la red Claro + plan con gigas libres</li>
+                                        <li><span class="dot g-dot-blue"></span><strong>Vigencia:</strong> Oferta disponible hasta el 05 de abril, genera urgencia</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANEL 3: Condiciones Comerciales -->
+                <div id="bs-panel-comercial" class="bs-tab-panel">
+                    <div class="guide-body">
+                        <div class="guide-accordion">
+                            <div class="guide-acc-item open">
+                                <div class="guide-acc-head" onclick="toggleGuide(this)">
+                                    <div class="guide-acc-icon blue">📜</div>
+                                    <div class="guide-acc-label">Reglas y restricciones<small>Modalidades de financiamiento y vigencia</small></div>
+                                    <div class="guide-acc-arrow">▾</div>
+                                </div>
+                                <div class="guide-acc-body">
+                                    <div class="g-section-title">Reglas de portabilidad con equipo</div>
+                                    <ul class="g-rule-list">
+                                        <li><span class="dot g-dot-red"></span>Aplica exclusivamente para portabilidad de primera línea</li>
+                                        <li><span class="dot g-dot-red"></span>No aplica para líneas adicionales (se pueden vender de forma normal)</li>
+                                        <li><span class="dot g-dot-red"></span>Oferta masiva corresponde a vía de ingreso post-post</li>
+                                        <li><span class="dot g-dot-warn"></span>Oferta táctica corresponde a vía pre-post; <strong>NO aplica para canal Outbound ni Directa</strong></li>
+                                        <li><span class="dot g-dot-green"></span>Se puede vender línea adicional de forma normal junto con la portabilidad</li>
+                                    </ul>
+                                    <div class="g-divider"></div>
+                                    <div class="g-section-title">Modalidades de financiamiento</div>
+                                    <div class="g-alert blue"><span class="ico">ℹ️</span><div><strong>RET-PET:</strong> Precio con descuento de campaña, financiable a 24 cuotas mensuales. Vía principal para portabilidad.</div></div>
+                                    <div class="g-alert blue"><span class="ico">ℹ️</span><div><strong>PEB:</strong> Precio con Pie + 18 cuotas. Incluye pago inicial (pie) que reduce las cuotas mensuales. Mayor compromiso inicial.</div></div>
+                                    <div class="g-alert blue"><span class="ico">ℹ️</span><div><strong>REB:</strong> Precio sin pie + 18 cuotas. Sin pago inicial, cuotas algo más altas que PEB. Ideal para clientes sin efectivo disponible.</div></div>
+                                    <div class="g-divider"></div>
+                                    <div class="g-section-title">Vigencia de la campaña</div>
+                                    <ul class="g-rule-list">
+                                        <li><span class="dot g-dot-green"></span>Oferta general: Válida durante Marzo 2026</li>
+                                        <li><span class="dot g-dot-warn"></span>Samsung A56, A36 5G, Xiaomi, ZTE, Honor Magic 8 Lite, Motorola G56: disponibles hasta el <strong>05-04-2026</strong></li>
+                                        <li><span class="dot g-dot-warn"></span>Planes Hogar: Vigentes desde el <strong>24 de Marzo hasta el 05 de Abril de 2026</strong></li>
+                                    </ul>
+                                    <div class="g-divider"></div>
+                                    <div class="g-section-title">Consideraciones de stock</div>
+                                    <ul class="g-rule-list">
+                                        <li><span class="dot g-dot-warn"></span>El stock es limitado y varía por punto de venta</li>
+                                        <li><span class="dot g-dot-warn"></span>Verificar disponibilidad antes de cerrar la venta</li>
+                                        <li><span class="dot g-dot-red"></span>Si el equipo no tiene stock, no ofrecer en la campaña</li>
+                                        <li><span class="dot g-dot-green"></span>Proponer alternativa del mismo segmento si hay quiebre de stock</li>
+                                    </ul>
+                                    <div class="g-alert warn"><span class="ico">⚠️</span><div>El precio de referencia es el precio normal del equipo sin campaña. Siempre mostrar el descuento porcentual para evidenciar el beneficio real al cliente.</div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANEL 4: Condiciones Técnicas -->
+                <div id="bs-panel-tecnico" class="bs-tab-panel">
+                    <div class="guide-body">
+                        <div class="guide-accordion">
+                            <div class="guide-acc-item open">
+                                <div class="guide-acc-head" onclick="toggleGuide(this)">
+                                    <div class="guide-acc-icon green">⚙️</div>
+                                    <div class="guide-acc-label">Requisitos y validaciones<small>Errores frecuentes en operación</small></div>
+                                    <div class="guide-acc-arrow">▾</div>
+                                </div>
+                                <div class="guide-acc-body">
+                                    <div class="g-section-title">Requisitos técnicos para portar con equipo</div>
+                                    <ul class="g-rule-list">
+                                        <li><span class="dot g-dot-blue"></span>El número a portar debe estar activo en el operador origen</li>
+                                        <li><span class="dot g-dot-blue"></span>El cliente debe presentar RUT y datos del titular de la línea a portar</li>
+                                        <li><span class="dot g-dot-blue"></span>La línea origen no debe tener deudas pendientes que bloqueen la portabilidad</li>
+                                        <li><span class="dot g-dot-blue"></span>Se requiere evaluación crediticia para el financiamiento del equipo</li>
+                                        <li><span class="dot g-dot-blue"></span>El plan seleccionado debe ser de postpago para aplicar la campaña</li>
+                                    </ul>
+                                    <div class="g-divider"></div>
+                                    <div class="g-section-title">Validaciones del sistema</div>
+                                    <ol class="g-steps">
+                                        <li><span class="num">1</span><div>Validar identidad del cliente<div class="step-detail">RUT + verificación de titularidad antes de iniciar el proceso de portabilidad.</div></div></li>
+                                        <li><span class="num">2</span><div>Verificar elegibilidad crediticia<div class="step-detail">El sistema evalúa si el cliente califica para financiamiento de equipo. Sin aprobación, no se puede asignar cuotas.</div></div></li>
+                                        <li><span class="num">3</span><div>Confirmar disponibilidad del equipo en sistema<div class="step-detail">Verificar stock real antes de generar la promesa de venta al cliente.</div></div></li>
+                                        <li><span class="num">4</span><div>Aplicar código/campaña Black Sale en el sistema<div class="step-detail">El descuento debe aplicarse correctamente. Verificar que el precio final refleje el descuento de campaña.</div></div></li>
+                                    </ol>
+                                    <div class="g-divider"></div>
+                                    <div class="g-section-title">Errores frecuentes en operación</div>
+                                    <div class="g-alert red"><span class="ico">❌</span><div><strong>Error:</strong> Aplicar descuento Black Sale a clientes que ya son Claro. La campaña de equipos aplica solo para portabilidad nueva.</div></div>
+                                    <div class="g-alert red"><span class="ico">❌</span><div><strong>Error:</strong> Ofrecer precio de campaña sin verificar stock. Si el equipo no está disponible, el precio no aplica.</div></div>
+                                    <div class="g-alert red"><span class="ico">❌</span><div><strong>Error:</strong> Usar oferta táctica en canal Outbound o canal Directa. Está expresamente restringido.</div></div>
+                                    <div class="g-alert warn"><span class="ico">⚠️</span><div><strong>Atención:</strong> Equipos con vigencia hasta 05-04 (Samsung A56, A36 5G, Xiaomi, ZTE, Honor Magic 8 Lite, Motorola G56) deben venderse dentro de ese plazo.</div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANEL 5: Canales -->
+                <div id="bs-panel-canales" class="bs-tab-panel">
+                    <div class="guide-body">
+                        <div class="g-channel-card">
+                            <div class="g-channel-title">📞 Call Center (Canal Principal)</div>
+                            <ul class="g-rule-list">
+                                <li><span class="dot g-dot-green"></span>Oferta masiva: aplica plenamente (post-post)</li>
+                                <li><span class="dot g-dot-green"></span>Puede ofrecer todos los equipos del catálogo</li>
+                                <li><span class="dot g-dot-green"></span>Puede aplicar descuentos Black Sale completos</li>
+                                <li><span class="dot g-dot-green"></span>Oferta táctica también disponible (pre-post)</li>
+                                <li><span class="dot g-dot-green"></span>Puede vender línea adicional de forma normal</li>
+                            </ul>
+                        </div>
+                        <div class="g-channel-card blue">
+                            <div class="g-channel-title">🚫 Canal Outbound</div>
+                            <ul class="g-rule-list">
+                                <li><span class="dot g-dot-green"></span>Oferta masiva: aplica (post-post)</li>
+                                <li><span class="dot g-dot-red"></span><strong>Oferta táctica: NO aplica</strong> — expresamente excluido</li>
+                                <li><span class="dot g-dot-warn"></span>Solo puede usar la vía de ingreso masiva para portabilidad</li>
+                            </ul>
+                        </div>
+                        <div class="g-channel-card blue">
+                            <div class="g-channel-title">🚫 Canal Directa</div>
+                            <ul class="g-rule-list">
+                                <li><span class="dot g-dot-green"></span>Oferta masiva: aplica (post-post)</li>
+                                <li><span class="dot g-dot-red"></span><strong>Oferta táctica: NO aplica</strong> — expresamente excluido</li>
+                                <li><span class="dot g-dot-warn"></span>Solo puede usar la vía de ingreso masiva</li>
+                            </ul>
+                        </div>
+                        <div class="g-alert green"><span class="ico">✅</span><div>En todos los canales aplica la <strong>oferta masiva</strong> (post-post). La restricción es únicamente para la <strong>oferta táctica</strong> (pre-post) en Outbound y Directa.</div></div>
+                        <div class="g-divider"></div>
+                        <div class="g-section-title">Aclaración de vías de ingreso</div>
+                        <ul class="g-rule-list">
+                            <li><span class="dot g-dot-blue"></span><strong>Post-post:</strong> Cliente viene de postpago en otro operador. Aplica oferta masiva.</li>
+                            <li><span class="dot g-dot-blue"></span><strong>Pre-post:</strong> Cliente viene de prepago y migra a postpago Claro. Aplica oferta táctica (solo call center).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- PANEL 6: Planes Móvil -->
+                <div id="bs-panel-planes" class="bs-tab-panel">
+                    <div class="guide-body">
+                        <div class="g-alert green"><span class="ico">✅</span><div>Porta tu línea a Claro y accede a <strong>50% de descuento por 6 meses</strong>. Desde el mes 7 aplica el cargo fijo normal del plan.</div></div>
+                        <div class="g-section-title">Planes primera línea (portabilidad)</div>
+                        <div class="g-plan-card">
+                            <span class="g-plan-tag">50% dcto.</span>
+                            <div class="g-plan-name">MAX XL LIBRE</div>
+                            <div class="g-plan-price">$8.495 <sub>/mes × 6 meses</sub></div>
+                            <div class="g-plan-regular">Cargo fijo normal: $16.990/mes</div>
+                            <ul class="g-plan-features">
+                                <li>Gigas libres</li>
+                                <li>Navega hasta 500 GB en alta velocidad</li>
+                                <li>Minutos libres a 300 números</li>
+                            </ul>
+                        </div>
+                        <div class="g-plan-card">
+                            <span class="g-plan-tag">50% dcto.</span>
+                            <div class="g-plan-name">MAX LIBRE PRO</div>
+                            <div class="g-plan-price">$10.495 <sub>/mes × 6 meses</sub></div>
+                            <div class="g-plan-regular">Cargo fijo normal: $20.990/mes</div>
+                            <ul class="g-plan-features">
+                                <li>Gigas libres (sin límite en alta velocidad)</li>
+                                <li>Minutos libres a 300 números</li>
+                            </ul>
+                        </div>
+                        <div class="g-divider"></div>
+                        <div class="g-section-title">Precio promedio plan base + línea adicional</div>
+                        <div class="g-plan-card">
+                            <div class="g-plan-name">MAX L + Línea Adicional</div>
+                            <div class="g-plan-price">$6.490 <sub>c/u × 6 meses</sub></div>
+                            <div class="g-plan-regular">Luego $11.990 c/u</div>
+                            <ul class="g-plan-features">
+                                <li>Plan base: $7.990 + Línea adicional: $4.990</li>
+                                <li>2 líneas adicionales por $6.490 c/u</li>
+                            </ul>
+                        </div>
+                        <div class="g-plan-card">
+                            <div class="g-plan-name">MAX XL + Línea Adicional</div>
+                            <div class="g-plan-price">$5.742 <sub>c/u × 6 meses</sub></div>
+                            <div class="g-plan-regular">Luego $12.990 c/u</div>
+                            <ul class="g-plan-features">
+                                <li>Plan base: $8.495 + Línea adicional: $2.990</li>
+                                <li>2 líneas adicionales por $5.742 c/u</li>
+                            </ul>
+                        </div>
+                        <div class="g-plan-card">
+                            <div class="g-plan-name">MAX LIBRE PRO + Línea Adicional</div>
+                            <div class="g-plan-price">$6.743 <sub>c/u × 6 meses</sub></div>
+                            <div class="g-plan-regular">Luego $14.990 c/u</div>
+                            <ul class="g-plan-features">
+                                <li>Plan base: $10.495 + Línea adicional: $2.990</li>
+                                <li>2 líneas adicionales por $6.743 c/u</li>
+                            </ul>
+                        </div>
+                        <div class="g-alert warn"><span class="ico">⚠️</span><div>Descuentos aplican por 6 meses. A partir del mes 7 aplica el cargo fijo normal del plan. Oferta válida hasta el <strong>5 de Abril de 2026</strong>.</div></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        <div class="catalog-wrapper">
+            <div id="catalogHeader" class="catalog-grid catalog-header">
+                <div data-column="sku">SKU <span class="sort-indicator"></span></div>
+                <div data-column="marca">Marca <span class="sort-indicator"></span></div>
+                <div data-column="modelo">Modelo <span class="sort-indicator"></span></div>
+                <div data-column="pie">Pie Inicial <span class="sort-indicator"></span></div>
+                <div data-column="cuotas">18 Cuotas <span class="sort-indicator"></span></div>
+                <div data-column="total">Precio Total <span class="sort-indicator"></span></div> <!-- Columna Nueva -->
+                <div data-column="stock">Stock <span class="sort-indicator"></span></div>
+                <div>Acción</div>
+            </div>
+            <div id="catalogContainer">
+                <!-- El contenido se genera con JavaScript -->
+            </div>
+        </div>
+        
+    </div>
+
+    <div id="copyToast" class="toast">¡Información copiada!</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- ELEMENTOS DEL DOM ---
+            const searchInput = document.getElementById('searchInput');
+            const brandFilter = document.getElementById('brandFilter');
+            const pieFilter = document.getElementById('pieFilter');
+            const stockFilter = document.getElementById('stockFilter');
+            const resetButton = document.getElementById('resetButton');
+            const hardRefreshButton = document.getElementById('hardRefreshButton');
+            const copyAllStockButton = document.getElementById('copyAllStockButton');
+            const quickFilterButton = document.getElementById('quickFilterButton');
+            const catalogContainer = document.getElementById('catalogContainer');
+            const catalogHeader = document.getElementById('catalogHeader');
+            const copyToast = document.getElementById('copyToast');
+
+            // --- ESTADO DE LA APLICACIÓN ---
+            let equipos = [];
+            let currentFilteredEquipos = []; 
+            
+            let sortState = { column: 'marca', direction: 'asc' };
+            
+            // NUEVO: Estado para rastrear qué SKUs han sido copiados en la sesión actual.
+            let copiedSKUs = new Set();
+            const COPIED_SKUS_KEY = 'copiedEquipment'; // Clave para sessionStorage
+
+            const clpFormatter = new Intl.NumberFormat('es-CL', {
+                style: 'currency',
+                currency: 'CLP',
+                minimumFractionDigits: 0
+            });
+
+            const formatCurrency = (value) => clpFormatter.format(value);
+
+            // --- AUDIO CONTEXT (Sonido Elegante) ---
+            let audioCtx = null;
+            let lastHoveredRow = null;
+
+            // Inicializar audio con la primera interacción del usuario
+            function initAudio() {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+            }
+            
+            // Capturamos cualquier clic inicial para habilitar el audio
+            document.body.addEventListener('click', initAudio, { once: true });
+            document.body.addEventListener('touchstart', initAudio, { once: true });
+
+            function playHoverSound() {
+                if (!audioCtx) return;
+
+                const osc = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                const filter = audioCtx.createBiquadFilter();
+
+                // Configuración para sonido "Madera Cálida"
+                // Onda triangular para tener cuerpo pero suave
+                osc.type = 'triangle';
+                
+                // Frecuencia media-baja (Cuerpo)
+                osc.frequency.setValueAtTime(250, audioCtx.currentTime);
+                // Ligera caída de tono para simular el golpe físico
+                osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.05);
+
+                // Filtro LowPass para quitar lo "chillón" y dejarlo "grueso"
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(450, audioCtx.currentTime);
+
+                // Envolvente de volumen muy corta (Percusivo/Madera)
+                gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 0.005); // Ataque suave
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.06); // Decaimiento rápido
+
+                // Conexión: Oscilador -> Filtro -> Ganancia -> Salida
+                osc.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.1);
+            }
+
+            // --- GESTIÓN DE SKUS COPIADOS (sessionStorage) ---
+            function loadCopiedSKUs() {
+                const stored = sessionStorage.getItem(COPIED_SKUS_KEY);
+                if (stored) {
+                    try {
+                        const parsed = JSON.parse(stored);
+                        if (Array.isArray(parsed)) {
+                            copiedSKUs = new Set(parsed);
+                        }
+                    } catch (e) {
+                        console.error("Error al parsear SKUs copiados de sessionStorage:", e);
+                    }
+                }
+            }
+            
+            function saveCopiedSKUs() {
+                sessionStorage.setItem(COPIED_SKUS_KEY, JSON.stringify(Array.from(copiedSKUs)));
+            }
+            // ---------------------------------------------------
+
+            // --- CARGA DE DATOS ---
+            function loadData() {
+                try {
+                    // Datos de ejemplo
+const staticData = [
+{ sku: '70016558', marca: 'SAMSUNG', modelo: 'S26 512GB Negro', stock: 0, pie: 549900, cuotas: 59000 },
+{ sku: '70013387', marca: 'VIVO', modelo: 'V50 5G 512GB Starry Blue', stock: 8, pie: 0, cuotas: 54000 },
+{ sku: '70013391', marca: 'VIVO', modelo: 'V50 5G 512GB Mist Purple', stock: 8, pie: 0, cuotas: 54000 },
+{ sku: '70013805', marca: 'SAMSUNG', modelo: 'A26 5G 128GB Blanco', stock: 0, pie: 0, cuotas: 21000 },
+{ sku: '70013820', marca: 'SAMSUNG', modelo: 'A26 5G 128GB Negro', stock: 610, pie: 0, cuotas: 21000 },
+{ sku: '70013824', marca: 'SAMSUNG', modelo: 'A26 5G 128GB Verde Claro', stock: 0, pie: 0, cuotas: 21000 },
+{ sku: '70015358', marca: 'ZTE', modelo: 'A56 Pro 128GB Negro', stock: 0, pie: 0, cuotas: 8000 },
+{ sku: '70015966', marca: 'ZTE', modelo: 'A56 Pro 128GB Gris', stock: 109, pie: 0, cuotas: 8000 },
+{ sku: '70015130', marca: 'SAMSUNG', modelo: 'A56 5G 128GB Awesome Graphite', stock: 95, pie: 29900, cuotas: 28500 },
+{ sku: '70015351', marca: 'XIAOMI', modelo: 'Redmi 15 5G 256GB Black', stock: 572, pie: 0, cuotas: 21000 },
+{ sku: '70015091', marca: 'HONOR', modelo: '400 Smart 5G 256GB Silver', stock: 351, pie: 0, cuotas: 20000 },
+{ sku: '70015096', marca: 'HONOR', modelo: '400 Smart 5G 256GB Gold', stock: 351, pie: 0, cuotas: 20000 },
+{ sku: '70013311', marca: 'HONOR', modelo: 'Magic 7 Pro 5G 512GB Lunar Shadow Grey', stock: 0, pie: 299900, cuotas: 69000 },
+{ sku: '70013375', marca: 'SAMSUNG', modelo: 'S25 Plus 256GB Navy', stock: 4, pie: 289900, cuotas: 69900 },
+{ sku: '70013379', marca: 'SAMSUNG', modelo: 'S25 Plus 256GB Menta', stock: 4, pie: 289900, cuotas: 69900 },
+{ sku: '70013383', marca: 'SAMSUNG', modelo: 'S25 Plus 256GB Ice Blue', stock: 0, pie: 289900, cuotas: 69900 },
+{ sku: '70013509', marca: 'SAMSUNG', modelo: 'S25 Plus 256GB Silver Shadow', stock: 4, pie: 289900, cuotas: 69900 },
+{ sku: '70013662', marca: 'HONOR', modelo: 'Magic 7 Pro 5G 512GB Black', stock: 10, pie: 299900, cuotas: 69000 },
+{ sku: '70015150', marca: 'SAMSUNG', modelo: 'Z Fold 7 256GB Silver Shadow', stock: 0, pie: 1199900, cuotas: 77500 },
+{ sku: '70015154', marca: 'SAMSUNG', modelo: 'Z Fold 7 256GB Jet Black', stock: 18, pie: 1199900, cuotas: 77500 },
+{ sku: '70015218', marca: 'SAMSUNG', modelo: 'Z Fold 7 256GB Blue Shadow', stock: 0, pie: 1199900, cuotas: 77500 },
+{ sku: '70015266', marca: 'SAMSUNG', modelo: 'A07 128GB Black', stock: 748, pie: 0, cuotas: 9000 },
+{ sku: '70015270', marca: 'SAMSUNG', modelo: 'A07 128GB Green', stock: 0, pie: 0, cuotas: 9000 },
+{ sku: '70015274', marca: 'SAMSUNG', modelo: 'A07 128GB Light Violet', stock: 0, pie: 0, cuotas: 9000 },
+{ sku: '70015401', marca: 'APPLE', modelo: 'iPhone 17 Pro 512GB Cosmic Orange', stock: 46, pie: 1106900, cuotas: 62000 },
+{ sku: '70015405', marca: 'APPLE', modelo: 'iPhone 17 Pro 512GB Deep Blue', stock: 46, pie: 1106900, cuotas: 62000 },
+{ sku: '70015448', marca: 'APPLE', modelo: 'iPhone 17 Pro 512GB Silver', stock: 0, pie: 1106900, cuotas: 62000 },
+{ sku: '70015943', marca: 'SAMSUNG', modelo: 'S25 FE 5G 256GB + Buds 3 FE Black', stock: 233, pie: 69900, cuotas: 59500 },
+{ sku: '70016117', marca: 'XIAOMI', modelo: 'Redmi Note 15 Pro 512GB Black', stock: 356, pie: 29900, cuotas: 32000 },
+{ sku: '70016121', marca: 'XIAOMI', modelo: 'Redmi Note 15 Pro 5G 512GB Titanio', stock: 356, pie: 29900, cuotas: 32000 },
+{ sku: '70013799', marca: 'HONOR', modelo: 'Magic 7 Pro 5G 512GB + Music Box + X5 Black', stock: 10, pie: 299900, cuotas: 69000 },
+{ sku: '70016109', marca: 'XIAOMI', modelo: 'Redmi Note 15 5G 256GB Black', stock: 551, pie: 0, cuotas: 23500 },
+{ sku: '70016113', marca: 'XIAOMI', modelo: 'Redmi Note 15 5G 256GB Glacier Blue', stock: 0, pie: 0, cuotas: 23500 },
+{ sku: '70016125', marca: 'XIAOMI', modelo: 'Redmi Note 15 Pro Plus 512GB Black', stock: 0, pie: 49900, cuotas: 38000 },
+{ sku: '70016128', marca: 'XIAOMI', modelo: 'Redmi Note 15 Pro Plus 512GB Marron', stock: 0, pie: 49900, cuotas: 38000 },
+{ sku: '70011730', marca: 'SAMSUNG', modelo: 'Z Flip 5 256GB Crema', stock: 0, pie: 599900, cuotas: 38000 },
+{ sku: '70011733', marca: 'SAMSUNG', modelo: 'Z Flip 5 256GB Lavanda', stock: 0, pie: 599900, cuotas: 38000 },
+{ sku: '70011736', marca: 'SAMSUNG', modelo: 'Z Flip 5 256GB Grafito', stock: 1, pie: 599900, cuotas: 38000 },
+{ sku: '70011739', marca: 'SAMSUNG', modelo: 'Z Flip 5 256GB Verde Oceano', stock: 0, pie: 599900, cuotas: 38000 },
+{ sku: '70009520', marca: 'OPPO', modelo: 'Reno 6 128GB Azul', stock: 0, pie: 0, cuotas: 13000 },
+{ sku: '70009523', marca: 'OPPO', modelo: 'Reno 6 128GB Negro', stock: 0, pie: 0, cuotas: 13000 },
+{ sku: '70012870', marca: 'SAMSUNG', modelo: 'S24 FE 5G 128GB Black', stock: 0, pie: 29900, cuotas: 49000 },
+{ sku: '70012873', marca: 'SAMSUNG', modelo: 'S24 FE 5G 128GB Gray', stock: 0, pie: 29900, cuotas: 49000 },
+{ sku: '70013210', marca: 'SAMSUNG', modelo: 'S24 FE 5G 128GB Graphite', stock: 0, pie: 29900, cuotas: 49000 },
+{ sku: '70012619', marca: 'SAMSUNG', modelo: 'A35 5G 256GB + Cargador Awesome Navy', stock: 1, pie: 0, cuotas: 32000 },
+{ sku: '70015278', marca: 'SAMSUNG', modelo: 'A17 5G 128GB Black', stock: 779, pie: 0, cuotas: 14500 },
+{ sku: '70015282', marca: 'SAMSUNG', modelo: 'A17 5G 128GB Gray', stock: 0, pie: 0, cuotas: 14500 },
+{ sku: '70015286', marca: 'SAMSUNG', modelo: 'A17 5G 128GB Light Blue', stock: 0, pie: 0, cuotas: 14500 },
+{ sku: '70012625', marca: 'ZTE', modelo: 'Nubia Focus Pro 256GB Negro', stock: 4, pie: 0, cuotas: 19500 },
+{ sku: '70012777', marca: 'ZTE', modelo: 'Nubia Focus Pro 256GB + KF Negro', stock: 4, pie: 0, cuotas: 19500 },
+{ sku: '70013415', marca: 'XIAOMI', modelo: 'Redmi Note 14 5G 256GB Midnight Black', stock: 7, pie: 0, cuotas: 22500 },
+{ sku: '70013459', marca: 'XIAOMI', modelo: 'Redmi Note 14 5G 256GB Lavender Purple', stock: 0, pie: 0, cuotas: 22500 },
+{ sku: '70013463', marca: 'XIAOMI', modelo: 'Redmi Note 14 5G 256GB Coral Green', stock: 7, pie: 0, cuotas: 22500 },
+{ sku: '70013732', marca: 'SAMSUNG', modelo: 'A36 5G 256GB Negro', stock: 329, pie: 0, cuotas: 29000 },
+{ sku: '70013762', marca: 'SAMSUNG', modelo: 'A56 5G 256GB Light Blue', stock: 0, pie: 29900, cuotas: 34000 },
+{ sku: '70013763', marca: 'SAMSUNG', modelo: 'A56 5G 256GB Rosado Claro', stock: 0, pie: 29900, cuotas: 34000 },
+{ sku: '70013784', marca: 'HONOR', modelo: 'H400 Lite 5G 256GB Black', stock: 0, pie: 0, cuotas: 28000 },
+{ sku: '70013808', marca: 'HONOR', modelo: 'H400 Lite 5G 256GB Silver', stock: 0, pie: 0, cuotas: 28000 },
+{ sku: '70013829', marca: 'SAMSUNG', modelo: 'A56 5G 256GB Negro', stock: 0, pie: 29900, cuotas: 34000 },
+{ sku: '70013833', marca: 'SAMSUNG', modelo: 'A56 5G 256GB Gris', stock: 0, pie: 29900, cuotas: 34000 },
+{ sku: '70013837', marca: 'SAMSUNG', modelo: 'A56 5G 256GB Verde', stock: 0, pie: 29900, cuotas: 34000 },
+{ sku: '70013840', marca: 'SAMSUNG', modelo: 'A36 5G 256GB Rosado Claro', stock: 0, pie: 0, cuotas: 29000 },
+{ sku: '70013767', marca: 'SAMSUNG', modelo: 'A36 5G 256GB Gris', stock: 0, pie: 0, cuotas: 29000 },
+{ sku: '70013851', marca: 'SAMSUNG', modelo: 'A36 5G 256GB Verde Claro', stock: 0, pie: 0, cuotas: 29000 },
+{ sku: '70013896', marca: 'HONOR', modelo: 'H400 Lite 5G 256GB Gris', stock: 0, pie: 0, cuotas: 28000 },
+{ sku: '70013920', marca: 'SAMSUNG', modelo: 'A56 5G 256GB Awesome Graphite', stock: 134, pie: 29900, cuotas: 34000 },
+{ sku: '70013926', marca: 'HONOR', modelo: 'H400 Lite 5G R12 256GB Gris', stock: 304, pie: 0, cuotas: 28000 },
+{ sku: '70013928', marca: 'HONOR', modelo: 'H400 Lite 5G R12 256GB Silver', stock: 0, pie: 0, cuotas: 28000 },
+{ sku: '70013933', marca: 'HONOR', modelo: 'H400 Lite 5G R12 256GB Black', stock: 304, pie: 0, cuotas: 28000 },
+{ sku: '70013949', marca: 'HONOR', modelo: 'H400 Lite 5G R12 256GB Silver Bundle', stock: 0, pie: 0, cuotas: 28000 },
+{ sku: '70013953', marca: 'HONOR', modelo: 'H400 Lite 5G R12 256GB Black Bundle', stock: 0, pie: 0, cuotas: 28000 },
+{ sku: '70013957', marca: 'HONOR', modelo: 'H400 Lite 5G R12 256GB Gris Bundle', stock: 0, pie: 0, cuotas: 28000 },
+{ sku: '70014690', marca: 'XIAOMI', modelo: '15C 128GB Black', stock: 304, pie: 0, cuotas: 10500 },
+{ sku: '70014696', marca: 'XIAOMI', modelo: '15C 128GB Green', stock: 0, pie: 0, cuotas: 10500 },
+{ sku: '70014702', marca: 'XIAOMI', modelo: '15C 128GB Blue', stock: 0, pie: 0, cuotas: 10500 },
+{ sku: '70016492', marca: 'HONOR', modelo: 'X6D 5G 256GB Cyan', stock: 0, pie: 0, cuotas: 16500 },
+{ sku: '70016497', marca: 'HONOR', modelo: 'X6D 5G 256GB Negro', stock: 126, pie: 0, cuotas: 16500 },
+{ sku: '70016214', marca: 'OPPO', modelo: 'A6X 5G 256GB Violet Purple', stock: 0, pie: 0, cuotas: 19500 },
+{ sku: '70016218', marca: 'OPPO', modelo: 'A6X 5G 256GB Dark Grey', stock: 277, pie: 0, cuotas: 19500 },
+{ sku: '70016173', marca: 'XIAOMI', modelo: 'Redmi Note 15 5G 256GB Black+Buds 6 Play', stock: 551, pie: 0, cuotas: 24000 },
+{ sku: '70016154', marca: 'XIAOMI', modelo: 'Redmi Note 15 5G 256GB Glacier Blue+Buds 6 Play', stock: 551, pie: 0, cuotas: 24000 },
+{ sku: '70014711', marca: 'MOTOROLA', modelo: 'Edge 60 Fusion 256GB Verde Amazonite', stock: 130, pie: 0, cuotas: 29000 },
+{ sku: '70014717', marca: 'MOTOROLA', modelo: 'Edge 60 Fusion 256GB Negro', stock: 0, pie: 0, cuotas: 29000 },
+{ sku: '70014747', marca: 'MOTOROLA', modelo: 'Edge 60 Fusion 256GB Azul Slipstream', stock: 130, pie: 0, cuotas: 29000 },
+{ sku: '70015962', marca: 'TCL', modelo: '60 SE 512GB Blizzard White 2', stock: 42, pie: 0, cuotas: 16000 },
+{ sku: '70014673', marca: 'TCL', modelo: '60 SE 512GB Blizzard White', stock: 0, pie: 0, cuotas: 16000 },
+{ sku: '70014679', marca: 'TCL', modelo: '60 SE 512GB Obsidian Black', stock: 42, pie: 0, cuotas: 16000 },
+{ sku: '70015323', marca: 'XIAOMI', modelo: 'Redmi 15C 5G 128GB Black', stock: 418, pie: 0, cuotas: 12000 },
+{ sku: '70015327', marca: 'XIAOMI', modelo: 'Redmi 15C 5G 128GB Green', stock: 0, pie: 0, cuotas: 12000 },
+{ sku: '70015341', marca: 'XIAOMI', modelo: 'Redmi 15C 5G 128GB Purple', stock: 0, pie: 0, cuotas: 12000 },
+{ sku: '70015882', marca: 'SAMSUNG', modelo: 'A56 5G 256GB + Buds Core Gris', stock: 0, pie: 39900, cuotas: 35000 },
+{ sku: '70015878', marca: 'SAMSUNG', modelo: 'A56 5G 256GB + Buds Core Negro', stock: 0, pie: 39900, cuotas: 35000 },
+{ sku: '70015886', marca: 'SAMSUNG', modelo: 'A56 5G 256GB + Buds Core Verde', stock: 0, pie: 39900, cuotas: 35000 },
+{ sku: '70015941', marca: 'SAMSUNG', modelo: 'A56 5G 256GB + Buds Core Awesome Graphite', stock: 0, pie: 39900, cuotas: 35000 },
+{ sku: '70013325', marca: 'SAMSUNG', modelo: 'S25 128GB Navy', stock: 5, pie: 199900, cuotas: 52000 },
+{ sku: '70013339', marca: 'SAMSUNG', modelo: 'S25 128GB Menta', stock: 5, pie: 199900, cuotas: 52000 },
+{ sku: '70013343', marca: 'SAMSUNG', modelo: 'S25 128GB Ice Blue', stock: 5, pie: 199900, cuotas: 52000 },
+{ sku: '70013491', marca: 'SAMSUNG', modelo: 'S25 128GB Silver Shadow', stock: 5, pie: 199900, cuotas: 52000 },
+{ sku: '70010909', marca: 'SAMSUNG', modelo: 'A04 64GB Negro', stock: 0, pie: 0, cuotas: 11000 },
+{ sku: '70011273', marca: 'SAMSUNG', modelo: 'A14 5G 128GB Negro', stock: 0, pie: 0, cuotas: 12000 },
+{ sku: '70011572', marca: 'SAMSUNG', modelo: 'A04 64GB Blanco', stock: 0, pie: 0, cuotas: 11000 },
+{ sku: '70011613', marca: 'SAMSUNG', modelo: 'A04 64GB Negro Ine', stock: 0, pie: 0, cuotas: 11000 },
+{ sku: '70011742', marca: 'SAMSUNG', modelo: 'Z Flip 5 512GB Grafito', stock: 0, pie: 599900, cuotas: 55000 },
+{ sku: '70011745', marca: 'SAMSUNG', modelo: 'Z Flip 5 512GB Crema', stock: 0, pie: 599900, cuotas: 55000 },
+{ sku: '70011748', marca: 'SAMSUNG', modelo: 'Z Flip 5 512GB Verde Oceano', stock: 0, pie: 599900, cuotas: 55000 },
+{ sku: '70011750', marca: 'SAMSUNG', modelo: 'Z Flip 5 512GB Lavanda', stock: 0, pie: 599900, cuotas: 55000 },
+{ sku: '70011753', marca: 'SAMSUNG', modelo: 'Z Fold 5 256GB Azul Helado', stock: 0, pie: 699900, cuotas: 77000 },
+{ sku: '70011756', marca: 'SAMSUNG', modelo: 'Z Fold 5 256GB Negro', stock: 1, pie: 699900, cuotas: 77000 },
+{ sku: '70011759', marca: 'SAMSUNG', modelo: 'Z Fold 5 256GB Crema', stock: 0, pie: 699900, cuotas: 77000 },
+{ sku: '70012262', marca: 'SAMSUNG', modelo: 'A05 128GB Lavender', stock: 0, pie: 0, cuotas: 11000 },
+{ sku: '70012265', marca: 'SAMSUNG', modelo: 'A05 128GB Silver', stock: 0, pie: 0, cuotas: 11000 },
+{ sku: '70012247', marca: 'SAMSUNG', modelo: 'A14 5G 128GB Silver', stock: 0, pie: 0, cuotas: 12000 },
+{ sku: '70012281', marca: 'SAMSUNG', modelo: 'A05 128GB Black', stock: 0, pie: 0, cuotas: 11000 },
+{ sku: '70012284', marca: 'SAMSUNG', modelo: 'A05 128GB Lime', stock: 0, pie: 0, cuotas: 11000 },
+{ sku: '70012288', marca: 'SAMSUNG', modelo: 'A15 5G 128GB Blue', stock: 0, pie: 0, cuotas: 19000 },
+{ sku: '70012291', marca: 'SAMSUNG', modelo: 'A15 5G 128GB Yellow', stock: 0, pie: 0, cuotas: 19000 },
+{ sku: '70012294', marca: 'SAMSUNG', modelo: 'A15 5G 128GB Blue Black', stock: 0, pie: 0, cuotas: 19000 },
+{ sku: '70012287', marca: 'SAMSUNG', modelo: 'A15 5G 256GB Blue', stock: 0, pie: 0, cuotas: 19500 },
+{ sku: '70012300', marca: 'SAMSUNG', modelo: 'A15 5G 256GB Yellow', stock: 0, pie: 0, cuotas: 19500 },
+{ sku: '70012303', marca: 'SAMSUNG', modelo: 'A15 5G 256GB Blue Black', stock: 2, pie: 0, cuotas: 19500 },
+{ sku: '70012306', marca: 'SAMSUNG', modelo: 'A25 5G 256GB Blue', stock: 0, pie: 0, cuotas: 28000 },
+{ sku: '70012309', marca: 'SAMSUNG', modelo: 'A25 5G 256GB Yellow', stock: 0, pie: 0, cuotas: 28000 },
+{ sku: '70012312', marca: 'SAMSUNG', modelo: 'S24 128GB Marble Gray', stock: 0, pie: 149900, cuotas: 50000 },
+{ sku: '70012315', marca: 'SAMSUNG', modelo: 'S24 128GB Onyx Black', stock: 2, pie: 149900, cuotas: 50000 },
+{ sku: '70012297', marca: 'SAMSUNG', modelo: 'A25 5G 256GB Blue Black', stock: 0, pie: 0, cuotas: 28000 },
+{ sku: '70012320', marca: 'SAMSUNG', modelo: 'S24 128GB Amber Yellow', stock: 0, pie: 149900, cuotas: 50000 },
+{ sku: '70012323', marca: 'SAMSUNG', modelo: 'S24 128GB Cobalt Violet', stock: 0, pie: 149900, cuotas: 50000 },
+{ sku: '70012326', marca: 'SAMSUNG', modelo: 'S24 Ultra 512GB Titanium Violet', stock: 0, pie: 549900, cuotas: 75000 },
+{ sku: '70012328', marca: 'SAMSUNG', modelo: 'S24 256GB Amber Yellow', stock: 0, pie: 149900, cuotas: 48000 },
+{ sku: '70012331', marca: 'SAMSUNG', modelo: 'S24 256GB Cobalt Violet', stock: 0, pie: 149900, cuotas: 48000 },
+{ sku: '70012334', marca: 'SAMSUNG', modelo: 'S24 256GB Marble Gray', stock: 0, pie: 149900, cuotas: 48000 },
+{ sku: '70012339', marca: 'SAMSUNG', modelo: 'S24 256GB Onyx Black', stock: 0, pie: 149900, cuotas: 48000 },
+{ sku: '70012342', marca: 'SAMSUNG', modelo: 'S24 Ultra 256GB Titanium Black', stock: 5, pie: 399900, cuotas: 69000 },
+{ sku: '70012345', marca: 'SAMSUNG', modelo: 'S24 Ultra 256GB Titanium Gray', stock: 5, pie: 399900, cuotas: 69000 },
+{ sku: '70012348', marca: 'SAMSUNG', modelo: 'S24 Ultra 256GB Titanium Violet', stock: 0, pie: 399900, cuotas: 69000 },
+{ sku: '70012351', marca: 'SAMSUNG', modelo: 'S24 Ultra 512GB Titanium Black', stock: 0, pie: 549900, cuotas: 75000 },
+{ sku: '70012354', marca: 'SAMSUNG', modelo: 'S24 Ultra 512GB Titanium Gray', stock: 0, pie: 549900, cuotas: 75000 },
+{ sku: '70012337', marca: 'SAMSUNG', modelo: 'S24 Ultra 256GB Titanium Yellow', stock: 0, pie: 399900, cuotas: 69000 },
+{ sku: '70012360', marca: 'SAMSUNG', modelo: 'S24 Plus 256GB Amber Yellow', stock: 0, pie: 399900, cuotas: 62000 },
+{ sku: '70012363', marca: 'SAMSUNG', modelo: 'S24 Plus 256GB Cobalt Violet', stock: 0, pie: 399900, cuotas: 62000 },
+{ sku: '70012366', marca: 'SAMSUNG', modelo: 'S24 Plus 256GB Marble Gray', stock: 0, pie: 399900, cuotas: 62000 },
+{ sku: '70012357', marca: 'SAMSUNG', modelo: 'S24 Ultra 512GB Titanium Yellow', stock: 0, pie: 549900, cuotas: 75000 },
+{ sku: '70012379', marca: 'SAMSUNG', modelo: 'S24 Plus 256GB Onyx Black', stock: 0, pie: 399900, cuotas: 62000 },
+{ sku: '70012382', marca: 'SAMSUNG', modelo: 'S24 Plus 512GB Amber Yellow', stock: 0, pie: 449900, cuotas: 70000 },
+{ sku: '70012385', marca: 'SAMSUNG', modelo: 'S24 Plus 512GB Cobalt Violet', stock: 0, pie: 449900, cuotas: 70000 },
+{ sku: '70012388', marca: 'SAMSUNG', modelo: 'S24 Plus 512GB Marble Gray', stock: 0, pie: 449900, cuotas: 70000 },
+{ sku: '70012391', marca: 'SAMSUNG', modelo: 'S24 Plus 512GB Onyx Black', stock: 0, pie: 449900, cuotas: 70000 },
+{ sku: '70012558', marca: 'SAMSUNG', modelo: 'A35 5G 128GB Awesome Iceblue', stock: 0, pie: 0, cuotas: 26000 },
+{ sku: '70012564', marca: 'SAMSUNG', modelo: 'A35 5G 128GB Awesome Navy', stock: 0, pie: 0, cuotas: 26000 },
+{ sku: '70012570', marca: 'SAMSUNG', modelo: 'A35 5G 256GB Awesome Iceblue', stock: 0, pie: 0, cuotas: 29000 },
+{ sku: '70012576', marca: 'SAMSUNG', modelo: 'A35 5G 256GB Awesome Navy', stock: 0, pie: 0, cuotas: 29000 },
+{ sku: '70012582', marca: 'SAMSUNG', modelo: 'A55 5G 128GB Awesome Iceblue', stock: 0, pie: 0, cuotas: 34000 },
+{ sku: '70012588', marca: 'SAMSUNG', modelo: 'A55 5G 128GB Awesome Navy', stock: 0, pie: 0, cuotas: 34000 },
+{ sku: '70012594', marca: 'SAMSUNG', modelo: 'A55 5G 256GB Awesome Iceblue', stock: 0, pie: 0, cuotas: 36000 },
+{ sku: '70012600', marca: 'SAMSUNG', modelo: 'A55 5G 256GB Awesome Navy', stock: 0, pie: 0, cuotas: 36000 },
+{ sku: '70012679', marca: 'SAMSUNG', modelo: 'A55 5G 128GB EC Awesome Navy', stock: 3, pie: 0, cuotas: 34000 },
+{ sku: '70012680', marca: 'SAMSUNG', modelo: 'A15 5G 128GB EC Blue Black', stock: 0, pie: 0, cuotas: 19000 },
+{ sku: '70012681', marca: 'SAMSUNG', modelo: 'A35 5G 256GB EC Awesome Navy', stock: 0, pie: 0, cuotas: 29000 },
+{ sku: '70012707', marca: 'SAMSUNG', modelo: 'A25 5G 128GB Blue Black', stock: 0, pie: 0, cuotas: 23000 },
+{ sku: '70012823', marca: 'SAMSUNG', modelo: 'A06 128GB Gold', stock: 0, pie: 0, cuotas: 8500 },
+{ sku: '70012826', marca: 'SAMSUNG', modelo: 'A06 128GB Light Green', stock: 0, pie: 0, cuotas: 8500 },
+{ sku: '70012865', marca: 'SAMSUNG', modelo: 'A06 128GB Black', stock: 1, pie: 0, cuotas: 8500 },
+{ sku: '70012868', marca: 'SAMSUNG', modelo: 'A06 128GB Light Blue', stock: 0, pie: 0, cuotas: 8500 },
+{ sku: '70012879', marca: 'SAMSUNG', modelo: 'A16 5G 128GB Blue Black', stock: 2, pie: 0, cuotas: 13500 },
+{ sku: '70012885', marca: 'SAMSUNG', modelo: 'A16 5G 128GB Gold', stock: 0, pie: 0, cuotas: 13500 },
+{ sku: '70012888', marca: 'SAMSUNG', modelo: 'A16 5G 128GB Light Green', stock: 0, pie: 0, cuotas: 13500 },
+{ sku: '70012905', marca: 'SAMSUNG', modelo: 'S24 FE 5G 256GB Black', stock: 0, pie: 79900, cuotas: 44000 },
+{ sku: '70012908', marca: 'SAMSUNG', modelo: 'S24 FE 5G 256GB Gray', stock: 0, pie: 79900, cuotas: 44000 },
+{ sku: '70013202', marca: 'SAMSUNG', modelo: 'S24 FE 5G 256GB Graphite', stock: 3, pie: 79900, cuotas: 44000 },
+{ sku: '70013347', marca: 'SAMSUNG', modelo: 'S25 256GB Navy', stock: 8, pie: 249900, cuotas: 60000 },
+{ sku: '70013351', marca: 'SAMSUNG', modelo: 'S25 256GB Ice Blue', stock: 8, pie: 249900, cuotas: 60000 },
+{ sku: '70013355', marca: 'SAMSUNG', modelo: 'S25 256GB Menta', stock: 8, pie: 249900, cuotas: 60000 },
+{ sku: '70013359', marca: 'SAMSUNG', modelo: 'S25 Ultra 256GB Titanium Black', stock: 112, pie: 399900, cuotas: 77000 },
+{ sku: '70013363', marca: 'SAMSUNG', modelo: 'S25 Ultra 256GB Titanium Gray', stock: 112, pie: 399900, cuotas: 77000 },
+{ sku: '70013367', marca: 'SAMSUNG', modelo: 'S25 Ultra 256GB Titanium Silver Blue', stock: 112, pie: 399900, cuotas: 77000 },
+{ sku: '70013371', marca: 'SAMSUNG', modelo: 'S25 Ultra 256GB Titanium White Silver', stock: 0, pie: 399900, cuotas: 77000 },
+{ sku: '70013495', marca: 'SAMSUNG', modelo: 'S25 Ultra 256GB Silver Shadow', stock: 0, pie: 399900, cuotas: 77000 },
+{ sku: '70013532', marca: 'SAMSUNG', modelo: 'S25 256GB Silver Shadow', stock: 8, pie: 249900, cuotas: 60000 },
+{ sku: '70013321', marca: 'SAMSUNG', modelo: 'A06 5G 128GB Black', stock: 698, pie: 0, cuotas: 10000 },
+{ sku: '70013676', marca: 'SAMSUNG', modelo: 'A06 5G 64GB Gray', stock: 0, pie: 0, cuotas: 9500 },
+{ sku: '70013672', marca: 'SAMSUNG', modelo: 'A06 5G 64GB Black', stock: 0, pie: 0, cuotas: 9500 },
+{ sku: '70013678', marca: 'SAMSUNG', modelo: 'A06 5G 64GB Light Green', stock: 0, pie: 0, cuotas: 9500 },
+{ sku: '70015142', marca: 'SAMSUNG', modelo: 'Z Flip 7 256GB Jet Black', stock: 16, pie: 599900, cuotas: 50000 },
+{ sku: '70015146', marca: 'SAMSUNG', modelo: 'Z Flip 7 256GB Blue Shadow', stock: 16, pie: 599900, cuotas: 50000 },
+{ sku: '70015166', marca: 'SAMSUNG', modelo: 'Z Flip 7 FE 128GB White', stock: 0, pie: 599900, cuotas: 32000 },
+{ sku: '70015169', marca: 'SAMSUNG', modelo: 'Z Flip 7 256GB Silver Shadow', stock: 0, pie: 599900, cuotas: 50000 },
+{ sku: '70015190', marca: 'SAMSUNG', modelo: 'Z Flip 7 FE 128GB Black', stock: 25, pie: 599900, cuotas: 32000 },
+{ sku: '70016506', marca: 'SAMSUNG', modelo: 'S26 256GB Violeta', stock: 166, pie: 449900, cuotas: 46000 },
+{ sku: '70016514', marca: 'SAMSUNG', modelo: 'S26 256GB Negro', stock: 166, pie: 449900, cuotas: 46000 },
+{ sku: '70016186', marca: 'XIAOMI', modelo: 'Redmi Note 15 Pro Plus 512GB Black+S.Pocket', stock: 4, pie: 49900, cuotas: 40000 },
+{ sku: '70016190', marca: 'XIAOMI', modelo: 'Redmi Note 15 Pro Plus 512GB Marron+S.Pocket', stock: 4, pie: 49900, cuotas: 40000 },
+{ sku: '70015874', marca: 'SAMSUNG', modelo: 'A56 5G 128GB + Buds Core Awesome Graphite', stock: 0, pie: 49900, cuotas: 30000 },
+{ sku: '70015311', marca: 'SAMSUNG', modelo: 'S25 FE 5G 128GB Black', stock: 171, pie: 49900, cuotas: 48000 },
+{ sku: '70015315', marca: 'SAMSUNG', modelo: 'S25 FE 5G 128GB Dark Blue', stock: 0, pie: 49900, cuotas: 48000 },
+{ sku: '70015245', marca: 'SAMSUNG', modelo: 'S25 FE 5G 128GB Jet Black', stock: 0, pie: 49900, cuotas: 48000 },
+{ sku: '70015319', marca: 'SAMSUNG', modelo: 'S25 FE 5G 128GB Light Blue', stock: 0, pie: 49900, cuotas: 48000 },
+{ sku: '70015329', marca: 'SAMSUNG', modelo: 'S25 FE 5G 128GB White', stock: 0, pie: 49900, cuotas: 48000 },
+{ sku: '70016566', marca: 'SAMSUNG', modelo: 'S26 Ultra 256GB Negro', stock: 185, pie: 599900, cuotas: 68000 },
+{ sku: '70016710', marca: 'SAMSUNG', modelo: 'S26 Ultra 256GB Violeta', stock: 185, pie: 599900, cuotas: 68000 },
+{ sku: '70016538', marca: 'SAMSUNG', modelo: 'S26 Ultra 512GB Negro', stock: 55, pie: 699900, cuotas: 77000 },
+{ sku: '70016550', marca: 'SAMSUNG', modelo: 'S26 Plus 256GB Negro', stock: 84, pie: 499900, cuotas: 61000 },
+{ sku: '70016574', marca: 'SAMSUNG', modelo: 'S26 Plus 256GB Violeta', stock: 0, pie: 499900, cuotas: 61000 },
+{ sku: '70015290', marca: 'SAMSUNG', modelo: 'S25 FE 5G 256GB Black', stock: 233, pie: 69900, cuotas: 55500 },
+{ sku: '70015294', marca: 'SAMSUNG', modelo: 'S25 FE 5G 256GB Dark Blue', stock: 0, pie: 69900, cuotas: 55500 },
+{ sku: '70015302', marca: 'SAMSUNG', modelo: 'S25 FE 5G 256GB Jet Black', stock: 0, pie: 69900, cuotas: 55500 },
+{ sku: '70015298', marca: 'SAMSUNG', modelo: 'S25 FE 5G 256GB Light Blue', stock: 0, pie: 69900, cuotas: 55500 },
+{ sku: '70015217', marca: 'SAMSUNG', modelo: 'S25 FE 5G 256GB White', stock: 0, pie: 69900, cuotas: 55500 },
+{ sku: '70015099', marca: 'SAMSUNG', modelo: 'A06 5G 128GB MPP Black', stock: 698, pie: 0, cuotas: 10000 },
+{ sku: '70012621', marca: 'SAMSUNG', modelo: 'A55 5G 128GB + Buds FE Awesome Navy Blanco', stock: 3, pie: 39900, cuotas: 36000 },
+{ sku: '70012620', marca: 'SAMSUNG', modelo: 'A55 5G 128GB + Buds FE Awesome Navy Gris', stock: 3, pie: 39900, cuotas: 36000 },
+{ sku: '70012623', marca: 'SAMSUNG', modelo: 'A55 5G 256GB + Buds FE Awesome Navy Blanco', stock: 2, pie: 49900, cuotas: 40000 },
+{ sku: '70012622', marca: 'SAMSUNG', modelo: 'A55 5G 256GB + Buds FE Awesome Navy Gris', stock: 2, pie: 49900, cuotas: 40000 },
+{ sku: '70007713', marca: 'SAMSUNG', modelo: 'A10S 32GB Negro', stock: 0, pie: 349900, cuotas: 18500 },
+{ sku: '70007716', marca: 'SAMSUNG', modelo: 'A30S 64GB Negro', stock: 0, pie: 9900, cuotas: 12000 },
+{ sku: '70007791', marca: 'APPLE', modelo: 'iPhone 11 64GB Negro', stock: 0, pie: 349900, cuotas: 18500 },
+{ sku: '70007794', marca: 'APPLE', modelo: 'iPhone 11 64GB Blanco', stock: 0, pie: 349900, cuotas: 18500 },
+{ sku: '70008006', marca: 'HUAWEI', modelo: 'Y9S 128GB Azul', stock: 0, pie: 0, cuotas: 0 },
+{ sku: '70008113', marca: 'SAMSUNG', modelo: 'A11 32GB Negro', stock: 0, pie: 0, cuotas: 0 },
+{ sku: '70008116', marca: 'SAMSUNG', modelo: 'A21S 64GB Negro', stock: 0, pie: 0, cuotas: 0 },
+{ sku: '70008199', marca: 'SAMSUNG', modelo: 'A31 128GB Negro', stock: 0, pie: 0, cuotas: 0 },
+{ sku: '70008236', marca: 'MOTOROLA', modelo: 'G8 Power Lite 64GB Azul', stock: 0, pie: 74900, cuotas: 6500 },
+{ sku: '70008261', marca: 'HUAWEI', modelo: 'P40 Pro 256GB Azul', stock: 0, pie: 0, cuotas: 0 },
+{ sku: '70008397', marca: 'HUAWEI', modelo: 'Y6P 64GB Negro', stock: 0, pie: 49900, cuotas: 4500 },
+{ sku: '70008403', marca: 'HUAWEI', modelo: 'Y7P 64GB Negro', stock: 0, pie: 69900, cuotas: 5500 },
+{ sku: '70008406', marca: 'HUAWEI', modelo: 'Y7P 64GB Azul', stock: 0, pie: 69900, cuotas: 5500 },
+{ sku: '70008432', marca: 'XIAOMI', modelo: 'Redmi 9A 32GB Azul', stock: 0, pie: 29900, cuotas: 3000 },
+{ sku: '70008419', marca: 'XIAOMI', modelo: 'Redmi Note 9 128GB Gris Medianoche', stock: 0, pie: 74900, cuotas: 9000 },
+{ sku: '70008422', marca: 'XIAOMI', modelo: 'Redmi 9 64GB Negro', stock: 0, pie: 54900, cuotas: 6500 },
+{ sku: '70008429', marca: 'XIAOMI', modelo: 'Redmi 9A 32GB Negro', stock: 0, pie: 29900, cuotas: 3000 },
+{ sku: '70008438', marca: 'LG', modelo: 'K22 32GB Titan', stock: 0, pie: 0, cuotas: 0 },
+{ sku: '70008441', marca: 'MOTOROLA', modelo: 'G9 Play 64GB Azul', stock: 0, pie: 64900, cuotas: 4500 },
+{ sku: '70008504', marca: 'XIAOMI', modelo: 'Redmi 9 64GB Morado', stock: 0, pie: 54900, cuotas: 6500 },
+{ sku: '70008506', marca: 'XIAOMI', modelo: 'Redmi 9 64GB Negro + Speaker', stock: 0, pie: 54900, cuotas: 6500 },
+{ sku: '70008514', marca: 'XIAOMI', modelo: 'Redmi 9C 64GB Gris', stock: 0, pie: 89900, cuotas: 6000 },
+{ sku: '70008565', marca: 'XIAOMI', modelo: 'Redmi Note 9 128GB Verde', stock: 0, pie: 74900, cuotas: 9000 },
+{ sku: '70008587', marca: 'HUAWEI', modelo: 'Y8P 128GB Negro', stock: 0, pie: 89900, cuotas: 7000 },
+{ sku: '70008595', marca: 'MOTOROLA', modelo: 'G9 Power 128GB Verde', stock: 0, pie: 74900, cuotas: 7000 },
+{ sku: '70008603', marca: 'HUAWEI', modelo: 'Y8P 128GB Piedra Luna', stock: 0, pie: 89900, cuotas: 7000 },
+{ sku: '70008612', marca: 'HUAWEI', modelo: 'Y7A 64GB Negro', stock: 0, pie: 74900, cuotas: 6000 },
+{ sku: '70008615', marca: 'HUAWEI', modelo: 'Y7A 64GB Verde', stock: 0, pie: 74900, cuotas: 6000 },
+{ sku: '70008628', marca: 'XIAOMI', modelo: 'Redmi 9C 64GB Gris + Speaker', stock: 0, pie: 89900, cuotas: 6000 },
+{ sku: '70008668', marca: 'APPLE', modelo: 'iPhone 12 Mini 64GB Negro', stock: 0, pie: 59900, cuotas: 8000 },
+{ sku: '70008672', marca: 'APPLE', modelo: 'iPhone 12 64GB Negro', stock: 0, pie: 499900, cuotas: 26000 },
+{ sku: '70008637', marca: 'APPLE', modelo: 'iPhone 12 Mini 64GB Blanco', stock: 0, pie: 59900, cuotas: 8000 },
+{ sku: '70008683', marca: 'APPLE', modelo: 'iPhone 12 128GB Negro', stock: 0, pie: 99900, cuotas: 36000 },
+{ sku: '70008686', marca: 'APPLE', modelo: 'iPhone 12 128GB Blanco', stock: 0, pie: 99900, cuotas: 36000 },
+{ sku: '70008692', marca: 'APPLE', modelo: 'iPhone 12 Pro 256GB Grafito', stock: 0, pie: 0, cuotas: 0 },
+{ sku: '70008695', marca: 'APPLE', modelo: 'iPhone 12 Pro Max 128GB Grafito', stock: 0, pie: 929900, cuotas: 17000 },
+{ sku: '70008698', marca: 'APPLE', modelo: 'iPhone 12 Pro 128GB Grafito', stock: 0, pie: 949900, cuotas: 22500 },
+{ sku: '70008727', marca: 'APPLE', modelo: 'iPhone 11 64GB Negro S/Carg', stock: 2, pie: 349900, cuotas: 18500 },
+{ sku: '70008740', marca: 'APPLE', modelo: 'iPhone 11 128GB Negro S/Carg', stock: 0, pie: 479900, cuotas: 10000 },
+{ sku: '70008746', marca: 'APPLE', modelo: 'iPhone SE 2020 64GB Negro S/Carg', stock: 0, pie: 199900, cuotas: 24000 },
+{ sku: '70008794', marca: 'SAMSUNG', modelo: 'A02S 32GB Negro', stock: 0, pie: 44900, cuotas: 4000 },
+{ sku: '70008839', marca: 'MOTOROLA', modelo: 'E7 32GB Gris', stock: 0, pie: 49900, cuotas: 4000 },
+{ sku: '70008833', marca: 'SAMSUNG', modelo: 'A02S 64GB Negro', stock: 0, pie: 49900, cuotas: 4000 },
+{ sku: '70008847', marca: 'SAMSUNG', modelo: 'S21 Ultra 128GB Negro', stock: 0, pie: 879900, cuotas: 15500 },
+{ sku: '70008860', marca: 'SAMSUNG', modelo: 'S21 256GB Gris', stock: 0, pie: 428900, cuotas: 18000 },
+{ sku: '70008867', marca: 'SAMSUNG', modelo: 'A12 128GB Negro', stock: 0, pie: 59900, cuotas: 5500 },
+{ sku: '70008903', marca: 'SAMSUNG', modelo: 'A52 128GB Negro', stock: 0, pie: 99900, cuotas: 9000 },
+{ sku: '70008933', marca: 'OPPO', modelo: 'A54 128GB Negro', stock: 0, pie: 19900, cuotas: 2500 },
+{ sku: '70008928', marca: 'OPPO', modelo: 'A15 32GB Negro', stock: 0, pie: 49900, cuotas: 6000 },
+{ sku: '70008931', marca: 'MOTOROLA', modelo: 'G100 128GB Verde', stock: 0, pie: 429900, cuotas: 17000 },
+{ sku: '70008950', marca: 'SAMSUNG', modelo: 'A72 256GB Negro', stock: 0, pie: 264900, cuotas: 10000 },
+{ sku: '70008951', marca: 'SAMSUNG', modelo: 'A32 128GB Negro', stock: 0, pie: 79900, cuotas: 7500 },
+{ sku: '70008947', marca: 'SAMSUNG', modelo: 'A02 32GB Negro', stock: 0, pie: 39900, cuotas: 3000 },
+{ sku: '70008953', marca: 'MOTOROLA', modelo: 'E7I Power 32GB Azul', stock: 0, pie: 44900, cuotas: 4000 },
+{ sku: '70008962', marca: 'HUAWEI', modelo: 'Y9A 128GB Negro', stock: 0, pie: 79900, cuotas: 10000 },
+{ sku: '70008966', marca: 'XIAOMI', modelo: 'Redmi Note 10 Pro 128GB Azul', stock: 0, pie: 149900, cuotas: 15000 },
+{ sku: '70008969', marca: 'XIAOMI', modelo: 'Redmi Note 10S 128GB Azul', stock: 0, pie: 149900, cuotas: 10000 },
+{ sku: '70008972', marca: 'XIAOMI', modelo: 'MI 11 Lite 128GB Azul', stock: 0, pie: 139900, cuotas: 15000 },
+{ sku: '70008979', marca: 'XIAOMI', modelo: 'MI 11 Lite 128GB Negro', stock: 0, pie: 139900, cuotas: 15000 },
+{ sku: '70008992', marca: 'XIAOMI', modelo: 'Redmi 9T 128GB Gris Carbono', stock: 0, pie: 74900, cuotas: 9000 },
+{ sku: '70009001', marca: 'OPPO', modelo: 'A15 32GB Azul', stock: 0, pie: 49900, cuotas: 6000 },
+{ sku: '70008997', marca: 'OPPO', modelo: 'A54 128GB Azul', stock: 0, pie: 19900, cuotas: 2500 },
+{ sku: '70009090', marca: 'OPPO', modelo: 'Reno 5 Lite 128GB Negro', stock: 0, pie: 89900, cuotas: 10500 },
+{ sku: '70009095', marca: 'OPPO', modelo: 'Reno 5 Lite 128GB Morado', stock: 0, pie: 89900, cuotas: 10500 },
+{ sku: '70009093', marca: 'XIAOMI', modelo: 'Redmi Note 9 128GB Negro', stock: 0, pie: 74900, cuotas: 9000 },
+{ sku: '70009105', marca: 'XIAOMI', modelo: 'Redmi Note 10 5G 128GB Azul', stock: 0, pie: 109900, cuotas: 9500 },
+{ sku: '70009111', marca: 'SAMSUNG', modelo: 'X Cover 5 64GB Negro', stock: 0, pie: 84900, cuotas: 10000 },
+{ sku: '70009113', marca: 'MOTOROLA', modelo: 'G20 64GB Azul', stock: 0, pie: 69900, cuotas: 8500 },
+{ sku: '70009139', marca: 'XIAOMI', modelo: 'Redmi Note 10S 128GB Gris', stock: 0, pie: 149900, cuotas: 10000 },
+{ sku: '70009144', marca: 'SAMSUNG', modelo: 'A72 256GB Negro Open', stock: 0, pie: 264900, cuotas: 10000 },
+{ sku: '70009147', marca: 'SAMSUNG', modelo: 'A52 128GB Negro Open', stock: 0, pie: 99900, cuotas: 9000 },
+{ sku: '70009150', marca: 'SAMSUNG', modelo: 'A32 128GB Negro Open', stock: 0, pie: 79900, cuotas: 7500 },
+{ sku: '70009153', marca: 'XIAOMI', modelo: 'Redmi Note 10 5G 128GB Gris', stock: 0, pie: 109900, cuotas: 9500 },
+{ sku: '70009188', marca: 'SAMSUNG', modelo: 'A22 128GB Negro', stock: 0, pie: 29900, cuotas: 17000 },
+{ sku: '70009192', marca: 'APPLE', modelo: 'iPhone 12 Pro Max 128GB Azul', stock: 0, pie: 929900, cuotas: 17000 },
+{ sku: '70009194', marca: 'SAMSUNG', modelo: 'A03S 64GB Negro', stock: 0, pie: 64900, cuotas: 5500 },
+{ sku: '70009200', marca: 'APPLE', modelo: 'iPhone 11 64GB Blanco S/Carg', stock: 0, pie: 349900, cuotas: 18500 },
+{ sku: '70009227', marca: 'XIAOMI', modelo: 'Redmi 9T 128GB Verde', stock: 0, pie: 74900, cuotas: 9000 },
+{ sku: '70009240', marca: 'SAMSUNG', modelo: 'A12 128GB Negro', stock: 0, pie: 59900, cuotas: 5500 },
+{ sku: '70009243', marca: 'SAMSUNG', modelo: 'S20 FE 128GB Azul', stock: 0, pie: 264900, cuotas: 11000 },
+{ sku: '70009276', marca: 'MOTOROLA', modelo: 'Edge 20 Lite 128GB Gris', stock: 0, pie: 284900, cuotas: 10000 },
+{ sku: '70009279', marca: 'MOTOROLA', modelo: 'G50 128GB Azul', stock: 0, pie: 22900, cuotas: 3000 },
+{ sku: '70009282', marca: 'SAMSUNG', modelo: 'A03S 32GB Negro', stock: 0, pie: 44900, cuotas: 7000 },
+{ sku: '70009291', marca: 'SAMSUNG', modelo: 'Z Fold 3 256GB Negro', stock: 0, pie: 1499900, cuotas: 41000 },
+{ sku: '70009287', marca: 'SAMSUNG', modelo: 'Z Flip 3 128GB Negro', stock: 0, pie: 799900, cuotas: 25000 },
+{ sku: '70009349', marca: 'XIAOMI', modelo: 'Redmi 9A 32GB Verde', stock: 0, pie: 29900, cuotas: 3000 },
+{ sku: '70009401', marca: 'XIAOMI', modelo: '11T Pro 256GB Gris', stock: 0, pie: 599900, cuotas: 19000 },
+{ sku: '70009384', marca: 'XIAOMI', modelo: 'Redmi 10 128GB Gris', stock: 0, pie: 74900, cuotas: 10500 },
+{ sku: '70009389', marca: 'XIAOMI', modelo: '11 Lite New Edition 128GB Negro', stock: 0, pie: 199900, cuotas: 18000 },
+{ sku: '70009395', marca: 'XIAOMI', modelo: '11T 256GB Gris', stock: 0, pie: 299900, cuotas: 16000 },
+{ sku: '70009409', marca: 'XIAOMI', modelo: '11T 256GB Azul', stock: 0, pie: 299900, cuotas: 16000 },
+{ sku: '70009415', marca: 'XIAOMI', modelo: 'Redmi 10 128GB Azul', stock: 0, pie: 74900, cuotas: 10500 },
+{ sku: '70009444', marca: 'APPLE', modelo: 'iPhone 13 128GB Midnight', stock: 2, pie: 149900, cuotas: 41000 },
+{ sku: '70009447', marca: 'APPLE', modelo: 'iPhone 13 128GB Starlight', stock: 0, pie: 149900, cuotas: 41000 },
+{ sku: '70009450', marca: 'APPLE', modelo: 'iPhone 13 128GB Rosado', stock: 0, pie: 149900, cuotas: 41000 },
+{ sku: '70009453', marca: 'APPLE', modelo: 'iPhone 13 256GB Midnight', stock: 0, pie: 789900, cuotas: 17000 },
+{ sku: '70009483', marca: 'APPLE', modelo: 'iPhone 13 Pro Max 128GB Grafito', stock: 0, pie: 949900, cuotas: 23000 },
+{ sku: '70009489', marca: 'APPLE', modelo: 'iPhone 13 Pro Max 128GB Azul Sierra', stock: 0, pie: 949900, cuotas: 23000 },
+{ sku: '70009506', marca: 'OPPO', modelo: 'A16 64GB Azul', stock: 0, pie: 49900, cuotas: 3000 },
+{ sku: '70009508', marca: 'OPPO', modelo: 'A16 64GB Negro', stock: 0, pie: 49900, cuotas: 3000 },
+{ sku: '70009510', marca: 'MOTOROLA', modelo: 'E20 32GB Gris', stock: 0, pie: 39900, cuotas: 5000 },
+{ sku: '70009512', marca: 'MOTOROLA', modelo: 'E30 32GB Gris', stock: 0, pie: 48900, cuotas: 6000 },
+{ sku: '70009514', marca: 'MOTOROLA', modelo: 'G20 128GB Verde', stock: 0, pie: 74900, cuotas: 7500 },
+{ sku: '70009516', marca: 'MOTOROLA', modelo: 'G20 128GB Azul', stock: 0, pie: 74900, cuotas: 7500 },
+{ sku: '70009526', marca: 'XIAOMI', modelo: 'Redmi Note 10S 128GB Blanco', stock: 0, pie: 149900, cuotas: 10000 },
+{ sku: '70009529', marca: 'XIAOMI', modelo: '11 Lite New Edition 128GB Negro + Band 6', stock: 0, pie: 199900, cuotas: 18000 },
+{ sku: '70009533', marca: 'XIAOMI', modelo: '11T 256GB Gris + Band 6 + Buds 3', stock: 0, pie: 299900, cuotas: 16000 },
+{ sku: '70009535', marca: 'XIAOMI', modelo: '11T Pro 256GB Gris + Watch + Buds', stock: 0, pie: 599900, cuotas: 19000 },
+{ sku: '70009537', marca: 'XIAOMI', modelo: '11T Pro 256GB Azul + Watch + Buds', stock: 0, pie: 599900, cuotas: 19000 },
+{ sku: '70009544', marca: 'OPPO', modelo: 'Reno 6 Lite 128GB Negro', stock: 0, pie: 39900, cuotas: 2500 },
+{ sku: '70009568', marca: 'SAMSUNG', modelo: 'A12 128GB Negro Open', stock: 0, pie: 59900, cuotas: 5500 },
+{ sku: '70009571', marca: 'SAMSUNG', modelo: 'A22 128GB Negro Open', stock: 0, pie: 29900, cuotas: 17000 },
+{ sku: '70009574', marca: 'SAMSUNG', modelo: 'A32 128GB Negro Open', stock: 0, pie: 79900, cuotas: 7500 },
+{ sku: '70009589', marca: 'SAMSUNG', modelo: 'A52 128GB Negro Open', stock: 0, pie: 99900, cuotas: 9000 },
+{ sku: '70009723', marca: 'NOKIA', modelo: 'G10 64GB Azul Open', stock: 0, pie: 44900, cuotas: 4500 },
+{ sku: '70009725', marca: 'OPPO', modelo: 'A54 128GB Azul Open', stock: 0, pie: 19900, cuotas: 2500 },
+{ sku: '70009731', marca: 'OPPO', modelo: 'Reno 5 Lite 128GB Negro Open', stock: 0, pie: 89900, cuotas: 10500 },
+{ sku: '70009736', marca: 'OPPO', modelo: 'A54 128GB Negro Open', stock: 0, pie: 19900, cuotas: 2500 },
+{ sku: '70009782', marca: 'XIAOMI', modelo: '11T Pro 256GB Gris Open', stock: 0, pie: 599900, cuotas: 19000 },
+{ sku: '70009785', marca: 'OPPO', modelo: 'Reno 6 Lite 128GB Plata', stock: 0, pie: 39900, cuotas: 2500 },
+{ sku: '70009777', marca: 'XIAOMI', modelo: '11T 256GB Gris Open', stock: 0, pie: 299900, cuotas: 16000 },
+{ sku: '70009788', marca: 'XIAOMI', modelo: '11T 256GB Azul Open', stock: 0, pie: 299900, cuotas: 16000 },
+{ sku: '70009780', marca: 'XIAOMI', modelo: '11T Pro 256GB Azul Open', stock: 0, pie: 599900, cuotas: 19000 },
+{ sku: '70009804', marca: 'SAMSUNG', modelo: 'A03 128GB Negro Open', stock: 0, pie: 54900, cuotas: 7000 },
+{ sku: '70009807', marca: 'SAMSUNG', modelo: 'A22 5G 128GB Gris Open', stock: 0, pie: 69900, cuotas: 10000 },
+{ sku: '70009830', marca: 'SAMSUNG', modelo: 'A32 5G 128GB Negro Open', stock: 0, pie: 124900, cuotas: 11000 },
+{ sku: '70009827', marca: 'MOTOROLA', modelo: 'G51 128GB Azul', stock: 0, pie: 119900, cuotas: 12500 },
+{ sku: '70009845', marca: 'MOTOROLA', modelo: 'G200 128GB Morado', stock: 0, pie: 439900, cuotas: 16500 },
+{ sku: '70009880', marca: 'XIAOMI', modelo: 'Redmi Note 11 128GB Azul Estrella', stock: 0, pie: 99900, cuotas: 14000 },
+{ sku: '70009895', marca: 'XIAOMI', modelo: 'Redmi Note 11 128GB Gris Grafito', stock: 0, pie: 99900, cuotas: 14000 },
+{ sku: '70009898', marca: 'XIAOMI', modelo: 'Redmi Note 11 128GB Turquesa', stock: 0, pie: 99900, cuotas: 14000 },
+{ sku: '70009877', marca: 'SAMSUNG', modelo: 'A03 Core 32GB Negro Open', stock: 0, pie: 39900, cuotas: 6000 },
+{ sku: '70010036', marca: 'XIAOMI', modelo: 'Redmi Note 11 128GB Gris Grafito Open', stock: 0, pie: 99900, cuotas: 14000 },
+{ sku: '70010087', marca: 'APPLE', modelo: 'iPhone SE 2022 64GB Midnight', stock: 0, pie: 269900, cuotas: 34000 },
+{ sku: '70010106', marca: 'APPLE', modelo: 'iPhone 13 128GB Verde', stock: 0, pie: 149900, cuotas: 41000 },
+{ sku: '70010152', marca: 'SAMSUNG', modelo: 'A53 5G 128GB Negro', stock: 0, pie: 119900, cuotas: 15500 },
+{ sku: '70010137', marca: 'XIAOMI', modelo: 'Redmi Note 11S 5G 128GB Negro', stock: 0, pie: 129900, cuotas: 16000 },
+{ sku: '70010189', marca: 'XIAOMI', modelo: 'Redmi Note 11 Pro 128GB Gris Grafito', stock: 0, pie: 149900, cuotas: 18000 },
+{ sku: '70010195', marca: 'XIAOMI', modelo: 'Redmi Note 11 Pro 5G 128GB Gris Grafito', stock: 0, pie: 249900, cuotas: 13000 },
+{ sku: '70010199', marca: 'XIAOMI', modelo: 'Redmi Note 11 Pro 5G 128GB Azul Atlantico', stock: 0, pie: 249900, cuotas: 13000 },
+{ sku: '70010201', marca: 'XIAOMI', modelo: '12 256GB Gris', stock: 0, pie: 799900, cuotas: 20500 },
+{ sku: '70010289', marca: 'SAMSUNG', modelo: 'A73 5G 256GB Gris', stock: 0, pie: 339900, cuotas: 18500 },
+{ sku: '70010277', marca: 'SAMSUNG', modelo: 'S22 256GB Negro', stock: 0, pie: 574900, cuotas: 13000 },
+{ sku: '70010292', marca: 'SAMSUNG', modelo: 'A13 128GB Negro', stock: 0, pie: 64900, cuotas: 8000 },
+{ sku: '70010298', marca: 'SAMSUNG', modelo: 'A03 32GB Negro Open', stock: 0, pie: 79900, cuotas: 4000 },
+{ sku: '70010315', marca: 'SAMSUNG', modelo: 'A23 128GB Negro', stock: 0, pie: 74900, cuotas: 10000 },
+{ sku: '70010317', marca: 'XIAOMI', modelo: 'Redmi 10A 64GB Gris Grafito', stock: 0, pie: 59900, cuotas: 8000 },
+{ sku: '70010344', marca: 'XIAOMI', modelo: '12 Pro 256GB Blue Open', stock: 0, pie: 599900, cuotas: 19500 },
+{ sku: '70010362', marca: 'SAMSUNG', modelo: 'S20 FE 5G 128GB Azul', stock: 8, pie: 289900, cuotas: 18000 },
+{ sku: '70010388', marca: 'XIAOMI', modelo: 'Redmi 10C 128GB Gris', stock: 0, pie: 99900, cuotas: 10000 },
+{ sku: '70010372', marca: 'XIAOMI', modelo: 'Redmi 10C 128GB Azul', stock: 0, pie: 99900, cuotas: 10000 },
+{ sku: '70010380', marca: 'MOTOROLA', modelo: 'G22 128GB Negro', stock: 0, pie: 74900, cuotas: 7500 },
+{ sku: '70010397', marca: 'XIAOMI', modelo: 'Redmi 9C 64GB Verde', stock: 0, pie: 89900, cuotas: 6000 },
+{ sku: '70010403', marca: 'XIAOMI', modelo: 'Redmi 10 5G 128GB Gris Grafito', stock: 0, pie: 59900, cuotas: 6500 },
+{ sku: '70010406', marca: 'XIAOMI', modelo: 'Redmi 9A 32GB Verde Aurora', stock: 0, pie: 29900, cuotas: 3000 },
+{ sku: '70010414', marca: 'XIAOMI', modelo: '12 Lite 128GB Negro', stock: 0, pie: 499900, cuotas: 16000 },
+{ sku: '70010431', marca: 'OPPO', modelo: 'Reno 7 5G 256GB Azul', stock: 0, pie: 184900, cuotas: 20500 },
+{ sku: '70010427', marca: 'OPPO', modelo: 'Reno 7 128GB Azul', stock: 0, pie: 30900, cuotas: 4000 },
+{ sku: '70010429', marca: 'OPPO', modelo: 'Reno 7 128GB Negro', stock: 0, pie: 30900, cuotas: 4000 },
+{ sku: '70010453', marca: 'HONOR', modelo: 'X7 128GB Azul', stock: 0, pie: 59900, cuotas: 6500 },
+{ sku: '70010444', marca: 'HONOR', modelo: 'X8 128GB Plata', stock: 0, pie: 29900, cuotas: 4500 },
+{ sku: '70010447', marca: 'HONOR', modelo: 'X9 128GB Negro', stock: 0, pie: 89900, cuotas: 12000 },
+{ sku: '70010506', marca: 'SAMSUNG', modelo: 'A03 Core 32GB CK Open', stock: 0, pie: 39900, cuotas: 6000 },
+{ sku: '70010541', marca: 'MOTOROLA', modelo: 'G22 128GB Blanco', stock: 0, pie: 74900, cuotas: 7500 },
+{ sku: '70010596', marca: 'SAMSUNG', modelo: 'Z Fold 4 256GB Negro Open', stock: 0, pie: 1199900, cuotas: 25000 },
+{ sku: '70010639', marca: 'MOTOROLA', modelo: 'Edge 30 Fusion 256GB Negro', stock: 0, pie: 549900, cuotas: 11000 },
+{ sku: '70010643', marca: 'VIVO', modelo: 'Y55 128GB Negro', stock: 0, pie: 59900, cuotas: 8500 },
+{ sku: '70010662', marca: 'SAMSUNG', modelo: 'Z Flip 4 256GB Gris Open', stock: 0, pie: 539900, cuotas: 12000 },
+{ sku: '70010666', marca: 'XIAOMI', modelo: 'Redmi Note 11S 5G 128GB Turquesa', stock: 0, pie: 129900, cuotas: 16000 },
+{ sku: '70010800', marca: 'HONOR', modelo: 'X6S 128GB Plata', stock: 0, pie: 0, cuotas: 6000 },
+{ sku: '70010804', marca: 'MOTOROLA', modelo: 'E22I 64GB Gris', stock: 0, pie: 69900, cuotas: 9000 },
+{ sku: '70010836', marca: 'APPLE', modelo: 'iPhone 14 128GB Midnight', stock: 3, pie: 229900, cuotas: 40000 },
+{ sku: '70010858', marca: 'APPLE', modelo: 'iPhone 14 128GB Starlight', stock: 0, pie: 229900, cuotas: 40000 },
+{ sku: '70010860', marca: 'APPLE', modelo: 'iPhone 14 256GB Midnight', stock: 0, pie: 879900, cuotas: 17500 },
+{ sku: '70010862', marca: 'APPLE', modelo: 'iPhone 14 Plus 128GB Midnight', stock: 0, pie: 959900, cuotas: 22000 },
+{ sku: '70010864', marca: 'APPLE', modelo: 'iPhone 14 Plus 128GB Starlight', stock: 0, pie: 959900, cuotas: 22000 },
+{ sku: '70010866', marca: 'APPLE', modelo: 'iPhone 14 Plus 128GB Purple', stock: 0, pie: 959900, cuotas: 22000 },
+{ sku: '70010868', marca: 'APPLE', modelo: 'iPhone 14 Plus 256GB Midnight', stock: 0, pie: 1009900, cuotas: 22500 },
+{ sku: '70010870', marca: 'APPLE', modelo: 'iPhone 14 Pro 128GB Space Black', stock: 0, pie: 1319900, cuotas: 32500 },
+{ sku: '70010872', marca: 'APPLE', modelo: 'iPhone 14 Pro 128GB Silver', stock: 0, pie: 1319900, cuotas: 32500 },
+{ sku: '70010874', marca: 'APPLE', modelo: 'iPhone 14 Pro 128GB Gold', stock: 0, pie: 1319900, cuotas: 32500 },
+{ sku: '70010876', marca: 'APPLE', modelo: 'iPhone 14 Pro 256GB Space Black', stock: 0, pie: 1099900, cuotas: 27000 },
+{ sku: '70010878', marca: 'APPLE', modelo: 'iPhone 14 Pro 512GB Space Black', stock: 0, pie: 1319900, cuotas: 32500 },
+{ sku: '70010880', marca: 'APPLE', modelo: 'iPhone 14 Pro Max 128GB Space Black', stock: 0, pie: 1129900, cuotas: 41000 },
+{ sku: '70010882', marca: 'APPLE', modelo: 'iPhone 14 Pro Max 128GB Silver', stock: 0, pie: 1129900, cuotas: 41000 },
+{ sku: '70010884', marca: 'APPLE', modelo: 'iPhone 14 Pro Max 128GB Gold', stock: 0, pie: 1129900, cuotas: 41000 },
+{ sku: '70010886', marca: 'APPLE', modelo: 'iPhone 14 Pro Max 512GB Space Black', stock: 0, pie: 1469900, cuotas: 33000 },
+{ sku: '70010913', marca: 'SAMSUNG', modelo: 'A04 128GB Blanco', stock: 0, pie: 59900, cuotas: 8000 },
+{ sku: '70010917', marca: 'SAMSUNG', modelo: 'A04S 128GB Negro', stock: 0, pie: 54900, cuotas: 10000 },
+{ sku: '70010919', marca: 'SAMSUNG', modelo: 'A23 5G 128GB Negro', stock: 0, pie: 99900, cuotas: 18000 },
+{ sku: '70010929', marca: 'XIAOMI', modelo: '12T 256GB Negro', stock: 0, pie: 699900, cuotas: 15000 },
+{ sku: '70010935', marca: 'XIAOMI', modelo: '12T Pro 256GB Negro', stock: 0, pie: 849900, cuotas: 18000 },
+{ sku: '70010937', marca: 'HONOR', modelo: 'H70 256GB Verde', stock: 0, pie: 259900, cuotas: 14000 },
+{ sku: '70010945', marca: 'APPLE', modelo: 'iPhone 14 Plus 512GB Midnight', stock: 0, pie: 1219900, cuotas: 28000 },
+{ sku: '70010947', marca: 'APPLE', modelo: 'iPhone 14 128GB Blue', stock: 0, pie: 229900, cuotas: 40000 },
+{ sku: '70010949', marca: 'APPLE', modelo: 'iPhone 14 256GB Starlight', stock: 0, pie: 879900, cuotas: 17500 },
+{ sku: '70010951', marca: 'APPLE', modelo: 'iPhone 14 Pro 256GB Starlight', stock: 0, pie: 1099900, cuotas: 27000 },
+{ sku: '70010953', marca: 'APPLE', modelo: 'iPhone 14 Pro Max 256GB Space Black', stock: 0, pie: 1249900, cuotas: 28000 },
+{ sku: '70010970', marca: 'XIAOMI', modelo: '12T 256GB Negro', stock: 0, pie: 699900, cuotas: 15000 },
+{ sku: '70010971', marca: 'XIAOMI', modelo: '12T Pro 256GB Negro', stock: 0, pie: 849900, cuotas: 18000 },
+{ sku: '70010982', marca: 'APPLE', modelo: 'iPhone 14 Plus 256GB Starlight', stock: 0, pie: 1009900, cuotas: 22500 },
+{ sku: '70010984', marca: 'APPLE', modelo: 'iPhone 14 128GB Purple', stock: 0, pie: 229900, cuotas: 40000 },
+{ sku: '70011011', marca: 'APPLE', modelo: 'iPhone 12 Mini 128GB Purpura', stock: 0, pie: 499900, cuotas: 29000 },
+{ sku: '70011015', marca: 'APPLE', modelo: 'iPhone 12 Mini 128GB Blanco', stock: 0, pie: 499900, cuotas: 29000 },
+{ sku: '70011017', marca: 'APPLE', modelo: 'iPhone 12 Mini 128GB Rojo', stock: 0, pie: 499900, cuotas: 29000 },
+{ sku: '70011019', marca: 'APPLE', modelo: 'iPhone 12 Mini 128GB Azul', stock: 0, pie: 499900, cuotas: 29000 },
+{ sku: '70011027', marca: 'APPLE', modelo: 'iPhone 12 Mini 256GB Rojo', stock: 0, pie: 499900, cuotas: 29000 },
+{ sku: '70011041', marca: 'SAMSUNG', modelo: 'A04E 32GB Negro', stock: 0, pie: 29900, cuotas: 7000 },
+{ sku: '70011059', marca: 'APPLE', modelo: 'iPhone 14 512GB Midnight', stock: 0, pie: 1119900, cuotas: 27000 },
+{ sku: '70011061', marca: 'APPLE', modelo: 'iPhone 14 Plus 128GB Blue', stock: 0, pie: 959900, cuotas: 22000 },
+{ sku: '70011114', marca: 'SAMSUNG', modelo: 'S22 256GB Purpura', stock: 0, pie: 574900, cuotas: 13000 },
+{ sku: '70011119', marca: 'HONOR', modelo: 'X7A 128GB Plata', stock: 0, pie: 0, cuotas: 5500 },
+{ sku: '70011122', marca: 'HONOR', modelo: 'Magic 5 Lite 128GB Verde', stock: 0, pie: 59900, cuotas: 10000 },
+{ sku: '70011172', marca: 'OPPO', modelo: 'A78 128GB Glowing Black', stock: 0, pie: 0, cuotas: 14000 },
+{ sku: '70011174', marca: 'OPPO', modelo: 'A78 128GB Glowing Blue', stock: 0, pie: 0, cuotas: 14000 },
+{ sku: '70011176', marca: 'OPPO', modelo: 'Reno 7 256GB Negro', stock: 0, pie: 139900, cuotas: 17000 },
+{ sku: '70011189', marca: 'OPPO', modelo: 'Reno 7 256GB Dawnlight Gold', stock: 0, pie: 139900, cuotas: 17000 },
+{ sku: '70011192', marca: 'XIAOMI', modelo: 'Redmi A2 32GB Black', stock: 0, pie: 69900, cuotas: 4000 },
+{ sku: '70011198', marca: 'XIAOMI', modelo: 'Redmi 12C 128GB Graphite Gray', stock: 0, pie: 89900, cuotas: 9000 },
+{ sku: '70011206', marca: 'XIAOMI', modelo: 'Redmi Note 12 128GB Onyx Gray', stock: 0, pie: 129900, cuotas: 13000 },
+{ sku: '70011208', marca: 'XIAOMI', modelo: 'Redmi Note 12 128GB Ice Blue', stock: 0, pie: 129900, cuotas: 13000 },
+{ sku: '70011210', marca: 'XIAOMI', modelo: 'Redmi Note 12 128GB Mint Green', stock: 0, pie: 129900, cuotas: 13000 },
+{ sku: '70011212', marca: 'XIAOMI', modelo: 'Redmi Note 12 Pro 5G 256GB Midnight Black', stock: 0, pie: 279900, cuotas: 11500 },
+{ sku: '70011214', marca: 'XIAOMI', modelo: 'Redmi Note 12 Pro 5G 256GB Blue', stock: 0, pie: 279900, cuotas: 11500 },
+{ sku: '70011216', marca: 'XIAOMI', modelo: 'Redmi Note 12 Pro 5G 256GB White', stock: 0, pie: 279900, cuotas: 11500 },
+{ sku: '70011232', marca: 'APPLE', modelo: 'iPhone 14 Pro Max 256GB Silver', stock: 0, pie: 1249900, cuotas: 28000 },
+{ sku: '70011234', marca: 'OPPO', modelo: 'A57 128GB Glowing Black', stock: 0, pie: 49900, cuotas: 7500 },
+{ sku: '70011236', marca: 'OPPO', modelo: 'A57 128GB Glowing Green', stock: 0, pie: 49900, cuotas: 7500 },
+{ sku: '70011240', marca: 'OPPO', modelo: 'A17 64GB Lake Blue', stock: 0, pie: 0, cuotas: 8500 },
+{ sku: '70011242', marca: 'OPPO', modelo: 'A17 64GB Midnight Black', stock: 0, pie: 0, cuotas: 8500 },
+{ sku: '70011277', marca: 'SAMSUNG', modelo: 'S21 FE 5G 256GB Gris', stock: 0, pie: 409900, cuotas: 27000 },
+{ sku: '70011279', marca: 'SAMSUNG', modelo: 'S23 128GB Negro', stock: 1, pie: 599900, cuotas: 33000 },
+{ sku: '70011281', marca: 'SAMSUNG', modelo: 'S23 128GB Blanco', stock: 0, pie: 599900, cuotas: 33000 },
+{ sku: '70011289', marca: 'SAMSUNG', modelo: 'S23 256GB Beige', stock: 0, pie: 749900, cuotas: 22000 },
+{ sku: '70011293', marca: 'SAMSUNG', modelo: 'S23 256GB Negro', stock: 0, pie: 749900, cuotas: 22000 },
+{ sku: '70011295', marca: 'SAMSUNG', modelo: 'S23 Plus 256GB Purpura', stock: 0, pie: 769900, cuotas: 28000 },
+{ sku: '70011297', marca: 'SAMSUNG', modelo: 'S23 Plus 256GB Beige', stock: 0, pie: 769900, cuotas: 28000 },
+{ sku: '70011299', marca: 'SAMSUNG', modelo: 'S23 Plus 256GB Verde', stock: 0, pie: 769900, cuotas: 28000 },
+{ sku: '70011301', marca: 'SAMSUNG', modelo: 'S23 Plus 256GB Negro', stock: 0, pie: 769900, cuotas: 28000 },
+{ sku: '70011303', marca: 'SAMSUNG', modelo: 'S23 Plus 512GB Beige', stock: 0, pie: 854900, cuotas: 32500 },
+{ sku: '70011305', marca: 'SAMSUNG', modelo: 'S23 Plus 512GB Verde', stock: 0, pie: 854900, cuotas: 32500 },
+{ sku: '70011307', marca: 'SAMSUNG', modelo: 'S23 Plus 512GB Negro', stock: 0, pie: 854900, cuotas: 32500 },
+{ sku: '70011309', marca: 'SAMSUNG', modelo: 'S23 Ultra 256GB Verde', stock: 0, pie: 929900, cuotas: 40000 },
+{ sku: '70011311', marca: 'SAMSUNG', modelo: 'S23 Ultra 256GB Negro', stock: 0, pie: 929900, cuotas: 40000 },
+{ sku: '70011317', marca: 'SAMSUNG', modelo: 'S23 Ultra 512GB Beige', stock: 0, pie: 979900, cuotas: 44000 },
+{ sku: '70011319', marca: 'SAMSUNG', modelo: 'S23 Plus 512GB Purpura', stock: 0, pie: 854900, cuotas: 32500 },
+{ sku: '70011321', marca: 'SAMSUNG', modelo: 'S23 Ultra 512GB Lila', stock: 0, pie: 979900, cuotas: 44000 },
+{ sku: '70011334', marca: 'VIVO', modelo: 'Y16 64GB Negro Estelar', stock: 0, pie: 39900, cuotas: 3000 },
+{ sku: '70011336', marca: 'VIVO', modelo: 'Y16 64GB Dorado Llovizna', stock: 0, pie: 39900, cuotas: 3000 },
+{ sku: '70011418', marca: 'VIVO', modelo: 'V25 5G 128GB Diamante', stock: 0, pie: 0, cuotas: 0 },
+{ sku: '70011420', marca: 'VIVO', modelo: 'V25 5G 128GB Amanecer', stock: 0, pie: 0, cuotas: 0 },
+{ sku: '70011443', marca: 'HONOR', modelo: 'Magic 5 pro 512GB Green', stock: 0, pie: 0, cuotas: 0 },
+{ sku: '70011449', marca: 'SAMSUNG', modelo: 'A34 5G 128GB Plata', stock: 3, pie: 199900, cuotas: 14000 },
+{ sku: '70011451', marca: 'SAMSUNG', modelo: 'A34 5G 128GB Verde', stock: 0, pie: 199900, cuotas: 14000 },
+{ sku: '70011455', marca: 'SAMSUNG', modelo: 'A54 5G 128GB Verde', stock: 0, pie: 249900, cuotas: 20000 },
+{ sku: '70011459', marca: 'SAMSUNG', modelo: 'A54 5G 128GB Negro', stock: 0, pie: 249900, cuotas: 20000 },
+{ sku: '70011467', marca: 'SAMSUNG', modelo: 'A54 5G 256GB Verde', stock: 0, pie: 249900, cuotas: 20000 },
+{ sku: '70011469', marca: 'XIAOMI', modelo: 'Redmi Note 12 Pro Plus 256GB Negro', stock: 0, pie: 299900, cuotas: 16000 },
+{ sku: '70011471', marca: 'VIVO', modelo: 'Y22S 128GB Azul', stock: 0, pie: 39900, cuotas: 4000 },
+{ sku: '70011482', marca: 'MOTOROLA', modelo: 'Edge 40 256GB Viva Magenta', stock: 0, pie: 121900, cuotas: 16500 },
+{ sku: '70011484', marca: 'ZTE', modelo: 'Blade A33 32GB Space Gray', stock: 0, pie: 28900, cuotas: 3000 },
+{ sku: '70011507', marca: 'HONOR', modelo: 'X8A 5G 128GB Silver', stock: 0, pie: 19900, cuotas: 11000 },
+{ sku: '70011549', marca: 'XIAOMI', modelo: 'Redmi Note 12S 256GB Black', stock: 0, pie: 239900, cuotas: 11500 },
+{ sku: '70011556', marca: 'SAMSUNG', modelo: 'A34 5G 128GB Graphite', stock: 0, pie: 199900, cuotas: 14000 },
+{ sku: '70011559', marca: 'SAMSUNG', modelo: 'A54 5G 128GB Graphite', stock: 0, pie: 249900, cuotas: 20000 },
+{ sku: '70011561', marca: 'SAMSUNG', modelo: 'A54 5G 256GB Graphite', stock: 0, pie: 249900, cuotas: 20000 },
+{ sku: '70011574', marca: 'SAMSUNG', modelo: 'A04S 128GB Blanco', stock: 0, pie: 54900, cuotas: 10000 },
+{ sku: '70011577', marca: 'XIAOMI', modelo: 'Redmi Note 12 Pro Plus 256GB Azul Cielo', stock: 0, pie: 299900, cuotas: 16000 },
+{ sku: '70011614', marca: 'SAMSUNG', modelo: 'A14 LTE 128GB Verde', stock: 0, pie: 0, cuotas: 0 },
+{ sku: '70011638', marca: 'ZTE', modelo: 'A73 128GB Space Gray', stock: 0, pie: 0, cuotas: 9000 },
+{ sku: '70011644', marca: 'ZTE', modelo: 'Blade A72S 128GB Azul', stock: 0, pie: 0, cuotas: 8500 },
+{ sku: '70011664', marca: 'SAMSUNG', modelo: 'A14 LTE 128GB Negro', stock: 0, pie: 0, cuotas: 0 },
+{ sku: '70011617', marca: 'SAMSUNG', modelo: 'A14 LTE 128GB Plata', stock: 0, pie: 0, cuotas: 0 },
+{ sku: '70011673', marca: 'HONOR', modelo: 'X6A 128GB Plata Estelar', stock: 0, pie: 1599900, cuotas: 33000 },
+{ sku: '70011676', marca: 'HONOR', modelo: 'H90 512GB Verde Esmeralda', stock: 0, pie: 0, cuotas: 39000 },
+{ sku: '70011689', marca: 'SAMSUNG', modelo: 'A14 5G 128GB EC Negro', stock: 0, pie: 79900, cuotas: 11000 },
+{ sku: '70011692', marca: 'SAMSUNG', modelo: 'S23 128GB Crema', stock: 0, pie: 599900, cuotas: 33000 },
+{ sku: '70011704', marca: 'SAMSUNG', modelo: 'A14 LTE 128GB EC Negro', stock: 0, pie: 64900, cuotas: 8000 },
+{ sku: '70011705', marca: 'XIAOMI', modelo: 'Redmi 10 5G 128GB EC Gris Grafito', stock: 0, pie: 129900, cuotas: 11000 },
+{ sku: '70011706', marca: 'SAMSUNG', modelo: 'A23 5G 128GB EC Negro', stock: 0, pie: 99900, cuotas: 18000 },
+{ sku: '70011707', marca: 'XIAOMI', modelo: 'Redmi Note 12 Pro 5G 256GB EC Midnight Black', stock: 0, pie: 249900, cuotas: 15500 },
+{ sku: '70011712', marca: 'HONOR', modelo: 'H90 Lite 256GB Cyan', stock: 0, pie: 0, cuotas: 17500 },
+{ sku: '70011715', marca: 'MOTOROLA', modelo: 'G84 256GB Negro', stock: 0, pie: 82900, cuotas: 10000 },
+{ sku: '70011718', marca: 'MOTOROLA', modelo: 'G84 256GB Azul', stock: 0, pie: 82900, cuotas: 10000 },
+{ sku: '70011721', marca: 'MOTOROLA', modelo: 'G84 256GB Magenta', stock: 0, pie: 82900, cuotas: 10000 },
+{ sku: '70011762', marca: 'SAMSUNG', modelo: 'Z Fold 5 512GB Negro', stock: 0, pie: 1599900, cuotas: 33000 },
+{ sku: '70011765', marca: 'SAMSUNG', modelo: 'Z Fold 5 512GB Azul Helado', stock: 0, pie: 1599900, cuotas: 33000 },
+{ sku: '70011768', marca: 'SAMSUNG', modelo: 'Z Fold 5 512GB Crema', stock: 0, pie: 1599900, cuotas: 33000 },
+{ sku: '70011771', marca: 'VIVO', modelo: 'Y36 5G 256GB Negro Místico', stock: 0, pie: 0, cuotas: 19000 },
+{ sku: '70011774', marca: 'VIVO', modelo: 'Y36 5G 256GB Verde Cristalino', stock: 0, pie: 0, cuotas: 19000 },
+{ sku: '70011783', marca: 'VIVO', modelo: 'Y27 5G 128GB Negro Místico', stock: 0, pie: 0, cuotas: 14000 },
+{ sku: '70011786', marca: 'VIVO', modelo: 'Y27 5G 128GB Morado Satin', stock: 0, pie: 0, cuotas: 14000 },
+{ sku: '70011841', marca: 'APPLE', modelo: 'iPhone 15 128GB Black', stock: 3, pie: 149900, cuotas: 54000 },
+{ sku: '70011844', marca: 'APPLE', modelo: 'iPhone 15 128GB Blue', stock: 0, pie: 149900, cuotas: 54000 },
+{ sku: '70011847', marca: 'APPLE', modelo: 'iPhone 15 128GB Green', stock: 0, pie: 149900, cuotas: 54000 },
+{ sku: '70011850', marca: 'APPLE', modelo: 'iPhone 15 128GB Pink', stock: 366, pie: 149900, cuotas: 54000 },
+{ sku: '70011853', marca: 'APPLE', modelo: 'iPhone 15 128GB Yellow', stock: 0, pie: 149900, cuotas: 54000 },
+{ sku: '70011856', marca: 'APPLE', modelo: 'iPhone 15 256GB Black', stock: 0, pie: 1039900, cuotas: 26000 },
+{ sku: '70011859', marca: 'APPLE', modelo: 'iPhone 15 256GB Blue', stock: 0, pie: 1039900, cuotas: 26000 },
+{ sku: '70011862', marca: 'APPLE', modelo: 'iPhone 15 256GB Green', stock: 0, pie: 1039900, cuotas: 26000 },
+{ sku: '70011865', marca: 'APPLE', modelo: 'iPhone 15 256GB Pink', stock: 0, pie: 1039900, cuotas: 26000 },
+{ sku: '70011868', marca: 'APPLE', modelo: 'iPhone 15 256GB Yellow', stock: 0, pie: 1039900, cuotas: 26000 },
+{ sku: '70011871', marca: 'APPLE', modelo: 'iPhone 15 Plus 128GB Pink', stock: 0, pie: 1049900, cuotas: 25000 },
+{ sku: '70011874', marca: 'APPLE', modelo: 'iPhone 15 Plus 128GB Yellow', stock: 0, pie: 1049900, cuotas: 25000 },
+{ sku: '70011893', marca: 'APPLE', modelo: 'iPhone 15 Plus 128GB Black', stock: 0, pie: 1049900, cuotas: 25000 },
+{ sku: '70011896', marca: 'APPLE', modelo: 'iPhone 15 Plus 128GB Blue', stock: 0, pie: 1049900, cuotas: 25000 },
+{ sku: '70011899', marca: 'APPLE', modelo: 'iPhone 15 Plus 128GB Green', stock: 0, pie: 1049900, cuotas: 25000 },
+{ sku: '70011920', marca: 'APPLE', modelo: 'iPhone 15 Pro 128GB Blue', stock: 0, pie: 399900, cuotas: 56000 },
+{ sku: '70011923', marca: 'APPLE', modelo: 'iPhone 15 Pro 128GB Titanium', stock: 0, pie: 399900, cuotas: 56000 },
+{ sku: '70011926', marca: 'APPLE', modelo: 'iPhone 15 Pro 128GB White', stock: 0, pie: 399900, cuotas: 56000 },
+{ sku: '70011943', marca: 'APPLE', modelo: 'iPhone 15 Pro 128GB Black', stock: 0, pie: 399900, cuotas: 56000 },
+{ sku: '70011955', marca: 'APPLE', modelo: 'iPhone 15 Pro 256GB Titanium', stock: 0, pie: 1269900, cuotas: 32000 },
+{ sku: '70011949', marca: 'APPLE', modelo: 'iPhone 15 Pro 256GB Black', stock: 0, pie: 1269900, cuotas: 32000 },
+{ sku: '70011952', marca: 'APPLE', modelo: 'iPhone 15 Pro 256GB Blue', stock: 0, pie: 1269900, cuotas: 32000 },
+{ sku: '70011958', marca: 'APPLE', modelo: 'iPhone 15 Pro 256GB White', stock: 0, pie: 1269900, cuotas: 32000 },
+{ sku: '70011984', marca: 'APPLE', modelo: 'iPhone 15 Pro Max 256GB Black', stock: 0, pie: 1299900, cuotas: 33000 },
+{ sku: '70011987', marca: 'APPLE', modelo: 'iPhone 15 Pro Max 256GB Blue', stock: 0, pie: 1299900, cuotas: 33000 },
+{ sku: '70011990', marca: 'APPLE', modelo: 'iPhone 15 Pro Max 256GB Titanium', stock: 1, pie: 1299900, cuotas: 33000 },
+{ sku: '70011993', marca: 'APPLE', modelo: 'iPhone 15 Pro Max 256GB White', stock: 0, pie: 1299900, cuotas: 33000 },
+{ sku: '70011996', marca: 'APPLE', modelo: 'iPhone 15 Pro Max 512GB Black', stock: 0, pie: 1599900, cuotas: 40000 },
+{ sku: '70011999', marca: 'APPLE', modelo: 'iPhone 15 Pro Max 512GB Blue', stock: 0, pie: 1599900, cuotas: 40000 },
+{ sku: '70012002', marca: 'APPLE', modelo: 'iPhone 15 Pro Max 512GB Titanium', stock: 0, pie: 1599900, cuotas: 40000 },
+{ sku: '70012005', marca: 'APPLE', modelo: 'iPhone 15 Pro Max 512GB White', stock: 0, pie: 1599900, cuotas: 40000 },
+{ sku: '70012017', marca: 'HONOR', modelo: 'H90 Lite 256GB Black', stock: 0, pie: 0, cuotas: 17500 },
+{ sku: '70012066', marca: 'MOTOROLA', modelo: 'Edge 40 Neo 256GB Verde', stock: 0, pie: 109900, cuotas: 13500 },
+{ sku: '70012027', marca: 'ZTE', modelo: 'Blade A54 128GB Gris', stock: 0, pie: 39900, cuotas: 4000 },
+{ sku: '70012050', marca: 'OPPO', modelo: 'A38 128GB Negro', stock: 0, pie: 49900, cuotas: 7000 },
+{ sku: '70012060', marca: 'SAMSUNG', modelo: 'S23 FE 5G 256GB Verde', stock: 0, pie: 499900, cuotas: 19500 },
+{ sku: '70012063', marca: 'MOTOROLA', modelo: 'Edge 40 Neo 256GB Azul', stock: 0, pie: 109900, cuotas: 13500 },
+{ sku: '70012071', marca: 'MOTOROLA', modelo: 'G14 128GB Gris Acero', stock: 0, pie: 36900, cuotas: 5000 },
+{ sku: '70012074', marca: 'SAMSUNG', modelo: 'S23 FE 5G 128GB Mint', stock: 0, pie: 449900, cuotas: 26000 },
+{ sku: '70012078', marca: 'MOTOROLA', modelo: 'G54 256GB Negro Espacial', stock: 0, pie: 69900, cuotas: 9000 },
+{ sku: '70012081', marca: 'MOTOROLA', modelo: 'G54 256GB Verde Menta', stock: 0, pie: 69900, cuotas: 9000 },
+{ sku: '70012084', marca: 'MOTOROLA', modelo: 'G54 256GB Azul Indigo', stock: 0, pie: 69900, cuotas: 9000 },
+{ sku: '70012087', marca: 'MOTOROLA', modelo: 'G84 256GB Negro Espacial', stock: 0, pie: 82900, cuotas: 10000 },
+{ sku: '70012057', marca: 'MOTOROLA', modelo: 'G84 256GB Viva Magenta', stock: 0, pie: 82900, cuotas: 10000 },
+{ sku: '70012100', marca: 'MOTOROLA', modelo: 'G84 256GB Azul Artico', stock: 0, pie: 82900, cuotas: 10000 },
+{ sku: '70012120', marca: 'SAMSUNG', modelo: 'S23 FE 5G 256GB Phantom White', stock: 0, pie: 499900, cuotas: 19500 },
+{ sku: '70012123', marca: 'SAMSUNG', modelo: 'S23 FE 5G 256GB Phantom Black', stock: 0, pie: 499900, cuotas: 19500 },
+{ sku: '70012141', marca: 'SAMSUNG', modelo: 'S23 FE 5G 256GB Mint', stock: 0, pie: 499900, cuotas: 19500 },
+{ sku: '70012144', marca: 'SAMSUNG', modelo: 'S23 FE 5G 256GB Purple', stock: 0, pie: 499900, cuotas: 19500 },
+{ sku: '70012150', marca: 'SAMSUNG', modelo: 'S23 FE 5G 128GB Cream', stock: 0, pie: 449900, cuotas: 26000 },
+{ sku: '70012153', marca: 'SAMSUNG', modelo: 'S23 FE 5G 128GB Graphite', stock: 0, pie: 449900, cuotas: 26000 },
+{ sku: '70012156', marca: 'SAMSUNG', modelo: 'S23 FE 5G 256GB Grafito', stock: 0, pie: 499900, cuotas: 19500 },
+{ sku: '70012147', marca: 'SAMSUNG', modelo: 'S23 FE 5G 256GB Cream', stock: 0, pie: 499900, cuotas: 19500 },
+{ sku: '70012171', marca: 'SAMSUNG', modelo: 'S23 Ultra 256GB Lila', stock: 0, pie: 929900, cuotas: 40000 },
+{ sku: '70012175', marca: 'ZTE', modelo: 'RED MAGIC 8S PRO 256GB Silver', stock: 0, pie: 500000, cuotas: 28000 },
+{ sku: '70012167', marca: 'ZTE', modelo: 'AXON 50 256GB Negro', stock: 0, pie: 0, cuotas: 16500 },
+{ sku: '70012189', marca: 'VIVO', modelo: 'Y17S 128GB Violeta Brillante', stock: 0, pie: 49900, cuotas: 3000 },
+{ sku: '70012192', marca: 'VIVO', modelo: 'Y17S 128GB Verde Oliva', stock: 0, pie: 49900, cuotas: 3000 },
+{ sku: '70012196', marca: 'MOTOROLA', modelo: 'Edge 40 256GB Negro Eclipse', stock: 0, pie: 121900, cuotas: 16500 },
+{ sku: '70012205', marca: 'MOTOROLA', modelo: 'G54 256GB EC Negro Espacial', stock: 0, pie: 74900, cuotas: 9000 },
+{ sku: '70012206', marca: 'SAMSUNG', modelo: 'A34 5G 128GB EC Plata', stock: 0, pie: 199900, cuotas: 14000 },
+{ sku: '70012207', marca: 'HONOR', modelo: 'H90 Lite 256GB EC Negro', stock: 0, pie: 89900, cuotas: 11500 },
+{ sku: '70012218', marca: 'SAMSUNG', modelo: 'A54 5G 256GB EC Graphite', stock: 0, pie: 249900, cuotas: 20000 },
+{ sku: '70012219', marca: 'SAMSUNG', modelo: 'S23 FE 5G 128GB EC Mint', stock: 0, pie: 449900, cuotas: 26500 },
+{ sku: '70012233', marca: 'HONOR', modelo: 'Magic 6 Lite 256GB Verde', stock: 0, pie: 0, cuotas: 24000 },
+{ sku: '70012236', marca: 'HONOR', modelo: 'Magic 6 Lite 256GB Plata', stock: 0, pie: 0, cuotas: 24000 },
+{ sku: '70012259', marca: 'HONOR', modelo: 'X6A Plus 256GB Plata', stock: 0, pie: 0, cuotas: 14000 },
+{ sku: '70012373', marca: 'MOTOROLA', modelo: 'G24 Power 256GB Azul Medianoche', stock: 2, pie: 0, cuotas: 12000 },
+{ sku: '70012376', marca: 'MOTOROLA', modelo: 'G34 256GB Negro', stock: 3, pie: 39900, cuotas: 11500 },
+{ sku: '70012400', marca: 'MOTOROLA', modelo: 'G24 Power 256GB Azul Glaciar', stock: 2, pie: 0, cuotas: 12000 },
+{ sku: '70012428', marca: 'VIVO', modelo: 'V30 Lite 256GB Dorado', stock: 2, pie: 0, cuotas: 29000 },
+{ sku: '70012457', marca: 'XIAOMI', modelo: 'Redmi Note 13 Pro 5G 256GB Midnight Black', stock: 0, pie: 0, cuotas: 29000 },
+{ sku: '70012442', marca: 'VIVO', modelo: 'V30 512GB Negro', stock: 0, pie: 0, cuotas: 40000 },
+{ sku: '70012445', marca: 'VIVO', modelo: 'V30 512GB Azul', stock: 1, pie: 0, cuotas: 40000 },
+{ sku: '70012448', marca: 'VIVO', modelo: 'Y27 5G 128GB Negro Místico', stock: 1, pie: 0, cuotas: 14000 },
+{ sku: '70012451', marca: 'VIVO', modelo: 'Y27 5G 128GB Morado Satin', stock: 0, pie: 0, cuotas: 14000 },
+{ sku: '70012454', marca: 'XIAOMI', modelo: 'Redmi Note 13 5G 256GB Midnight Black', stock: 0, pie: 0, cuotas: 20000 },
+{ sku: '70012435', marca: 'XIAOMI', modelo: 'Redmi 13C 256GB Negro', stock: 0, pie: 54900, cuotas: 7000 },
+{ sku: '70012460', marca: 'ZTE', modelo: 'V50 Design 256GB Negro', stock: 1, pie: 0, cuotas: 11000 },
+{ sku: '70012466', marca: 'MOTOROLA', modelo: 'Edge 40 Neo 256GB Negro', stock: 0, pie: 109900, cuotas: 13500 },
+{ sku: '70012477', marca: 'OPPO', modelo: 'A79 5G 256GB Mystery Black', stock: 0, pie: 0, cuotas: 18000 },
+{ sku: '70012500', marca: 'ZTE', modelo: 'Axon 50 256GB Verde', stock: 0, pie: 0, cuotas: 16500 },
+{ sku: '70012502', marca: 'SAMSUNG', modelo: 'A05 128GB EC Black', stock: 0, pie: 9900, cuotas: 9500 },
+{ sku: '70012517', marca: 'ZTE', modelo: 'A73 128GB EC Space Gray', stock: 3, pie: 0, cuotas: 9000 },
+{ sku: '70012518', marca: 'MOTOROLA', modelo: 'G14 128GB EC Gris Acero', stock: 0, pie: 39900, cuotas: 5500 },
+{ sku: '70012525', marca: 'ZTE', modelo: 'Nubia Focus 256GB Negro', stock: 2, pie: 0, cuotas: 15000 },
+{ sku: '70012547', marca: 'XIAOMI', modelo: 'Redmi Note 13 5G 256GB Gris', stock: 0, pie: 0, cuotas: 20000 },
+{ sku: '70012606', marca: 'MOTOROLA', modelo: 'Edge 50 Pro 512GB Black Beauty', stock: 0, pie: 99900, cuotas: 38000 },
+{ sku: '70012609', marca: 'MOTOROLA', modelo: 'Edge 50 Fusion 256GB Relucent Blue', stock: 3, pie: 0, cuotas: 27000 },
+{ sku: '70012614', marca: 'HONOR', modelo: 'H90 Smart 256GB Emerald Green', stock: 0, pie: 0, cuotas: 21500 },
+{ sku: '70012617', marca: 'ZTE', modelo: 'A75 5G 128GB Negro', stock: 4, pie: 0, cuotas: 9000 },
+{ sku: '70012664', marca: 'XIAOMI', modelo: 'Redmi 13C 5G 256GB Black', stock: 0, pie: 0, cuotas: 13000 },
+{ sku: '70012701', marca: 'HONOR', modelo: 'H200 Lite 256GB Midnight Black', stock: 0, pie: 0, cuotas: 22000 },
+{ sku: '70012704', marca: 'MOTOROLA', modelo: 'G85 5G 256GB Gris', stock: 0, pie: 0, cuotas: 24000 },
+{ sku: '70012926', marca: 'VIVO', modelo: 'Y28S 5G 256GB Morado', stock: 0, pie: 0, cuotas: 17000 },
+{ sku: '70012749', marca: 'VIVO', modelo: 'Y28S 5G 256GB Negro', stock: 1, pie: 0, cuotas: 17000 },
+{ sku: '70012752', marca: 'VIVO', modelo: 'Y38 5G 256GB Negro', stock: 0, pie: 0, cuotas: 22000 },
+{ sku: '70012755', marca: 'XIAOMI', modelo: 'Redmi 13C 5G 128GB Starry Black', stock: 1, pie: 0, cuotas: 10500 },
+{ sku: '70012758', marca: 'XIAOMI', modelo: '14T 512GB Titan Black', stock: 0, pie: 0, cuotas: 46000 },
+{ sku: '70012760', marca: 'MOTOROLA', modelo: 'G24 Power 256GB EC Azul Medianoche', stock: 0, pie: 0, cuotas: 12000 },
+{ sku: '70012790', marca: 'VIVO', modelo: 'Y38 5G 256GB Azul', stock: 0, pie: 0, cuotas: 22000 },
+{ sku: '70012793', marca: 'OPPO', modelo: 'A79 5G 256GB Dazzling Purple', stock: 0, pie: 0, cuotas: 18000 },
+{ sku: '70012797', marca: 'ZTE', modelo: 'A75 5G 128GB EC Negro', stock: 4, pie: 0, cuotas: 9000 },
+{ sku: '70012808', marca: 'APPLE', modelo: 'iPhone 12 128GB Purple', stock: 5, pie: 99900, cuotas: 36000 },
+{ sku: '70012811', marca: 'ZTE', modelo: 'Nubia Neo 2 256GB Gris', stock: 0, pie: 0, cuotas: 19000 },
+{ sku: '70012814', marca: 'ZTE', modelo: 'A35 64GB Starry Black', stock: 2, pie: 0, cuotas: 5000 },
+{ sku: '70013890', marca: 'ZTE', modelo: 'Nubia Neo 2 256GB Gris con Game Pad', stock: 0, pie: 0, cuotas: 19000 },
+{ sku: '70012820', marca: 'ZTE', modelo: 'Nubia Neo 2 256GB Amarillo', stock: 0, pie: 0, cuotas: 19000 },
+{ sku: '70012817', marca: 'ZTE', modelo: 'A35 64GB Clover Green', stock: 0, pie: 0, cuotas: 5000 },
+{ sku: '70012850', marca: 'ZTE', modelo: 'Nubia Music 128GB Pop Art', stock: 5, pie: 0, cuotas: 8500 },
+{ sku: '70012853', marca: 'HONOR', modelo: 'H200 5G 256GB Emerald Green', stock: 1, pie: 0, cuotas: 34500 },
+{ sku: '70013110', marca: 'APPLE', modelo: 'iPhone 16 Pro Max 512GB Black Titanium', stock: 0, pie: 699900, cuotas: 85000 },
+{ sku: '70012856', marca: 'MOTOROLA', modelo: 'G35 5G 128GB Gris', stock: 0, pie: 0, cuotas: 12500 },
+{ sku: '70012859', marca: 'MOTOROLA', modelo: 'G35 5G 128GB Verde', stock: 0, pie: 0, cuotas: 12500 },
+{ sku: '70012862', marca: 'MOTOROLA', modelo: 'G35 5G 128GB Coral', stock: 0, pie: 0, cuotas: 12500 },
+{ sku: '70012920', marca: 'VIVO', modelo: 'V40 SE 5G 256GB Black', stock: 1, pie: 0, cuotas: 28000 },
+{ sku: '70012923', marca: 'VIVO', modelo: 'V40 SE 5G 256GB Silver', stock: 0, pie: 0, cuotas: 28000 },
+{ sku: '70012935', marca: 'APPLE', modelo: 'iPhone 16 128GB Black', stock: 99, pie: 249900, cuotas: 62000 },
+{ sku: '70012938', marca: 'HONOR', modelo: 'H90 Smart 256GB Plata', stock: 0, pie: 0, cuotas: 21500 },
+{ sku: '70012943', marca: 'APPLE', modelo: 'iPhone 16 128GB Pink', stock: 99, pie: 249900, cuotas: 62000 },
+{ sku: '70012969', marca: 'APPLE', modelo: 'iPhone 16 128GB Ultramarine', stock: 0, pie: 249900, cuotas: 62000 },
+{ sku: '70012972', marca: 'APPLE', modelo: 'iPhone 16 256GB Black', stock: 0, pie: 339900, cuotas: 65000 },
+{ sku: '70013001', marca: 'APPLE', modelo: 'iPhone 16 Plus 128GB Black', stock: 4, pie: 309900, cuotas: 62000 },
+{ sku: '70013004', marca: 'APPLE', modelo: 'iPhone 16 Pro 128GB Black Titanium', stock: 1, pie: 369900, cuotas: 68000 },
+{ sku: '70013050', marca: 'APPLE', modelo: 'iPhone 16 Pro 128GB Natural Titanium', stock: 0, pie: 369900, cuotas: 68000 },
+{ sku: '70013058', marca: 'APPLE', modelo: 'iPhone 16 Pro 128GB Desert Titanium', stock: 0, pie: 369900, cuotas: 68000 },
+{ sku: '70013061', marca: 'APPLE', modelo: 'iPhone 16 Pro 256GB Black Titanium', stock: 0, pie: 369900, cuotas: 77000 },
+{ sku: '70013098', marca: 'APPLE', modelo: 'iPhone 16 Pro Max 256GB Black Titanium', stock: 0, pie: 539900, cuotas: 77000 },
+{ sku: '70013104', marca: 'APPLE', modelo: 'iPhone 16 Pro Max 256GB Natural Titanium', stock: 0, pie: 539900, cuotas: 77000 },
+{ sku: '70013107', marca: 'APPLE', modelo: 'iPhone 16 Pro Max 256GB Desert Titanium', stock: 0, pie: 539900, cuotas: 77000 },
+{ sku: '70013163', marca: 'VIVO', modelo: 'V40 SE 5G 256GB + Tws 3e Black', stock: 0, pie: 39900, cuotas: 26000 },
+{ sku: '70013166', marca: 'VIVO', modelo: 'V40 SE 5G 256GB + Tws 3e Silver', stock: 0, pie: 39900, cuotas: 26000 },
+{ sku: '70013169', marca: 'HONOR', modelo: 'X5B 128GB Negro', stock: 1, pie: 0, cuotas: 8500 },
+{ sku: '70013178', marca: 'HONOR', modelo: 'X6B 5G 256GB Midnight Black', stock: 4, pie: 0, cuotas: 16500 },
+{ sku: '70013193', marca: 'XIAOMI', modelo: '14C 128GB Midnight Black', stock: 1, pie: 0, cuotas: 10000 },
+{ sku: '70013196', marca: 'MOTOROLA', modelo: 'G85 5G 256GB Azul', stock: 0, pie: 0, cuotas: 24000 },
+{ sku: '70013241', marca: 'XIAOMI', modelo: '14T 512GB + SP Titan Black', stock: 0, pie: 0, cuotas: 46000 },
+{ sku: '70013252', marca: 'ZTE', modelo: 'A35 64GB Porta', stock: 2, pie: 0, cuotas: 5000 },
+{ sku: '70013316', marca: 'HONOR', modelo: 'H200 Smart 5G 256GB Forest Green', stock: 2, pie: 0, cuotas: 16500 },
+{ sku: '70013395', marca: 'HONOR', modelo: 'Magic 7 Lite 5G 512GB Titanium Black', stock: 0, pie: 29900, cuotas: 29000 },
+{ sku: '70013467', marca: 'XIAOMI', modelo: 'Redmi Note 14 Pro 5G 256GB Midnight Black', stock: 4, pie: 0, cuotas: 33000 },
+{ sku: '70013471', marca: 'XIAOMI', modelo: 'Redmi Note 14 Pro 5G 256GB Coral Green', stock: 0, pie: 0, cuotas: 33000 },
+{ sku: '70013475', marca: 'XIAOMI', modelo: 'Redmi Note 14 Pro 5G 256GB Lavender Purple', stock: 4, pie: 0, cuotas: 33000 },
+{ sku: '70013479', marca: 'XIAOMI', modelo: 'Redmi Note 14 Pro Plus 5g 256GB Midnight Black', stock: 3, pie: 29900, cuotas: 38000 },
+{ sku: '70013483', marca: 'XIAOMI', modelo: 'Redmi Note 14 Pro Plus 5g 256GB Lavender Purple', stock: 0, pie: 29900, cuotas: 38000 },
+{ sku: '70013487', marca: 'HONOR', modelo: 'H200 Lite 256GB Starry Blue', stock: 0, pie: 0, cuotas: 22000 },
+{ sku: '70013616', marca: 'APPLE', modelo: 'iPhone 16e 128GB White', stock: 0, pie: 199900, cuotas: 41000 },
+{ sku: '70013602', marca: 'MOTOROLA', modelo: 'G35 5G 128GB Negro', stock: 5, pie: 0, cuotas: 12500 },
+{ sku: '70013646', marca: 'HONOR', modelo: 'H200 5G 512GB Emerald Green', stock: 1, pie: 0, cuotas: 34500 },
+{ sku: '70013650', marca: 'APPLE', modelo: 'iPhone 16e 128GB Black', stock: 438, pie: 199900, cuotas: 41000 },
+{ sku: '70013759', marca: 'ZTE', modelo: 'Nubia Focus 256GB 8GB Blanco', stock: 0, pie: 0, cuotas: 15000 },
+{ sku: '70013686', marca: 'ZTE', modelo: 'Nubia Focus 256GB 8GB Azul', stock: 0, pie: 0, cuotas: 15000 },
+{ sku: '70013689', marca: 'XIAOMI', modelo: '15 512GB Black', stock: 14, pie: 299900, cuotas: 66000 },
+{ sku: '70013681', marca: 'XIAOMI', modelo: '15 Ultra 512GB Black', stock: 0, pie: 1000000, cuotas: 100000 },
+{ sku: '70013695', marca: 'XIAOMI', modelo: '15 + Buds 5 512GB Black', stock: 14, pie: 299900, cuotas: 66000 },
+{ sku: '70013607', marca: 'XIAOMI', modelo: '15 Ultra + Photography Kit 512GB Black', stock: 12, pie: 1000000, cuotas: 100000 },
+{ sku: '70013700', marca: 'MOTOROLA', modelo: 'G05 64GB Verde', stock: 2, pie: 0, cuotas: 9000 },
+{ sku: '70013704', marca: 'MOTOROLA', modelo: 'G05 64GB Rojo', stock: 0, pie: 0, cuotas: 9000 },
+{ sku: '70013736', marca: 'VIVO', modelo: 'Y29s 5G 256GB Dark Green', stock: 38, pie: 0, cuotas: 18000 },
+{ sku: '70013740', marca: 'VIVO', modelo: 'Y29s 5G 256GB Titanium Gold', stock: 38, pie: 0, cuotas: 18000 },
+{ sku: '70013744', marca: 'VIVO', modelo: 'Y39 5G 256GB Lotus Purple', stock: 17, pie: 0, cuotas: 22000 },
+{ sku: '70013697', marca: 'VIVO', modelo: 'Y39 5G 256GB Ocean Blue', stock: 17, pie: 0, cuotas: 22000 },
+{ sku: '70013751', marca: 'VIVO', modelo: 'V50 Lite 5G 256GB Phantom Black', stock: 0, pie: 0, cuotas: 31000 },
+{ sku: '70013755', marca: 'VIVO', modelo: 'V50 Lite 5G 256GB Titanium Gold', stock: 0, pie: 0, cuotas: 31000 },
+{ sku: '70013770', marca: 'ZTE', modelo: 'Nubia Focus 256GB 8GB Negro', stock: 58, pie: 0, cuotas: 15000 },
+{ sku: '70013774', marca: 'ZTE', modelo: 'Nubia Neo 3 GT 5G 256GB Amarillo', stock: 643, pie: 0, cuotas: 24000 },
+{ sku: '70013778', marca: 'ZTE', modelo: 'Nubia Neo 3 GT 5G 256GB Gris', stock: 0, pie: 0, cuotas: 24000 },
+{ sku: '70013812', marca: 'MOTOROLA', modelo: 'G55 5G 256GB Rosa', stock: 0, pie: 0, cuotas: 18000 },
+{ sku: '70013816', marca: 'MOTOROLA', modelo: 'G55 5G 256GB Verde', stock: 0, pie: 0, cuotas: 18000 },
+{ sku: '70013844', marca: 'XIAOMI', modelo: 'A5 64GB Midnight Black', stock: 0, pie: 0, cuotas: 6000 },
+{ sku: '70013858', marca: 'ZTE', modelo: 'V70 Max 256GB Gris', stock: 50, pie: 0, cuotas: 9500 },
+{ sku: '70013862', marca: 'ZTE', modelo: 'V70 Max 256GB Verde', stock: 0, pie: 0, cuotas: 9500 },
+{ sku: '70013866', marca: 'ZTE', modelo: 'Nubia Neo 3 5G 256GB Negro', stock: 254, pie: 0, cuotas: 15000 },
+{ sku: '70013870', marca: 'ZTE', modelo: 'Nubia Neo 3 5G 256GB Dorado', stock: 254, pie: 0, cuotas: 15000 },
+{ sku: '70013874', marca: 'ZTE', modelo: 'Nubia Neo 3 5G 256GB Plata', stock: 0, pie: 0, cuotas: 15000 },
+{ sku: '70013900', marca: 'VIVO', modelo: 'V50 Lite 5G 256GB Phantom Black Bundle', stock: 0, pie: 0, cuotas: 31000 },
+{ sku: '70013904', marca: 'VIVO', modelo: 'V50 Lite 5G 256GB Titanium Gold Bundle', stock: 0, pie: 0, cuotas: 31000 },
+{ sku: '70013908', marca: 'VIVO', modelo: 'Y39 5G 256GB Ocean Blue Bundle', stock: 0, pie: 0, cuotas: 22000 },
+{ sku: '70013912', marca: 'VIVO', modelo: 'Y39 5G 256GB Lotus Purple Bundle', stock: 0, pie: 0, cuotas: 22000 },
+{ sku: '70013916', marca: 'MOTOROLA', modelo: 'G55 5G 256GB V2 Negro', stock: 2, pie: 0, cuotas: 18000 },
+{ sku: '70013603', marca: 'MOTOROLA', modelo: 'G55 5G 256GB Negro', stock: 0, pie: 0, cuotas: 18000 },
+{ sku: '70014342', marca: 'ZTE', modelo: 'Nubia Neo 3 5G 256GB Dorado con Gamepad', stock: 0, pie: 0, cuotas: 15000 },
+{ sku: '70014379', marca: 'XIAOMI', modelo: '15 Ultra + Photography Kit 512GB Silver', stock: 0, pie: 1000000, cuotas: 100000 },
+{ sku: '70014385', marca: 'XIAOMI', modelo: '15 Ultra + Photography Kit 512GB Silver', stock: 12, pie: 1000000, cuotas: 100000 },
+{ sku: '70014347', marca: 'ZTE', modelo: 'Nubia Neo 3 5G 256GB Negro con Gamepad', stock: 254, pie: 0, cuotas: 15000 },
+{ sku: '70014402', marca: 'ZTE', modelo: 'Nubia Neo 3 5G 256GB Plata con Gamepad', stock: 0, pie: 0, cuotas: 15000 },
+{ sku: '70014407', marca: 'ZTE', modelo: 'Nubia Neo 3 GT 5G 256GB Amarillo con Gamepad', stock: 0, pie: 0, cuotas: 24000 },
+{ sku: '70014412', marca: 'ZTE', modelo: 'Nubia Neo 3 GT 5G 256GB Gris con Gamepad', stock: 0, pie: 0, cuotas: 24000 },
+{ sku: '70014613', marca: 'HONOR', modelo: '400 5G 512GB Midnight Black', stock: 53, pie: 49900, cuotas: 42000 },
+{ sku: '70014619', marca: 'HONOR', modelo: '400 5G 512GB Midnight Black + CLIP', stock: 0, pie: 49900, cuotas: 42000 },
+{ sku: '70014624', marca: 'HONOR', modelo: '400 5G 512GB Desert Gold', stock: 53, pie: 49900, cuotas: 42000 },
+{ sku: '70014630', marca: 'HONOR', modelo: '400 5G 512GB Desert Gold + CLIP', stock: 53, pie: 49900, cuotas: 42000 },
+{ sku: '70014765', marca: 'ZTE', modelo: 'Nubia Focus 2 Ultra 256GB Verde', stock: 0, pie: 29900, cuotas: 25000 },
+{ sku: '70014797', marca: 'ZTE', modelo: 'Nubia Focus 2 Ultra 256GB Negro', stock: 0, pie: 29900, cuotas: 25000 },
+{ sku: '70015213', marca: 'ZTE', modelo: 'Nubia Focus 2 Ultra 5G 256GB Blanco', stock: 13, pie: 29900, cuotas: 25000 },
+{ sku: '70015384', marca: 'APPLE', modelo: 'iPhone 17 256GB Black', stock: 79, pie: 599900, cuotas: 42000 },
+{ sku: '70015388', marca: 'APPLE', modelo: 'iPhone 17 256GB White', stock: 0, pie: 599900, cuotas: 42000 },
+{ sku: '70015392', marca: 'APPLE', modelo: 'iPhone 17 256GB Lavender', stock: 79, pie: 599900, cuotas: 42000 },
+{ sku: '70015396', marca: 'APPLE', modelo: 'iPhone 17 256GB Sage', stock: 0, pie: 599900, cuotas: 42000 },
+{ sku: '70015307', marca: 'APPLE', modelo: 'iPhone 17 256GB Mist Blue', stock: 79, pie: 599900, cuotas: 42000 },
+{ sku: '70015436', marca: 'APPLE', modelo: 'iPhone 17 Pro 256GB Silver', stock: 115, pie: 679900, cuotas: 69000 },
+{ sku: '70015440', marca: 'APPLE', modelo: 'iPhone 17 Pro 256GB Cosmic Orange', stock: 115, pie: 679900, cuotas: 69000 },
+{ sku: '70015444', marca: 'APPLE', modelo: 'iPhone 17 Pro 256GB Deep Blue', stock: 115, pie: 679900, cuotas: 69000 },
+{ sku: '70015469', marca: 'APPLE', modelo: 'iPhone 17 Pro Max 256GB Silver', stock: 181, pie: 699900, cuotas: 75000 },
+{ sku: '70015473', marca: 'APPLE', modelo: 'iPhone 17 Pro Max 256GB Cosmic Orange', stock: 181, pie: 699900, cuotas: 75000 },
+{ sku: '70015477', marca: 'APPLE', modelo: 'iPhone 17 Pro Max 256GB Deep Blue', stock: 181, pie: 699900, cuotas: 75000 },
+{ sku: '70015501', marca: 'APPLE', modelo: 'iPhone Air 256GB Space Black', stock: 0, pie: 872900, cuotas: 48000 },
+{ sku: '70015505', marca: 'APPLE', modelo: 'iPhone Air 256GB Cloud White', stock: 0, pie: 872900, cuotas: 48000 },
+{ sku: '70015579', marca: 'APPLE', modelo: 'iPhone Air 256GB Light Gold', stock: 0, pie: 872900, cuotas: 48000 },
+{ sku: '70015563', marca: 'APPLE', modelo: 'iPhone Air 256GB Sky Blue', stock: 0, pie: 872900, cuotas: 48000 },
+{ sku: '70012432', marca: 'XIAOMI', modelo: 'Redmi Note 13 Pro Plus 512GB Midnight Black', stock: 0, pie: 0, cuotas: 32000 },
+{ sku: '70012439', marca: 'VIVO', modelo: 'V30 Lite 256GB Negro', stock: 0, pie: 0, cuotas: 29000 },
+{ sku: '70016723', marca: 'ZTE', modelo: 'V80 Max 256GB Plateado', stock: 0, pie: 0, cuotas: 9500 },
+{ sku: '70016735', marca: 'ZTE', modelo: 'V80 Max 256GB Negro', stock: 0, pie: 0, cuotas: 9500 },
+{ sku: '70016713', marca: 'APPLE', modelo: 'iPhone 17e 256GB Black', stock: 0, pie: 199900, cuotas: 46000 },
+{ sku: '70016717', marca: 'APPLE', modelo: 'iPhone 17e 256GB White', stock: 0, pie: 199900, cuotas: 46000 },
+{ sku: '70016731', marca: 'APPLE', modelo: 'iPhone 17e 256GB Soft Pink', stock: 0, pie: 199900, cuotas: 46000 },
+{ sku: '70016132', marca: 'OPPO', modelo: 'A6 5G Pro 256GB Azul', stock: 175, pie: 29900, cuotas: 26500 },
+{ sku: '70016136', marca: 'OPPO', modelo: 'A6 5G Pro 256GB Rosado', stock: 0, pie: 29900, cuotas: 26500 },
+{ sku: '70015250', marca: 'MOTOROLA', modelo: 'G56 5G 256GB Azul', stock: 552, pie: 0, cuotas: 18000 },
+{ sku: '70015254', marca: 'MOTOROLA', modelo: 'G56 5G 256GB Verde', stock: 0, pie: 0, cuotas: 18000 },
+{ sku: '70015667', marca: 'MOTOROLA', modelo: 'G35 256GB Negro', stock: 655, pie: 0, cuotas: 13000 },
+{ sku: '70015976', marca: 'XIAOMI', modelo: 'Redmi 15 5G 256GB + Buds 6 Play Black', stock: 0, pie: 0, cuotas: 21000 },
+{ sku: '70015362', marca: 'ZTE', modelo: 'Nubia Air 5G 256GB Negro', stock: 304, pie: 0, cuotas: 22500 },
+{ sku: '70015366', marca: 'ZTE', modelo: 'Nubia Air 5G 256GB Dorado', stock: 0, pie: 0, cuotas: 22500 },
+{ sku: '70016198', marca: 'HONOR', modelo: 'Magic 8 Pro 5G 512GB Sunrise Gold', stock: 29, pie: 499900, cuotas: 76000 },
+{ sku: '70013451', marca: 'XIAOMI', modelo: 'Redmi Note 14 Pro 5G 256GB Bundle Midnight Black', stock: 0, pie: 0, cuotas: 33000 },
+{ sku: '70015237', marca: 'HONOR', modelo: 'X5C 128GB Black', stock: 460, pie: 0, cuotas: 10000 },
+{ sku: '70014674', marca: 'XIAOMI', modelo: '15T 512GB Black', stock: 4, pie: 49900, cuotas: 46000 },
+{ sku: '70015671', marca: 'XIAOMI', modelo: '15T 512GB Black con W5 Lite', stock: 4, pie: 49900, cuotas: 46000 },
+{ sku: '70015676', marca: 'XIAOMI', modelo: '15T 512GB Oro Rosa con W5 Lite', stock: 4, pie: 49900, cuotas: 46000 },
+{ sku: '70015688', marca: 'XIAOMI', modelo: '15T 512GB Oro Rosa', stock: 4, pie: 49900, cuotas: 46000 },
+{ sku: '70015258', marca: 'MOTOROLA', modelo: 'Edge 60 Pro 512GB Azul', stock: 0, pie: 49900, cuotas: 41000 },
+{ sku: '70015262', marca: 'MOTOROLA', modelo: 'Edge 60 Pro 512GB Gris', stock: 22, pie: 49900, cuotas: 41000 },
+{ sku: '70012409', marca: 'MOTOROLA', modelo: 'G34 256GB Azul', stock: 0, pie: 39900, cuotas: 11500 },
+{ sku: '70016182', marca: 'XIAOMI', modelo: 'Redmi Note 15 Pro 5G 512GB Titanio+Buds 6 Play', stock: 0, pie: 29900, cuotas: 32000 },
+{ sku: '70016178', marca: 'XIAOMI', modelo: 'Redmi Note 15 Pro 512GB Black+Buds 6 Play', stock: 0, pie: 29900, cuotas: 32000 },
+{ sku: '70015980', marca: 'XIAOMI', modelo: 'Redmi Note 14 Pro 5G 256GB + Sound Pocket Gris Midnight Black', stock: 4, pie: 19900, cuotas: 31000 },
+{ sku: '70015984', marca: 'XIAOMI', modelo: 'Redmi Note 14 Pro 5G 256GB + Sound Pocket Rosa Midnight Black', stock: 4, pie: 19900, cuotas: 31000 },
+{ sku: '70015968', marca: 'XIAOMI', modelo: 'Redmi Note 14 Pro 5G 256GB + Sound Pocket Gris Negro', stock: 0, pie: 19900, cuotas: 31000 },
+{ sku: '70015972', marca: 'XIAOMI', modelo: 'Redmi Note 14 Pro 5G 256GB + Sound Pocket Rosa Negro', stock: 0, pie: 19900, cuotas: 31000 },
+{ sku: '70014755', marca: 'TCL', modelo: '60 SE NXTPAPER 5G 256GB Verde Menta', stock: 159, pie: 0, cuotas: 17000 },
+{ sku: '70014771', marca: 'TCL', modelo: '60 SE NXTPAPER 5G 256GB Space Grey', stock: 159, pie: 0, cuotas: 17000 },
+{ sku: '70016100', marca: 'TCL', modelo: '60 SE NXTPAPER 5G 256GB Space Grey+Buds', stock: 159, pie: 0, cuotas: 17000 },
+{ sku: '70016104', marca: 'TCL', modelo: '60 SE NXTPAPER 5G 256GB Verde Menta+Buds', stock: 159, pie: 0, cuotas: 17000 },
+{ sku: '70013798', marca: 'HONOR', modelo: 'Magic 7 Lite 5G 512GB Parlante Titanium Black', stock: 3, pie: 29900, cuotas: 29000 },
+{ sku: '70013542', marca: 'HONOR', modelo: 'Magic 7 Lite 512GB Bundle Titanium Black', stock: 0, pie: 29900, cuotas: 29000 },
+{ sku: '70015891', marca: 'HONOR', modelo: 'Magic 7 Lite 5G 512GB + Honor Choice Earbuds X7 Lite Titanium Black', stock: 0, pie: 29900, cuotas: 29000 },
+{ sku: '70016016', marca: 'HONOR', modelo: 'Magic 8 Lite 5G 512GB Forest Green+X8I Bl', stock: 379, pie: 49900, cuotas: 35500 },
+{ sku: '70016012', marca: 'HONOR', modelo: 'Magic 8 Lite 512GB 5G Midnight Black+X8I Bl', stock: 379, pie: 49900, cuotas: 35500 }
+];
+                    equipos = staticData;
+                    loadCopiedSKUs(); // Cargar el estado de los SKUs copiados
+                    populateFilters();
+                } catch (error) {
+                    console.error("Error crítico al cargar datos:", error);
+                    catalogContainer.innerHTML = `<div style="text-align:center; padding: 2rem; color: var(--claro-red);">No se pudieron cargar los datos. Por favor, revise la consola.</div>`;
+                }
+            }
+
+            function showInitialMessage() {
+                currentFilteredEquipos = [];
+                catalogContainer.innerHTML = `<div style="text-align:center; padding: 2rem; color: var(--text-muted);">Utilice los filtros para comenzar la búsqueda.</div>`;
+            }
+
+            function renderEquipos() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedBrand = brandFilter.value;
+                const pieValue = pieFilter.value;
+                const showOnlyStock = stockFilter.checked;
+
+                if (searchTerm === '' && selectedBrand === '' && pieValue === '' && !showOnlyStock) {
+                    showInitialMessage();
+                    return;
+                }
+                
+                catalogContainer.innerHTML = '';
+                
+                const pieRange = pieFilter.value.split('-').map(Number);
+                let filteredEquipos = equipos.filter(eq => {
+                    const matchesSearch = searchTerm === '' || 
+                                          eq.sku.toLowerCase().includes(searchTerm) ||
+                                          eq.marca.toLowerCase().includes(searchTerm) ||
+                                          eq.modelo.toLowerCase().includes(searchTerm);
+                    const matchesBrand = selectedBrand === '' || eq.marca === selectedBrand;
+                    const matchesPie = pieFilter.value === '' || (eq.pie >= pieRange[0] && eq.pie <= pieRange[1]);
+                    const matchesStock = !showOnlyStock || eq.stock > 0;
+
+                    return matchesSearch && matchesBrand && matchesPie && matchesStock;
+                });
+
+                // --- LÓGICA DE ORDENAMIENTO ---
+                filteredEquipos.sort((a, b) => {
+                    // 1. Jerarquía de Stock
+                    const getStockTier = (stock) => {
+                        if (stock >= 30) return 1;
+                        if (stock >= 1) return 2;
+                        return 3;
+                    };
+
+                    const tierA = getStockTier(a.stock);
+                    const tierB = getStockTier(b.stock);
+
+                    if (tierA !== tierB) {
+                        return tierA - tierB;
+                    }
+
+                    // 2. Ordenamiento Secundario (Columnas y Precios)
+                    const col = sortState.column;
+                    const dir = sortState.direction === 'asc' ? 1 : -1;
+                    
+                    let valA, valB;
+
+                    // Si ordenamos por Pie, Cuotas O PRECIO TOTAL, usamos el cálculo del total
+                    if (col === 'pie' || col === 'cuotas' || col === 'total') {
+                        valA = a.pie + (a.cuotas * 18);
+                        valB = b.pie + (b.cuotas * 18);
+                    } else {
+                        valA = (typeof a[col] === 'string') ? a[col].toLowerCase() : a[col];
+                        valB = (typeof b[col] === 'string') ? b[col].toLowerCase() : b[col];
+                    }
+
+                    if (valA < valB) return -1 * dir;
+                    if (valA > valB) return 1 * dir;
+                    return 0;
+                });
+
+                currentFilteredEquipos = filteredEquipos;
+                
+                if (filteredEquipos.length === 0) {
+                    catalogContainer.innerHTML = `<div style="text-align:center; padding: 2rem;">No se encontraron equipos con los filtros seleccionados.</div>`;
+                    return;
+                }
+                
+                const fragment = document.createDocumentFragment();
+                filteredEquipos.forEach(equipo => {
+                    const row = document.createElement('div');
+                    row.className = 'catalog-grid catalog-row';
+                    
+                    const stockStatus = equipo.stock >= 30 ? 'high' : equipo.stock > 0 ? 'medium' : 'low';
+                    const precioTotal = equipo.pie + (equipo.cuotas * 18);
+                    
+                    // Comprobar si este SKU ha sido copiado para aplicar la clase
+                    const buttonClass = copiedSKUs.has(equipo.sku) ? 'copy-button copied-button' : 'copy-button';
+
+                    row.innerHTML = `
+                        <div class="sku">${equipo.sku}</div>
+                        <div>${equipo.marca}</div>
+                        <div>${equipo.modelo}</div>
+                        <div>${formatCurrency(equipo.pie)}</div>
+                        <div>${formatCurrency(equipo.cuotas)}</div>
+                        <div class="total-price">${formatCurrency(precioTotal)}</div>
+                        <div><span class="stock-indicator stock-${stockStatus}">${equipo.stock}</span></div>
+                        <div><button class="${buttonClass}" data-sku="${equipo.sku}">Copiar</button></div>
+                    `;
+                    fragment.appendChild(row);
+                });
+                catalogContainer.appendChild(fragment);
+            }
+            
+            function populateFilters() {
+                const brands = [...new Set(equipos.map(eq => eq.marca))].sort();
+                brands.forEach(brand => {
+                    const option = document.createElement('option');
+                    option.value = brand;
+                    option.textContent = brand;
+                    brandFilter.appendChild(option);
+                });
+            }
+
+            function resetFilters() {
+                searchInput.value = '';
+                brandFilter.selectedIndex = 0;
+                pieFilter.selectedIndex = 0;
+                stockFilter.checked = false; 
+                
+                // NUEVO: Limpiar la lista de copiados al resetear la búsqueda
+                copiedSKUs.clear();
+                sessionStorage.removeItem(COPIED_SKUS_KEY);
+
+                sortState = { column: 'marca', direction: 'asc' };
+                
+                updateSortIndicators();
+                renderEquipos(); // Redibuja para eliminar cualquier marca
+                showInitialMessage();
+            }
+            
+            function handleSort(column) {
+                if (sortState.column === column) {
+                    sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    sortState.column = column;
+                    sortState.direction = 'asc';
+                }
+                updateSortIndicators();
+                renderEquipos();
+            }
+
+            function updateSortIndicators() {
+                catalogHeader.querySelectorAll('[data-column]').forEach(header => {
+                    const col = header.dataset.column;
+                    const indicator = header.querySelector('.sort-indicator');
+                    if (col === sortState.column) {
+                        header.classList.add('active');
+                        indicator.textContent = sortState.direction === 'asc' ? '▲' : '▼';
+                    } else {
+                        header.classList.remove('active');
+                        indicator.textContent = '';
+                    }
+                });
+            }
+
+            function copyToClipboard(text, message) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'absolute';
+                textarea.style.left = '-9999px';
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    copyToast.textContent = message;
+                    copyToast.classList.add('show');
+                    setTimeout(() => {
+                        copyToast.classList.remove('show');
+                    }, 2000);
+                } catch (err) {
+                    console.error('Error al copiar:', err);
+                }
+                document.body.removeChild(textarea);
+            }
+
+            function clearAllDomainCookies() {
+                const cookies = document.cookie.split(";");
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i];
+                    const eqPos = cookie.indexOf("=");
+                    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                    document.cookie = name.trim() + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+                }
+            }
+
+            searchInput.addEventListener('input', renderEquipos);
+            brandFilter.addEventListener('change', renderEquipos);
+            pieFilter.addEventListener('change', renderEquipos);
+            stockFilter.addEventListener('change', renderEquipos);
+            resetButton.addEventListener('click', resetFilters);
+
+            hardRefreshButton.addEventListener('click', () => {
+                clearAllDomainCookies();
+                // Limpiar sessionStorage antes de recargar (el usuario pidió que se borre al recargar)
+                sessionStorage.removeItem(COPIED_SKUS_KEY); 
+
+                let currentUrl = window.location.href;
+                currentUrl = currentUrl.replace(/([?&])v=\d+/g, '$1');
+                currentUrl = currentUrl.replace(/\?$/, '');
+                const separator = currentUrl.includes('?') ? '&' : '?';
+                const newUrl = currentUrl + separator + 'v=' + Date.now();
+                setTimeout(() => {
+                    window.location.href = newUrl;
+                }, 50);
+            });
+
+            // --- LÓGICA DEL NUEVO BOTÓN DE FILTRO RÁPIDO ---
+            quickFilterButton.addEventListener('click', () => {
+                pieFilter.value = "0-0";
+                stockFilter.checked = true;
+                sortState = { column: 'cuotas', direction: 'asc' };
+                updateSortIndicators();
+                renderEquipos();
+            });
+
+            copyAllStockButton.addEventListener('click', () => {
+                const itemsToCopy = currentFilteredEquipos.filter(eq => {
+                    const stockNum = parseInt(eq.stock, 10);
+                    return !isNaN(stockNum) && stockNum >= 30;
+                });
+
+                if (itemsToCopy.length === 0) {
+                    copyToast.textContent = "No hay equipos con stock suficiente (>=30) para copiar.";
+                    copyToast.classList.add('show');
+                    setTimeout(() => copyToast.classList.remove('show'), 2000);
+                    return;
+                }
+
+                // Actualizado para incluir Precio Total en el copiado masivo
+                const textToCopy = itemsToCopy.map(eq => {
+                    const total = eq.pie + (eq.cuotas * 18);
+                    return `SKU: ${eq.sku}\nMarca: ${eq.marca}\nModelo: ${eq.modelo}\nPie: ${formatCurrency(eq.pie)}\nCuota: ${formatCurrency(eq.cuotas)}\nTotal: ${formatCurrency(total)}\nStock: ${eq.stock}\n----------------`;
+                }).join('\n\n');
+
+                copyToClipboard(textToCopy, `¡Lista de ${itemsToCopy.length} equipos (Stock >= 30) copiada!`);
+            });
+
+            catalogHeader.addEventListener('click', (e) => {
+                const headerCell = e.target.closest('[data-column]');
+                if (headerCell) {
+                    handleSort(headerCell.dataset.column);
+                }
+            });
+
+            catalogContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('copy-button')) {
+                    const button = e.target;
+                    const sku = button.dataset.sku;
+                    const equipo = equipos.find(eq => eq.sku === sku);
+                    
+                    if (equipo) {
+                        // NUEVO: Marcar el botón como copiado y guardar estado
+                        copiedSKUs.add(sku);
+                        saveCopiedSKUs();
+                        button.classList.add('copied-button');
+
+                        const total = equipo.pie + (equipo.cuotas * 18);
+                        const summary = `*Financiamiento:* \n\n*SKU:* ${equipo.sku}\n*MARCA:* ${equipo.marca}\n*MODELO:* ${equipo.modelo}\n*PIE:* ${formatCurrency(equipo.pie)}\n*18 CUOTAS DE:* ${formatCurrency(equipo.cuotas)}\n*PRECIO TOTAL:* ${formatCurrency(total)}\n*STOCK:* ${equipo.stock} unidades`;
+                        copyToClipboard(summary, '¡Información copiada!');
+                    }
+                } 
+                else if (e.target.classList.contains('sku')) {
+                    const skuText = e.target.textContent;
+                    copyToClipboard(skuText, '¡SKU copiado!');
+                }
+            });
+            
+            // --- IMPLEMENTACIÓN TOOLTIP MODELO (SENSIBILIDAD EXTREMA) ---
+            const tooltip = document.createElement('div');
+            tooltip.className = 'model-hover-tooltip';
+            document.body.appendChild(tooltip);
+
+            // Se detecta el hover sobre cualquier parte de la fila contenedora
+            catalogContainer.addEventListener('mouseover', (e) => {
+                const row = e.target.closest('.catalog-row');
+                
+                // Si estamos sobre una fila, mostramos el tooltip INMEDIATAMENTE
+                if (row) {
+                    // Si cambiamos de fila, reproducir sonido
+                    if (row !== lastHoveredRow) {
+                        playHoverSound();
+                        lastHoveredRow = row;
+                    }
+
+                    // El modelo es siempre la 3era columna (índice 2)
+                    // Hijos: 0:sku, 1:marca, 2:modelo, etc.
+                    const modelCell = row.children[2];
+                    if (modelCell) {
+                        tooltip.textContent = modelCell.textContent;
+                        tooltip.classList.add('visible');
+                    }
+                }
+            });
+
+            catalogContainer.addEventListener('mousemove', (e) => {
+                // Si el tooltip está visible, lo movemos con el cursor
+                if (tooltip.classList.contains('visible')) {
+                    // Posicionamiento offset para no tapar el cursor
+                    const x = e.clientX + 16;
+                    const y = e.clientY + 16;
+                    tooltip.style.left = `${x}px`;
+                    tooltip.style.top = `${y}px`;
+                }
+            });
+
+            catalogContainer.addEventListener('mouseout', (e) => {
+                // Lógica crítica: solo ocultar si realmente salimos de la fila
+                const row = e.target.closest('.catalog-row');
+                
+                // Si no hay fila (salimos al contenedor) o si el nuevo elemento (relatedTarget)
+                // no está dentro de la fila actual, ocultamos.
+                if (!row || !row.contains(e.relatedTarget)) {
+                    tooltip.classList.remove('visible');
+                    // Resetear lastHoveredRow para que suene de nuevo si volvemos a entrar a la misma fila
+                    lastHoveredRow = null; 
+                }
+            });
+
+            // ============================================================
+            // BLACK SALE 2026 — Datos extraídos del PDF de ofertas
+            // ============================================================
+            const BLACK_SALE_OFFERS = [
+                // APPLE
+                { marca: 'APPLE', modelo: 'iPhone 17 Pro 256GB',    precioRef: 1429990, precioBS: 1295760, cuotasBS: 53990, dsct: -9,  vence: null },
+                { marca: 'APPLE', modelo: 'iPhone 15 128GB',         precioRef: 1054990, precioBS: 599760,  cuotasBS: 24990, dsct: -43, vence: null },
+                { marca: 'APPLE', modelo: 'iPhone 16 128GB',         precioRef: 989990,  precioBS: 738960,  cuotasBS: 30790, dsct: -25, vence: null },
+                { marca: 'APPLE', modelo: 'iPhone 17 256GB',         precioRef: 999990,  precioBS: 899760,  cuotasBS: 37490, dsct: -10, vence: null },
+                // SAMSUNG
+                { marca: 'SAMSUNG', modelo: 'A56 5G 256GB',          precioRef: 549990,  precioBS: 335760,  cuotasBS: 13990, dsct: -39, vence: '05-04' },
+                { marca: 'SAMSUNG', modelo: 'A36 5G 256GB',          precioRef: 449990,  precioBS: 287760,  cuotasBS: 11990, dsct: -36, vence: '05-04' },
+                { marca: 'SAMSUNG', modelo: 'S26 256GB',             precioRef: 1109990, precioBS: 798960,  cuotasBS: 33290, dsct: -28, vence: null },
+                { marca: 'SAMSUNG', modelo: 'S26 Ultra 256GB',       precioRef: 1549990, precioBS: 1175760, cuotasBS: 48990, dsct: -24, vence: null },
+                // XIAOMI / ZTE
+                { marca: 'XIAOMI', modelo: 'Redmi Note 15 5G 256GB', precioRef: 299990,  precioBS: 215760,  cuotasBS: 8990,  dsct: -28, vence: '05-04' },
+                { marca: 'XIAOMI', modelo: 'Redmi Note 15 Pro 5G 512GB', precioRef: 399990, precioBS: 311760, cuotasBS: 12990, dsct: -22, vence: '05-04' },
+                { marca: 'ZTE',    modelo: 'Nubia Neo 3 GT 5G 256GB',precioRef: 449990,  precioBS: 134160,  cuotasBS: 5590,  dsct: -70, vence: '05-04' },
+                { marca: 'ZTE',    modelo: 'Nubia Air 5G 256GB',     precioRef: 299990,  precioBS: 215760,  cuotasBS: 8990,  dsct: -28, vence: '05-04' },
+                // HONOR / MOTOROLA
+                { marca: 'HONOR',    modelo: 'H400 Lite 5G 256GB',        precioRef: 349990,  precioBS: 239760,  cuotasBS: 9990,  dsct: -31, vence: null },
+                { marca: 'HONOR',    modelo: 'Magic 8 Lite 5G 512GB',     precioRef: 549990,  precioBS: 383760,  cuotasBS: 15990, dsct: -30, vence: '05-04' },
+                { marca: 'MOTOROLA', modelo: 'G56 5G 256GB',               precioRef: 259990,  precioBS: 167760,  cuotasBS: 6990,  dsct: -35, vence: '05-04' },
+                { marca: 'MOTOROLA', modelo: 'G35 5G 256GB',               precioRef: 189990,  precioBS: 119760,  cuotasBS: 4990,  dsct: -37, vence: '05-04' },
+            ];
+
+            function renderBlackSaleModal() {
+                const bsContent = document.getElementById('bsContent');
+                if (!bsContent) return;
+
+                // Agrupar por marca
+                const byBrand = {};
+                BLACK_SALE_OFFERS.forEach(offer => {
+                    if (!byBrand[offer.marca]) byBrand[offer.marca] = [];
+                    byBrand[offer.marca].push(offer);
+                });
+
+                let html = '';
+                for (const brand of Object.keys(byBrand).sort()) {
+                    html += `<div class="bs-section-title">${brand}</div><div class="bs-grid">`;
+                    byBrand[brand].forEach(offer => {
+                        // Buscar si hay stock en el catálogo para este modelo
+                        const matchingSkus = equipos.filter(eq =>
+                            eq.marca === offer.marca &&
+                            eq.modelo.toLowerCase().includes(
+                                offer.modelo.toLowerCase().split(' ').slice(0, 3).join(' ').toLowerCase()
+                            ) && eq.stock > 0
+                        );
+                        const totalStock = matchingSkus.reduce((sum, eq) => sum + eq.stock, 0);
+                        const hasStock = totalStock > 0;
+                        const stockColor = totalStock >= 30 ? '#28a745' : totalStock > 0 ? '#ffc107' : '#DA291C';
+                        const stockLabel = totalStock > 0 ? `${totalStock} uds.` : 'Sin stock';
+
+                        const cuotasTotal = offer.cuotasBS * 24;
+                        const deadlineHtml = offer.vence
+                            ? `<span class="bs-deadline-tag">Hasta ${offer.vence}</span>` : '';
+
+                        html += `
+                        <div class="bs-card${!hasStock ? ' bs-no-stock' : ''}">
+                            ${deadlineHtml}
+                            <div class="bs-card-header">
+                                <div class="bs-card-model">${offer.modelo}</div>
+                                <span class="bs-card-badge">${offer.dsct}%</span>
+                            </div>
+                            <div class="bs-card-ref">Ref: ${formatCurrency(offer.precioRef)}</div>
+                            <div class="bs-stock-info">
+                                <span class="bs-stock-dot" style="background:${stockColor}"></span>
+                                Stock: <strong style="color:${stockColor}">${stockLabel}</strong>
+                            </div>
+                            <div class="bs-card-prices">
+                                <div class="bs-price-box highlight">
+                                    <div class="label">Precio Black Sale</div>
+                                    <div class="value">${formatCurrency(offer.precioBS)}</div>
+                                </div>
+                                <div class="bs-price-box">
+                                    <div class="label">24 Cuotas de</div>
+                                    <div class="value">${formatCurrency(offer.cuotasBS)}</div>
+                                </div>
+                                <div class="bs-price-box" style="grid-column:span 2">
+                                    <div class="label">Total financiado (24 cuotas)</div>
+                                    <div class="value">${formatCurrency(cuotasTotal)}</div>
+                                </div>
+                            </div>
+                            <button class="bs-copy-btn" data-bs-modelo="${offer.modelo}" data-bs-marca="${offer.marca}"
+                                data-bs-precio="${offer.precioBS}" data-bs-cuotas="${offer.cuotasBS}" 
+                                data-bs-dsct="${offer.dsct}" data-bs-stock="${totalStock}">
+                                Copiar Oferta
+                            </button>
+                        </div>`;
+                    });
+                    html += '</div>';
+                }
+                bsContent.innerHTML = html;
+
+                // Listeners para copiar oferta
+                bsContent.querySelectorAll('.bs-copy-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const modelo = btn.dataset.bsModelo;
+                        const marca = btn.dataset.bsMarca;
+                        const precio = parseInt(btn.dataset.bsPrecio);
+                        const cuotas = parseInt(btn.dataset.bsCuotas);
+                        const dsct = btn.dataset.bsDsct;
+                        const stock = btn.dataset.bsStock;
+                        const totalFin = cuotas * 24;
+
+                        const text = `🔥 *BLACK SALE 2026*\n\n*MARCA:* ${marca}\n*MODELO:* ${modelo}\n*Descuento:* ${dsct}%\n*Precio Black Sale:* ${formatCurrency(precio)}\n*24 Cuotas de:* ${formatCurrency(cuotas)}\n*Total Financiado:* ${formatCurrency(totalFin)}\n*Stock disponible:* ${stock > 0 ? stock + ' uds.' : 'Sin stock'}\n\n⏰ Válido hasta el 5 de Abril de 2026`;
+                        copyToClipboard(text, '¡Oferta Black Sale copiada!');
+                        btn.classList.add('copied');
+                        btn.textContent = 'Copiar Oferta';
+                        setTimeout(() => btn.classList.remove('copied'), 2000);
+                    });
+                });
+            }
+
+            // Evento botón Black Sale (abre modal)
+            const blackSaleButton = document.getElementById('blackSaleButton');
+            const bsOverlay = document.getElementById('bsOverlay');
+            const bsClose = document.getElementById('bsClose');
+
+            blackSaleButton.addEventListener('click', () => {
+                renderBlackSaleModal();
+                bsOverlay.classList.add('open');
+                blackSaleButton.classList.add('active');
+            });
+            bsClose.addEventListener('click', () => {
+                bsOverlay.classList.remove('open');
+                blackSaleButton.classList.remove('active');
+            });
+            bsOverlay.addEventListener('click', (e) => {
+                if (e.target === bsOverlay) {
+                    bsOverlay.classList.remove('open');
+                    blackSaleButton.classList.remove('active');
+                }
+            });
+
+            // --- TABS DEL MODAL BLACK SALE ---
+            document.querySelectorAll('.bs-tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tab = btn.dataset.tab;
+                    document.querySelectorAll('.bs-tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.bs-tab-panel').forEach(p => p.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById('bs-panel-' + tab).classList.add('active');
+                    // Renderizar ofertas si se vuelve a esa pestaña
+                    if (tab === 'ofertas') renderBlackSaleModal();
+                });
+            });
+
+            loadData();
+            updateSortIndicators();
+            showInitialMessage();
+
+
+        });
+        // Guide accordion toggle (outside DOMContentLoaded since HTML is static)
+        function toggleGuide(head) {
+            const item = head.closest('.guide-acc-item');
+            const isOpen = item.classList.contains('open');
+            item.closest('.guide-accordion')?.querySelectorAll('.guide-acc-item.open').forEach(el => el.classList.remove('open'));
+            if (!isOpen) item.classList.add('open');
+        }
+    </script>
+</body>
+</html>

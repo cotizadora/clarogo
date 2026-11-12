@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script de Validación de Venta - Claro Chile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --claro-red: #DA0000;
+            --claro-gray-dark: #333333;
+            --claro-gray-light: #f0f2f5;
+            --claro-gray-medium: #757575;
+            --warning-bg: #ffebee;
+            --warning-border: #ffcdd2;
+            --note-bg: #f5f5f5;
+            --success-green: #28a745;
+            --plan-detail-bg: #e3f2fd;
+            --plan-detail-border: #90caf9;
+            --plan-feature-color: #0d47a1;
+            --price-color: #c62828;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            background-color: var(--claro-gray-light);
+            color: var(--claro-gray-dark);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid var(--claro-red);
+            padding-bottom: 20px;
+        }
+
+        .logo-claro {
+            color: var(--claro-red);
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--claro-gray-dark);
+            margin: 0;
+        }
+
+        /* Botón descarga planilla */
+        .btn-planilla-wrap {
+            text-align: center;
+            margin: 0 0 18px 0;
+        }
+        .btn-planilla {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #0F9D58, #0b7a42);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 15px rgba(15,157,88,0.4);
+            animation: pulso 2s ease-in-out infinite;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .btn-planilla:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 22px rgba(15,157,88,0.6);
+            animation: none;
+        }
+        .btn-planilla:active {
+            transform: scale(0.97);
+        }
+        .btn-planilla .gs-icon {
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+        }
+        @keyframes pulso {
+            0%, 100% { box-shadow: 0 4px 15px rgba(15,157,88,0.4); transform: scale(1); }
+            50%       { box-shadow: 0 4px 28px rgba(15,157,88,0.75); transform: scale(1.03); }
+        }
+
+        h2 {
+            font-size: 1.3em;
+            font-weight: 500;
+            color: var(--claro-red);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--claro-red);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sec-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            min-width: 26px;
+            background-color: var(--claro-red);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.8em;
+            font-weight: 700;
+        }
+
+        .data-loader {
+            background-color: var(--claro-gray-light);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 35px;
+            border: 1px solid #e0e0e0;
+        }
+
+        #paste-data-area {
+            width: 100%;
+            padding: 12px;
+            font-size: 0.95em;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            resize: vertical;
+            min-height: 80px;
+            font-family: monospace;
+            margin-bottom: 10px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background-color: var(--claro-red);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1em;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .btn-primary:hover {
+            background-color: #b00000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(218, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: var(--claro-gray-medium);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1em;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--claro-gray-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: var(--success-green);
+        }
+
+        .script-section {
+            margin-bottom: 35px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: 500;
+            display: block;
+            margin-bottom: 5px;
+            color: var(--claro-gray-medium);
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #rut-status {
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-left: 8px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--claro-red);
+            box-shadow: 0 0 5px rgba(218, 0, 0, 0.2);
+        }
+
+        .inline-inputs p {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            line-height: 2;
+        }
+
+        .dynamic-name-input {
+            min-width: 150px;
+            max-width: none;
+            display: inline-block;
+            vertical-align: middle;
+            background: transparent;
+            border: none;
+            border-bottom: 2px dashed var(--claro-red);
+            padding: 5px;
+            font-size: 1em;
+            font-weight: 500;
+            color: var(--claro-red);
+            text-align: center;
+        }
+
+        .dynamic-name-input:focus {
+            outline: none;
+            background: rgba(218, 0, 0, 0.05);
+        }
+
+        .service-type-select {
+            font-weight: 500;
+            color: var(--claro-red);
+            border-color: var(--claro-red);
+        }
+
+        .agent-note {
+            background-color: var(--note-bg);
+            border-left: 4px solid var(--claro-gray-medium);
+            padding: 12px 15px;
+            border-radius: 4px;
+            font-style: italic;
+            color: var(--claro-gray-dark);
+            margin-top: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .agent-note i {
+            color: var(--claro-red);
+            margin-top: 3px;
+        }
+
+        #plan-details-display {
+            background-color: #fff;
+            border: 2px solid var(--plan-detail-border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            font-size: 0.95em;
+            color: var(--claro-gray-dark);
+            transition: all 0.3s ease;
+        }
+
+        .plan-header {
+            font-weight: 700;
+            color: var(--claro-red);
+            font-size: 1.2em;
+            margin: 0 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--claro-red);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .plan-desglose {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .plan-item {
+            padding: 10px;
+            background: var(--plan-detail-bg);
+            border-radius: 6px;
+            border-left: 3px solid var(--plan-detail-border);
+        }
+
+        .plan-item strong {
+            font-weight: 500;
+            color: var(--claro-gray-medium);
+            display: block;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .plan-item span {
+            font-weight: 700;
+            color: var(--plan-feature-color);
+            font-size: 1.1em;
+        }
+
+        .plan-precios {
+            background-color: var(--plan-detail-bg);
+            border-top: 2px solid var(--plan-detail-border);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 0 0 6px 6px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 0;
+            padding: 5px 0;
+        }
+
+        .price-tag {
+            font-weight: 700;
+            color: var(--price-color);
+            font-size: 1.2em;
+        }
+
+        .price-promo {
+            color: var(--success-green);
+            font-size: 1.4em;
+        }
+
+        .confirmation-box {
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            border-left: 5px solid var(--claro-red);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .confirmation-box strong {
+            font-weight: 700;
+            color: var(--claro-red);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .plan-desglose {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .highlight {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(218, 0, 0, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(218, 0, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(218, 0, 0, 0); }
+        }
+
+        .readonly-field {
+            background-color: #f5f5f5;
+            color: var(--claro-gray-medium);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-weight: 500;
+            color: var(--claro-gray-medium);
+            border-top: 1px solid #e0e0e0;
+            padding-top: 20px;
+        }
+
+        .excel-instructions {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .excel-instructions strong {
+            color: #856404;
+        }
+
+        .excel-instructions ol {
+            margin: 10px 0 0 20px;
+            padding: 0;
+            color: #856404;
+        }
+
+        .excel-instructions li {
+            margin-bottom: 5px;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Script de Validación de Venta</h1>
+        </header>
+
+        <form id="sales-script-form">
+            <!-- BOTÓN DESCARGA PLANILLA -->
+            <div class="btn-planilla-wrap">
+                <button type="button" class="btn-planilla" onclick="descargarPlanilla()">
+                    <svg class="gs-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="24" height="24" rx="3" fill="#fff" opacity="0.15"/>
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="white" opacity="0.9"/>
+                        <polyline points="14 2 14 8 20 8" fill="none" stroke="white" stroke-width="1.5" opacity="0.7"/>
+                        <line x1="8" y1="13" x2="16" y2="13" stroke="#0F9D58" stroke-width="1.8"/>
+                        <line x1="8" y1="17" x2="16" y2="17" stroke="#0F9D58" stroke-width="1.8"/>
+                        <line x1="8" y1="9" x2="11" y2="9" stroke="#0F9D58" stroke-width="1.8"/>
+                    </svg>
+                    📋 Obtener Planilla Personal (Google Sheets)
+                </button>
+                <p style="margin-top:8px; font-size:0.82em; color:#555; text-align:center;">
+                    <i class="fas fa-info-circle" style="color:#0F9D58;"></i>
+                    Se creará una copia <strong>exclusiva para ti</strong> en tu Google Drive — compatible con este script y lista para usar.
+                </p>
+            </div>
+
+            <!-- SECCIÓN 0: CARGA DE DATOS -->
+            <div class="script-section data-loader">
+                <h2><span class="sec-num">0</span> Carga Rápida desde Excel</h2>
+                
+                <div class="excel-instructions">
+                    <strong><i class="fas fa-info-circle"></i> Instrucciones:</strong>
+                    <ol>
+                        <li>En tu planilla, haga clic en el número de fila completa (ej: fila 683)</li>
+                        <li>Presione Ctrl+C para copiar</li>
+                        <li>Pegue aquí con Ctrl+V y haga clic en "Mapear Datos"</li>
+                    </ol>
+                </div>
+
+                <div class="form-group">
+                    <label for="paste-data-area">Datos copiados de Excel (fila completa):</label>
+                    <textarea id="paste-data-area" rows="3" placeholder="Pegue aquí la fila copiada de Excel..."></textarea>
+                </div>
+                
+                <div class="button-group">
+                    <button type="button" id="process-data-btn" class="btn-primary">
+                        <i class="fas fa-magic"></i> Mapear Datos al Formulario
+                    </button>
+                    <button type="button" id="reset-form-btn" class="btn-secondary" title="Limpiar todo">
+                        <i class="fas fa-trash-alt"></i> Limpiar
+                    </button>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 1: INICIO -->
+            <div class="script-section">
+                <h2><span class="sec-num">1</span> Inicio y Contratación</h2>
+                <div class="inline-inputs">
+                    <p>
+                        Don/Sra. <input type="text" id="customerName1" class="dynamic-name-input" placeholder="Nombre del Cliente">, 
+                        con fecha de hoy <input type="text" id="currentDate" readonly class="readonly-field" style="width: 200px;">, 
+                        siendo las <input type="text" id="currentTime" readonly class="readonly-field" style="width: 80px;"> horas, 
+                        usted ha contratado con <strong>CLARO CHILE</strong> un servicio de 
+                        <select id="serviceType" class="service-type-select">
+                            <option value="Portabilidad" selected>Portabilidad</option>
+                            <option value="Línea Nueva">Línea Nueva</option>
+                            <option value="Migración">Migración</option>
+                        </select>
+                        <span id="portability-detail">
+                            de un número proveniente de la empresa 
+                            <input type="text" id="previousCompany" placeholder="Empresa de origen" style="width: 150px;">.
+                        </span>
+                        <span id="non-portability-detail" class="hidden">.</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 2: INFORMACIÓN ESPECÍFICA -->
+            <div class="script-section">
+                <h2><span class="sec-num">2</span> Información Específica del Servicio</h2>
+                
+                <div id="portability-note" class="agent-note">
+                    <i class="fas fa-mobile-alt"></i>
+                    <div>
+                        <strong>Para Portabilidad:</strong> El número quedará habilitado al día siguiente desde la fecha en que recibe el chip. 
+                        <strong>Importante:</strong> No cambie el chip antes de haber perdido la señal con su compañía de origen.
+                    </div>
+                </div>
+                
+                <div id="newline-note" class="agent-note hidden">
+                    <i class="fas fa-plus-circle"></i>
+                    <div>
+                        <strong>Para Línea Nueva:</strong> Su nuevo número de Claro quedará activo en los próximos minutos una vez que inserte el chip en su equipo.
+                    </div>
+                </div>
+                
+                <div id="migration-note" class="agent-note hidden">
+                    <i class="fas fa-random"></i>
+                    <div>
+                        <strong>Para Migración:</strong> Su plan actual será actualizado a las nuevas condiciones. El cambio se verá reflejado al inicio de su próximo ciclo de facturación.
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <p><strong>Emisión de Boleta:</strong> Le informamos que el pago de su servicio es a mes vencido. La primera boleta se emitirá aproximadamente dentro de 40 días. Le recuerdo que su boleta llegará de manera electrónica a su email.</p>
+                    
+                    <div class="confirmation-box">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        Su contrato de servicio está sujeto a la <strong>VARIACIÓN POSITIVA TRIMESTRAL DEL ÍNDICE DE PRECIOS AL CONSUMIDOR (IPC)</strong>, 
+                        valor que verá reflejado mensualmente en su boleta.
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 3: VALIDACIÓN DE DATOS -->
+            <div class="script-section">
+                <h2><span class="sec-num">3</span> Validación de Datos del Cliente</h2>
+                
+                <p style="margin-bottom: 20px;">
+                    <input type="text" id="customerName2" class="dynamic-name-input" placeholder="Nombre del Cliente">, 
+                    mi nombre es <input type="text" id="agentName" placeholder="Tu Nombre" style="width: 200px; border-bottom: 2px dashed var(--claro-red); border-top: none; border-left: none; border-right: none; background: transparent; padding: 5px;">, 
+                    ejecutivo de ventas de Claro Chile. A continuación, validaré la aceptación del servicio que acaba de adquirir, para ello le pido que me confirme su nombre completo y número de RUT.
+                </p>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label for="customerFullName">Nombre Completo</label>
+                        <input type="text" id="customerFullName" placeholder="Nombre completo del cliente">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="customerRUT">RUT <span id="rut-status"></span></label>
+                        <input type="text" id="customerRUT" placeholder="12.345.678-9">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="customerDOB">Fecha de Nacimiento</label>
+                        <input type="text" id="customerDOB" placeholder="DD-MM-AAAA">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="customerEmail">Correo Electrónico</label>
+                        <input type="email" id="customerEmail" placeholder="email@ejemplo.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="customerPhone">Número de Teléfono a Portar</label>
+                        <input type="text" id="customerPhone" placeholder="9 XXXX XXXX">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="customerAddress">Dirección de Entrega</label>
+                        <input type="text" id="customerAddress" placeholder="Dirección completa">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 4: CONFIRMACIÓN DEL PLAN -->
+            <div class="script-section">
+                <h2><span class="sec-num">4</span> Confirmación del Plan y Condiciones</h2>
+                
+                <div class="form-group">
+                    <label for="planSelector">Plan Contratado</label>
+                    <select id="planSelector">
+                        <option value="Plan Max M">Plan Max M</option>
+                        <option value="Plan Max L Libre" selected>Plan Max L Libre</option>
+                        <option value="Plan Max XL Libre">Plan Max XL Libre</option>
+                        <option value="Plan Max Libre Pro">Plan Max Libre Pro</option>
+                        <option value="Plan Persona Mayor">Plan Persona Mayor</option>
+                    </select>
+                </div>
+                
+                <div id="plan-details-display">
+                    <!-- Se llena dinámicamente -->
+                </div>
+
+                <div class="confirmation-box" style="margin-top: 20px;">
+                    <p>Don/Sra. <input type="text" id="customerName3" class="dynamic-name-input" placeholder="Nombre del Cliente" style="font-size: 1em;">, 
+                    <strong>¿acepta las condiciones del plan contratado?</strong></p>
+                </div>
+                
+                <div class="agent-note">
+                    <i class="fas fa-microphone"></i>
+                    <div><strong>Acción requerida:</strong> Esperar y registrar un <strong>"Sí, acepto"</strong> claro y sin dudas del cliente.</div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 5: CIERRE -->
+            <div class="script-section">
+                <h2><span class="sec-num">5</span> Cierre de la Venta</h2>
+                
+                <div class="form-group">
+                    <label for="orderNumber">Número de Pedido (Transacción FVC)</label>
+                    <input type="text" id="orderNumber" placeholder="Ingresar número de transacción FVC">
+                </div>
+
+                <div class="inline-inputs" style="margin-top: 20px;">
+                    <p>
+                        Sr(a). <input type="text" id="customerName4" class="dynamic-name-input" placeholder="Nombre del Cliente">, 
+                        ¿Tiene alguna duda adicional?
+                    </p>
+                    <p>
+                        Le doy la más cordial bienvenida a Claro Chile. Recuerde que habló con <span id="agentNameDisplay" style="font-weight: 600; color: var(--claro-red);">[Nombre del Ejecutivo]</span>.
+                    </p>
+                    <p>Tenga un excelente día y muchas gracias por su preferencia.</p>
+                </div>
+
+                <div style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 6px; border-left: 4px solid var(--success-green);">
+                    <p style="margin: 0 0 10px 0;"><strong>Beneficio adicional:</strong></p>
+                    <p style="margin: 0 0 10px 0;">
+                        Antes de despedirnos, le comento un beneficio útil para evitar llamadas molestas: el <strong>bloqueo de llamadas 809</strong>. 
+                        Con esto, deja de recibir llamadas SPAM o no deseadas que vienen desde números que comienzan con 809, 
+                        así tiene más tranquilidad y menos interrupciones.
+                    </p>
+                    <p style="margin: 0;">
+                        Si le interesa activarlo, puede hacerlo llamando al <strong>103</strong> o directamente desde la <strong>App MiClaro</strong>.
+                    </p>
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <p>
+                        Si tiene algún familiar, amigo o persona cercana que también quiera portarse a Claro, 
+                        quedo a su disposición para poder gestionarlo, que tenga muy buen día.
+                    </p>
+                    <p>
+                        Me despido y le dejo con una grabación muy corta de parte de la <strong>Subtel</strong> la cual le indicará 
+                        algunos aspectos relacionados con la portabilidad, una vez que se corte el proceso estará finalizado.
+                    </p>
+                </div>
+            </div>
+        </form>
+
+        <footer>
+            <p><i class="fas fa-shield-alt"></i> Grabación SUBTEL en curso</p>
+            <p style="font-size: 0.8em; margin-top: 5px;">Claro Chile - Script de Validación de Ventas</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- DATOS DE PLANES ---
+            const PLAN_DETAILS = {
+                'Plan Max M': {
+                    nombre: 'Plan Max M',
+                    internet: '200 GB',
+                    minutos: 'Libres a 300 números',
+                    roaming: '20 min + 1 GB + 20 SMS',
+                    ldi: '20 minutos',
+                    rrss: 'WhatsApp, Facebook, Instagram, Telegram, TikTok, X (Libres)',
+                    sms: '500 SMS',
+                    via_ingreso: 'Todas',
+                    cargo_fijo_normal: '$12.990',
+                    cargo_promo: '$6.495',
+                    cargo_mes_7: '$9.743',
+                    dscto: '50%',
+                    promo_detalle: 'Oferta out. 50% x 6 meses, luego 25% permanente',
+                    vigencia_dcto: '6 meses al 50%'
+                },
+                'Plan Max L Libre': {
+                    nombre: 'Plan Max L Libre',
+                    internet: '300 GB alta velocidad',
+                    minutos: 'Libres a 300 números',
+                    roaming: '40 min + 2 GB + 40 SMS',
+                    ldi: '40 minutos',
+                    rrss: 'WhatsApp, Facebook, Instagram, Telegram, TikTok, X (Libres)',
+                    sms: '500 SMS',
+                    via_ingreso: 'Todas',
+                    cargo_fijo_normal: '$14.990',
+                    cargo_promo: '$7.495',
+                    cargo_mes_7: '$11.243',
+                    dscto: '50%',
+                    promo_detalle: 'Oferta out. 50% x 6 meses, luego 25% permanente',
+                    vigencia_dcto: '6 meses al 50%'
+                },
+                'Plan Max XL Libre': {
+                    nombre: 'Plan Max XL Libre',
+                    internet: '500 GB alta velocidad',
+                    minutos: 'Libres a 300 números',
+                    roaming: '60 min + 3 GB + 60 SMS',
+                    ldi: '60 minutos',
+                    rrss: 'WhatsApp, Facebook, Instagram, Telegram, TikTok, X (Libres)',
+                    sms: '500 SMS',
+                    via_ingreso: 'Portabilidad y Línea Nueva (Pos a Pos)',
+                    cargo_fijo_normal: '$16.990',
+                    cargo_promo: '$8.495',
+                    cargo_mes_7: '$12.743',
+                    dscto: '50%',
+                    promo_detalle: 'Oferta out. 50% x 6 meses, luego 25% permanente',
+                    vigencia_dcto: '6 meses al 50%'
+                },
+                'Plan Max Libre Pro': {
+                    nombre: 'Plan Max Libre Pro',
+                    internet: 'GB libres (Ilimitado)',
+                    minutos: 'Libres a 300 números',
+                    roaming: '100 min + 5 GB + 100 SMS',
+                    ldi: '100 minutos',
+                    rrss: 'WhatsApp, Facebook, Instagram, Telegram, TikTok, X (Libres)',
+                    sms: '500 SMS',
+                    via_ingreso: 'Portabilidad y Línea Nueva (Pos a Pos)',
+                    cargo_fijo_normal: '$20.990',
+                    cargo_promo: '$10.495',
+                    cargo_mes_7: '$15.743',
+                    dscto: '50%',
+                    promo_detalle: 'Oferta out. 50% x 6 meses, luego 25% permanente',
+                    vigencia_dcto: '6 meses al 50%'
+                },
+                'Plan Persona Mayor': {
+                    nombre: 'Plan Persona Mayor',
+                    internet: '50 GB',
+                    minutos: '1000 minutos de llamadas',
+                    roaming: 'No incluido',
+                    ldi: 'No incluido',
+                    rrss: 'Instagram, Facebook, X, WhatsApp, TikTok (Ilimitadas)',
+                    sms: 'No incluido',
+                    via_ingreso: 'Portabilidad PosPos',
+                    cargo_fijo_normal: '$6.990',
+                    cargo_promo: '$3.990',
+                    cargo_mes_7: '$6.990',
+                    dscto: '43%',
+                    promo_detalle: 'Oferta Portabilidad PosPos. 43% x 12 meses',
+                    vigencia_dcto: '12 meses al 43%',
+                    restriccion: 'Para titulares desde 70 años'
+                }
+            };
+
+            // --- REFERENCIAS A ELEMENTOS ---
+            const dateField = document.getElementById('currentDate');
+            const timeField = document.getElementById('currentTime');
+            const agentNameInput = document.getElementById('agentName');
+            const agentNameDisplay = document.getElementById('agentNameDisplay');
+            const rutInput = document.getElementById('customerRUT');
+            const rutStatus = document.getElementById('rut-status');
+            const serviceTypeSelect = document.getElementById('serviceType');
+            const planSelector = document.getElementById('planSelector');
+            const planDetailsDisplay = document.getElementById('plan-details-display');
+            
+            // Campos de nombre sincronizados
+            const nameFields = ['customerFullName', 'customerName1', 'customerName2', 'customerName3', 'customerName4'];
+            
+            // --- FUNCIONES AUXILIARES ---
+            
+            function setDateTime() {
+                const now = new Date();
+                const weekday = now.toLocaleDateString('es-CL', { weekday: 'long' });
+                const day = String(now.getDate()).padStart(2, '0');
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const year = now.getFullYear();
+                dateField.value = `${weekday} ${day}-${month}-${year}`;
+                timeField.value = now.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit', hour12: false });
+            }
+
+            function validateRut(rut) {
+                const cleanRut = rut.replace(/[^0-9kK]/g, '');
+                if (cleanRut.length < 2) return false;
+                
+                const body = cleanRut.slice(0, -1);
+                let dv = cleanRut.slice(-1).toLowerCase();
+                
+                let sum = 0;
+                let multiplier = 2;
+                
+                for (let i = body.length - 1; i >= 0; i--) {
+                    sum += parseInt(body.charAt(i)) * multiplier;
+                    multiplier = multiplier === 7 ? 2 : multiplier + 1;
+                }
+                
+                const expectedDv = 11 - (sum % 11);
+                const calculatedDv = expectedDv === 11 ? '0' : expectedDv === 10 ? 'k' : expectedDv.toString();
+                
+                return dv === calculatedDv;
+            }
+
+            function formatRut(value) {
+                const clean = value.replace(/[^0-9kK]/g, '').replace(/^0+/, '');
+                if (clean.length <= 1) return clean;
+                
+                const body = clean.slice(0, -1);
+                const dv = clean.slice(-1).toUpperCase();
+                const formattedBody = body.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                
+                return `${formattedBody}-${dv}`;
+            }
+
+            function updateRutValidation() {
+                const formatted = formatRut(rutInput.value);
+                rutInput.value = formatted;
+                
+                if (formatted.length > 4) {
+                    const isValid = validateRut(formatted);
+                    rutStatus.textContent = isValid ? '✓ Válido' : '✗ Inválido';
+                    rutStatus.style.color = isValid ? 'var(--success-green)' : 'var(--claro-red)';
+                    rutInput.style.borderColor = isValid ? 'var(--success-green)' : 'var(--claro-red)';
+                } else {
+                    rutStatus.textContent = '';
+                    rutInput.style.borderColor = '#ccc';
+                }
+            }
+
+            function syncNames(source) {
+                const value = source.value;
+                nameFields.forEach(id => {
+                    const field = document.getElementById(id);
+                    if (field && field.id !== source.id) {
+                        field.value = value;
+                    }
+                });
+                adjustInputWidths();
+            }
+
+            function adjustInputWidths() {
+                nameFields.forEach(id => {
+                    const input = document.getElementById(id);
+                    if (input) {
+                        const span = document.createElement('span');
+                        span.style.visibility = 'hidden';
+                        span.style.position = 'absolute';
+                        span.style.fontSize = getComputedStyle(input).fontSize;
+                        span.style.fontFamily = getComputedStyle(input).fontFamily;
+                        span.style.fontWeight = getComputedStyle(input).fontWeight;
+                        span.style.whiteSpace = 'nowrap';
+                        span.textContent = input.value || input.placeholder;
+                        document.body.appendChild(span);
+                        
+                        input.style.width = (span.offsetWidth + 30) + 'px';
+                        document.body.removeChild(span);
+                    }
+                });
+            }
+
+            function toggleServiceType() {
+                const type = serviceTypeSelect.value;
+                const portabilityDetail = document.getElementById('portability-detail');
+                const nonPortabilityDetail = document.getElementById('non-portability-detail');
+                const portabilityNote = document.getElementById('portability-note');
+                const newlineNote = document.getElementById('newline-note');
+                const migrationNote = document.getElementById('migration-note');
+                
+                // Reset
+                [portabilityNote, newlineNote, migrationNote].forEach(el => el.classList.add('hidden'));
+                
+                if (type === 'Portabilidad') {
+                    portabilityDetail.classList.remove('hidden');
+                    nonPortabilityDetail.classList.add('hidden');
+                    portabilityNote.classList.remove('hidden');
+                } else if (type === 'Línea Nueva') {
+                    portabilityDetail.classList.add('hidden');
+                    nonPortabilityDetail.classList.remove('hidden');
+                    newlineNote.classList.remove('hidden');
+                } else if (type === 'Migración') {
+                    portabilityDetail.classList.add('hidden');
+                    nonPortabilityDetail.classList.remove('hidden');
+                    migrationNote.classList.remove('hidden');
+                }
+            }
+
+            function displayPlanDetails() {
+                const planName = planSelector.value;
+                const baseDetails = PLAN_DETAILS[planName];
+
+                if (!baseDetails) {
+                    planDetailsDisplay.innerHTML = '<p style="text-align: center; color: var(--claro-gray-medium);">Seleccione un plan para ver los detalles</p>';
+                    return;
+                }
+
+                // ── ZONA 4: Override local de precios según tipo de servicio ──────────
+                // Clonar objeto para NO modificar PLAN_DETAILS original
+                const details = Object.assign({}, baseDetails);
+
+                const tipoServicio = serviceTypeSelect.value;
+
+                if (tipoServicio === 'Línea Nueva' || tipoServicio === 'Migración') {
+                    const OVERRIDE_PRECIOS = {
+                        'Plan Max M': {
+                            cargo_promo:  '$8.444',
+                            cargo_mes_7:  '$12.990',
+                            dscto:        '35%',
+                            vigencia_dcto: '6 meses al 35%',
+                            promo_detalle: '35% de descuento por 6 meses, luego precio normal. No aplica descuento permanente.'
+                        },
+                        'Plan Max L Libre': {
+                            cargo_promo:  '$9.744',
+                            cargo_mes_7:  '$14.990',
+                            dscto:        '35%',
+                            vigencia_dcto: '6 meses al 35%',
+                            promo_detalle: '35% de descuento por 6 meses, luego precio normal. No aplica descuento permanente.'
+                        }
+                    };
+
+                    if (OVERRIDE_PRECIOS[planName]) {
+                        const ov = OVERRIDE_PRECIOS[planName];
+                        details.cargo_promo  = ov.cargo_promo;
+                        details.cargo_mes_7  = ov.cargo_mes_7;
+                        details.dscto        = ov.dscto;
+                        details.vigencia_dcto = ov.vigencia_dcto;
+                        details.promo_detalle = ov.promo_detalle;
+                    }
+                }
+                // ── FIN override ──────────────────────────────────────────────────────
+
+                const restriccionHtml = details.restriccion ? 
+                    `<div style="margin-top: 15px; padding: 10px; background: #ffebee; border-radius: 4px; color: var(--claro-red); font-weight: bold;">
+                        <i class="fas fa-exclamation-circle"></i> ${details.restriccion}
+                    </div>` : '';
+
+                planDetailsDisplay.innerHTML = `
+                    <div class="plan-header">
+                        <i class="fas fa-signal"></i> ${details.nombre}
+                    </div>
+                    <div class="plan-desglose">
+                        <div class="plan-item">
+                            <strong>Internet</strong>
+                            <span>${details.internet}</span>
+                        </div>
+                        <div class="plan-item">
+                            <strong>Minutos</strong>
+                            <span>${details.minutos}</span>
+                        </div>
+                        <div class="plan-item">
+                            <strong>SMS</strong>
+                            <span>${details.sms}</span>
+                        </div>
+                        <div class="plan-item">
+                            <strong>LDI</strong>
+                            <span>${details.ldi}</span>
+                        </div>
+                        <div class="plan-item" style="grid-column: 1 / -1;">
+                            <strong>Redes Sociales</strong>
+                            <span>${details.rrss}</span>
+                        </div>
+                        <div class="plan-item" style="grid-column: 1 / -1;">
+                            <strong>Roaming</strong>
+                            <span>${details.roaming}</span>
+                        </div>
+                    </div>
+                    <div class="plan-precios">
+                        <div class="price-row">
+                            <span class="label">Precio Normal:</span>
+                            <span class="price-tag" style="text-decoration: line-through; opacity: 0.6;">${details.cargo_fijo_normal}</span>
+                        </div>
+                        <div class="price-row">
+                            <span class="label">Precio Promocional:</span>
+                            <span class="price-tag price-promo">${details.cargo_promo}</span>
+                        </div>
+                        <div class="price-row">
+                            <span class="label">Desde mes 7:</span>
+                            <span class="price-tag">${details.cargo_mes_7}</span>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 0.9em; color: var(--claro-gray-medium);">
+                            <strong>Descuento:</strong> ${details.dscto} (${details.vigencia_dcto})<br>
+                            <strong>Vía de ingreso:</strong> ${details.via_ingreso}<br>
+                            <em>${details.promo_detalle}</em>
+                        </div>
+                        ${restriccionHtml}
+                    </div>
+                `;
+            }
+
+            function processExcelData() {
+                const textarea = document.getElementById('paste-data-area');
+                const data = textarea.value.trim();
+                
+                if (!data) {
+                    alert('Por favor, pegue los datos de Excel primero');
+                    return;
+                }
+
+                // Separar por tabulaciones (formato de copia de Excel)
+                const columns = data.split('\t');
+                
+                // Mapeo según planilla real (verificado con captura):
+                // [0]: FECHA         — ignorar
+                // [1]: NOMBRE COMPLETO
+                // [2]: RUT
+                // [3]: TELÉFONO      — ignorar
+                // [4]: N° PORTAR
+                // [5]: EMAIL
+                // [6]: N° LÍNEAS     — ignorar
+                // [7]: FECHA NACIMIENTO
+                // [8]: DONANTE
+                // [9]: PLAN          — ignorar
+                // [10]: DIRECCIÓN
+                // [11]: REFERENCIA   — ignorar
+                // [12]: TRANSACCIÓN
+
+                const g = (i) => (columns[i] || '').trim();
+
+                document.getElementById('customerFullName').value = g(1);
+                document.getElementById('customerRUT').value      = g(2);
+                document.getElementById('customerPhone').value    = g(4);
+                document.getElementById('customerEmail').value    = g(5);
+                document.getElementById('customerDOB').value      = g(7);
+                document.getElementById('previousCompany').value  = g(8);
+                document.getElementById('customerAddress').value  = g(10);
+                document.getElementById('orderNumber').value      = g(12);
+
+                document.getElementById('customerFullName').dispatchEvent(new Event('input'));
+                updateRutValidation();
+
+                if (g(8) !== '') {
+                    serviceTypeSelect.value = 'Portabilidad';
+                    toggleServiceType();
+                }
+
+                textarea.value = '';
+
+                const btn = document.getElementById('process-data-btn');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> ¡Datos Cargados!';
+                btn.classList.add('btn-success');
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('btn-success');
+                }, 2000);
+            }
+
+            function resetForm() {
+                document.getElementById('sales-script-form').reset();
+                setDateTime();
+                rutStatus.textContent = '';
+                rutInput.style.borderColor = '#ccc';
+                planSelector.value = 'Plan Max L Libre';
+                displayPlanDetails();
+                toggleServiceType();
+                adjustInputWidths();
+                
+                // Restaurar nombre de agente si existe
+                const savedName = localStorage.getItem('agentName');
+                if (savedName) {
+                    agentNameInput.value = savedName;
+                    agentNameDisplay.textContent = savedName;
+                }
+            }
+
+            // --- EVENT LISTENERS ---
+            
+            // Fecha y hora
+            setDateTime();
+            setInterval(setDateTime, 1000);
+            
+            // RUT
+            rutInput.addEventListener('input', updateRutValidation);
+            
+            // Sincronización de nombres
+            nameFields.forEach(id => {
+                const field = document.getElementById(id);
+                if (field) {
+                    field.addEventListener('input', (e) => syncNames(e.target));
+                }
+            });
+            
+            // Nombre del agente
+            agentNameInput.addEventListener('input', (e) => {
+                agentNameDisplay.textContent = e.target.value;
+                localStorage.setItem('agentName', e.target.value);
+            });
+            
+            // Cargar nombre guardado
+            const savedAgentName = localStorage.getItem('agentName');
+            if (savedAgentName) {
+                agentNameInput.value = savedAgentName;
+                agentNameDisplay.textContent = savedAgentName;
+            }
+            
+            // Tipo de servicio
+            serviceTypeSelect.addEventListener('change', toggleServiceType);
+            
+            // Plan
+            planSelector.addEventListener('change', displayPlanDetails);
+
+            // ── ZONA 4: Filtrado dinámico de planSelector según serviceType ──────────
+            (function() {
+                const PLANES_POR_TIPO = {
+                    'Portabilidad': ['Plan Max M', 'Plan Max L Libre', 'Plan Max XL Libre', 'Plan Max Libre Pro', 'Plan Persona Mayor'],
+                    'Línea Nueva':  ['Plan Max M', 'Plan Max L Libre'],
+                    'Migración':    ['Plan Max M', 'Plan Max L Libre']
+                };
+
+                // Prefijo visual por tipo (Portabilidad = sin prefijo)
+                const PREFIJO_POR_TIPO = {
+                    'Portabilidad': '',
+                    'Línea Nueva':  'Línea Nueva - ',
+                    'Migración':    'Migración - '
+                };
+
+                function filtrarPlanes() {
+                    const tipo       = serviceTypeSelect.value;
+                    const permitidos = PLANES_POR_TIPO[tipo] || [];
+                    const prefijo    = PREFIJO_POR_TIPO[tipo] !== undefined ? PREFIJO_POR_TIPO[tipo] : '';
+                    let primerPermitido = null;
+
+                    Array.from(planSelector.options).forEach(function(opt) {
+                        const visible = permitidos.includes(opt.value);
+                        opt.style.display = visible ? '' : 'none';
+                        opt.disabled      = !visible;
+
+                        // Ajustar solo el texto visible; value permanece intacto
+                        opt.textContent = prefijo + opt.value;
+
+                        if (visible && !primerPermitido) primerPermitido = opt.value;
+                    });
+
+                    // Si el plan actualmente seleccionado quedó fuera del filtro, cambiar al primero válido
+                    if (!permitidos.includes(planSelector.value) && primerPermitido) {
+                        planSelector.value = primerPermitido;
+                    }
+
+                    // Siempre refrescar la pizarra para reflejar precios del tipo actual
+                    displayPlanDetails();
+                }
+
+                // Escuchar cambios en serviceType (listener adicional, no reemplaza el original)
+                serviceTypeSelect.addEventListener('change', filtrarPlanes);
+
+                // Aplicar filtro en la inicialización
+                filtrarPlanes();
+            })();
+            // ── FIN ZONA 4 ────────────────────────────────────────────────────────────
+            
+            // Botones
+            document.getElementById('process-data-btn').addEventListener('click', processExcelData);
+            document.getElementById('reset-form-btn').addEventListener('click', resetForm);
+            
+            // Inicialización
+            toggleServiceType();
+            displayPlanDetails();
+            adjustInputWidths();
+        });
+
+            function descargarPlanilla() {
+                var url = 'https://docs.google.com/spreadsheets/d/1KnWZ-M0LeIIrwQq5CuGLJkHHAANNq_MUKoaTXR8K6Ck/copy';
+                window.open(url, '_blank');
+            }
+    </script>
+</body>
+</html>
