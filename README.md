@@ -35,6 +35,14 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 12-11-2026 (cuarta entrega): stock del 12-11
+
+- datos/stock.csv se reemplazó con el archivo `Stock Diario, Planilla de precios 12-11.xlsx` que envió Eduardo.
+- Quedaron 316 equipos: 131 con stock (hoja Stock) y 185 vigentes sin stock (hoja Planilla), para que al buscarlos aparezcan como sin stock.
+- El nombre de cada equipo es el Modelo Comercial de la Planilla. Pie y 18 cuotas son los valores referenciales de Financiamiento Portabilidad.
+- No se incluyeron 22 productos con stock que en el Excel no traen precio (#N/A): tablets, routers y equipos MDT, LS o ECOM.
+- No se incluyeron los 508 equipos marcados como Antiguo en la Planilla.
+
 ### 12-11-2026 (tercera entrega): revisión de la oferta y Preguntas y Respuestas
 
 Fuente indicada por Eduardo: `PRODUCTO MÓVIL 14082026.pdf` (Entrenamiento Técnico Comercial, 100 láminas) y los cuatro resúmenes de la carpeta "MD DE APOYO PRODUCTOS Y PROCESOS". Leídos el 12-11-2026.
