@@ -8,6 +8,7 @@ Portal de apoyo para ventas de equipos y planes con portabilidad. Es una herrami
 
 ## Estructura
 
+- `clarogo-2026.png`: miniatura que aparece al compartir el enlace.
 - `index.html`: todo el portal en un solo archivo, con CSS y JavaScript propios. No usa CDN, fuentes externas ni librerías.
 - `datos/stock.csv`: stock de equipos. Es lo único que hay que tocar para actualizar el stock.
 - `galeria/`: imágenes de equipos optimizadas (1600 px) y `galeria/mini/` con las miniaturas.
@@ -34,6 +35,14 @@ Todos los datos comerciales están al inicio del script de `index.html`, en el b
 GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza el sitio en uno o dos minutos.
 
 ## Historial de cambios
+
+### 12-11-2026 (séptima entrega): ClaroGo! 2.0
+
+- Miniatura nueva para compartir por WhatsApp: `clarogo-2026.png` (1200x630, 130 KB). Reemplaza a `og-preview.png`, que era la imagen del sitio antiguo y sigue guardada en `original/`.
+- Se completaron los metadatos para compartir (dirección, tipo y tamaño de la imagen).
+- Portada renovada con fondo oscuro y la marca "ClaroGo! 2.0 · 2026".
+- El menú de inicio se ajusta al alto de la pantalla y se ve completo sin scroll. Probado en 320x520, 360x640 y 1366x640.
+- La firma queda en un marco fijo al pie de todas las secciones.
 
 ### 12-11-2026 (sexta entrega): Oferta PNG pasa a la oferta PYME
 
