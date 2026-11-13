@@ -1524,7 +1524,10 @@ const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', '
 const ctSeg = r => [r.campana, (r.cola || '').replace(/^COLA_CLARO_/, '')].filter(Boolean).join(' · ') || 'Sin segmento';
 
 const ctLeerLocal = () => { try { const v = JSON.parse(localStorage.getItem(CT_KEY) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
-const ctGuardarLocal = () => { try { localStorage.setItem(CT_KEY, JSON.stringify(CT)); } catch (e) { if (!ctAviso) { ctAviso = true; toast('El navegador no dejó guardar la copia local. Revisa que el archivo de respaldo esté activo.'); } } };
+// Antes de escribir combina con lo que dejó otra pestaña, así una pestaña antigua nunca borra registros nuevos
+let ctRepintarPend = false;
+const ctRepintar = () => { if (!ctListo) return; if ($('#ct-body').contains(document.activeElement)) { ctRepintarPend = true; return; } ctRepintarPend = false; ctPinta(); };
+const ctGuardarLocal = () => { try { const antes = JSON.stringify(CT); CT = ctMezclar(CT, ctLeerLocal()); localStorage.setItem(CT_KEY, JSON.stringify(CT)); if (JSON.stringify(CT) !== antes) ctRepintar(); } catch (e) { if (!ctAviso) { ctAviso = true; toast('El navegador no dejó guardar la copia local. Revisa que el archivo de respaldo esté activo.'); } } };
 // Cada cambio: copia local inmediata y guardado en el archivo a los pocos segundos
 function ctGuardar() { ctGuardarLocal(); clearTimeout(ctTimer); ctTimer = setTimeout(() => respSync('edición'), AUTO_EDIT_SEG * 1000); }
 
@@ -1562,7 +1565,9 @@ let respEnCurso = null;
 function respSync(motivo) {
   if (!RESP.handle || RESP.estado === 'noSoportado') return Promise.resolve(false);
   if (respEnCurso) return respEnCurso;
-  respEnCurso = (async () => {
+  // Candado entre pestañas del mismo navegador: nunca escriben el archivo dos a la vez
+  const conCandado = fn => (navigator.locks && navigator.locks.request) ? navigator.locks.request('clarogo-archivo', fn) : fn();
+  respEnCurso = conCandado(async () => {
     try {
       if ((await RESP.handle.queryPermission({ mode: 'readwrite' })) !== 'granted') { RESP.estado = 'permiso'; respPinta(); return false; }
       const antes = JSON.stringify(CT);
@@ -1573,14 +1578,14 @@ function respSync(motivo) {
       await w.write(JSON.stringify({ app: 'ClaroGo!', version: 1, guardado: new Date().toISOString(), registros: CT }));
       await w.close();
       RESP.estado = 'ok'; RESP.ultimo = Date.now(); RESP.error = '';
-      if (cambio && ctListo && !$('#ct-body').contains(document.activeElement)) ctPinta();
+      if (cambio) ctRepintar();
       respPinta();
       return true;
     } catch (e) {
       RESP.estado = 'error'; RESP.error = (e && e.message) || String(e); respPinta();
       return false;
     } finally { respEnCurso = null; }
-  })();
+  });
   return respEnCurso;
 }
 async function respElegir(nuevo) {
@@ -1610,10 +1615,32 @@ function respPinta() {
     error: ['red', `⚠️ No se pudo guardar en <b>${nom}</b> (${esc(RESP.error)}). Tus datos siguen guardados en este navegador.`, B('ahora', 'Reintentar', 'red') + B('usar', 'Elegir otro archivo')]
   }[RESP.estado];
   el.className = 'note resp ' + v[0];
-  el.innerHTML = `<span>${v[1]}</span><span class="resp-b">${v[2]}</span>`;
+  const n = PEST.otras.size, otras = n ? `<br><small>🗂️ Hay ${n === 1 ? 'otra pestaña' : n + ' pestañas más'} de ClaroGo! abierta${n === 1 ? '' : 's'}. Los registros se combinan entre todas: ninguna borra lo que guardó otra.</small>` : '';
+  el.innerHTML = `<span>${v[1]}${otras}</span><span class="resp-b">${v[2]}</span>`;
+}
+const PEST = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), otras: new Map(), canal: null };
+function iniciarPestanas() {
+  // Otra pestaña del mismo navegador guardó: se combina aquí sin volver a escribir (evita ida y vuelta)
+  window.addEventListener('storage', e => {
+    if (e.key !== CT_KEY) return;
+    try { const otros = JSON.parse(e.newValue || '[]'); const antes = JSON.stringify(CT); CT = ctMezclar(CT, Array.isArray(otros) ? otros : []); if (JSON.stringify(CT) !== antes) ctRepintar(); } catch (x) {}
+  });
+  if (!('BroadcastChannel' in window)) return;
+  PEST.canal = new BroadcastChannel('clarogo-pestanas');
+  const enviar = t => { try { PEST.canal.postMessage({ t, id: PEST.id }); } catch (e) {} };
+  PEST.canal.onmessage = ({ data }) => {
+    if (!data || data.id === PEST.id) return;
+    if (data.t === 'adios') PEST.otras.delete(data.id); else PEST.otras.set(data.id, Date.now());
+    if (data.t === 'hola') enviar('aqui');
+    respPinta();
+  };
+  enviar('hola');
+  setInterval(() => { enviar('aqui'); const lim = Date.now() - 150000; let cambio = false; PEST.otras.forEach((v, k) => { if (v < lim) { PEST.otras.delete(k); cambio = true; } }); if (cambio) respPinta(); }, 60000);
+  window.addEventListener('pagehide', () => enviar('adios'));
 }
 async function iniciarRespaldo() {
   CT = ctLeerLocal();
+  iniciarPestanas();
   if (soportaArchivo) {
     RESP.handle = await idb('get');
     if (RESP.handle) {
@@ -1749,7 +1776,7 @@ function initControl() {
   };
   body.addEventListener('input', actualizar);
   body.addEventListener('change', actualizar);
-  body.addEventListener('focusout', () => setTimeout(() => { if (!body.contains(document.activeElement)) respSync('edición'); }, 50));
+  body.addEventListener('focusout', () => setTimeout(() => { if (!body.contains(document.activeElement)) { if (ctRepintarPend) ctRepintar(); respSync('edición'); } }, 50));
   body.addEventListener('click', e => {
     const b = e.target.closest('[data-ct]'); if (!b) return;
     const r = CT.find(x => x.id === b.closest('tr').dataset.id); if (!r) return;

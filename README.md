@@ -36,6 +36,14 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: varias pestañas abiertas sin perder registros
+
+- La copia local del navegador ahora también se combina antes de guardar. Una pestaña antigua ya no puede reemplazar lo que guardó otra más nueva.
+- Candado entre pestañas del mismo navegador: solo una escribe el archivo a la vez.
+- Las pestañas abiertas se actualizan solas cuando otra guarda, sin recargar.
+- La barra de guardado avisa cuántas otras pestañas de ClaroGo! están abiertas.
+- Criterio: no gana la pestaña, gana cada registro en su versión editada más reciente. Los borrados también llevan fecha de edición, así que una pestaña antigua no los revive.
+
 ### 13-11-2026: se quita Prospectos
 
 - Se quitó el acceso "Prospectos" (formulario de campaña digital) de Enlaces, a pedido de Eduardo.
