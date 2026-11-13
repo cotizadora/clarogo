@@ -300,8 +300,39 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .tile-b{top:5px;right:5px;font-size:.5rem;padding:2px 6px}
 @media (min-width:640px){.tiles{grid-template-columns:repeat(4,1fr)}}
 @media (max-height:520px) and (min-width:560px){.tiles{grid-template-columns:repeat(6,1fr)} .hero p,.tag{display:none}}
-/* Mi planilla de control */
-/* Estilo hoja de cálculo: una línea por registro, sin scroll horizontal */
+/* Celulares de pantalla baja: todo el menú sin scroll ni textos cortados */
+@media (max-width:640px) and (max-height:700px){
+  .tag{display:none}
+  .hero{padding:6px 0 8px}
+  .hero h1{font-size:clamp(1.7rem,6.5vh,2.6rem)}
+  .tiles{gap:6px}
+  .tile{gap:3px;padding:2px}
+  .tile-i{width:clamp(24px,5.2vh,44px);height:clamp(24px,5.2vh,44px)}
+  .tile-t{font-size:clamp(.62rem,1.7vh,.82rem);line-height:1.1}
+  .tile-b{font-size:.44rem;padding:1px 5px;top:3px;right:3px}
+}
+/* Horario ejecutivos: hoja de cálculo sin scroll horizontal */
+#hz-tabla{width:100%;table-layout:fixed;border-collapse:collapse;font-family:"Segoe UI",Calibri,Arial,sans-serif}
+#hz-tabla th,#hz-tabla td{border:1px solid #d4d7dc;height:28px;padding:0 5px;font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+#hz-tabla th{background:#f3f3f3;color:#333;font-weight:600;font-size:.72rem;line-height:1.15;padding:4px;border-bottom:2px solid #b9bcc2}
+#hz-tabla th small{font-weight:400;color:#6b6f76}
+#hz-tabla th.hoy{background:#fde2e2;color:var(--red-dk)}
+#hz-tabla .h-n{width:30px;background:#f3f3f3;color:#6b6f76;font-size:.7rem}
+#hz-tabla .h-nom{text-align:left;width:auto}
+#hz-tabla .h-dia{width:70px}
+#hz-tabla .h-hrs{width:62px;font-weight:700}
+#hz-tabla .h-est{width:150px;font-size:.74rem}
+#hz-tabla td.libre{background:#fff59a;color:#5a4d00;font-weight:600}
+#hz-tabla td.sin{background:#f6f7f9;color:#b3b7be}
+#hz-tabla td.raro{background:#fde2e2;color:var(--red-dk)}
+#hz-tabla td.ok{background:#d8f0dd;color:#1b6b33}
+#hz-tabla td.falta{background:#fff1cc;color:#8a5a00}
+#hz-tabla td.sobra{background:#fde2e2;color:var(--red-dk)}
+#hz-tabla td.inc{color:#8b93a7}
+#hz-tabla tbody tr:hover td{filter:brightness(.97)}
+@media (max-width:900px){#hz-tabla .h-dia{width:52px;font-size:.7rem}#hz-tabla .h-est{width:110px}}
+@media (max-width:640px){#hz-tabla .h-dia{display:none}#hz-tabla .h-est{width:120px}}
+/* Mi planilla de control *//* Estilo hoja de cálculo: una línea por registro, sin scroll horizontal */
 .ct-wrap{overflow:hidden;background:#fff;border:1px solid #c6c9cf;border-radius:4px;box-shadow:var(--shadow)}
 #ct-tabla{width:100%;table-layout:fixed;border-collapse:collapse;font-family:"Segoe UI",Calibri,Arial,sans-serif}
 #ct-tabla th,#ct-tabla td{border:1px solid #d4d7dc;padding:0;height:28px;font-size:.8rem;white-space:nowrap;overflow:hidden}
@@ -540,6 +571,29 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     <div class="empty" id="f-none" hidden>No hay preguntas que coincidan con la búsqueda.</div>
   </section>
 
+  <!-- HORARIO EJECUTIVOS -->
+  <section id="v-horario" class="view" hidden>
+    <h1 class="h">Horario Ejecutivos</h1>
+    <p class="sub">Turnos de la semana y horas trabajadas. La meta es de 42 horas semanales.</p>
+    <div class="note blue" style="margin-bottom:12px">📋 En la planilla de turnos selecciona desde la fila de los días y fechas hasta el último ejecutivo, copia con <b>Ctrl+C</b> y presiona <b>"Pegar horario"</b>. 🔒 Queda guardado solo en este navegador y el RUT no se guarda. <span id="hz-info"></span></div>
+    <div class="card filters">
+      <div class="f-actions">
+        <button class="btn red" id="hz-pegar">📋 Pegar horario</button>
+        <button class="btn sm" id="hz-borrar">Borrar horario</button>
+      </div>
+      <select id="hz-semana"></select>
+      <input type="search" id="hz-q" placeholder="Buscar ejecutivo" autocomplete="off">
+      <label class="chk" title="Horas que se descuentan por cada día trabajado">Colación por día <input type="number" id="hz-colacion" min="0" max="3" step="0.5" style="width:64px;margin-left:6px"> h</label>
+    </div>
+    <div class="chips" id="hz-resumen"></div>
+    <div class="ct-wrap"><table id="hz-tabla">
+      <thead id="hz-head"></thead>
+      <tbody id="hz-body"></tbody>
+    </table></div>
+    <div class="empty" id="hz-vacio">Todavía no hay horario cargado. Copia los turnos desde la planilla y presiona "Pegar horario".</div>
+    <p class="sub" style="margin-top:10px;font-size:.78rem">Horas trabajadas = duración del turno menos la colación de cada día trabajado. Pasa el mouse sobre un turno para ver sus horas.</p>
+  </section>
+
   <!-- MI PLANILLA DE CONTROL -->
   <section id="v-control" class="view" hidden>
     <h1 class="h">Mi Planilla de Control</h1>
@@ -635,6 +689,15 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <img id="g-img" alt="">
   <div class="g-bar"><button class="g-nav" id="g-prev" aria-label="Anterior">‹</button><b id="g-name"></b><button class="g-nav" id="g-next" aria-label="Siguiente">›</button></div>
   <div class="g-act"><button class="btn" id="g-copy">Copiar imagen</button><button class="btn" id="g-dl">Descargar</button><button class="btn dark" data-close>Cerrar</button></div>
+</dialog>
+
+<dialog id="dlg-horario">
+  <div class="d-head"><div><h2>Pegar horario</h2><p>Este navegador no permitió leer el portapapeles</p></div><button class="d-x" data-close>✕</button></div>
+  <div class="d-body">
+    <p style="font-size:.86rem">Haz clic en el cuadro, presiona <b>Ctrl+V</b> y luego "Cargar horario".</p>
+    <textarea id="hz-texto" rows="7" placeholder="Pega aquí los turnos copiados desde la planilla"></textarea>
+    <div class="d-foot"><button class="btn" data-close>Cancelar</button><button class="btn red" id="hz-procesar">Cargar horario</button></div>
+  </div>
 </dialog>
 
 <dialog id="dlg-pegar">
@@ -740,6 +803,7 @@ const MENU = [
  {v:'enlaces',t:'Enlaces',i:'<path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>'},
  {v:'galeria',t:'Galería',i:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>'},
  {v:'control',t:'Mi Planilla',badge:'Nuevo',i:'<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/>'},
+ {v:'horario',t:'Horario Ejecutivos',badge:'Nuevo',i:'<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/>'},
  {v:'faq',t:'Preguntas y Respuestas',badge:'Nuevo',i:'<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>'},
  {m:'dlg-exc',t:'Excepciones de Boletas',i:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/>'},
  {v:'tutoriales',t:'Tutoriales',badge:'Nuevo',i:'<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>'},
@@ -825,8 +889,8 @@ const abrir = id => { const d = $('#' + id); if (!d.open) d.showModal(); };
 /* ════════════════════════════════════════════════════════════════
    NAVEGACIÓN
    ════════════════════════════════════════════════════════════════ */
-const VIEWS = ['inicio', 'stock', 'oferta', 'png', 'script', 'control', 'venta', 'enlaces', 'galeria', 'faq', 'tutoriales'];
-const INIT = { control: initControl, faq: initFaq, stock: initStock, oferta: initOferta, png: initPng, script: initScript, venta: initVenta, enlaces: initEnlaces, galeria: initGaleria, tutoriales: initTutoriales };
+const VIEWS = ['inicio', 'stock', 'oferta', 'png', 'script', 'control', 'horario', 'venta', 'enlaces', 'galeria', 'faq', 'tutoriales'];
+const INIT = { horario: initHorario, control: initControl, faq: initFaq, stock: initStock, oferta: initOferta, png: initPng, script: initScript, venta: initVenta, enlaces: initEnlaces, galeria: initGaleria, tutoriales: initTutoriales };
 const listo = {};
 function route() {
   let v = location.hash.slice(1) || 'inicio';
@@ -1787,6 +1851,126 @@ function initControl() {
   });
   respPinta();
   ctPinta();
+}
+
+/* ════════════════════════════════════════════════════════════════
+   HORARIO EJECUTIVOS
+   Se pega desde la planilla de turnos. Se guarda solo en este navegador.
+   El RUT no se guarda. Horas = duración del turno menos la colación diaria.
+   ════════════════════════════════════════════════════════════════ */
+const HZ_KEY = 'clarogo_horario_v1';
+const HZ_META = 42;
+const HZ_DIAS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+let HZ = { ejecutivos: [], colacion: 1 }, hzSemana = '';
+const hzLeer = () => { try { const v = JSON.parse(localStorage.getItem(HZ_KEY) || 'null'); if (v && Array.isArray(v.ejecutivos)) HZ = Object.assign({ colacion: 1 }, v); } catch (e) {} };
+const hzGuardar = () => { try { localStorage.setItem(HZ_KEY, JSON.stringify(HZ)); } catch (e) { toast('No se pudo guardar el horario en este navegador'); } };
+const isoDe = d => { const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
+const fechaDe = iso => { const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d); };
+const lunesDe = iso => { const d = fechaDe(iso), dia = (d.getDay() + 6) % 7; d.setDate(d.getDate() - dia); return isoDe(d); };
+const masDias = (iso, n) => { const d = fechaDe(iso); d.setDate(d.getDate() + n); return isoDe(d); };
+const ddmm = iso => iso.slice(8, 10) + '-' + iso.slice(5, 7);
+
+// Lee un turno: "10:00 a 20:00" → { tipo:'turno', horas }, "Libre" → libre, vacío → sin dato
+function hzTurno(txt) {
+  const s = String(txt || '').trim();
+  if (!s) return { tipo: 'vacio', horas: 0 };
+  if (/^libre/i.test(s)) return { tipo: 'libre', horas: 0 };
+  const m = s.match(/(\d{1,2})[:.](\d{2})\s*(?:a|-|–|hasta)\s*(\d{1,2})[:.](\d{2})/i);
+  if (!m) return { tipo: 'otro', horas: 0 };
+  let ini = +m[1] * 60 + +m[2], fin = +m[3] * 60 + +m[4]; if (fin <= ini) fin += 1440;
+  const bruto = (fin - ini) / 60;
+  return { tipo: 'turno', bruto, horas: Math.max(0, bruto - (+HZ.colacion || 0)), ini: `${m[1].padStart(2, '0')}:${m[2]}`, fin: `${m[3].padStart(2, '0')}:${m[4]}` };
+}
+
+// Lee lo copiado desde la planilla: busca la fila de fechas (DD-MM-AAAA) y luego una fila por ejecutivo
+function hzLeerPegado(txt) {
+  const filas = txt.replace(/\r/g, '').split('\n').map(l => l.split('\t'));
+  const rFecha = /^(\d{1,2})-(\d{1,2})-(\d{4})$/;
+  const iFila = filas.findIndex(f => f.filter(c => rFecha.test(c.trim())).length >= 3);
+  if (iFila < 0) return { error: 'No encontré la fila de fechas. Copia también los encabezados con los días y las fechas.' };
+  const cols = {};
+  filas[iFila].forEach((c, i) => { const m = c.trim().match(rFecha); if (m) cols[i] = `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`; });
+  const primeraFecha = Math.min(...Object.keys(cols).map(Number));
+  const esRut = c => /^\d{7,8}-?[\dkK]$/.test(c.replace(/\./g, '').trim());
+  const ejecutivos = [];
+  filas.slice(iFila + 1).forEach(f => {
+    const nombre = (f.slice(0, primeraFecha).find(c => /[A-Za-zÁÉÍÓÚÑáéíóúñ]{3,}/.test(c) && !esRut(c)) || '').trim().replace(/\s+/g, ' ');
+    if (!nombre) return;
+    const turnos = {}; Object.entries(cols).forEach(([i, iso]) => { turnos[iso] = (f[i] || '').trim(); });
+    ejecutivos.push({ nombre, turnos });
+  });
+  if (!ejecutivos.length) return { error: 'No encontré ejecutivos debajo de la fila de fechas.' };
+  return { ejecutivos, dias: Object.values(cols) };
+}
+
+// Combina: el nuevo pegado reemplaza solo los días que trae, por nombre
+function hzCombinar(nuevo) {
+  const clave = n => n.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  nuevo.ejecutivos.forEach(n => {
+    const x = HZ.ejecutivos.find(e => clave(e.nombre) === clave(n.nombre));
+    if (x) Object.assign(x.turnos, n.turnos); else HZ.ejecutivos.push(n);
+  });
+  HZ.cargado = new Date().toISOString();
+  hzGuardar();
+}
+
+function hzSemanas() {
+  const s = new Set(); HZ.ejecutivos.forEach(e => Object.keys(e.turnos).forEach(iso => s.add(lunesDe(iso))));
+  return [...s].sort();
+}
+
+function hzPinta() {
+  const semanas = hzSemanas(), sel = $('#hz-semana'), hoyLun = lunesDe(isoDe(new Date()));
+  if (!semanas.includes(hzSemana)) hzSemana = semanas.includes(hoyLun) ? hoyLun : (semanas.find(s => s > hoyLun) || semanas[semanas.length - 1] || '');
+  sel.innerHTML = semanas.map(s => `<option value="${s}"${s === hzSemana ? ' selected' : ''}>${s === hoyLun ? 'Esta semana · ' : ''}${ddmm(s)} al ${ddmm(masDias(s, 6))}</option>`).join('') || '<option value="">Sin horario cargado</option>';
+  $('#hz-colacion').value = HZ.colacion;
+  const dias = hzSemana ? [0, 1, 2, 3, 4, 5, 6].map(i => masDias(hzSemana, i)) : [];
+  $('#hz-head').innerHTML = `<tr><th class="h-n"></th><th class="h-nom">Ejecutivo</th>${dias.map((d, i) => `<th class="h-dia${d === isoDe(new Date()) ? ' hoy' : ''}">${HZ_DIAS[i]}<br><small>${ddmm(d)}</small></th>`).join('')}<th class="h-hrs">Horas</th><th class="h-est">Estado</th></tr>`;
+  const q = $('#hz-q').value.trim().toLowerCase();
+  const lista = HZ.ejecutivos.filter(e => !q || e.nombre.toLowerCase().includes(q));
+  const cuenta = { ok: 0, falta: 0, sobra: 0, inc: 0 };
+  $('#hz-body').innerHTML = lista.map((e, n) => {
+    let horas = 0, incompleta = 0, raro = 0;
+    const celdas = dias.map(d => {
+      const tieneDia = Object.prototype.hasOwnProperty.call(e.turnos, d), t = hzTurno(e.turnos[d]);
+      if (!tieneDia || t.tipo === 'vacio') { incompleta++; return `<td class="h-dia sin" title="Sin dato">—</td>`; }
+      if (t.tipo === 'libre') return `<td class="h-dia libre">Libre</td>`;
+      if (t.tipo === 'otro') { raro++; return `<td class="h-dia raro" title="${esc(e.turnos[d])}">${esc(e.turnos[d])}</td>`; }
+      horas += t.horas;
+      return `<td class="h-dia" title="${t.ini} a ${t.fin} · ${String(t.horas).replace('.', ',')} h trabajadas">${t.ini.replace(':00', '')}–${t.fin.replace(':00', '')}</td>`;
+    }).join('');
+    const h = Math.round(horas * 100) / 100, dif = Math.round((h - HZ_META) * 100) / 100, hTxt = String(h).replace('.', ',');
+    let est, cls;
+    if (incompleta || raro) { est = incompleta ? `Incompleta (${incompleta} ${incompleta === 1 ? 'día' : 'días'} sin dato)` : 'Revisar turno'; cls = 'inc'; cuenta.inc++; }
+    else if (dif === 0) { est = '✓ 42 h'; cls = 'ok'; cuenta.ok++; }
+    else if (dif < 0) { est = `Faltan ${String(-dif).replace('.', ',')} h`; cls = 'falta'; cuenta.falta++; }
+    else { est = `Sobran ${String(dif).replace('.', ',')} h`; cls = 'sobra'; cuenta.sobra++; }
+    return `<tr><td class="h-n">${n + 1}</td><td class="h-nom" title="${esc(e.nombre)}">${esc(e.nombre)}</td>${celdas}<td class="h-hrs ${cls}">${hTxt} h</td><td class="h-est ${cls}">${est}</td></tr>`;
+  }).join('');
+  $('#hz-vacio').hidden = HZ.ejecutivos.length > 0;
+  $('#hz-tabla').hidden = !HZ.ejecutivos.length;
+  $('#hz-resumen').innerHTML = HZ.ejecutivos.length ? `<span class="chip on">Ejecutivos<b>${lista.length}</b></span><span class="chip">✓ Cumplen 42 h<b>${cuenta.ok}</b></span><span class="chip">Faltan horas<b>${cuenta.falta}</b></span><span class="chip">Sobran horas<b>${cuenta.sobra}</b></span><span class="chip">Incompletas<b>${cuenta.inc}</b></span>` : '';
+  $('#hz-info').textContent = HZ.cargado ? `Horario cargado el ${new Date(HZ.cargado).toLocaleString('es-CL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}.` : '';
+}
+
+function initHorario() {
+  hzLeer();
+  const procesar = txt => {
+    const r = hzLeerPegado(txt || '');
+    if (r.error) return toast(r.error);
+    hzCombinar(r); hzSemana = ''; hzPinta();
+    toast(`Horario cargado: ${r.ejecutivos.length} ejecutivos, ${r.dias.length} días`);
+  };
+  $('#hz-pegar').onclick = async () => {
+    try { const txt = await navigator.clipboard.readText(); if (!txt.trim()) throw new Error('vacío'); procesar(txt); }
+    catch (e) { $('#hz-texto').value = ''; abrir('dlg-horario'); setTimeout(() => $('#hz-texto').focus(), 50); }
+  };
+  $('#hz-procesar').onclick = () => { const txt = $('#hz-texto').value; $('#dlg-horario').close(); procesar(txt); };
+  $('#hz-semana').addEventListener('change', e => { hzSemana = e.target.value; hzPinta(); });
+  $('#hz-colacion').addEventListener('change', e => { const v = parseFloat(String(e.target.value).replace(',', '.')); HZ.colacion = isNaN(v) || v < 0 ? 1 : v; hzGuardar(); hzPinta(); });
+  $('#hz-q').addEventListener('input', hzPinta);
+  $('#hz-borrar').onclick = () => { if (HZ.ejecutivos.length && confirm('¿Borrar el horario cargado en este navegador? Lo puedes volver a pegar desde la planilla.')) { HZ.ejecutivos = []; HZ.cargado = ''; hzGuardar(); hzPinta(); } };
+  hzPinta();
 }
 
 /* ════════════════════════════════════════════════════════════════

@@ -36,6 +36,14 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: Horario Ejecutivos
+
+- Nueva sección "Horario Ejecutivos": se copian los turnos desde la planilla (fila de días y fechas más las filas de ejecutivos) y se pegan con "Pegar horario".
+- Tabla tipo Excel por semana (lunes a domingo) con los turnos, horas trabajadas y estado contra la meta de 42 horas: cumple, faltan horas, sobran horas o semana incompleta.
+- Cálculo: duración de cada turno menos 1 hora de colación por día trabajado (ajustable). Con ese criterio las semanas completas de la planilla dan 42 horas.
+- Los datos quedan solo en el navegador. El RUT no se guarda y ningún nombre queda en el código publicado.
+- El menú de inicio se ajustó para que las 13 secciones quepan sin scroll en celulares chicos.
+
 ### 13-11-2026: varias pestañas abiertas sin perder registros
 
 - La copia local del navegador ahora también se combina antes de guardar. Una pestaña antigua ya no puede reemplazar lo que guardó otra más nueva.
