@@ -36,11 +36,16 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: horario precargado
+
+- Horario Ejecutivos trae precargado el horario de la planilla del 13-11-2026 (12-11 al 29-11) con los 15 ejecutivos, transcrito de la imagen enviada por Eduardo, quien autorizó publicar los nombres. Los RUT no se incluyeron.
+- En las semanas completas (16 al 22 y 23 al 29) los 15 ejecutivos dan 42 horas. Esta semana (9 al 15) es parcial porque la planilla parte el jueves 12.
+- Pegar un horario nuevo reemplaza los datos precargados.
+
 ### 13-11-2026: horario con celdas vacías
 
 - Horario Ejecutivos: una celda vacía cuenta como día sin turno y ya no marca la semana como incompleta.
 - Si la planilla no trae algunos días de la semana (por ejemplo, esta semana parte el jueves 12), se avisa arriba de la tabla y el estado dice "Parcial".
-- Pendiente: precargar el horario con los nombres de los ejecutivos. El control de seguridad de la sesión bloqueó guardar esos nombres en el código del sitio público.
 
 ### 13-11-2026: Horario Ejecutivos
 

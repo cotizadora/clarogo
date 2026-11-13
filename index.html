@@ -1862,8 +1862,35 @@ function initControl() {
 const HZ_KEY = 'clarogo_horario_v1';
 const HZ_META = 42;
 const HZ_DIAS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+// Horario base: transcrito de la planilla de turnos enviada por Eduardo el 13-11-2026 (12-11 al 29-11).
+// Códigos: '11-20' = 11:00 a 20:00, '10-19:30' = 10:00 a 19:30, 'L' = Libre, '' = sin turno. Pegar un horario nuevo reemplaza estos datos.
+const HZ_BASE_FECHA = '2026-11-13T17:00:00';
+const HZ_BASE_DIAS = ['2026-11-12', '2026-11-13', '2026-11-14', '2026-11-15', '2026-11-16', '2026-11-17', '2026-11-18', '2026-11-19', '2026-11-20', '2026-11-21', '2026-11-22', '2026-11-23', '2026-11-24', '2026-11-25', '2026-11-26', '2026-11-27', '2026-11-28', '2026-11-29'];
+const HZ_A = ['10-20', '10-20', '11-20', '11-20', '11-20', 'L', 'L'];          // semana tipo A: 42 h
+const HZ_B = ['10-18', '10-18', '10-18', '11-20', '11-20', '10-16', 'L'];      // semana tipo B: 42 h
+const HZ_BASE = [
+  ['CONSTANZA VALENTINA FUENTES YEVENES', '11-20', '11-20', '10-16', 'L', ...HZ_A, ...HZ_A],
+  ['VICTOR MIGUEL GONZALEZ SALGADO', '11-20', '11-20', 'L', 'L', ...HZ_A, ...HZ_A],
+  ['JENNIFER KAREN MORALES OLIVARES', '11-20', '11-20', '10-16', 'L', ...HZ_A, ...HZ_A],
+  ['CRISTOPHER ZYON BONFORT BARRIENTOS', '11-20', '11-20', 'L', 'L', '12-20', '12-20', '12-20', '11-20', '11-20', '10-16', 'L', ...HZ_A],
+  ['CAROLINA ANDRES GUZMAN CARO', '11-20', '11-20', 'L', 'L', ...HZ_A, ...HZ_A],
+  ['GENESIS GOMEZ BRUNA', '11-20', '11-20', 'L', 'L', ...HZ_B, ...HZ_A],
+  ['NATALIA LISSETTE MORALES MARTINEZ', '11-20', '11-20', 'L', 'L', ...HZ_A, ...HZ_A],
+  ['JULIA MAGLEN URIBE POQUET', '10-19:30', '10-19', 'L', 'L', '10-19:30', '10-19:30', '10-19:30', '10-19:30', '10-19', 'L', 'L', '10-19:30', '10-19:30', '10-19:30', '10-19:30', '10-19', 'L', 'L'],
+  ['CLAUDIA ALEXANDRA HIDALGO MONTECINO', '10-20', '11-20', 'L', 'L', ...HZ_B, '10-20', '10-19', '10-19', '10-20', '11-20', 'L', 'L'],
+  ['AGUEDA KARINA CARDENAS CONSTANCIO', '11-20', '11-20', 'L', 'L', ...HZ_A, ...HZ_B],
+  ['CARLA DANIELA GOMEZ LAZON', '11-20', '11-20', 'L', 'L', ...HZ_A, ...HZ_B],
+  ['EDUARDO RODRIGO PEREZ MOYA', '', '', '', '', '10-20', '10-20', '11-20', '11-20', '11-20', '', '', '10-18', '10-18', '10-18', '11-20', '11-20', '10-16', ''],
+  ['SANDRA ELIZABETH GARAVITO LUENGO', '', '', '', '', '10-20', '10-20', '11-20', '11-20', '11-20', '', '', '10-18', '10-18', '10-18', '11-20', '11-20', '10-16', ''],
+  ['MARIA ELIZABETH MUÑOZ MIRANDA', '', '', '', '', '10-18', '10-18', '10-18', '11-20', '11-20', '10-16', '', ...HZ_A],
+  ['ANDREA PAZ MUÑOZ IVAÑEZ', '', '', '', '', '10-18', '10-18', '10-18', '11-20', '11-20', '10-16', '', '10-20', '10-20', '11-20', '11-20', '11-20', 'L', '']
+];
+function hzExpandirBase() {
+  const largo = c => { if (c === 'L') return 'Libre'; if (!c) return ''; const [a, b] = c.split('-'); const h = x => x.includes(':') ? x.padStart(5, '0') : x.padStart(2, '0') + ':00'; return `${h(a)} a ${h(b)}`; };
+  return HZ_BASE.map(([nombre, ...t]) => ({ nombre, turnos: Object.fromEntries(HZ_BASE_DIAS.map((d, i) => [d, largo(t[i] || '')])) }));
+}
 let HZ = { ejecutivos: [], colacion: 1 }, hzSemana = '';
-const hzLeer = () => { try { const v = JSON.parse(localStorage.getItem(HZ_KEY) || 'null'); if (v && Array.isArray(v.ejecutivos)) HZ = Object.assign({ colacion: 1 }, v); } catch (e) {} };
+const hzLeer = () => { try { const v = JSON.parse(localStorage.getItem(HZ_KEY) || 'null'); if (v && Array.isArray(v.ejecutivos) && v.ejecutivos.length) HZ = Object.assign({ colacion: 1 }, v); } catch (e) {} if (!HZ.ejecutivos.length) { HZ.ejecutivos = hzExpandirBase(); HZ.cargado = HZ_BASE_FECHA; HZ.base = true; } };
 const hzGuardar = () => { try { localStorage.setItem(HZ_KEY, JSON.stringify(HZ)); } catch (e) { toast('No se pudo guardar el horario en este navegador'); } };
 const isoDe = d => { const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
 const fechaDe = iso => { const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d); };
@@ -1911,7 +1938,7 @@ function hzCombinar(nuevo) {
     const x = HZ.ejecutivos.find(e => clave(e.nombre) === clave(n.nombre));
     if (x) Object.assign(x.turnos, n.turnos); else HZ.ejecutivos.push(n);
   });
-  HZ.cargado = new Date().toISOString();
+  HZ.cargado = new Date().toISOString(); HZ.base = false;
   hzGuardar();
 }
 
@@ -1957,7 +1984,7 @@ function hzPinta() {
   const faltan = dias.filter(d => !HZ.ejecutivos.some(e => Object.prototype.hasOwnProperty.call(e.turnos, d)));
   $('#hz-aviso').hidden = !HZ.ejecutivos.length || !faltan.length || faltan.length === 7;
   $('#hz-aviso').textContent = `La planilla no trae ` + faltan.map(d => HZ_DIAS[dias.indexOf(d)] + ' ' + ddmm(d)).join(', ') + `: las horas de esta semana son solo de los días cargados.`;
-  $('#hz-info').textContent = HZ.cargado ? `Horario cargado el ${new Date(HZ.cargado).toLocaleString('es-CL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}.` : '';
+  $('#hz-info').textContent = HZ.base ? 'Horario de la planilla del 13-11-2026 (12-11 al 29-11). Para actualizarlo, pega el horario nuevo.' : HZ.cargado ? `Horario cargado el ${new Date(HZ.cargado).toLocaleString('es-CL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}.` : '';
 }
 
 function initHorario() {
