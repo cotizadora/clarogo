@@ -36,6 +36,21 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: precios Planes 5G, adicionales, calculadora y enlaces nuevos
+
+Fuente: imágenes "Planes 5G Claro" y "Planes Adicionales Claro" enviadas por Eduardo el 13-11-2026.
+
+| Plan | Meses 1 a 6 | Desde el mes 7 | Línea adicional |
+|---|---|---|---|
+| Plan 500 | $5.994 | $9.990 | $4.990 por 6 meses, después $8.990 |
+| Plan 800 | $7.923 | $12.990 | $6.990 por siempre |
+| Plan 1000 | $16.990 | $17.990 | $4.990 por 6 meses, después $6.990 |
+
+- Los planes con Netflix siguen con el cargo fijo del documento Producto Móvil ($17.990, $20.990 y $25.990), porque las imágenes no los incluyen.
+- Nueva calculadora de líneas en Oferta Personas: cada línea puede ser un plan base distinto o una línea adicional. Muestra el total de los meses 1 a 6 y desde el mes 7, avisa si una adicional no tiene su plan base, y copia la cotización como imagen o mensaje.
+- Se agregaron 5G y llamadas ilimitadas a los atributos de cada plan.
+- Enlaces: Genesys pasa a `login.mypurecloud.com` (org clarochilepersonas) y Front FVC pasa a `fvc-dev.clarovtrcloud.com`, según indicó Eduardo.
+
 ### 13-11-2026: Oferta Personas más completa
 
 Fuente indicada por Eduardo: los documentos adjuntos (`PRODUCTO MÓVIL 14082026.pdf` y `producto-movil.md`). Los valores de la página de Claro no se usan, porque difieren de los documentos.

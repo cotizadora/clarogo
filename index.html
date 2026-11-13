@@ -296,6 +296,11 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .tile-b{top:5px;right:5px;font-size:.5rem;padding:2px 6px}
 @media (min-width:640px){.tiles{grid-template-columns:repeat(4,1fr)}}
 @media (max-height:520px) and (min-width:560px){.tiles{grid-template-columns:repeat(6,1fr)} .hero p,.tag{display:none}}
+/* Calculadora de líneas */
+.calc{padding:14px;max-width:720px}
+.cl-row{display:grid;grid-template-columns:auto 1fr auto;gap:6px 8px;align-items:center;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #eef0f3}
+.cl-row b{font-size:.8rem;white-space:nowrap}
+.cl-row small{grid-column:1/-1;color:var(--muted);font-size:.78rem}
 /* Portada clara en PC */
 @media (min-width:900px){
   body[data-view="inicio"]{background:var(--bg)}
@@ -375,9 +380,20 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     <h1 class="h">Oferta Personas</h1>
     <p class="sub">Planes Libres vigentes. Captura la tarjeta como imagen o copia el mensaje para WhatsApp.</p>
     <div class="sec-t" style="margin-top:0">Planes Libres <em>vigentes</em></div>
-    <div class="note green" style="margin:6px 0 12px">Fuente: <b id="ov-fuente"></b>. <span id="ov-vig"></span> Para descuentos o promociones revisa el Plan Comercial vigente.</div>
+    <div class="note green" style="margin:6px 0 12px">Fuente: <b id="ov-fuente"></b>. <span id="ov-vig"></span></div>
     <div class="plans" id="ov-grid"></div>
-    <p style="margin-top:16px"><button class="btn dark" id="o-todos">📸 Capturar los 3 planes en una imagen</button></p>  </section>
+    <p style="margin-top:16px"><button class="btn dark" id="o-todos">📸 Capturar los 3 planes en una imagen</button></p>
+
+    <div class="sec-t" style="margin-top:28px">Calculadora de <em>líneas</em></div>
+    <p class="sub">Arma la cotización línea por línea. Puedes mezclar planes distintos y sumar líneas adicionales al plan base.</p>
+    <div class="card calc">
+      <div id="cl-rows"></div>
+      <button class="btn sm" id="cl-add">+ Agregar línea</button>
+      <div id="cl-warn"></div>
+      <div id="cl-tot"></div>
+      <div class="plan-btns" style="padding:0"><button class="btn" id="cl-cap">📸 Capturar</button><button class="btn red" id="cl-msg">📋 Copiar mensaje</button></div>
+    </div>
+  </section>
 
   <!-- OFERTA PNG -->
   <section id="v-png" class="view" hidden>
@@ -584,19 +600,28 @@ const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 // Excepciones de Boletas
 const EXCEPCIONES = [['1','Hasta $18.000'],['2','Hasta $27.000'],['3','Hasta $36.000'],['4','Hasta $45.000'],['5','Hasta $54.000'],['6 o más','Hasta $63.000']];
 
-// Planes Libres vigentes. Cargo fijo mensual normal, sin descuentos.
-// Fuente: PRODUCTO MÓVIL 14082026.pdf y producto-movil.md (Entrenamiento Técnico Comercial).
-const FUENTE_PLANES = 'Producto Móvil 14-08-2026, Entrenamiento Técnico Comercial';
-const VIGENCIA_PLANES = 'Cargo fijo normal, sin descuentos. Sujeto a evaluación comercial.';
-const PV_MIN = 'Libres a 300 números', PV_SMS = '500 SMS a todo destino';
+// Planes Libres vigentes.
+// Precios: imágenes "Planes 5G Claro" y "Planes Adicionales Claro" enviadas por Eduardo el 13-11-2026.
+// Atributos (roaming, SMS, LDI, Claro Drive, uso justo): PRODUCTO MÓVIL 14082026.pdf.
+// promo = valor de los primeros PROMO_MESES meses; price = valor fijo desde el mes 7.
+const FUENTE_PLANES = 'Planes 5G y Planes Adicionales Claro (13-11-2026) y Producto Móvil 14-08-2026';
+const VIGENCIA_PLANES = 'Sujeto a evaluación comercial.';
+const PROMO_MESES = 6;
+const PV_MIN = 'Ilimitadas, libres a 300 números', PV_SMS = '500 SMS a todo destino';
 const PLANES_VIGENTES = [
- {id:'v500',title:'Plan 500',data:'500 GB a alta velocidad',roaming:'40 Min + 2 GB + 40 SMS',ldi:'40 minutos',price:9990,puj:'Al usar la cuota baja a 256 kbps. Sobre 600 GB baja a 64 kbps.'},
- {id:'v800',title:'Plan 800',data:'800 GB a alta velocidad',roaming:'60 Min + 3 GB + 60 SMS',ldi:'60 minutos',price:12990,puj:'Al usar la cuota baja a 256 kbps. Sobre 900 GB baja a 64 kbps.'},
- {id:'v1000',title:'Plan 1000',data:'1000 GB de alta velocidad',roaming:'100 Min + 5 GB + 100 SMS',ldi:'100 minutos',price:17990,puj:'Al usar la cuota baja a 256 kbps hasta el siguiente ciclo.'},
- {id:'v500n',title:'Plan 500 + Netflix',data:'500 GB a alta velocidad',roaming:'40 Min + 2 GB + 40 SMS',ldi:'40 minutos',price:17990,netflix:true,puj:'Al usar la cuota baja a 256 kbps. Sobre 600 GB baja a 64 kbps.'},
- {id:'v800n',title:'Plan 800 + Netflix',data:'800 GB a alta velocidad',roaming:'60 Min + 3 GB + 60 SMS',ldi:'60 minutos',price:20990,netflix:true,puj:'Al usar la cuota baja a 256 kbps. Sobre 900 GB baja a 64 kbps.'},
- {id:'v1000n',title:'Plan 1000 + Netflix',data:'1000 GB libres',roaming:'100 Min + 5 GB + 100 SMS',ldi:'100 minutos',price:25990,netflix:true,puj:'Al usar la cuota baja a 256 kbps hasta el siguiente ciclo.'}
+ {id:'v500',gb:500,title:'Plan 500',data:'500 GB a alta velocidad',roaming:'40 Min + 2 GB + 40 SMS',ldi:'40 minutos',promo:5994,price:9990,puj:'Al usar la cuota baja a 256 kbps. Sobre 600 GB baja a 64 kbps.'},
+ {id:'v800',gb:800,title:'Plan 800',sello:'Más vendido',data:'800 GB a alta velocidad',roaming:'60 Min + 3 GB + 60 SMS',ldi:'60 minutos',promo:7923,price:12990,puj:'Al usar la cuota baja a 256 kbps. Sobre 900 GB baja a 64 kbps.'},
+ {id:'v1000',gb:1000,title:'Plan 1000',data:'1000 GB de alta velocidad',roaming:'100 Min + 5 GB + 100 SMS',ldi:'100 minutos',promo:16990,price:17990,puj:'Al usar la cuota baja a 256 kbps hasta el siguiente ciclo.'},
+ {id:'v500n',gb:500,title:'Plan 500 + Netflix',data:'500 GB a alta velocidad',roaming:'40 Min + 2 GB + 40 SMS',ldi:'40 minutos',price:17990,netflix:true,puj:'Al usar la cuota baja a 256 kbps. Sobre 600 GB baja a 64 kbps.'},
+ {id:'v800n',gb:800,title:'Plan 800 + Netflix',data:'800 GB a alta velocidad',roaming:'60 Min + 3 GB + 60 SMS',ldi:'60 minutos',price:20990,netflix:true,puj:'Al usar la cuota baja a 256 kbps. Sobre 900 GB baja a 64 kbps.'},
+ {id:'v1000n',gb:1000,title:'Plan 1000 + Netflix',data:'1000 GB libres',roaming:'100 Min + 5 GB + 100 SMS',ldi:'100 minutos',price:25990,netflix:true,puj:'Al usar la cuota baja a 256 kbps hasta el siguiente ciclo.'}
 ];
+// Líneas adicionales según el plan base (promo por PROMO_MESES meses; meses 0 = valor fijo "por siempre")
+const ADICIONALES = {
+ 500: {promo:4990, meses:6, luego:8990},
+ 800: {promo:6990, meses:0, luego:6990},
+ 1000:{promo:4990, meses:6, luego:6990}
+};
 // Íconos de redes sociales (trazos SVG de 16x16)
 const ICONOS = {
  wa: 'M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z',
@@ -606,7 +631,6 @@ const ICONOS = {
  x: 'M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z'
 };
 const REDES = [['wa','WhatsApp'],['ig','Instagram'],['fb','Facebook'],['tt','TikTok'],['x','X']];
-
 // Oferta PNG (PYME). Valores mensuales por línea, sin IVA.
 // Fuente: imagen "Oferta Móvil PYME, RUT mayor a 50 millones" enviada por Eduardo el 12-11-2026.
 const IVA = 0.19;
@@ -628,8 +652,8 @@ const SCRIPT_NOTAS = {
    ════════════════════════════════════════════════════════════════ */
 const ENLACES = [
  {t:'Canales Críticos',two:true,items:[
-  ['🎧','Genesys','Llamadas salientes y omnicanalidad','https://login.sae1.pure.cloud/?rid=fmyewhEdV0_vPZjkIdnB5AjR9OKFPlbcdEDDTZQYAoc#/authenticate-adv/org/clarochilesa'],
-  ['🚀','Front FVC','Evaluaciones y cierre de ventas','https://fvc-prod.clarovtrcloud.com/#/login']]},
+  ['🎧','Genesys','Llamadas salientes y omnicanalidad','https://login.mypurecloud.com/?rid=RfxEnXqBw64-d10nnWwT9ZW4z1e1KGhk3LTKrBF5W0E#/authenticate-adv/org/clarochilepersonas'],
+  ['🚀','Front FVC','Evaluaciones y cierre de ventas','https://fvc-dev.clarovtrcloud.com/#/login']]},
  {t:'Gestión Operativa',items:[
   ['👤','Buk','RRHH y Liquidación','https://cyg-phoenix.buk.cl/static_pages/portal'],
   ['📝','Ingreso Ventas','Formulario Oficial',FORM_VENTA],
@@ -1015,30 +1039,83 @@ const T = (text, size, w, color, extra) => Object.assign({ t: 'txt', text, size,
    OFERTA PERSONAS
    ════════════════════════════════════════════════════════════════ */
 // Planes vigentes
+const vPrecio = p => p.promo ? `${clp(p.promo)} por ${PROMO_MESES} meses, luego ${clp(p.price)}` : `${clp(p.price)} mensual`;
+const aTxt = gb => { const a = ADICIONALES[gb]; return a.meses ? `${clp(a.promo)} por ${a.meses} meses, luego ${clp(a.luego)}` : `${clp(a.promo)} por siempre`; };
 const vAtrib = p => [
-  ['📶', 'Internet', p.data + ' · Gigas Libres'], ['📞', 'Minutos', PV_MIN], ['💬', 'Mensajes', PV_SMS],
+  ['📶', 'Internet', p.data + ' · Gigas Libres · 5G'], ['📞', 'Llamadas', PV_MIN], ['💬', 'Mensajes', PV_SMS],
   ['✈️', 'Roaming', p.roaming + ' · 51 países, 365 días'], ['🌎', 'Larga Distancia Internacional', p.ldi],
   ...(p.netflix ? [['🎬', 'Streaming', 'Netflix Estándar incluido']] : []),
+  ['➕', 'Línea adicional', aTxt(p.gb)],
   ['☁️', 'Claro Drive', '100 GB gratis en la nube'], ['🎁', 'Claro Club', 'Beneficios y descuentos'], ['📱', 'Equipos', 'Hasta 24 cuotas sin interés con bancos en convenio']];
 const vRedesHTML = `<div class="redes">${REDES.map(r => `<svg viewBox="0 0 16 16" role="img" aria-label="${r[1]}"><title>${r[1]}</title><path d="${ICONOS[r[0]]}"/></svg>`).join('')}<small>Redes sociales incluidas</small></div>`;
 function vTarjeta(p) {
-  return `<div class="plan-h">${esc(p.title)}<span class="plan-badge">Gigas Libres</span></div><div class="plan-b">
+  return `<div class="plan-h">${esc(p.title)}<span class="plan-badge">${esc(p.sello || 'Gigas Libres · 5G')}</span></div><div class="plan-b">
     <div class="plan-data" style="font-size:1.05rem">${esc(p.data)}</div>
-    <div class="plan-price"><b>${clp(p.price)}</b><span>Mensual · cargo fijo</span></div>
+    <div class="plan-price"><b>${clp(p.promo || p.price)}</b><span>${p.promo ? `Mensual por ${PROMO_MESES} meses` : 'Mensual'}</span></div>
+    ${p.promo ? `<small>Desde el mes 7 valor fijo <b>${clp(p.price)}</b></small>` : '<small>Valor fijo mensual</small>'}
     ${vRedesHTML}
     <div class="plan-rows">${vAtrib(p).map(f => `<div><span>${f[0]} ${f[1]}</span><span>${esc(f[2])}</span></div>`).join('')}</div>
     <small>Minutos y SMS no se cortan: adicional $60 el minuto y $50 el SMS. ${esc(p.puj)}</small>
   </div><div class="plan-btns"><button class="btn" data-vcap="${p.id}">📸 Capturar</button><button class="btn red" data-vmsg="${p.id}">📋 Copiar mensaje</button></div>`;
 }
 function vBloques(p) {
-  return [{ t: 'head', text: p.title }, T('Gigas Libres · ' + p.data, 15, 800, '#e60000', { gap: 8 }),
-    { t: 'grp', bg: '#f3f4f6', items: [T(clp(p.price), 32, 800, '#1f2937'), T('Mensual', 13, 600, '#4b5563')] },
-    { t: 'icons', ids: REDES.map(r => r[0]), gap: 4 }, T('Redes sociales incluidas', 10, 500, '#6b7280', { gap: 8 }), { t: 'hr' },
-    { t: 'rows', rows: vAtrib(p).filter(f => f[1] !== 'Equipos').map(f => [f[1], f[2].replace(' · 51 países, 365 días', ''), false, '#374151']) },
+  const b = [{ t: 'head', text: p.title }, T('Gigas Libres · ' + p.data + ' · 5G', 14, 800, '#e60000', { gap: 8 }),
+    { t: 'grp', bg: '#f3f4f6', items: [T(clp(p.promo || p.price), 32, 800, '#1f2937'), T(p.promo ? `Mensual por ${PROMO_MESES} meses` : 'Mensual', 13, 600, '#4b5563')] }];
+  if (p.promo) b.push(T('Desde el mes 7 valor fijo ' + clp(p.price), 12, 700, '#374151', { gap: 10 }));
+  b.push({ t: 'icons', ids: REDES.map(r => r[0]), gap: 4 }, T('Redes sociales incluidas', 10, 500, '#6b7280', { gap: 8 }), { t: 'hr' },
+    { t: 'rows', rows: vAtrib(p).filter(f => f[1] !== 'Equipos').map(f => [f[1] === 'Larga Distancia Internacional' ? 'Larga distancia int.' : f[1], f[2].replace(' · 51 países, 365 días', '').replace(' · Gigas Libres · 5G', '').replace(', libres a 300 números', ''), false, '#374151']) },
     T('', 1, 400, '', { gap: 4 }), T('Roaming en 51 países los 365 días del año', 10, 600, '#374151', { gap: 6 }),
-    { t: 'grp', bg: '#fff1f1', pad: 8, items: [T(VIGENCIA_PLANES, 10, 600, '#b50000')] }];
+    { t: 'grp', bg: '#fff1f1', pad: 8, items: [T(VIGENCIA_PLANES, 10, 600, '#b50000')] });
+  return b;
 }
-const vMensaje = p => `📱 *${p.title}* · Gigas Libres\n💰 *${clp(p.price)} mensual*\n\n📶 *Internet:* ${p.data}\n📲 *Redes sociales incluidas:* WhatsApp, Instagram, Facebook, TikTok y X\n📞 *Minutos:* ${PV_MIN}\n💬 *Mensajes:* ${PV_SMS}\n✈️ *Roaming:* ${p.roaming}, en 51 países los 365 días del año\n🌎 *Larga Distancia Internacional:* ${p.ldi}${p.netflix ? '\n🎬 *Netflix Estándar incluido*' : ''}\n☁️ *Claro Drive:* 100 GB gratis en la nube\n🎁 *Claro Club:* beneficios y descuentos\n📱 *Equipos:* hasta 24 cuotas sin interés con bancos en convenio\n\n_${VIGENCIA_PLANES}_`;
+const vMensaje = p => `📱 *${p.title}* · Gigas Libres · 5G\n💰 *${p.promo ? `${clp(p.promo)} mensual por ${PROMO_MESES} meses*\nDesde el mes 7 valor fijo ${clp(p.price)}` : `${clp(p.price)} mensual*`}\n\n📶 *Internet:* ${p.data}\n📲 *Redes sociales incluidas:* WhatsApp, Instagram, Facebook, TikTok y X\n📞 *Llamadas:* ${PV_MIN}\n💬 *Mensajes:* ${PV_SMS}\n✈️ *Roaming:* ${p.roaming}, en 51 países los 365 días del año\n🌎 *Larga Distancia Internacional:* ${p.ldi}${p.netflix ? '\n🎬 *Netflix Estándar incluido*' : ''}\n➕ *Línea adicional:* ${aTxt(p.gb)}\n☁️ *Claro Drive:* 100 GB gratis en la nube\n🎁 *Claro Club:* beneficios y descuentos\n📱 *Equipos:* hasta 24 cuotas sin interés con bancos en convenio\n\n_${VIGENCIA_PLANES}_`;
+
+// Calculadora de líneas: cada línea puede ser un plan base distinto o una línea adicional
+const CL_OPC = [
+  ...PLANES_VIGENTES.map(p => ({ id: p.id, label: p.title, gb: p.gb, base: true, m1: p.promo || p.price, m7: p.price, meses: p.promo ? PROMO_MESES : 0 })),
+  ...Object.keys(ADICIONALES).map(gb => { const a = ADICIONALES[gb]; return { id: 'a' + gb, label: 'Adicional a Plan ' + gb, gb: +gb, base: false, m1: a.promo, m7: a.luego, meses: a.meses }; })
+];
+const clOpc = id => CL_OPC.find(o => o.id === id);
+const clTxt = o => o.meses ? `${clp(o.m1)} por ${o.meses} meses, luego ${clp(o.m7)}` : `${clp(o.m1)} ${o.base ? 'mensual' : 'por siempre'}`;
+let clLineas = ['v800'];
+function clCalculo() {
+  const ops = clLineas.map(clOpc);
+  const t1 = ops.reduce((s, o) => s + o.m1, 0), t7 = ops.reduce((s, o) => s + o.m7, 0);
+  const avisos = [];
+  ops.forEach((o, i) => { if (!o.base && !ops.some(b => b.base && b.gb === o.gb)) avisos.push(`La línea ${i + 1} es adicional a Plan ${o.gb}, pero no hay ninguna línea con Plan ${o.gb} en la cotización.`); });
+  if (ops.every(o => !o.base)) avisos.push('Agrega al menos una línea con plan base.');
+  return { ops, t1, t7, cambia: t1 !== t7, avisos };
+}
+function clPinta() {
+  const c = clCalculo();
+  $('#cl-rows').innerHTML = c.ops.map((o, i) => `<div class="cl-row"><b>Línea ${i + 1}</b><select data-cl="${i}">${CL_OPC.map(x => `<option value="${x.id}"${x.id === o.id ? ' selected' : ''}>${esc(x.label)}</option>`).join('')}</select>${clLineas.length > 1 ? `<button class="btn sm" data-clx="${i}" aria-label="Quitar línea ${i + 1}">✕</button>` : ''}<small>${esc(clTxt(o))}</small></div>`).join('');
+  $('#cl-warn').innerHTML = c.avisos.map(a => `<div class="note" style="margin-top:8px">⚠️ ${esc(a)}</div>`).join('');
+  $('#cl-tot').innerHTML = `<div class="plan-total solid" style="margin:12px 0">${c.cambia ? `TOTAL MESES 1 A ${PROMO_MESES}<b>${c.ops.length} ${c.ops.length === 1 ? 'línea' : 'líneas'} = ${clp(c.t1)}</b>DESDE EL MES 7<b>${clp(c.t7)}</b>` : `TOTAL MENSUAL<b>${c.ops.length} ${c.ops.length === 1 ? 'línea' : 'líneas'} = ${clp(c.t1)}</b>`}</div>`;
+}
+function clMensaje() {
+  const c = clCalculo();
+  return `📲 *Cotización Planes Claro* · ${c.ops.length} ${c.ops.length === 1 ? 'línea' : 'líneas'}\n\n${c.ops.map((o, i) => `${i + 1}. *${o.label}:* ${clTxt(o)}`).join('\n')}\n\n${c.cambia ? `💰 *Total meses 1 a ${PROMO_MESES}:* ${clp(c.t1)}\n💰 *Total desde el mes 7:* ${clp(c.t7)}` : `💰 *Total mensual:* ${clp(c.t1)}`}\n\nTodos con Gigas Libres, 5G, llamadas ilimitadas y roaming en 51 países.\n_${VIGENCIA_PLANES}_`;
+}
+function clBloques() {
+  const c = clCalculo(), B = '#fff';
+  return [{ t: 'head', text: `Cotización · ${c.ops.length} ${c.ops.length === 1 ? 'línea' : 'líneas'}` },
+    { t: 'rows', rows: c.ops.map((o, i) => [`${i + 1}. ${o.label}`, clp(o.m1), true, '#1f2937']) },
+    T('', 1, 400, '', { gap: 2 }),
+    ...c.ops.filter(o => o.meses).length ? [T(`Valores de los primeros meses. Revisa abajo el valor desde el mes 7.`, 10, 400, '#6b7280', { gap: 8 })] : [],
+    { t: 'grp', bg: 'rojo', items: c.cambia
+      ? [T(`TOTAL MESES 1 A ${PROMO_MESES}`, 10, 700, B), T(clp(c.t1), 22, 800, B, { gap: 8 }), T('DESDE EL MES 7', 10, 700, B), T(clp(c.t7), 18, 800, B)]
+      : [T('TOTAL MENSUAL', 10, 700, B), T(clp(c.t1), 22, 800, B)] },
+    T('Gigas Libres · 5G · Llamadas ilimitadas · Roaming 51 países', 10, 600, '#374151', { gap: 4 }),
+    T(VIGENCIA_PLANES, 10, 400, '#6b7280', { gap: 6 })];
+}
+function initCalculadora() {
+  $('#cl-add').onclick = () => { const base = clLineas.map(clOpc).find(o => o.base); clLineas.push(base ? 'a' + base.gb : 'v800'); clPinta(); };
+  $('#cl-rows').addEventListener('change', e => { const s = e.target.closest('[data-cl]'); if (s) { clLineas[+s.dataset.cl] = s.value; clPinta(); } });
+  $('#cl-rows').addEventListener('click', e => { const b = e.target.closest('[data-clx]'); if (b) { clLineas.splice(+b.dataset.clx, 1); clPinta(); } });
+  $('#cl-msg').onclick = () => copyText(clMensaje(), 'Cotización copiada. Pégala con Ctrl+V.');
+  $('#cl-cap').onclick = () => copyCanvas(tarjetaCanvas(clBloques()), 'cotizacion.png', 'Imagen de la cotización copiada. Pégala en el chat.');
+  clPinta();
+}
 function initOferta() {
   $('#ov-fuente').textContent = FUENTE_PLANES; $('#ov-vig').textContent = VIGENCIA_PLANES;
   $('#ov-grid').innerHTML = PLANES_VIGENTES.map(p => `<article class="card plan">${vTarjeta(p)}</article>`).join('');
@@ -1047,8 +1124,10 @@ function initOferta() {
     if (c) { const p = pv(c.dataset.vcap); copyCanvas(tarjetaCanvas(vBloques(p)), p.id + '.png', `Imagen del ${p.title} copiada. Pégala en el chat.`); }
     if (m) copyText(vMensaje(pv(m.dataset.vmsg)), 'Mensaje copiado. Pégalo con Ctrl+V.');
   });
-  $('#o-todos').onclick = () => copyCanvas(variasCanvas('Planes Libres', PLANES_VIGENTES.filter(p => !p.netflix).map(p => tarjetaCanvas(vBloques(p)))), 'planes.png', 'Captura copiada. Pégala en el chat.');
+  $('#o-todos').onclick = () => copyCanvas(variasCanvas('Planes 5G Claro', PLANES_VIGENTES.filter(p => !p.netflix).map(p => tarjetaCanvas(vBloques(p)))), 'planes.png', 'Captura copiada. Pégala en el chat.');
+  initCalculadora();
 }
+
 /* ════════════════════════════════════════════════════════════════
    OFERTA PNG
    ════════════════════════════════════════════════════════════════ */
@@ -1150,12 +1229,12 @@ function initScript() {
     if (rut.value.length > 4) { const v = rutValido(rut.value); ok.textContent = v ? '✓ Válido' : '✗ Inválido'; ok.style.color = rut.style.borderColor = v ? 'var(--green)' : 'var(--red)'; }
     else { ok.textContent = ''; rut.style.borderColor = ''; }
   };
-  const SP = Object.fromEntries(PLANES_VIGENTES.map(p => [p.title, { internet: p.data, minutos: PV_MIN, sms: PV_SMS, ldi: p.ldi, roaming: p.roaming, extra: p.netflix ? 'Netflix Estándar' : '', cargo: clp(p.price) }]));
+  const SP = Object.fromEntries(PLANES_VIGENTES.map(p => [p.title, { internet: p.data, minutos: PV_MIN, sms: PV_SMS, ldi: p.ldi, roaming: p.roaming, extra: p.netflix ? 'Netflix Estándar' : '', cargo: vPrecio(p), adicional: aTxt(p.gb) }]));
   const detalle = () => {
     const d = SP[plan.value]; if (!d) return;
     $('#sc-detalle').innerHTML = `<div class="pd"><div class="pd-h">📶 ${esc(plan.value)}</div>
       <div class="pd-g"><div><b>Internet</b>${esc(d.internet)}</div><div><b>Minutos</b>${esc(d.minutos)}</div><div><b>SMS</b>${esc(d.sms)}</div><div><b>LDI</b>${esc(d.ldi)}</div><div class="w"><b>Roaming</b>${esc(d.roaming)}</div>${d.extra ? `<div class="w"><b>Incluye</b>${esc(d.extra)}</div>` : ''}</div>
-      <div class="pd-p"><div class="row"><span>Cargo fijo mensual:</span><span class="promo">${esc(d.cargo)}</span></div>
+      <div class="pd-p"><div class="row"><span>Valor del plan:</span><span class="promo">${esc(d.cargo)}</span></div><div class="row"><span>Línea adicional:</span><b>${esc(d.adicional)}</b></div>
         <div style="margin-top:8px;font-size:.84rem;color:var(--muted)">${esc(VIGENCIA_PLANES)} Fuente: ${esc(FUENTE_PLANES)}.</div></div></div>`;
   };
   const cambioTipo = () => {
@@ -1243,11 +1322,13 @@ const FAQ_FUENTES = {
   GEN: 'Inducción VR Fijo y Móvil, Genesys (resumen de apoyo)',
   FRONT: 'Inducción VR Móvil, Sistema Front Comercial (resumen de apoyo)',
   TALLER: 'Resumen del Taller de Ventas (resumen de apoyo)',
-  PYME: 'Oferta Móvil PYME, imagen recibida el 12-11-2026'
+  PYME: 'Oferta Móvil PYME, imagen recibida el 12-11-2026',
+  IMG: 'Imágenes Planes 5G y Planes Adicionales Claro, recibidas el 13-11-2026'
 };
 const FAQ = [
  // Planes
- ['Planes','PM','¿Qué planes postpago se ofrecen?','Los <b>Planes Libres</b>: Plan 500 ($9.990), Plan 800 ($12.990) y Plan 1000 ($17.990). También existen con Netflix Estándar incluido: Plan 500 + Netflix ($17.990), Plan 800 + Netflix ($20.990) y Plan 1000 + Netflix ($25.990).<br>Estos valores son el cargo fijo mensual normal. Para descuentos o promociones revisa el Plan Comercial vigente.'],
+ ['Planes','IMG','¿Qué planes se ofrecen y cuánto cuestan?','Los <b>Planes 5G</b> con Gigas Libres y llamadas ilimitadas:<ul><li><b>Plan 500:</b> $5.994 por 6 meses, desde el mes 7 valor fijo $9.990.</li><li><b>Plan 800 (el más vendido):</b> $7.923 por 6 meses, desde el mes 7 valor fijo $12.990.</li><li><b>Plan 1000:</b> $16.990 por 6 meses, desde el mes 7 valor fijo $17.990.</li></ul>Con Netflix Estándar incluido: Plan 500 + Netflix $17.990, Plan 800 + Netflix $20.990 y Plan 1000 + Netflix $25.990 (cargo fijo del documento Producto Móvil).'],
+ ['Planes','IMG','¿Cuánto cuesta una línea adicional?','Depende del plan base:<ul><li><b>Adicional a Plan 500:</b> $4.990 por 6 meses, después $8.990.</li><li><b>Adicional a Plan 800:</b> $6.990 por siempre.</li><li><b>Adicional a Plan 1000:</b> $4.990 por 6 meses, después $6.990.</li></ul>La línea adicional queda en la misma cuenta. En Oferta Personas está la calculadora para cotizar varias líneas, incluso con planes distintos.'],
  ['Planes','PM','¿Qué incluye cada Plan Libre?','Todos traen minutos libres a 300 números y 500 SMS a todo destino.<ul><li><b>Plan 500:</b> 500 GB, roaming de 40 min + 2 GB + 40 SMS y 40 minutos de larga distancia internacional.</li><li><b>Plan 800:</b> 800 GB, roaming de 60 min + 3 GB + 60 SMS y 60 minutos de larga distancia internacional.</li><li><b>Plan 1000:</b> 1000 GB, roaming de 100 min + 5 GB + 100 SMS y 100 minutos de larga distancia internacional.</li></ul>'],
  ['Planes','PM','¿Qué pasa cuando el cliente consume todos sus minutos o SMS?','El servicio no se corta. El consumo adicional se cobra en la boleta mensual: <b>$60 el minuto</b> y <b>$50 el SMS</b>.'],
  ['Planes','PM','¿Qué es la Política de Uso Justo (PUJ)?','La navegación es libre y no se corta, pero al alcanzar la cuota del plan la velocidad baja hasta el siguiente ciclo de facturación.<ul><li><b>Plan 500:</b> baja a 256 kbps. Sobre 600 GB baja a 64 kbps.</li><li><b>Plan 800:</b> baja a 256 kbps. Sobre 900 GB baja a 64 kbps.</li><li><b>Plan 1000:</b> baja a 256 kbps y se mantiene así hasta el inicio del siguiente ciclo.</li></ul>'],
