@@ -36,6 +36,11 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: Enlaces compactos
+
+- La sección Enlaces pasó de botones grandes a filas compactas (ícono, nombre y descripción corta). Ahora cabe completa en pantalla sin bajar, en PC y en celular.
+- En PC se muestra en tres columnas, una por grupo. La Planilla de Trabajo quedó dentro de Canales Críticos.
+
 ### 13-11-2026: horario precargado
 
 - Horario Ejecutivos trae precargado el horario de la planilla del 13-11-2026 (12-11 al 29-11) con los 15 ejecutivos, transcrito de la imagen enviada por Eduardo, quien autorizó publicar los nombres. Los RUT no se incluyeron.

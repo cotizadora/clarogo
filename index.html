@@ -171,12 +171,17 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 .pd-p .promo{color:var(--red);font-weight:800;font-size:1.1rem}
 
 /* Enlaces */
-.links{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px}
-.link{padding:16px 10px;text-align:center;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:6px;border-top:3px solid var(--border);transition:transform .15s,border-color .15s}
-.link:hover{border-top-color:var(--red);transform:translateY(-3px)}
-.link span{font-size:1.6rem}
-.link b{font-size:.92rem}
-.link small{font-size:.72rem;color:var(--dim)}
+#e-grid{display:grid;gap:12px}
+.links{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.link{padding:7px 9px;text-decoration:none;display:flex;align-items:center;gap:9px;min-width:0;border-left:3px solid var(--border);transition:border-color .15s,background .15s}
+.link:hover{border-left-color:var(--red);background:#fff5f5}
+.link.dest{border-left-color:#0f9d58}
+.link span{font-size:1.15rem;flex:none}
+.link div{min-width:0;line-height:1.2}
+.link b{display:block;font-size:.84rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.link small{display:block;font-size:.68rem;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#e-grid .lbl{margin-bottom:5px}
+@media (max-width:380px){.link{padding:6px 7px;gap:7px}.link span{font-size:1rem}.link b{font-size:.8rem}.link small{font-size:.66rem}}
 .lbl{font-size:.66rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
 
 /* Galería */
@@ -253,8 +258,9 @@ footer a,footer button{color:inherit;background:none;border:0;padding:0;text-dec
   .filters{grid-template-columns:2fr 1fr 1fr auto}
   .filters .full{grid-column:auto}
   .form2{grid-template-columns:1fr 1fr}
-  .links{grid-template-columns:repeat(4,1fr)}
-  .links.two{grid-template-columns:repeat(2,1fr)}
+  #e-grid{grid-template-columns:repeat(3,1fr);align-items:start;gap:18px}
+  .links{grid-template-columns:1fr}
+  .link{padding:9px 12px}
   .gal{grid-template-columns:repeat(4,1fr)}
   .tut{grid-template-columns:repeat(3,1fr)}
   footer{padding-bottom:18px}
@@ -777,8 +783,8 @@ const PNG_PLANES = [
    ════════════════════════════════════════════════════════════════ */
 const ENLACES = [
  {t:'Canales Críticos',two:true,items:[
-  ['🎧','Genesys','Llamadas salientes y omnicanalidad','https://login.mypurecloud.com/?rid=RfxEnXqBw64-d10nnWwT9ZW4z1e1KGhk3LTKrBF5W0E#/authenticate-adv/org/clarochilepersonas'],
-  ['🚀','Front FVC','Evaluaciones y cierre de ventas','https://fvc-dev.clarovtrcloud.com/#/login']]},
+  ['🎧','Genesys','Llamadas salientes','https://login.mypurecloud.com/?rid=RfxEnXqBw64-d10nnWwT9ZW4z1e1KGhk3LTKrBF5W0E#/authenticate-adv/org/clarochilepersonas'],
+  ['🚀','Front FVC','Evaluación y cierre','https://fvc-dev.clarovtrcloud.com/#/login']]},
  {t:'Gestión Operativa',items:[
   ['👤','Buk','RRHH y Liquidación','https://cyg-phoenix.buk.cl/static_pages/portal'],
   ['📝','Ingreso Ventas','Formulario Oficial',FORM_VENTA],
@@ -1417,8 +1423,8 @@ function initScript() {
    ════════════════════════════════════════════════════════════════ */
 function initVenta() { $('#venta-link').href = FORM_VENTA; $('#venta-frame').src = FORM_VENTA + '?embedded=true'; }
 function initEnlaces() {
-  $('#e-grid').innerHTML = `<a class="card link" href="${PLANILLA_URL}" target="_blank" rel="noopener" style="flex-direction:row;justify-content:center;gap:12px;margin-bottom:18px;border-top-color:#0f9d58"><span>📗</span><div style="text-align:left"><b>Planilla de Trabajo</b><br><small>Crea tu copia personal en Google Sheets</small></div></a>` +
-    ENLACES.map(g => `<div class="lbl">${g.t}</div><div class="links${g.two ? ' two' : ''}">${g.items.map(i => `<a class="card link" href="${esc(i[3])}" target="_blank" rel="noopener noreferrer"><span>${i[0]}</span><b>${i[1]}</b><small>${i[2]}</small></a>`).join('')}</div>`).join('');
+  const a = (i, cls = '') => `<a class="card link${cls}" href="${esc(i[3])}" target="_blank" rel="noopener noreferrer" title="${esc(i[1] + ': ' + i[2])}"><span>${i[0]}</span><div><b>${i[1]}</b><small>${i[2]}</small></div></a>`;
+  $('#e-grid').innerHTML = ENLACES.map((g, n) => `<div><div class="lbl">${g.t}</div><div class="links">${n === 0 ? a(['📗', 'Planilla de Trabajo', 'Copia en Sheets', PLANILLA_URL], ' dest') : ''}${g.items.map(i => a(i)).join('')}</div></div>`).join('');
 }
 let gIdx = 0;
 function gMostrar(i) { gIdx = (i + GALERIA.length) % GALERIA.length; $('#g-img').src = `galeria/${GALERIA[gIdx][0]}.jpg`; $('#g-img').alt = $('#g-name').textContent = GALERIA[gIdx][1]; }
