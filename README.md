@@ -36,6 +36,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: ícono propio
+
+- Nuevo ícono redondo rojo con "G!" para la pestaña, los marcadores y el acceso directo en celular: `favicon.svg`, `favicon-32.png`, `icono-192.png` y `apple-touch-icon.png`. También se agregó a los tutoriales.
+
 ### 13-11-2026: vuelve el Plan 500 + Netflix
 
 Fuente: imagen "Plan 500 + Netflix, entretención sin límites" enviada por Eduardo el 13-11-2026.
