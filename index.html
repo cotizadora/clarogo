@@ -301,8 +301,12 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .cl-row{display:grid;grid-template-columns:auto 1fr auto;gap:6px 8px;align-items:center;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #eef0f3}
 .cl-row b{font-size:.8rem;white-space:nowrap}
 .cl-row small{grid-column:1/-1;color:var(--muted);font-size:.78rem}
-/* Portada clara en PC */
-@media (min-width:900px){
+/* Script de cierre */
+.fill{color:var(--red-dk);font-weight:700}
+.fill.empty{background:#fff4d6;color:#8a5a00;font-weight:600;padding:0 4px;border-radius:4px}
+.tag-si{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:#f1f3f5;color:var(--muted);padding:3px 8px;border-radius:999px}
+.sc-list{margin:6px 0 0;padding-left:20px;line-height:1.9}
+/* Portada clara en PC */@media (min-width:900px){
   body[data-view="inicio"]{background:var(--bg)}
   body[data-view="inicio"] .hero{color:var(--text)}
   body[data-view="inicio"] .hero h1 em{color:var(--red)}
@@ -406,74 +410,50 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 
   <!-- SCRIPT -->
   <section id="v-script" class="view" hidden>
-    <h1 class="h">Script de Validación de Venta</h1>
-    <p class="sub">Completa los datos y lee el texto al cliente.</p>
-    <form id="sc-form" autocomplete="off">
-      <div class="card sc">
-        <button type="button" class="btn green" id="sc-planilla" style="width:100%">📋 Obtener Planilla Personal (Google Sheets)</button>
-        <p style="font-size:.8rem;color:var(--muted);text-align:center;margin-top:8px;line-height:1.4">Se creará una copia exclusiva para ti en tu Google Drive, compatible con este script y lista para usar.</p>
+    <h1 class="h">Script de Cierre de Ventas</h1>
+    <p class="sub">Portabilidades conectados. Completa los datos de la venta y el guion de abajo se arma solo. Los datos deben concordar con los del Front de ventas.</p>
+    <div class="note blue" style="margin-bottom:12px">La carga automática de datos desde Genesys se configurará más adelante. Por ahora los datos se ingresan a mano.</div>
+    <form id="sc-form" class="card sc" autocomplete="off">
+      <h2><i>✎</i> Datos de la venta</h2>
+      <div class="lbl">Cliente</div>
+      <div class="form2">
+        <div><label for="sc-nombre">Nombre completo</label><input type="text" id="sc-nombre" placeholder="Nombre y apellidos"></div>
+        <div><label for="sc-rut">RUT <span id="sc-rut-ok"></span></label><input type="text" id="sc-rut" placeholder="12.345.678-9"></div>
+        <div><label for="sc-nac">Fecha de nacimiento</label><input type="text" id="sc-nac" placeholder="DD-MM-AAAA"></div>
+        <div><label for="sc-mail">Correo electrónico</label><input type="email" id="sc-mail" placeholder="correo@ejemplo.com"></div>
+        <div><label for="sc-fono">Número a portar</label><input type="text" id="sc-fono" placeholder="9 XXXX XXXX (solo si aplica)"></div>
+        <div><label for="sc-contacto">Teléfono de contacto</label><input type="text" id="sc-contacto" placeholder="9 XXXX XXXX"></div>
       </div>
-      <div class="card sc">
-        <h2><i>0</i> Carga rápida desde Excel</h2>
-        <div class="note blue" style="margin-bottom:10px">
-          <b>Instrucciones:</b> en tu planilla haz clic en el número de la fila completa, copia con Ctrl+C, pega aquí con Ctrl+V y presiona "Mapear datos".
-        </div>
-        <label for="sc-paste">Datos copiados de Excel (fila completa)</label>
-        <textarea id="sc-paste" rows="3" placeholder="Pega aquí la fila copiada de Excel"></textarea>
-        <div class="d-foot" style="margin-top:10px;justify-content:flex-start">
-          <button type="button" class="btn red" id="sc-map">Mapear datos al formulario</button>
-          <button type="button" class="btn" id="sc-reset">Limpiar</button>
-        </div>
+      <div class="lbl" style="margin-top:14px">Venta</div>
+      <div class="form2">
+        <div><label for="sc-tipo">Tipo de venta</label><select id="sc-tipo"><option value="port">PortIn Post-Post</option><option value="portpre">PortIn Pre-Post</option><option value="migra">Migración</option><option value="ln">Línea nueva</option></select></div>
+        <div><label for="sc-plan">Plan</label><select id="sc-plan"></select></div>
+        <div style="grid-column:1/-1"><label for="sc-adic">Números de líneas adicionales (solo si aplica)</label><input type="text" id="sc-adic" placeholder="Ej: 9 1111 1111, 9 2222 2222"></div>
       </div>
-      <div class="card sc">
-        <h2><i>1</i> Inicio y Contratación</h2>
-        <p>Don/Sra. <input type="text" class="in nm" placeholder="Nombre del Cliente">, con fecha de hoy <input type="text" class="in ro" id="sc-fecha" readonly size="22">, siendo las <input type="text" class="in ro" id="sc-hora" readonly size="5"> horas, usted ha contratado con <strong>CLARO CHILE</strong> un servicio de
-          <select class="in" id="sc-tipo"><option>Portabilidad</option><option>Línea Nueva</option><option>Migración</option></select><span id="sc-port"> de un número proveniente de la empresa <input type="text" class="in" id="sc-donante" placeholder="Empresa de origen"></span>.</p>
+      <div class="lbl" style="margin-top:14px">Equipo (solo si aplica)</div>
+      <div class="form2">
+        <div><label for="sc-eq">Equipo</label><input type="text" id="sc-eq" placeholder="Ej: Samsung A17 5G 128GB"></div>
+        <div><label for="sc-eqtotal">Monto total</label><input type="text" id="sc-eqtotal" inputmode="numeric" placeholder="$0"></div>
+        <div><label for="sc-eqpie">Pago inicial</label><input type="text" id="sc-eqpie" inputmode="numeric" placeholder="$0"></div>
+        <div><label for="sc-eqforma">Forma de pago</label><input type="text" id="sc-eqforma" placeholder="Ej: 18 cuotas de $22.000 en la boleta"></div>
       </div>
-      <div class="card sc">
-        <h2><i>2</i> Información Específica del Servicio</h2>
-        <div class="note" id="sc-nota" style="margin-bottom:12px"></div>
-        <p><strong>Emisión de Boleta:</strong> Le informamos que el pago de su servicio es a mes vencido. La primera boleta se emitirá aproximadamente dentro de 40 días. Le recuerdo que su boleta llegará de manera electrónica a su email.</p>
-        <div class="note red">⚠️ Su contrato de servicio está sujeto a la <strong>VARIACIÓN POSITIVA TRIMESTRAL DEL ÍNDICE DE PRECIOS AL CONSUMIDOR (IPC)</strong>, valor que verá reflejado mensualmente en su boleta.</div>
+      <div class="lbl" style="margin-top:14px">Despacho</div>
+      <div class="form2">
+        <div><label for="sc-calle">Calle o pasaje</label><input type="text" id="sc-calle" placeholder="Nombre de la calle"></div>
+        <div><label for="sc-num">Número</label><input type="text" id="sc-num" placeholder="Número"></div>
+        <div><label for="sc-int">N° interior (solo si aplica)</label><input type="text" id="sc-int" placeholder="Depto, block, casa"></div>
+        <div><label for="sc-comuna">Comuna</label><input type="text" id="sc-comuna" placeholder="Comuna"></div>
+        <div><label for="sc-region">Región</label><input type="text" id="sc-region" list="sc-regiones" placeholder="Región"></div>
+        <div><label for="sc-ref">Referencia o entrecalles</label><input type="text" id="sc-ref" placeholder="Referencia"></div>
+        <div><label for="sc-eta">Tiempo estimado de despacho</label><input type="text" id="sc-eta" list="sc-etas" placeholder="Según el Front de ventas"></div>
+        <div><label for="sc-agente">Tu nombre (ejecutivo)</label><input type="text" id="sc-agente" placeholder="Tu nombre"></div>
       </div>
-      <div class="card sc">
-        <h2><i>3</i> Validación de Datos del Cliente</h2>
-        <p><input type="text" class="in nm" placeholder="Nombre del Cliente">, mi nombre es <input type="text" class="in" id="sc-agente" placeholder="Tu Nombre">, ejecutivo de ventas de Claro Chile. A continuación, validaré la aceptación del servicio que acaba de adquirir, para ello le pido que me confirme su nombre completo y número de RUT.</p>
-        <div class="form2">
-          <div><label for="sc-nombre">Nombre Completo</label><input type="text" id="sc-nombre" class="nm" placeholder="Nombre completo del cliente"></div>
-          <div><label for="sc-rut">RUT <span id="sc-rut-ok"></span></label><input type="text" id="sc-rut" placeholder="12.345.678-9"></div>
-          <div><label for="sc-nac">Fecha de Nacimiento</label><input type="text" id="sc-nac" placeholder="DD-MM-AAAA"></div>
-          <div><label for="sc-mail">Correo Electrónico</label><input type="email" id="sc-mail" placeholder="email@ejemplo.com"></div>
-          <div><label for="sc-fono">Número de Teléfono a Portar</label><input type="text" id="sc-fono" placeholder="9 XXXX XXXX"></div>
-          <div><label for="sc-dir">Dirección de Entrega</label><input type="text" id="sc-dir" placeholder="Dirección completa"></div>
-        </div>
-      </div>
-      <div class="card sc">
-        <h2><i>4</i> Confirmación del Plan y Condiciones</h2>
-        <label for="sc-plan">Plan Contratado</label>
-        <select id="sc-plan"></select>
-        <div id="sc-detalle"></div>
-        <div class="note red" style="margin-top:12px">Don/Sra. <input type="text" class="in nm" placeholder="Nombre del Cliente">, <strong>¿acepta las condiciones del plan contratado?</strong></div>
-        <div class="note" style="margin-top:10px">🎙️ <strong>Acción requerida:</strong> esperar y registrar un <strong>"Sí, acepto"</strong> claro y sin dudas del cliente.</div>
-      </div>
-      <div class="card sc">
-        <h2><i>5</i> Cierre de la Venta</h2>
-        <label for="sc-pedido">Número de Pedido (Transacción FVC)</label>
-        <input type="text" id="sc-pedido" placeholder="Ingresar número de transacción FVC" style="margin-bottom:12px">
-        <p>Sr(a). <input type="text" class="in nm" placeholder="Nombre del Cliente">, ¿Tiene alguna duda adicional?</p>
-        <p>Le doy la más cordial bienvenida a Claro Chile. Recuerde que habló con <strong id="sc-agente2" style="color:var(--red)">[Nombre del Ejecutivo]</strong>.</p>
-        <p>Tenga un excelente día y muchas gracias por su preferencia.</p>
-        <div class="note green" style="margin:12px 0;line-height:1.6">
-          <strong>Beneficio adicional:</strong><br>
-          Antes de despedirnos, le comento un beneficio útil para evitar llamadas molestas: el <strong>bloqueo de llamadas 809</strong>. Con esto, deja de recibir llamadas SPAM o no deseadas que vienen desde números que comienzan con 809, así tiene más tranquilidad y menos interrupciones.<br>
-          Si le interesa activarlo, puede hacerlo llamando al <strong>103</strong> o directamente desde la <strong>App MiClaro</strong>.
-        </div>
-        <p>Si tiene algún familiar, amigo o persona cercana que también quiera portarse a Claro, quedo a su disposición para poder gestionarlo, que tenga muy buen día.</p>
-        <p>Me despido y le dejo con una grabación muy corta de parte de la <strong>Subtel</strong> la cual le indicará algunos aspectos relacionados con la portabilidad, una vez que se corte el proceso estará finalizado.</p>
-      </div>
+      <datalist id="sc-etas"><option value="hasta 3 días hábiles"><option value="despacho express"></datalist>
+      <datalist id="sc-regiones"><option value="de Arica y Parinacota"><option value="de Tarapacá"><option value="de Antofagasta"><option value="de Atacama"><option value="de Coquimbo"><option value="de Valparaíso"><option value="Metropolitana"><option value="del Libertador General Bernardo O'Higgins"><option value="del Maule"><option value="de Ñuble"><option value="del Biobío"><option value="de La Araucanía"><option value="de Los Ríos"><option value="de Los Lagos"><option value="de Aysén"><option value="de Magallanes"></datalist>
+      <div class="d-foot" style="justify-content:flex-start;margin-top:12px"><button type="button" class="btn" id="sc-reset">Limpiar datos</button></div>
     </form>
+    <div id="sc-out"></div>
   </section>
-
   <!-- INGRESO DE VENTA -->
   <section id="v-venta" class="view" hidden>
     <h1 class="h">Ingreso de Venta</h1>
@@ -637,12 +617,7 @@ const PNG_PLANES = [
  {id:'xl',title:'Plan XL',hasta3:7500,desde4:6500},
  {id:'pro',title:'Plan Premium Pro',hasta3:9000,desde4:8000}
 ];
-// Script de validación: usa los mismos PLANES_VIGENTES de arriba
-const SCRIPT_NOTAS = {
- 'Portabilidad':'📱 <strong>Para Portabilidad:</strong> El número quedará habilitado al día siguiente desde la fecha en que recibe el chip. <strong>Importante:</strong> No cambie el chip antes de haber perdido la señal con su compañía de origen.',
- 'Línea Nueva':'➕ <strong>Para Línea Nueva:</strong> Su nuevo número de Claro quedará activo en los próximos minutos una vez que inserte el chip en su equipo.',
- 'Migración':'🔀 <strong>Para Migración:</strong> Su plan actual será actualizado a las nuevas condiciones. El cambio se verá reflejado al inicio de su próximo ciclo de facturación.'
-};
+// Script de cierre: usa los mismos PLANES_VIGENTES y ADICIONALES de arriba
 
 /* ════════════════════════════════════════════════════════════════
    CONTENIDO (enlaces, galería, tutoriales, menú)
@@ -1214,55 +1189,52 @@ function rutFormato(v) {
   return c.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '-' + c.slice(-1).toUpperCase();
 }
 function initScript() {
-  const tipo = $('#sc-tipo'), plan = $('#sc-plan'), rut = $('#sc-rut'), agente = $('#sc-agente'), nombres = $$('#v-script .nm');
-  const ancho = () => $$('#v-script .in:not(select):not(.ro)').forEach(i => i.style.width = Math.max((i.value || i.placeholder).length + 2, 9) + 'ch');
-  const reloj = () => {
-    const d = new Date(), p = n => String(n).padStart(2, '0');
-    $('#sc-fecha').value = `${d.toLocaleDateString('es-CL', { weekday: 'long' })} ${p(d.getDate())}-${p(d.getMonth() + 1)}-${d.getFullYear()}`;
-    $('#sc-hora').value = `${p(d.getHours())}:${p(d.getMinutes())}`;
-  };
+  const $v = id => $('#sc-' + id).value.trim(), rut = $('#sc-rut');
+  const F = (val, ph) => val ? `<b class="fill">${esc(val)}</b>` : `<b class="fill empty">[${esc(ph)}]</b>`;
+  const plata = s => { const n = String(s).replace(/[^\d]/g, ''); return n ? clp(+n) : ''; };
+  const fechaLarga = () => { const d = new Date(); return `${d.getDate()} de ${d.toLocaleDateString('es-CL', { month: 'long' })} del año ${d.getFullYear()}`; };
+  $('#sc-plan').innerHTML = PLANES_VIGENTES.map(p => `<option value="${p.id}">${esc(p.title)}</option>`).join('');
   const validarRut = () => {
     rut.value = rutFormato(rut.value); const ok = $('#sc-rut-ok');
     if (rut.value.length > 4) { const v = rutValido(rut.value); ok.textContent = v ? '✓ Válido' : '✗ Inválido'; ok.style.color = rut.style.borderColor = v ? 'var(--green)' : 'var(--red)'; }
     else { ok.textContent = ''; rut.style.borderColor = ''; }
   };
-  const SP = Object.fromEntries(PLANES_VIGENTES.map(p => [p.title, { internet: p.data, minutos: PV_MIN, sms: PV_SMS, ldi: p.ldi, roaming: p.roaming, extra: p.netflix ? 'Netflix Estándar' : '', cargo: vPrecio(p), adicional: aTxt(p.gb) }]));
-  const detalle = () => {
-    const d = SP[plan.value]; if (!d) return;
-    $('#sc-detalle').innerHTML = `<div class="pd"><div class="pd-h">📶 ${esc(plan.value)}</div>
-      <div class="pd-g"><div><b>Internet</b>${esc(d.internet)}</div><div><b>Minutos</b>${esc(d.minutos)}</div><div><b>SMS</b>${esc(d.sms)}</div><div><b>LDI</b>${esc(d.ldi)}</div><div class="w"><b>Roaming</b>${esc(d.roaming)}</div>${d.extra ? `<div class="w"><b>Incluye</b>${esc(d.extra)}</div>` : ''}</div>
-      <div class="pd-p"><div class="row"><span>Valor del plan:</span><span class="promo">${esc(d.cargo)}</span></div><div class="row"><span>Línea adicional:</span><b>${esc(d.adicional)}</b></div>
-        <div style="margin-top:8px;font-size:.84rem;color:var(--muted)">${esc(VIGENCIA_PLANES)} Fuente: ${esc(FUENTE_PLANES)}.</div></div></div>`;
+  const paso = (n, titulo, cuerpo, aplica) => `<div class="card sc"><h2><i>${n}</i> ${titulo}${aplica ? ' <span class="tag-si">Solo si aplica</span>' : ''}</h2>${cuerpo}</div>`;
+  const ojo = txt => `<div class="note" style="margin-top:8px">🎙️ ${txt}</div>`;
+  const pinta = () => {
+    const N = F($v('nombre'), 'Nombre del cliente'), p = PLANES_VIGENTES.find(x => x.id === $v('plan')) || PLANES_VIGENTES[0];
+    const r = p.roaming.match(/(\d+)\s*Min\s*\+\s*(\d+)\s*GB\s*\+\s*(\d+)\s*SMS/i) || [0, '', '', ''], ldi = (p.ldi.match(/\d+/) || [''])[0];
+    const nums = $v('adic').split(/[,;\n]+/).map(s => s.trim()).filter(Boolean), a = ADICIONALES[p.gb], tipo = $v('tipo');
+    const valorPlan = p.promo ? `un valor promocional de ${F(clp(p.promo))} por los primeros ${PROMO_MESES} meses, quedando luego en ${F(clp(p.price))}` : `un valor de ${F(clp(p.price))}`;
+    const valorAdic = a.meses ? `un valor promocional de ${F(clp(a.promo))} por ${a.meses} meses, quedando luego en ${F(clp(a.luego))}` : `un valor fijo de ${F(clp(a.promo))}`;
+    const datos = [['Su nombre completo', $v('nombre')], ['Su RUT', $v('rut')], ['Su fecha de nacimiento', $v('nac')],
+      ['Su dirección', [$v('calle'), $v('num'), $v('int'), $v('comuna')].filter(Boolean).join(' ')], ['Referencia o entrecalles', $v('ref')],
+      ['El número de teléfono que desea portar', $v('fono')], ['Teléfonos de contacto', $v('contacto')], ['Su correo electrónico', $v('mail')]];
+    const activ = {
+      port: `En su caso, como ha portado su número desde otra compañía, el número quedará habilitado en Claro al día hábil siguiente de la recepción de la SIM Card (en la madrugada), pudiendo utilizar el servicio desde ese momento. <b>¿Está de acuerdo?</b>` + ojo('El cliente debe indicar <b>Sí</b>.') + `<p style="margin-top:10px">Además, le recuerdo que debe insertar el chip de Claro una vez pierda la señal en su compañía actual.</p>`,
+      migra: `El número quedará habilitado cuando usted reciba el chip. <b>¿Está de acuerdo?</b>` + ojo('El cliente debe indicar <b>Sí</b>.'),
+      ln: `El número quedará habilitado desde este momento. <b>¿Está de acuerdo?</b>` + ojo('El cliente debe indicar <b>Sí</b>.')
+    };
+    activ.portpre = activ.port;
+    let n = 0, h = '';
+    h += paso(++n, 'Validación de identidad (VDI)', `<p>Don/Sra. ${N}, según lo establecido en la Resolución Exenta N.º 566 de SUBTEL, la validación facial es un procedimiento obligatorio para confirmar su identidad y proteger sus datos personales. Le enviaré un enlace a su correo electrónico, WhatsApp o SMS, para que realice este proceso. Solo debe permitir el uso de la cámara y seguir las instrucciones que aparecerán en pantalla.</p>`);
+    h += paso(++n, 'Documentación', ojo('Leer una vez aprobada la VDI.') + `<p style="margin-top:10px">Don/Sra. ${N} hoy, con fecha ${F(fechaLarga())}, para efectos de respaldo de la solicitud de servicios necesitaremos repasar de manera ordenada lo conversado previamente, donde confirmaremos sus datos personales (por lo que es necesario que tenga a mano su carnet de identidad), el servicio contratado, sus características y condiciones, y la aceptación explícita de la contratación. Además, a modo de respaldo y seguridad, le comento que esta conversación está siendo grabada. <b>¿Está usted de acuerdo?</b></p>`);
+    h += paso(++n, 'Confirmación de datos', `<p>Para poder realizar la activación de su servicio le pido por favor me pueda proporcionar sus siguientes datos personales:</p><ul class="sc-list">${datos.map(d => `<li>${d[0]}: ${F(d[1], d[0] === 'El número de teléfono que desea portar' ? 'solo si aplica' : 'por confirmar')}</li>`).join('')}</ul>` + ojo('Los datos deben concordar con los del Front de ventas.'));
+    h += paso(++n, 'Plan contratado', `<p>Le informo que está contratando en la empresa "Claro Chile" el ${F(`Plan ${p.gb} GB Libres`)}, que incluye minutos libres a 300 números para llamar a todo destino dentro de territorio nacional, ${F(p.gb + ' GB')} de navegación + 500 SMS, y tiene ${valorPlan}, valor que está sujeto a reajuste positivo trimestral de IPC. Le recuerdo que se cobra un valor por minuto adicional de $60 (IVA incluido), y un valor por SMS adicional de $50 (IVA incluido). Su servicio también incluye una bolsa de Roaming con ${F(r[1] + ' minutos')}, ${F(r[2] + ' GB')} y ${F(r[3] + ' SMS')}, y una bolsa con ${F(ldi + ' minutos')} para llamada(s) de Larga Distancia Internacional (LDI) a través del Carrier 171, las cuales no serán acumulables y se renovarán en cada ciclo de facturación.</p>`);
+    if (nums.length) h += paso(++n, 'Planes adicionales', `<p>Además activaremos el mismo plan adicional para ${nums.length === 1 ? 'el siguiente número' : 'los siguientes números'}: ${F(nums.join(', '))}, con ${valorAdic}${nums.length > 1 ? ' cada uno' : ''}.</p>`, true);
+    h += paso(++n, 'Activación', `<p>${activ[tipo]}</p>`);
+    if ($v('eq')) h += paso(++n, 'Equipo', `<p>Junto a lo anterior está llevando el equipo ${F($v('eq'))}, por un monto total de ${F(plata($v('eqtotal')), 'monto total')}, pagándolo ${F(plata($v('eqpie')), 'pago inicial')}, con ${F($v('eqforma'), 'forma de pago')}.</p>`, true);
+    h += paso(++n, 'Dirección y tiempo de despacho', `<p>Don/Sra. ${N}, para continuar con la venta es necesario confirmar los siguientes datos de la dirección de despacho: Calle ${F($v('calle'), 'calle o pasaje')} ${F($v('num'), 'número')}${$v('int') ? `, interior ${F($v('int'))}` : ''}, en la comuna de ${F($v('comuna'), 'comuna')}, en la Región ${F($v('region'), 'región')}. Le informo que su tiempo estimado de despacho es de ${F($v('eta'), 'tiempo de despacho')}.</p>`);
+    h += paso(++n, 'Despedida', `<p>¿Tiene alguna duda o consulta respecto a la información brindada? A continuación, y para cumplir con lo solicitado por la Subsecretaría de Telecomunicaciones, lo dejaré con una grabación que contiene información relevante sobre los servicios contratados, por lo que es importante que pueda escuchar la grabación completa. Si sobre esta información presenta alguna duda o consulta nos puede contactar a nuestros canales de atención al 800 171 171 o al 103 desde su teléfono móvil de Claro. Recuerde que mi nombre es ${F($v('agente'), 'tu nombre')}, muchas gracias por su preferencia.</p>` + ojo('Pide referidos y presiona el botón de <b>SUBTEL</b> antes de cortar la llamada.'));
+    $('#sc-out').innerHTML = h;
   };
-  const cambioTipo = () => {
-    const t = tipo.value, lista = Object.keys(SP), actual = SP[plan.value] ? plan.value : lista[0];
-    plan.innerHTML = lista.map(p => `<option${p === actual ? ' selected' : ''}>${p}</option>`).join('');
-    $('#sc-port').hidden = t !== 'Portabilidad'; $('#sc-nota').innerHTML = SCRIPT_NOTAS[t]; detalle();
-  };
-  const ponerAgente = v => { agente.value = v; $('#sc-agente2').textContent = v || '[Nombre del Ejecutivo]'; };
-  nombres.forEach(f => f.addEventListener('input', () => { nombres.forEach(o => { if (o !== f) o.value = f.value; }); ancho(); }));
-  $('#v-script').addEventListener('input', e => { if (e.target.classList.contains('in')) ancho(); });
-  rut.addEventListener('input', validarRut);
-  tipo.addEventListener('change', cambioTipo); plan.addEventListener('change', detalle);
-  agente.addEventListener('input', () => { $('#sc-agente2').textContent = agente.value || '[Nombre del Ejecutivo]'; try { localStorage.setItem('agentName', agente.value); } catch (e) {} });
-  $('#sc-planilla').onclick = () => window.open(PLANILLA_URL, '_blank', 'noopener');
-  $('#sc-map').onclick = () => {
-    const data = $('#sc-paste').value.trim(); if (!data) return toast('Pega primero la fila copiada de Excel');
-    // Columnas de la planilla: 1 nombre, 2 RUT, 4 número a portar, 5 email, 7 nacimiento, 8 donante, 10 dirección, 12 transacción
-    const col = data.split('\t'), g = i => (col[i] || '').trim();
-    nombres.forEach(n => n.value = g(1)); rut.value = g(2); $('#sc-fono').value = g(4); $('#sc-mail').value = g(5);
-    $('#sc-nac').value = g(7); $('#sc-donante').value = g(8); $('#sc-dir').value = g(10); $('#sc-pedido').value = g(12);
-    validarRut(); if (g(8)) { tipo.value = 'Portabilidad'; cambioTipo(); }
-    $('#sc-paste').value = ''; ancho(); toast('Datos cargados');
-  };
-  $('#sc-reset').onclick = () => {
-    $('#sc-form').reset(); plan.innerHTML = ''; reloj(); validarRut(); cambioTipo();
-    let n = ''; try { n = localStorage.getItem('agentName') || ''; } catch (e) {} ponerAgente(n); ancho();
-  };
-  let guardado = ''; try { guardado = localStorage.getItem('agentName') || ''; } catch (e) {}
-  ponerAgente(guardado); reloj(); setInterval(reloj, 15000); cambioTipo(); ancho();
+  $('#sc-form').addEventListener('input', e => { if (e.target === rut) validarRut(); if (e.target.id === 'sc-agente') { try { localStorage.setItem('agentName', e.target.value); } catch (x) {} } pinta(); });
+  $('#sc-form').addEventListener('change', pinta);
+  $('#sc-reset').onclick = () => { const ag = $('#sc-agente').value; $('#sc-form').reset(); $('#sc-agente').value = ag; validarRut(); pinta(); };
+  try { $('#sc-agente').value = localStorage.getItem('agentName') || ''; } catch (e) {}
+  setInterval(pinta, 60000);
+  pinta();
 }
-
 /* ════════════════════════════════════════════════════════════════
    INGRESO DE VENTA, ENLACES, GALERÍA, TUTORIALES
    ════════════════════════════════════════════════════════════════ */

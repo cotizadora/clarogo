@@ -36,6 +36,16 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: nuevo Script de Cierre de Ventas
+
+Fuente: planilla de Google Sheets "Cierre de ventas, Portabilidades conectados" indicada por Eduardo el 13-11-2026.
+
+- El Script de Validación se reemplazó por el Script de Cierre de Ventas: validación de identidad (VDI), documentación, confirmación de datos, plan contratado, planes adicionales, activación (PortIn, Migración o Línea nueva), equipo, dirección y tiempo de despacho, y despedida.
+- Arriba hay un formulario con los datos de la venta y el guion se completa solo. Los datos que faltan aparecen marcados en amarillo. Los pasos de adicionales y equipo aparecen solo si se completan.
+- El plan, los valores, el roaming y la larga distancia salen de la Oferta Personas vigente.
+- Se quitó la carga rápida desde Excel. Eduardo configurará más adelante la carga de datos desde Genesys.
+- La planilla de origen trae datos reales de una clienta. No se copiaron al portal.
+
 ### 13-11-2026: se retiran los planes con Netflix
 
 - Eduardo confirmó que los planes con Netflix (Plan 500, 800 y 1000 + Netflix) ya no van. Se quitaron de Oferta Personas, la calculadora, el Script y Preguntas y Respuestas.
