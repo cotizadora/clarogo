@@ -36,6 +36,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: nuevo formulario de Ingreso de Venta
+
+- El formulario de Google de Ingreso de Venta cambió al enlace indicado por Eduardo (`1FAIpQLSe3nbhazUn9...`). Se usa en la sección Ingreso de Venta y en Enlaces.
+
 ### 13-11-2026: lo que se ve es lo que se copia
 
 - Oferta Personas, la calculadora, Oferta PNG y Excepciones de Boletas muestran en la página la misma lámina que se copia: el botón copia esa misma imagen, no una distinta.
