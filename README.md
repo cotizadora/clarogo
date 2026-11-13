@@ -36,6 +36,16 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: Mi Planilla de Control
+
+- Nueva sección "Mi Planilla": en Genesys se hace Ctrl+A y Ctrl+C, y el botón "Pegar desde Genesys" crea una fila con campaña, RUT, nombre, teléfono, cola, fecha y hora.
+- El lector se armó con una página de Genesys guardada por Eduardo el 13-11-2026. Usa el título de la interacción (campaña, RUT y nombre separados por |), la línea "Teléfono:", la cola y la línea "Conectado a la conversación". La página original no se subió al repositorio.
+- Cada fila se edita libremente y tiene tipificación, plan de interés y notas. Botones por fila: copiar el RUT y abrir el Rutificador, pasar los datos al Script de Cierre y borrar.
+- Tipificaciones: Venta, Buzón de voz, Mudo o corta llamada y No molestar (de la Inducción VR de Genesys), más Volver a llamar, No contesta, No interesado, Ya es cliente Claro, Rechazo de evaluación, Número equivocado y Otro.
+- Filtros por período, tipificación y búsqueda, resumen de llamadas por tipificación y exportación a Excel (CSV).
+- Los datos se guardan solo en el navegador de cada ejecutivo (almacenamiento local). No se envían a ningún servidor.
+- Pendiente: la carpeta de recursos de la página guardada no venía, así que no se pudo revisar el panel interno de Scripts de Genesys ni la lista de códigos de conclusión.
+
 ### 13-11-2026: nuevo Script de Cierre de Ventas
 
 Fuente: planilla de Google Sheets "Cierre de ventas, Portabilidades conectados" indicada por Eduardo el 13-11-2026.

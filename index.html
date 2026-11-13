@@ -296,8 +296,19 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .tile-b{top:5px;right:5px;font-size:.5rem;padding:2px 6px}
 @media (min-width:640px){.tiles{grid-template-columns:repeat(4,1fr)}}
 @media (max-height:520px) and (min-width:560px){.tiles{grid-template-columns:repeat(6,1fr)} .hero p,.tag{display:none}}
-/* Calculadora de líneas */
-.calc{padding:14px;max-width:720px}
+/* Mi planilla de control */
+.ct-wrap{overflow-x:auto;background:#fff;border:1px solid var(--border);border-radius:12px}
+#ct-tabla{width:100%;border-collapse:collapse;min-width:980px}
+#ct-tabla th{background:#1f2430;color:#fff;text-align:left;padding:9px 8px;font-size:.74rem;white-space:nowrap}
+#ct-tabla td{padding:5px 6px;border-bottom:1px solid #eef0f3;vertical-align:top;font-size:.82rem}
+#ct-tabla td input,#ct-tabla td select,#ct-tabla td textarea{padding:6px 7px;border-radius:7px;font-size:.82rem}
+#ct-tabla td textarea{min-height:34px;resize:vertical}
+#ct-tabla .meta{font-size:.68rem;color:var(--dim);display:block;margin-top:2px;white-space:nowrap}
+#ct-tabla .acc{display:flex;gap:4px;flex-wrap:nowrap}
+#ct-tabla tr.nuevo td{background:#fff7e0}
+#ct-tabla tr.t-venta td:first-child{box-shadow:inset 4px 0 0 var(--green)}
+#ct-resumen .chip b{margin-left:4px}
+/* Calculadora de líneas */.calc{padding:14px;max-width:720px}
 .cl-row{display:grid;grid-template-columns:auto 1fr auto;gap:6px 8px;align-items:center;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #eef0f3}
 .cl-row b{font-size:.8rem;white-space:nowrap}
 .cl-row small{grid-column:1/-1;color:var(--muted);font-size:.78rem}
@@ -487,6 +498,30 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     <div class="empty" id="f-none" hidden>No hay preguntas que coincidan con la búsqueda.</div>
   </section>
 
+  <!-- MI PLANILLA DE CONTROL -->
+  <section id="v-control" class="view" hidden>
+    <h1 class="h">Mi Planilla de Control</h1>
+    <p class="sub">En Genesys presiona Ctrl+A y Ctrl+C con el cliente en pantalla, y aquí presiona "Pegar desde Genesys". Todo se puede editar.</p>
+    <div class="note blue" style="margin-bottom:12px">🔒 Los datos quedan guardados solo en este navegador. No se suben a internet ni los ve nadie más. Si limpias la caché del portal, se borran: exporta a Excel antes.</div>
+    <div class="card filters">
+      <div class="f-actions">
+        <button class="btn red" id="ct-pegar">📋 Pegar desde Genesys</button>
+        <button class="btn sm" id="ct-nueva">+ Fila vacía</button>
+        <button class="btn sm" id="ct-excel">⬇ Exportar a Excel</button>
+        <button class="btn sm" id="ct-borrar">Borrar todo</button>
+      </div>
+      <input class="full" type="search" id="ct-q" placeholder="Buscar RUT, nombre o teléfono" autocomplete="off">
+      <select id="ct-periodo"><option value="hoy">Hoy</option><option value="7">Últimos 7 días</option><option value="todo">Todo</option></select>
+      <select id="ct-tipo"><option value="">Todas las tipificaciones</option></select>
+    </div>
+    <div class="chips" id="ct-resumen"></div>
+    <div class="ct-wrap"><table id="ct-tabla">
+      <thead><tr><th>Fecha</th><th>RUT</th><th>Nombre</th><th>Teléfono</th><th>Tipificación</th><th>Plan</th><th>Notas</th><th>Acciones</th></tr></thead>
+      <tbody id="ct-body"></tbody>
+    </table></div>
+    <div class="empty" id="ct-vacio" hidden>No hay llamadas en este período. Pega la primera desde Genesys.</div>
+  </section>
+
   <!-- TUTORIALES -->
   <section id="v-tutoriales" class="view" hidden>
     <h1 class="h">Tutoriales</h1>
@@ -556,6 +591,15 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <img id="g-img" alt="">
   <div class="g-bar"><button class="g-nav" id="g-prev" aria-label="Anterior">‹</button><b id="g-name"></b><button class="g-nav" id="g-next" aria-label="Siguiente">›</button></div>
   <div class="g-act"><button class="btn" id="g-copy">Copiar imagen</button><button class="btn" id="g-dl">Descargar</button><button class="btn dark" data-close>Cerrar</button></div>
+</dialog>
+
+<dialog id="dlg-pegar">
+  <div class="d-head"><div><h2>Pegar desde Genesys</h2><p>Este navegador no permitió leer el portapapeles</p></div><button class="d-x" data-close>✕</button></div>
+  <div class="d-body">
+    <p style="font-size:.86rem">Haz clic en el cuadro, presiona <b>Ctrl+V</b> y luego "Agregar a la planilla".</p>
+    <textarea id="ct-texto" rows="7" placeholder="Pega aquí lo copiado desde Genesys"></textarea>
+    <div class="d-foot"><button class="btn" data-close>Cancelar</button><button class="btn red" id="ct-procesar">Agregar a la planilla</button></div>
+  </div>
 </dialog>
 
 <dialog id="dlg-phone">
@@ -651,6 +695,7 @@ const MENU = [
  {v:'venta',t:'Ingreso de Venta',i:'<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>'},
  {v:'enlaces',t:'Enlaces',i:'<path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>'},
  {v:'galeria',t:'Galería',i:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>'},
+ {v:'control',t:'Mi Planilla',badge:'Nuevo',i:'<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/>'},
  {v:'faq',t:'Preguntas y Respuestas',badge:'Nuevo',i:'<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>'},
  {m:'dlg-exc',t:'Excepciones de Boletas',i:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/>'},
  {v:'tutoriales',t:'Tutoriales',badge:'Nuevo',i:'<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>'},
@@ -736,8 +781,8 @@ const abrir = id => { const d = $('#' + id); if (!d.open) d.showModal(); };
 /* ════════════════════════════════════════════════════════════════
    NAVEGACIÓN
    ════════════════════════════════════════════════════════════════ */
-const VIEWS = ['inicio', 'stock', 'oferta', 'png', 'script', 'venta', 'enlaces', 'galeria', 'faq', 'tutoriales'];
-const INIT = { faq: initFaq, stock: initStock, oferta: initOferta, png: initPng, script: initScript, venta: initVenta, enlaces: initEnlaces, galeria: initGaleria, tutoriales: initTutoriales };
+const VIEWS = ['inicio', 'stock', 'oferta', 'png', 'script', 'control', 'venta', 'enlaces', 'galeria', 'faq', 'tutoriales'];
+const INIT = { control: initControl, faq: initFaq, stock: initStock, oferta: initOferta, png: initPng, script: initScript, venta: initVenta, enlaces: initEnlaces, galeria: initGaleria, tutoriales: initTutoriales };
 const listo = {};
 function route() {
   let v = location.hash.slice(1) || 'inicio';
@@ -1390,6 +1435,126 @@ function initFaq() {
   $('#f-q').addEventListener('input', pinta);
   $('#f-chips').addEventListener('click', e => { const b = e.target.closest('[data-cat]'); if (b) { cat = b.dataset.cat; pinta(); } });
   pinta();
+}
+
+/* ════════════════════════════════════════════════════════════════
+   MI PLANILLA DE CONTROL (datos solo en este navegador)
+   ════════════════════════════════════════════════════════════════ */
+// Códigos de conclusión de Genesys según la Inducción VR (Venta, Buzón de voz, Mudo o corta llamada, No molestar) y otros frecuentes
+const TIPIFICACIONES = ['Venta', 'Volver a llamar', 'Buzón de voz', 'No contesta', 'Mudo o corta llamada', 'No interesado', 'No molestar', 'Ya es cliente Claro', 'Rechazo de evaluación', 'Número equivocado', 'Otro'];
+const CT_KEY = 'clarogo_control_v1';
+let CT = [], ctNuevo = '', ctAviso = false;
+const ctLeer = () => { try { const v = JSON.parse(localStorage.getItem(CT_KEY) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
+const ctGuardar = () => { try { localStorage.setItem(CT_KEY, JSON.stringify(CT)); } catch (e) { if (!ctAviso) { ctAviso = true; toast('No se pudo guardar en este navegador. Exporta a Excel para no perder datos.'); } } };
+const hoyISO = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
+const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+// Lee el texto copiado de Genesys (Ctrl+A, Ctrl+C).
+// El título de la interacción viene como CAMPAÑA|RUT|NOMBRE, por ejemplo CONECTADOS|123456789|NOMBRE APELLIDO.
+function leerGenesys(txt) {
+  const r = {};
+  const tit = txt.match(/([A-ZÁÉÍÓÚÑ0-9_ ]{2,40})\|\s*(\d{1,2}\.?\d{3}\.?\d{3}-?[\dkK])\s*\|?([^\n|(]*)/i);
+  if (tit) { r.campana = tit[1].trim(); r.rut = rutFormato(tit[2]); r.nombre = tit[3].trim().replace(/\s+/g, ' '); }
+  const tel = txt.match(/Tel[eé]fono:\s*\+?\s*56\s*([\d ]{8,14})/i) || txt.match(/\+56\s*(9[\d ]{8,12})/);
+  if (tel) r.telefono = tel[1].replace(/\s+/g, ' ').trim();
+  const cola = txt.match(/\b(COLA_[A-Z0-9_]+)/i);
+  if (cola) r.cola = cola[1];
+  const f = txt.match(/Conectado a la conversaci[oó]n a la\(s\)\s*(\d{1,2}) de (\w+) de (\d{4})\s+(\d{1,2}):(\d{2})\s*([ap])\.?\s*m\.?/i);
+  if (f) {
+    let h = +f[4] % 12; if (f[6].toLowerCase() === 'p') h += 12;
+    const m = MESES.indexOf(f[2].toLowerCase()) + 1, p = n => String(n).padStart(2, '0');
+    if (m) { r.fecha = `${f[3]}-${p(m)}-${p(+f[1])}`; r.hora = `${p(h)}:${f[5]}`; }
+  }
+  return r;
+}
+
+function ctAgregar(datos) {
+  const d = new Date(), p = n => String(n).padStart(2, '0');
+  const fila = Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), fecha: hoyISO(), hora: `${p(d.getHours())}:${p(d.getMinutes())}`, campana: '', cola: '', rut: '', nombre: '', telefono: '', tipo: '', plan: '', notas: '' }, datos);
+  const dup = fila.rut && CT.find(x => x.rut === fila.rut && x.fecha === fila.fecha && x.telefono === fila.telefono);
+  if (dup) { ctNuevo = dup.id; ctPinta(); toast('Este cliente ya está en la planilla de hoy'); return; }
+  CT.unshift(fila); ctNuevo = fila.id; ctGuardar(); ctPinta();
+  if (!datos || (!datos.rut && !datos.telefono)) toast(datos && Object.keys(datos).length === 0 ? 'Fila vacía agregada' : 'No encontré datos de Genesys. Agregué una fila vacía para completar a mano.');
+  else toast('Cliente agregado a la planilla' + (fila.nombre ? '' : '. Falta el nombre: usa el Rutificador.'));
+}
+
+function ctFiltradas() {
+  const per = $('#ct-periodo').value, tipo = $('#ct-tipo').value, q = $('#ct-q').value.trim().toLowerCase();
+  const desde = per === 'hoy' ? hoyISO() : per === '7' ? new Date(Date.now() - 6 * 864e5).toISOString().slice(0, 10) : '';
+  return CT.filter(r => (!desde || r.fecha >= desde) && (!tipo || (tipo === 'Sin tipificar' ? !r.tipo : r.tipo === tipo)) && (!q || [r.rut, r.nombre, r.telefono].join(' ').toLowerCase().includes(q)));
+}
+
+function ctPinta() {
+  const lista = ctFiltradas();
+  const opt = (arr, sel, vacio) => `<option value="">${vacio}</option>` + arr.map(x => `<option${x === sel ? ' selected' : ''}>${esc(x)}</option>`).join('');
+  $('#ct-body').innerHTML = lista.map(r => `<tr data-id="${r.id}" class="${r.id === ctNuevo ? 'nuevo ' : ''}${r.tipo === 'Venta' ? 't-venta' : ''}">
+    <td><input type="date" data-k="fecha" value="${esc(r.fecha)}" style="width:132px"><input type="time" data-k="hora" value="${esc(r.hora)}" style="width:96px;margin-top:4px"><span class="meta">${esc(r.campana || '')}${r.cola ? ' · ' + esc(r.cola.replace(/^COLA_CLARO_/, '')) : ''}</span></td>
+    <td><input data-k="rut" value="${esc(r.rut)}" placeholder="RUT" style="width:118px"></td>
+    <td><input data-k="nombre" value="${esc(r.nombre)}" placeholder="Pegar nombre" style="width:190px"></td>
+    <td><input data-k="telefono" value="${esc(r.telefono)}" placeholder="9 XXXX XXXX" style="width:118px"></td>
+    <td><select data-k="tipo" style="width:150px">${opt(TIPIFICACIONES, r.tipo, 'Sin tipificar')}</select></td>
+    <td><select data-k="plan" style="width:104px">${opt(PLANES_VIGENTES.map(p => p.title), r.plan, 'Sin plan')}</select></td>
+    <td><textarea data-k="notas" rows="1" placeholder="Notas" style="width:190px">${esc(r.notas)}</textarea></td>
+    <td><div class="acc"><button class="btn sm" data-ct="rutificador" title="Copia el RUT y abre el Rutificador">🪪</button><button class="btn sm red" data-ct="script" title="Pasar al Script de Cierre">Script</button><button class="btn sm" data-ct="borrar" title="Borrar fila">✕</button></div></td>
+  </tr>`).join('');
+  $('#ct-vacio').hidden = lista.length > 0;
+  const cuenta = {}; lista.forEach(r => { const k = r.tipo || 'Sin tipificar'; cuenta[k] = (cuenta[k] || 0) + 1; });
+  $('#ct-resumen').innerHTML = `<span class="chip on">Llamadas<b>${lista.length}</b></span>` + Object.keys(cuenta).sort((a, b) => cuenta[b] - cuenta[a]).map(k => `<span class="chip">${esc(k)}<b>${cuenta[k]}</b></span>`).join('');
+}
+
+function ctAScript(r) {
+  location.hash = 'script';
+  setTimeout(() => {
+    const set = (id, v) => { const e = $('#sc-' + id); if (e && v) e.value = v; };
+    set('nombre', r.nombre); set('rut', r.rut); set('fono', r.telefono); set('contacto', r.telefono);
+    const p = PLANES_VIGENTES.find(x => x.title === r.plan); if (p) set('plan', p.id);
+    $('#sc-rut').dispatchEvent(new Event('input', { bubbles: true }));
+    toast('Datos cargados en el Script. Revisa y completa lo que falte.');
+  }, 150);
+}
+
+function ctExcel() {
+  const lista = ctFiltradas(); if (!lista.length) return toast('No hay filas para exportar');
+  const q = s => /[;"\n]/.test(s) ? '"' + String(s).replace(/"/g, '""') + '"' : s;
+  const cols = [['fecha', 'Fecha'], ['hora', 'Hora'], ['campana', 'Campaña'], ['cola', 'Cola'], ['rut', 'RUT'], ['nombre', 'Nombre'], ['telefono', 'Teléfono'], ['tipo', 'Tipificación'], ['plan', 'Plan'], ['notas', 'Notas']];
+  const csv = String.fromCharCode(0xFEFF) + cols.map(c => c[1]).join(';') + '\r\n' + lista.map(r => cols.map(c => q(r[c[0]] || '')).join(';')).join('\r\n') + '\r\n';
+  downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8' }), `planilla-control-${hoyISO()}.csv`);
+  toast('Planilla exportada. Ábrela con Excel.');
+}
+
+function initControl() {
+  CT = ctLeer();
+  $('#ct-tipo').innerHTML = '<option value="">Todas las tipificaciones</option><option>Sin tipificar</option>' + TIPIFICACIONES.map(x => `<option>${x}</option>`).join('');
+  const procesar = txt => ctAgregar(leerGenesys(txt || ''));
+  $('#ct-pegar').onclick = async () => {
+    try { const txt = await navigator.clipboard.readText(); if (!txt.trim()) throw new Error('vacío'); procesar(txt); }
+    catch (e) { $('#ct-texto').value = ''; abrir('dlg-pegar'); setTimeout(() => $('#ct-texto').focus(), 50); }
+  };
+  $('#ct-procesar').onclick = () => { const txt = $('#ct-texto').value; $('#dlg-pegar').close(); procesar(txt); };
+  $('#ct-nueva').onclick = () => ctAgregar({});
+  $('#ct-excel').onclick = ctExcel;
+  $('#ct-borrar').onclick = () => { if (!CT.length) return; if (confirm(`Se borrarán las ${CT.length} filas de la planilla. Esto no se puede deshacer. ¿Exportaste a Excel?`)) { CT = []; ctGuardar(); ctPinta(); } };
+  $('#ct-q').addEventListener('input', ctPinta);
+  $('#ct-periodo').addEventListener('change', ctPinta);
+  $('#ct-tipo').addEventListener('change', ctPinta);
+  const body = $('#ct-body');
+  const actualizar = e => {
+    const el = e.target.closest('[data-k]'); if (!el) return;
+    const r = CT.find(x => x.id === el.closest('tr').dataset.id); if (!r) return;
+    if (el.dataset.k === 'rut' && e.type === 'change') el.value = rutFormato(el.value);
+    r[el.dataset.k] = el.value; ctGuardar();
+    if (el.dataset.k === 'tipo') el.closest('tr').classList.toggle('t-venta', el.value === 'Venta');
+  };
+  body.addEventListener('input', actualizar);
+  body.addEventListener('change', actualizar);
+  body.addEventListener('click', e => {
+    const b = e.target.closest('[data-ct]'); if (!b) return;
+    const r = CT.find(x => x.id === b.closest('tr').dataset.id); if (!r) return;
+    if (b.dataset.ct === 'borrar' && confirm('¿Borrar esta fila?')) { CT = CT.filter(x => x !== r); ctGuardar(); ctPinta(); }
+    if (b.dataset.ct === 'script') ctAScript(r);
+    if (b.dataset.ct === 'rutificador') { if (r.rut) copyText(r.rut, 'RUT copiado. Pégalo en el Rutificador.'); window.open('https://www.nombrerutyfirma.com/', '_blank', 'noopener'); }
+  });
+  ctPinta();
 }
 
 /* ════════════════════════════════════════════════════════════════
