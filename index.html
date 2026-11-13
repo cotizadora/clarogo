@@ -323,6 +323,13 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 @media (max-width:1000px){.c-hora,.c-plan{display:none}.c-notas{width:18%}}
 @media (max-width:720px){.c-fecha,.c-notas,.c-tel{display:none}.c-tipo{width:96px}.c-rut{width:84px}.c-n{width:24px}.c-acc{width:48px} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
 #ct-resumen .chip b{margin-left:4px}
+.resp{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:.84rem}
+.resp .resp-b{display:flex;gap:6px;flex-wrap:wrap}
+.ct-rango{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.ct-rango label{margin:0}
+.ct-rango input{width:auto}
+#ct-tabla tr.borrado td input,#ct-tabla tr.borrado td select{text-decoration:line-through;color:#9aa0a6}
+@media (min-width:640px){#v-control .filters{grid-template-columns:2fr 1fr 1fr 1fr auto}}
 /* Calculadora de líneas */.calc{padding:14px;max-width:720px}
 .cl-row{display:grid;grid-template-columns:auto 1fr auto;gap:6px 8px;align-items:center;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #eef0f3}
 .cl-row b{font-size:.8rem;white-space:nowrap}
@@ -516,21 +523,22 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <!-- MI PLANILLA DE CONTROL -->
   <section id="v-control" class="view" hidden>
     <h1 class="h">Mi Planilla de Control</h1>
-    <p class="sub">En Genesys presiona Ctrl+A y Ctrl+C con el cliente en pantalla, y aquí presiona "Pegar desde Genesys". Todo se puede editar.</p>
-    <div class="note blue" style="margin-bottom:12px">🔒 Los datos quedan guardados solo en este navegador. No se suben a internet ni los ve nadie más. Si limpias la caché del portal, se borran: exporta a Excel antes.</div>
+    <p class="sub">En Genesys presiona Ctrl+A y Ctrl+C con el cliente en pantalla, y aquí presiona "Pegar desde Genesys". Todo se puede editar y ningún registro se pierde.</p>
+    <div id="ct-resp" class="note resp"></div>
     <div class="card filters">
       <div class="f-actions">
         <button class="btn red" id="ct-pegar">📋 Pegar desde Genesys</button>
         <button class="btn sm" id="ct-nueva">+ Fila vacía</button>
         <button class="btn sm" id="ct-excel">⬇ Exportar a Excel</button>
-        <button class="btn sm" id="ct-borrar">Borrar todo</button>
       </div>
-      <input class="full" type="search" id="ct-q" placeholder="Buscar RUT, nombre o teléfono" autocomplete="off">
-      <select id="ct-periodo"><option value="hoy">Hoy</option><option value="7">Últimos 7 días</option><option value="todo">Todo</option></select>
+      <input class="full" type="search" id="ct-q" placeholder="Buscar RUT, nombre, teléfono o notas" autocomplete="off">
+      <select id="ct-periodo"><option value="hoy">Hoy</option><option value="7">Últimos 7 días</option><option value="30">Últimos 30 días</option><option value="mes">Este mes</option><option value="rango">Entre fechas</option><option value="todo">Todo el historial</option></select>
       <select id="ct-tipo"><option value="">Todas las tipificaciones</option></select>
+      <select id="ct-seg"><option value="">Todos los segmentos</option></select>
+      <div class="ct-rango full" id="ct-rango" hidden><label for="ct-desde">Desde</label><input type="date" id="ct-desde"><label for="ct-hasta">Hasta</label><input type="date" id="ct-hasta"></div>
+      <label class="chk"><input type="checkbox" id="ct-verborr"> Ver borrados</label>
     </div>
-    <div class="chips" id="ct-resumen"></div>
-    <div class="ct-wrap"><table id="ct-tabla">
+    <div class="chips" id="ct-resumen"></div>    <div class="ct-wrap"><table id="ct-tabla">
       <colgroup><col class="c-n"><col class="c-fecha"><col class="c-hora"><col class="c-rut"><col class="c-nombre"><col class="c-tel"><col class="c-tipo"><col class="c-plan"><col class="c-notas"><col class="c-acc"></colgroup>
       <thead><tr><th class="c-n"></th><th class="c-fecha">Fecha</th><th class="c-hora">Hora</th><th class="c-rut">RUT</th><th class="c-nombre">Nombre</th><th class="c-tel">Teléfono</th><th class="c-tipo">Tipificación</th><th class="c-plan">Plan</th><th class="c-notas">Notas</th><th class="c-acc"></th></tr></thead>
       <tbody id="ct-body"></tbody>
@@ -1454,18 +1462,131 @@ function initFaq() {
 }
 
 /* ════════════════════════════════════════════════════════════════
-   MI PLANILLA DE CONTROL (datos solo en este navegador)
+   MI PLANILLA DE CONTROL
+   Los registros nunca se eliminan: borrar solo los marca como borrados.
+   Copia 1: almacenamiento local del navegador.
+   Copia 2: un archivo único en el PC (Chrome y Edge), que se reemplaza en cada guardado
+   y que comparten todos los navegadores del mismo PC.
    ════════════════════════════════════════════════════════════════ */
 // Códigos de conclusión de Genesys según la Inducción VR (Venta, Buzón de voz, Mudo o corta llamada, No molestar) y otros frecuentes
 const TIPIFICACIONES = ['Venta', 'Volver a llamar', 'Buzón de voz', 'No contesta', 'Mudo o corta llamada', 'No interesado', 'No molestar', 'Ya es cliente Claro', 'Rechazo de evaluación', 'Número equivocado', 'Otro'];
 const CT_KEY = 'clarogo_control_v1';
-let CT = [], ctNuevo = '', ctAviso = false;
-const ctLeer = () => { try { const v = JSON.parse(localStorage.getItem(CT_KEY) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
-const ctGuardar = () => { try { localStorage.setItem(CT_KEY, JSON.stringify(CT)); } catch (e) { if (!ctAviso) { ctAviso = true; toast('No se pudo guardar en este navegador. Exporta a Excel para no perder datos.'); } } };
+const ARCH_NOMBRE = 'ClaroGo-planilla-control.json';
+const AUTO_MIN = 30;           // guardado programado
+const AUTO_EDIT_SEG = 4;       // guardado después de cada cambio
+let CT = [], ctNuevo = '', ctAviso = false, ctListo = false, ctTimer = 0;
 const hoyISO = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
+const isoMenos = dias => { const d = new Date(Date.now() - dias * 864e5), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+const ctSeg = r => [r.campana, (r.cola || '').replace(/^COLA_CLARO_/, '')].filter(Boolean).join(' · ') || 'Sin segmento';
 
-// Lee el texto copiado de Genesys (Ctrl+A, Ctrl+C).
+const ctLeerLocal = () => { try { const v = JSON.parse(localStorage.getItem(CT_KEY) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
+const ctGuardarLocal = () => { try { localStorage.setItem(CT_KEY, JSON.stringify(CT)); } catch (e) { if (!ctAviso) { ctAviso = true; toast('El navegador no dejó guardar la copia local. Revisa que el archivo de respaldo esté activo.'); } } };
+// Cada cambio: copia local inmediata y guardado en el archivo a los pocos segundos
+function ctGuardar() { ctGuardarLocal(); clearTimeout(ctTimer); ctTimer = setTimeout(() => respSync('edición'), AUTO_EDIT_SEG * 1000); }
+
+// Une dos listas sin perder registros: si un registro está en ambas, gana la versión editada más tarde
+function ctMezclar(a, b) {
+  const m = new Map();
+  [...a, ...b].forEach(r => { if (!r || !r.id) return; const x = m.get(r.id); if (!x || (r.upd || 0) > (x.upd || 0)) m.set(r.id, r); });
+  return [...m.values()].sort((x, y) => ((y.fecha || '') + (y.hora || '')).localeCompare((x.fecha || '') + (x.hora || '')) || (y.upd || 0) - (x.upd || 0));
+}
+
+/* ── Archivo de respaldo en el PC ───────────────────────────────── */
+const soportaArchivo = 'showSaveFilePicker' in window && 'showOpenFilePicker' in window;
+const RESP = { handle: null, estado: soportaArchivo ? 'sin' : 'noSoportado', ultimo: 0, error: '' };
+const TIPO_ARCH = [{ description: 'Planilla ClaroGo!', accept: { 'application/json': ['.json'] } }];
+// Guarda en IndexedDB qué archivo eligió el usuario (es la única forma de recordarlo entre visitas)
+const idb = (op, val) => new Promise(res => {
+  try {
+    const rq = indexedDB.open('clarogo-respaldo', 1);
+    rq.onupgradeneeded = () => rq.result.createObjectStore('kv');
+    rq.onerror = () => res(null);
+    rq.onsuccess = () => {
+      const tx = rq.result.transaction('kv', op === 'get' ? 'readonly' : 'readwrite'), st = tx.objectStore('kv');
+      const r = op === 'get' ? st.get('archivo') : st.put(val, 'archivo');
+      r.onsuccess = () => res(op === 'get' ? (r.result || null) : true); r.onerror = () => res(null);
+    };
+  } catch (e) { res(null); }
+});
+async function respLeer() {
+  const txt = await (await RESP.handle.getFile()).text();
+  if (!txt.trim()) return [];
+  const d = JSON.parse(txt);                       // si el archivo está dañado, lanza error y NO se sobrescribe
+  return Array.isArray(d) ? d : (Array.isArray(d.registros) ? d.registros : []);
+}
+let respEnCurso = null;
+function respSync(motivo) {
+  if (!RESP.handle || RESP.estado === 'noSoportado') return Promise.resolve(false);
+  if (respEnCurso) return respEnCurso;
+  respEnCurso = (async () => {
+    try {
+      if ((await RESP.handle.queryPermission({ mode: 'readwrite' })) !== 'granted') { RESP.estado = 'permiso'; respPinta(); return false; }
+      const antes = JSON.stringify(CT);
+      CT = ctMezclar(CT, await respLeer());
+      const cambio = JSON.stringify(CT) !== antes;
+      ctGuardarLocal();
+      const w = await RESP.handle.createWritable();
+      await w.write(JSON.stringify({ app: 'ClaroGo!', version: 1, guardado: new Date().toISOString(), registros: CT }));
+      await w.close();
+      RESP.estado = 'ok'; RESP.ultimo = Date.now(); RESP.error = '';
+      if (cambio && ctListo && !$('#ct-body').contains(document.activeElement)) ctPinta();
+      respPinta();
+      return true;
+    } catch (e) {
+      RESP.estado = 'error'; RESP.error = (e && e.message) || String(e); respPinta();
+      return false;
+    } finally { respEnCurso = null; }
+  })();
+  return respEnCurso;
+}
+async function respElegir(nuevo) {
+  try {
+    const h = nuevo
+      ? await window.showSaveFilePicker({ suggestedName: ARCH_NOMBRE, startIn: 'documents', types: TIPO_ARCH })
+      : (await window.showOpenFilePicker({ startIn: 'documents', types: TIPO_ARCH, multiple: false }))[0];
+    if ((await h.requestPermission({ mode: 'readwrite' })) !== 'granted') return toast('Sin permiso no se puede guardar en el archivo');
+    RESP.handle = h; await idb('put', h);
+    if (await respSync('elegido')) toast(`Listo. La planilla se guarda en ${h.name}`);
+  } catch (e) { if (e && e.name !== 'AbortError') toast('No se pudo usar ese archivo: ' + e.message); }
+}
+async function respAutorizar() {
+  try { if ((await RESP.handle.requestPermission({ mode: 'readwrite' })) === 'granted') { await respSync('autorizado'); toast('Guardado automático activado'); } }
+  catch (e) { toast('No se pudo autorizar: ' + e.message); }
+}
+function respPinta() {
+  const el = $('#ct-resp'); if (!el) return;
+  const hora = RESP.ultimo ? new Date(RESP.ultimo).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }) : '';
+  const nom = RESP.handle ? esc(RESP.handle.name) : '';
+  const B = (id, txt, cls) => `<button class="btn sm ${cls || ''}" data-resp="${id}">${txt}</button>`;
+  const v = {
+    noSoportado: ['red', `⚠️ Este navegador no permite guardar en un archivo del PC. Usa <b>Chrome</b> o <b>Edge</b> para el guardado automático. Mientras tanto los datos quedan solo en este navegador: exporta a Excel al terminar el día.`, ''],
+    sin: ['', `💾 <b>Elige una sola vez dónde guardar tu planilla.</b> Desde ahí se guarda sola. Si ya la creaste en otro navegador de este PC, elige "Usar archivo existente" y selecciona el mismo archivo para que queden sincronizados.`, B('crear', 'Crear archivo nuevo', 'red') + B('usar', 'Usar archivo existente')],
+    permiso: ['', `🔑 Para seguir guardando en <b>${nom}</b>, autoriza el archivo. Si el navegador lo ofrece, elige "Permitir en cada visita" y no te lo volverá a pedir.`, B('autorizar', 'Autorizar', 'red')],
+    ok: ['green', `✅ Guardado automático activo en <b>${nom}</b>${hora ? ' · último guardado ' + hora : ''}. Se guarda al editar, cada ${AUTO_MIN} minutos y al salir.`, B('ahora', 'Guardar ahora') + B('usar', 'Cambiar archivo')],
+    error: ['red', `⚠️ No se pudo guardar en <b>${nom}</b> (${esc(RESP.error)}). Tus datos siguen guardados en este navegador.`, B('ahora', 'Reintentar', 'red') + B('usar', 'Elegir otro archivo')]
+  }[RESP.estado];
+  el.className = 'note resp ' + v[0];
+  el.innerHTML = `<span>${v[1]}</span><span class="resp-b">${v[2]}</span>`;
+}
+async function iniciarRespaldo() {
+  CT = ctLeerLocal();
+  if (soportaArchivo) {
+    RESP.handle = await idb('get');
+    if (RESP.handle) {
+      try { RESP.estado = (await RESP.handle.queryPermission({ mode: 'readwrite' })) === 'granted' ? 'ok' : 'permiso'; } catch (e) { RESP.estado = 'permiso'; }
+      if (RESP.estado === 'ok') await respSync('inicio');
+    }
+  }
+  respPinta();
+  setInterval(() => respSync('programado'), AUTO_MIN * 60000);
+  document.addEventListener('visibilitychange', () => respSync(document.hidden ? 'oculto' : 'visible'));
+  window.addEventListener('pagehide', () => respSync('cierre'));
+  window.addEventListener('focus', () => respSync('foco'));
+  window.addEventListener('hashchange', () => respSync('sección'));
+}
+
+/* ── Lectura de Genesys ─────────────────────────────────────────── */
 // El título de la interacción viene como CAMPAÑA|RUT|NOMBRE, por ejemplo CONECTADOS|123456789|NOMBRE APELLIDO.
 function leerGenesys(txt) {
   const r = {};
@@ -1484,28 +1605,40 @@ function leerGenesys(txt) {
   return r;
 }
 
+/* ── Planilla ───────────────────────────────────────────────────── */
 function ctAgregar(datos) {
   const d = new Date(), p = n => String(n).padStart(2, '0');
-  const fila = Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), fecha: hoyISO(), hora: `${p(d.getHours())}:${p(d.getMinutes())}`, campana: '', cola: '', rut: '', nombre: '', telefono: '', tipo: '', plan: '', notas: '' }, datos);
-  const dup = fila.rut && CT.find(x => x.rut === fila.rut && x.fecha === fila.fecha && x.telefono === fila.telefono);
+  const fila = Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), fecha: hoyISO(), hora: `${p(d.getHours())}:${p(d.getMinutes())}`, campana: '', cola: '', rut: '', nombre: '', telefono: '', tipo: '', plan: '', notas: '' }, datos, { upd: Date.now() });
+  const dup = fila.rut && CT.find(x => !x.borrado && x.rut === fila.rut && x.fecha === fila.fecha && x.telefono === fila.telefono);
   if (dup) { ctNuevo = dup.id; ctPinta(); toast('Este cliente ya está en la planilla de hoy'); return; }
   CT.unshift(fila); ctNuevo = fila.id; ctGuardar(); ctPinta();
   if (!datos || (!datos.rut && !datos.telefono)) toast(datos && Object.keys(datos).length === 0 ? 'Fila vacía agregada' : 'No encontré datos de Genesys. Agregué una fila vacía para completar a mano.');
   else toast('Cliente agregado a la planilla' + (fila.nombre ? '' : '. Falta el nombre: usa el Rutificador.'));
 }
-
-function ctFiltradas() {
-  const per = $('#ct-periodo').value, tipo = $('#ct-tipo').value, q = $('#ct-q').value.trim().toLowerCase();
-  const desde = per === 'hoy' ? hoyISO() : per === '7' ? new Date(Date.now() - 6 * 864e5).toISOString().slice(0, 10) : '';
-  return CT.filter(r => (!desde || r.fecha >= desde) && (!tipo || (tipo === 'Sin tipificar' ? !r.tipo : r.tipo === tipo)) && (!q || [r.rut, r.nombre, r.telefono].join(' ').toLowerCase().includes(q)));
+function ctRango() {
+  const per = $('#ct-periodo').value;
+  if (per === 'hoy') return [hoyISO(), ''];
+  if (per === '7') return [isoMenos(6), ''];
+  if (per === '30') return [isoMenos(29), ''];
+  if (per === 'mes') return [hoyISO().slice(0, 8) + '01', ''];
+  if (per === 'rango') return [$('#ct-desde').value, $('#ct-hasta').value];
+  return ['', ''];
 }
-
+function ctFiltradas() {
+  const [desde, hasta] = ctRango(), tipo = $('#ct-tipo').value, seg = $('#ct-seg').value, q = $('#ct-q').value.trim().toLowerCase(), verBorr = $('#ct-verborr').checked;
+  return CT.filter(r => (verBorr ? r.borrado : !r.borrado) && (!desde || r.fecha >= desde) && (!hasta || r.fecha <= hasta)
+    && (!tipo || (tipo === 'Sin tipificar' ? !r.tipo : r.tipo === tipo)) && (!seg || ctSeg(r) === seg)
+    && (!q || [r.rut, r.nombre, r.telefono, r.notas].join(' ').toLowerCase().includes(q)));
+}
 function ctPinta() {
-  const lista = ctFiltradas();
+  if (!ctListo) return;
+  const segs = [...new Set(CT.filter(r => !r.borrado).map(ctSeg))].sort(), selSeg = $('#ct-seg').value;
+  $('#ct-seg').innerHTML = '<option value="">Todos los segmentos</option>' + segs.map(s => `<option${s === selSeg ? ' selected' : ''}>${esc(s)}</option>`).join('');
+  const lista = ctFiltradas(), verBorr = $('#ct-verborr').checked;
   const opt = (arr, sel, vacio) => `<option value="">${vacio}</option>` + arr.map(x => `<option${x === sel ? ' selected' : ''}>${esc(x)}</option>`).join('');
   const fmtF = iso => { const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/); return m ? `${m[3]}-${m[2]}-${m[1]}` : iso; };
-  $('#ct-body').innerHTML = lista.map((r, i) => `<tr data-id="${r.id}" class="${r.id === ctNuevo ? 'nuevo ' : ''}${r.tipo === 'Venta' ? 't-venta' : ''}">
-    <td class="c-n" title="${esc([r.campana, r.cola].filter(Boolean).join(' · '))}">${i + 1}</td>
+  $('#ct-body').innerHTML = lista.map((r, i) => `<tr data-id="${r.id}" class="${r.id === ctNuevo ? 'nuevo ' : ''}${r.tipo === 'Venta' ? 't-venta ' : ''}${r.borrado ? 'borrado' : ''}">
+    <td class="c-n" title="${esc(ctSeg(r))}">${i + 1}</td>
     <td class="c-fecha"><input data-k="fecha" value="${esc(fmtF(r.fecha))}" placeholder="DD-MM-AAAA" title="${esc(fmtF(r.fecha))}"></td>
     <td class="c-hora"><input data-k="hora" value="${esc(r.hora)}" placeholder="HH:MM"></td>
     <td class="c-rut"><input data-k="rut" value="${esc(r.rut)}" placeholder="RUT" title="${esc(r.rut)}"></td>
@@ -1514,13 +1647,16 @@ function ctPinta() {
     <td class="c-tipo"><select data-k="tipo">${opt(TIPIFICACIONES, r.tipo, 'Sin tipificar')}</select></td>
     <td class="c-plan"><select data-k="plan">${opt(PLANES_VIGENTES.map(p => p.title), r.plan, 'Sin plan')}</select></td>
     <td class="c-notas"><input data-k="notas" value="${esc(r.notas)}" placeholder="Notas" title="${esc(r.notas)}"></td>
-    <td class="c-acc"><div class="acc"><button data-ct="rutificador" class="rutif" title="Copiar RUT y abrir Rutificador">🪪</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar fila">✕</button></div></td>
+    <td class="c-acc"><div class="acc">${r.borrado
+      ? `<button data-ct="restaurar" class="go" title="Recuperar registro">↺</button>`
+      : `<button data-ct="rutificador" class="rutif" title="Copiar RUT y abrir Rutificador">🪪</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
   </tr>`).join('');
   $('#ct-vacio').hidden = lista.length > 0;
+  $('#ct-vacio').textContent = verBorr ? 'No hay registros borrados en este período.' : 'No hay llamadas en este período. Pega la primera desde Genesys.';
   const cuenta = {}; lista.forEach(r => { const k = r.tipo || 'Sin tipificar'; cuenta[k] = (cuenta[k] || 0) + 1; });
-  $('#ct-resumen').innerHTML = `<span class="chip on">Llamadas<b>${lista.length}</b></span>` + Object.keys(cuenta).sort((a, b) => cuenta[b] - cuenta[a]).map(k => `<span class="chip">${esc(k)}<b>${cuenta[k]}</b></span>`).join('');
+  $('#ct-resumen').innerHTML = `<span class="chip on">${verBorr ? 'Borrados' : 'Llamadas'}<b>${lista.length}</b></span>` + Object.keys(cuenta).sort((a, b) => cuenta[b] - cuenta[a]).map(k => `<span class="chip">${esc(k)}<b>${cuenta[k]}</b></span>`).join('')
+    + `<span class="chip">Total histórico<b>${CT.filter(r => !r.borrado).length}</b></span>`;
 }
-
 function ctAScript(r) {
   location.hash = 'script';
   setTimeout(() => {
@@ -1531,19 +1667,18 @@ function ctAScript(r) {
     toast('Datos cargados en el Script. Revisa y completa lo que falte.');
   }, 150);
 }
-
 function ctExcel() {
   const lista = ctFiltradas(); if (!lista.length) return toast('No hay filas para exportar');
   const q = s => /[;"\n]/.test(s) ? '"' + String(s).replace(/"/g, '""') + '"' : s;
   const cols = [['fecha', 'Fecha'], ['hora', 'Hora'], ['campana', 'Campaña'], ['cola', 'Cola'], ['rut', 'RUT'], ['nombre', 'Nombre'], ['telefono', 'Teléfono'], ['tipo', 'Tipificación'], ['plan', 'Plan'], ['notas', 'Notas']];
   const csv = String.fromCharCode(0xFEFF) + cols.map(c => c[1]).join(';') + '\r\n' + lista.map(r => cols.map(c => q(r[c[0]] || '')).join(';')).join('\r\n') + '\r\n';
   downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8' }), `planilla-control-${hoyISO()}.csv`);
-  toast('Planilla exportada. Ábrela con Excel.');
+  toast(`${lista.length} registros exportados. Ábrelo con Excel.`);
 }
-
 function initControl() {
-  CT = ctLeer();
+  ctListo = true;
   $('#ct-tipo').innerHTML = '<option value="">Todas las tipificaciones</option><option>Sin tipificar</option>' + TIPIFICACIONES.map(x => `<option>${x}</option>`).join('');
+  $('#ct-desde').value = isoMenos(6); $('#ct-hasta').value = hoyISO();
   const procesar = txt => ctAgregar(leerGenesys(txt || ''));
   $('#ct-pegar').onclick = async () => {
     try { const txt = await navigator.clipboard.readText(); if (!txt.trim()) throw new Error('vacío'); procesar(txt); }
@@ -1552,28 +1687,35 @@ function initControl() {
   $('#ct-procesar').onclick = () => { const txt = $('#ct-texto').value; $('#dlg-pegar').close(); procesar(txt); };
   $('#ct-nueva').onclick = () => ctAgregar({});
   $('#ct-excel').onclick = ctExcel;
-  $('#ct-borrar').onclick = () => { if (!CT.length) return; if (confirm(`Se borrarán las ${CT.length} filas de la planilla. Esto no se puede deshacer. ¿Exportaste a Excel?`)) { CT = []; ctGuardar(); ctPinta(); } };
   $('#ct-q').addEventListener('input', ctPinta);
-  $('#ct-periodo').addEventListener('change', ctPinta);
-  $('#ct-tipo').addEventListener('change', ctPinta);
+  ['#ct-tipo', '#ct-seg', '#ct-desde', '#ct-hasta', '#ct-verborr'].forEach(s => $(s).addEventListener('change', ctPinta));
+  $('#ct-periodo').addEventListener('change', () => { $('#ct-rango').hidden = $('#ct-periodo').value !== 'rango'; ctPinta(); });
+  $('#ct-resp').addEventListener('click', e => {
+    const b = e.target.closest('[data-resp]'); if (!b) return;
+    ({ crear: () => respElegir(true), usar: () => respElegir(false), autorizar: respAutorizar, ahora: async () => { if (await respSync('manual')) toast('Planilla guardada'); } })[b.dataset.resp]();
+  });
   const body = $('#ct-body');
   const actualizar = e => {
     const el = e.target.closest('[data-k]'); if (!el) return;
     const r = CT.find(x => x.id === el.closest('tr').dataset.id); if (!r) return;
     if (el.dataset.k === 'rut' && e.type === 'change') el.value = rutFormato(el.value);
-    if (el.dataset.k === 'fecha') { const m = el.value.trim().match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/); if (!m) return; r.fecha = `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`; ctGuardar(); return; }
-    el.title = el.value; r[el.dataset.k] = el.value; ctGuardar();
+    if (el.dataset.k === 'fecha') { const m = el.value.trim().match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/); if (!m) return; r.fecha = `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`; }
+    else { el.title = el.value; r[el.dataset.k] = el.value; }
+    r.upd = Date.now(); ctGuardar();
     if (el.dataset.k === 'tipo') el.closest('tr').classList.toggle('t-venta', el.value === 'Venta');
   };
   body.addEventListener('input', actualizar);
   body.addEventListener('change', actualizar);
+  body.addEventListener('focusout', () => setTimeout(() => { if (!body.contains(document.activeElement)) respSync('edición'); }, 50));
   body.addEventListener('click', e => {
     const b = e.target.closest('[data-ct]'); if (!b) return;
     const r = CT.find(x => x.id === b.closest('tr').dataset.id); if (!r) return;
-    if (b.dataset.ct === 'borrar' && confirm('¿Borrar esta fila?')) { CT = CT.filter(x => x !== r); ctGuardar(); ctPinta(); }
+    if (b.dataset.ct === 'borrar') { r.borrado = true; r.upd = Date.now(); ctGuardar(); ctPinta(); toast('Registro borrado. Puedes recuperarlo con "Ver borrados".'); }
+    if (b.dataset.ct === 'restaurar') { r.borrado = false; r.upd = Date.now(); ctGuardar(); ctPinta(); toast('Registro recuperado'); }
     if (b.dataset.ct === 'script') ctAScript(r);
     if (b.dataset.ct === 'rutificador') { if (r.rut) copyText(r.rut, 'RUT copiado. Pégalo en el Rutificador.'); window.open('https://www.nombrerutyfirma.com/', '_blank', 'noopener'); }
   });
+  respPinta();
   ctPinta();
 }
 
@@ -1607,25 +1749,27 @@ function initSugerencias() {
    Borra cookies, localStorage, sessionStorage, Cache API, Service Workers e IndexedDB de este sitio.
    ════════════════════════════════════════════════════════════════ */
 async function limpiarCache() {
-  if (!confirm('Esto borra los datos que este sitio guardó en tu navegador (cookies, almacenamiento local y caché) y recarga la página. También se borra tu nombre guardado en el Script. ¿Continuar?')) return;
+  if (!confirm('Esto borra cookies, caché y datos temporales del portal y recarga la página. Tu planilla de control NO se borra. ¿Continuar?')) return;
+  try { await respSync('limpieza'); } catch (e) {}
+  let planilla = null; try { planilla = localStorage.getItem(CT_KEY); } catch (e) {}
   try {
     document.cookie.split(';').forEach(c => {
       const name = c.split('=')[0].trim(); if (!name) return;
       [location.hostname, '.' + location.hostname, ''].forEach(dom => { document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/' + (dom ? ';domain=' + dom : ''); });
     });
   } catch (e) {}
-  try { localStorage.clear(); } catch (e) {}
+  try { localStorage.clear(); if (planilla) localStorage.setItem(CT_KEY, planilla); } catch (e) {}
   try { sessionStorage.clear(); } catch (e) {}
   try { if (window.caches) await Promise.all((await caches.keys()).map(k => caches.delete(k))); } catch (e) {}
   try { if ('serviceWorker' in navigator) await Promise.all((await navigator.serviceWorker.getRegistrations()).map(r => r.unregister())); } catch (e) {}
-  try { if (window.indexedDB && indexedDB.databases) await Promise.all((await indexedDB.databases()).map(db => new Promise(res => { const r = indexedDB.deleteDatabase(db.name); r.onsuccess = r.onerror = r.onblocked = res; }))); } catch (e) {}
+  try { if (window.indexedDB && indexedDB.databases) await Promise.all((await indexedDB.databases()).filter(db => db.name !== 'clarogo-respaldo').map(db => new Promise(res => { const r = indexedDB.deleteDatabase(db.name); r.onsuccess = r.onerror = r.onblocked = res; }))); } catch (e) {}
   location.reload();
 }
 
 /* ════════════════════════════════════════════════════════════════
    INICIO
    ════════════════════════════════════════════════════════════════ */
-initMenu(); initExcepciones(); initSugerencias();
+initMenu(); initExcepciones(); initSugerencias(); iniciarRespaldo();
 $('#cache-btn').onclick = limpiarCache;
 window.addEventListener('hashchange', route);
 route();

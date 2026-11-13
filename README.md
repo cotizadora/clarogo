@@ -36,6 +36,16 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: Mi Planilla nunca pierde registros
+
+- Guardado en un archivo único del PC (`ClaroGo-planilla-control.json`, sugerido en Documentos). Se elige una sola vez por navegador y se reemplaza en cada guardado, sin acumular copias. Funciona en Chrome y Edge.
+- Todos los navegadores del mismo PC que apunten a ese archivo quedan sincronizados. Al sincronizar se mezclan los registros: si uno cambió en dos lados, gana la versión editada más tarde.
+- Se guarda solo: a los 4 segundos de cada cambio, cada 30 minutos, al cambiar de sección, al cambiar de pestaña o minimizar y al cerrar el navegador. Requiere que ClaroGo! esté abierto en alguna pestaña.
+- Copia local en el navegador además del archivo. Si el archivo está dañado, no se sobrescribe y se avisa.
+- Borrar ya no elimina: marca el registro como borrado y se recupera con "Ver borrados". Se quitó el botón "Borrar todo".
+- Historial filtrable por período (hoy, 7 días, 30 días, este mes, entre fechas, todo), segmento (campaña y cola), tipificación y texto.
+- Limpiar caché ahora guarda la planilla antes y no la borra, ni tampoco el archivo elegido.
+
 ### 13-11-2026: Mi Planilla con estilo de hoja de cálculo
 
 - Una línea por registro y sin scroll horizontal: las columnas se ajustan al ancho de la pantalla.
