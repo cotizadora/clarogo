@@ -334,7 +334,19 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .ct-rango input{width:auto}
 #ct-tabla tr.borrado td input,#ct-tabla tr.borrado td select{text-decoration:line-through;color:#9aa0a6}
 @media (min-width:640px){#v-control .filters{grid-template-columns:2fr 1fr 1fr 1fr auto}}
-/* Calculadora de líneas */.calc{padding:14px;max-width:720px}
+/* Calculadora de líneas *//* Vista previa idéntica a lo que se copia */
+.lamcard{padding:0;display:flex;flex-direction:column;overflow:hidden}
+.lam{padding:12px 12px 6px;background:#eef0f4}
+.lam-img{display:block;width:100%;max-width:380px;height:auto;margin:0 auto;border-radius:10px;box-shadow:0 2px 10px rgba(20,25,50,.12);background:#fff}
+.lam-ancha .lam-img{max-width:100%}
+.lam-txt{margin:10px auto 4px;max-width:380px}
+.lam-ancha .lam-txt{max-width:none}
+.lam-txt summary{cursor:pointer;font-size:.78rem;font-weight:600;color:var(--muted)}
+.lam-txt pre{white-space:pre-wrap;font-family:inherit;font-size:.78rem;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px;margin:6px 0 0;max-height:280px;overflow:auto}
+.lamcard .plan-btns{padding:10px 12px 12px;background:#fff}
+.calc{padding:14px;display:grid;gap:14px}
+.calc-out .lam{border-radius:12px}
+@media (min-width:900px){.calc{grid-template-columns:minmax(0,1fr) 400px;align-items:start}}
 .cl-row{display:grid;grid-template-columns:auto 1fr auto;gap:6px 8px;align-items:center;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #eef0f3}
 .cl-row b{font-size:.8rem;white-space:nowrap}
 .cl-row small{grid-column:1/-1;color:var(--muted);font-size:.78rem}
@@ -428,20 +440,23 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     <div class="sec-t" style="margin-top:28px">Calculadora de <em>líneas</em></div>
     <p class="sub">Arma la cotización línea por línea. Puedes mezclar planes distintos y sumar líneas adicionales al plan base.</p>
     <div class="card calc">
-      <div id="cl-rows"></div>
-      <button class="btn sm" id="cl-add">+ Agregar línea</button>
-      <div id="cl-warn"></div>
-      <div id="cl-tot"></div>
-      <div class="plan-btns" style="padding:0"><button class="btn" id="cl-cap">📸 Copiar lámina</button><button class="btn red" id="cl-msg">📋 Copiar texto</button></div>
-    </div>
-  </section>
+      <div class="calc-ctrl">
+        <div id="cl-rows"></div>
+        <button class="btn sm" id="cl-add">+ Agregar línea</button>
+        <div id="cl-warn"></div>
+      </div>
+      <div class="calc-out">
+        <div id="cl-lam" class="lam"></div>
+        <div class="plan-btns" style="padding:0"><button class="btn" id="cl-cap">📸 Copiar lámina</button><button class="btn red" id="cl-msg">📋 Copiar texto</button></div>
+      </div>
+    </div>  </section>
 
   <!-- OFERTA PNG -->
   <section id="v-png" class="view" hidden>
     <h1 class="h">Oferta PNG</h1>
     <p class="sub">Oferta Móvil PYME para portabilidad. Valores mensuales por línea, sin IVA. El IVA se calcula con 19%.</p>
     <div class="note green" style="margin-bottom:12px">Aplica para clientes PYME con <b>RUT mayor a 50 millones</b>. Considera estos valores al momento de ofertar y registrar la venta.</div>
-    <p style="margin-bottom:14px"><button class="btn dark" id="p-todos">📸 Capturar tabla de precios</button></p>
+    <div class="card lamcard lam-ancha"><div id="p-tabla" class="lam"></div><div class="plan-btns"><button class="btn dark" id="p-todos">📸 Copiar tabla de precios</button></div></div>
     <div class="plans" id="p-grid"></div>
   </section>
 
@@ -573,7 +588,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 <dialog id="dlg-exc">
   <div class="d-head"><div><h2>Excepciones de Boletas</h2><p>Monto máximo de deuda según líneas portadas</p></div><button class="d-x" data-close>✕</button></div>
   <div class="d-body">
-    <table class="exc"><thead><tr><th>N° de Líneas Portadas</th><th>Monto de Deuda</th></tr></thead><tbody id="exc-body"></tbody></table>
+    <div id="exc-lam" class="lam"></div>
     <div class="d-foot"><button class="btn" id="exc-copy">Copiar imagen</button><button class="btn red" id="exc-dl">Descargar imagen</button></div>
   </div>
 </dialog>
@@ -1137,7 +1152,7 @@ function clPinta() {
   const c = clCalculo();
   $('#cl-rows').innerHTML = c.ops.map((o, i) => `<div class="cl-row"><b>Línea ${i + 1}</b><select data-cl="${i}">${CL_OPC.map(x => `<option value="${x.id}"${x.id === o.id ? ' selected' : ''}>${esc(x.label)}</option>`).join('')}</select>${clLineas.length > 1 ? `<button class="btn sm" data-clx="${i}" aria-label="Quitar línea ${i + 1}">✕</button>` : ''}<small>${esc(clTxt(o))}</small></div>`).join('');
   $('#cl-warn').innerHTML = c.avisos.map(a => `<div class="note" style="margin-top:8px">⚠️ ${esc(a)}</div>`).join('');
-  $('#cl-tot').innerHTML = `<div class="plan-total solid" style="margin:12px 0">${c.cambia ? `TOTAL MESES 1 A ${PROMO_MESES}<b>${c.ops.length} ${c.ops.length === 1 ? 'línea' : 'líneas'} = ${clp(c.t1)}</b>DESDE EL MES 7<b>${clp(c.t7)}</b>` : `TOTAL MENSUAL<b>${c.ops.length} ${c.ops.length === 1 ? 'línea' : 'líneas'} = ${clp(c.t1)}</b>`}</div>`;
+  lamina($('#cl-lam'), tarjetaCanvas(clBloques()), clMensaje());
 }
 const clN = n => `${n} ${n === 1 ? 'línea' : 'líneas'}`;
 function clMensaje() {
@@ -1171,19 +1186,32 @@ function clBloques() {
   $('#cl-add').onclick = () => { const base = clLineas.map(clOpc).find(o => o.base); clLineas.push(base ? 'a' + base.gb : 'v800'); clPinta(); };
   $('#cl-rows').addEventListener('change', e => { const s = e.target.closest('[data-cl]'); if (s) { clLineas[+s.dataset.cl] = s.value; clPinta(); } });
   $('#cl-rows').addEventListener('click', e => { const b = e.target.closest('[data-clx]'); if (b) { clLineas.splice(+b.dataset.clx, 1); clPinta(); } });
-  $('#cl-msg').onclick = () => copyText(clMensaje(), 'Cotización copiada. Pégala con Ctrl+V.');
-  $('#cl-cap').onclick = () => copyCanvas(tarjetaCanvas(clBloques()), 'cotizacion.png', 'Imagen de la cotización copiada. Pégala en el chat.');
+  $('#cl-msg').onclick = () => copyText(lamTexto($('#cl-lam')), 'Cotización copiada. Pégala con Ctrl+V.');
+  $('#cl-cap').onclick = () => copyCanvas(lamCanvas($('#cl-lam')), 'cotizacion.png', 'Imagen de la cotización copiada. Pégala en el chat.');
   clPinta();
 }
-function initOferta() {
-  $('#ov-fuente').textContent = FUENTE_PLANES; $('#ov-vig').textContent = VIGENCIA_PLANES;
-  $('#ov-grid').innerHTML = PLANES_VIGENTES.map(p => `<article class="card plan">${vTarjeta(p)}</article>`).join('');
+// Vista previa idéntica a lo que se copia: la página muestra el mismo canvas que se copia y el mismo texto.
+function lamina(box, canvas, texto) {
+  const abierto = !!(box.querySelector('details') || {}).open;
+  canvas.className = 'lam-img'; box.innerHTML = ''; box.appendChild(canvas);
+  if (texto != null) {
+    const d = document.createElement('details'); d.className = 'lam-txt'; d.open = abierto;
+    d.innerHTML = '<summary>Ver el texto que se copia</summary><pre></pre>'; d.querySelector('pre').textContent = texto; box.appendChild(d);
+  }
+  return canvas;
+}
+const lamCanvas = box => box.querySelector('canvas.lam-img');
+const lamTexto = box => (box.querySelector('.lam-txt pre') || {}).textContent || '';
+
+function initOferta() {  $('#ov-fuente').textContent = FUENTE_PLANES; $('#ov-vig').textContent = VIGENCIA_PLANES;
+  $('#ov-grid').innerHTML = PLANES_VIGENTES.map(p => `<article class="card lamcard" data-id="${p.id}"><div class="lam"></div><div class="plan-btns"><button class="btn" data-vcap="${p.id}">📸 Copiar lámina</button><button class="btn red" data-vmsg="${p.id}">📋 Copiar texto</button></div></article>`).join('');
+  PLANES_VIGENTES.forEach(p => lamina($(`#ov-grid [data-id="${p.id}"] .lam`), tarjetaCanvas(vBloques(p)), vMensaje(p)));
   $('#ov-grid').addEventListener('click', e => {
     const c = e.target.closest('[data-vcap]'), m = e.target.closest('[data-vmsg]'), pv = id => PLANES_VIGENTES.find(p => p.id === id);
-    if (c) { const p = pv(c.dataset.vcap); copyCanvas(tarjetaCanvas(vBloques(p)), p.id + '.png', `Imagen del ${p.title} copiada. Pégala en el chat.`); }
-    if (m) copyText(vMensaje(pv(m.dataset.vmsg)), 'Mensaje copiado. Pégalo con Ctrl+V.');
+    if (c) { const p = pv(c.dataset.vcap); copyCanvas(lamCanvas(c.closest('article')), p.id + '.png', `Lámina del ${p.title} copiada. Pégala en el chat.`); }
+    if (m) copyText(lamTexto(m.closest('article')), 'Texto copiado. Pégalo con Ctrl+V.');
   });
-  $('#o-todos').onclick = () => copyCanvas(variasCanvas('Planes 5G Claro', PLANES_VIGENTES.filter(p => !p.netflix).map(p => tarjetaCanvas(vBloques(p)))), 'planes.png', 'Captura copiada. Pégala en el chat.');
+  $('#o-todos').onclick = () => copyCanvas(variasCanvas('Planes 5G Claro', PLANES_VIGENTES.filter(p => !p.netflix).map(p => lamCanvas($(`#ov-grid [data-id="${p.id}"]`)))), 'planes.png', 'Captura copiada. Pégala en el chat.');
   initCalculadora();
 }
 
@@ -1196,16 +1224,12 @@ const pValor = (p, n) => n >= PNG_CORTE ? p.desde4 : p.hasta3;
 const pTramo = n => n >= PNG_CORTE ? 'Portabilidad desde 4 líneas' : 'Portabilidad hasta 3 líneas';
 const pTxtLineas = n => n + (n === 1 ? ' línea' : ' líneas');
 function pHTML(p) {
-  const n = pLineas[p.id], v = pValor(p, n);
-  return `<div class="plan-h">${esc(p.title)}</div><div class="plan-b">
-    <div class="plan-price"><small>PRECIO POR LÍNEA</small><b>${clp(v)}</b><span>+ IVA · ${pTramo(n)}</span></div>
-    <div><small>Con IVA (19%): <b>${conIva(v)}</b> por línea</small></div>
-    <div class="plan-rows"><div><span>Hasta 3 líneas</span><span>${clp(p.hasta3)} + IVA</span></div><div><span>Desde 4 líneas</span><span>${clp(p.desde4)} + IVA</span></div></div>
-    <div class="plan-sel"><label>Líneas a portar</label><select data-plin="${p.id}">${Array.from({ length: 20 }, (_, i) => `<option value="${i + 1}"${i + 1 === n ? ' selected' : ''}>${pTxtLineas(i + 1)}</option>`).join('')}</select></div>
-  </div><div class="plan-total solid">TOTAL MENSUAL<b>${pTxtLineas(n)} = ${clp(v * n)} + IVA</b>Con IVA: ${conIva(v * n)}</div>
-  <div class="plan-btns"><button class="btn" data-pcap="${p.id}">📸 Capturar</button><button class="btn red" data-pmsg="${p.id}">📋 Copiar mensaje</button></div>`;
+  const n = pLineas[p.id];
+  return `<div class="plan-sel" style="padding:12px 12px 4px"><label>${esc(p.title)} · líneas a portar</label><select data-plin="${p.id}">${Array.from({ length: 20 }, (_, i) => `<option value="${i + 1}"${i + 1 === n ? ' selected' : ''}>${pTxtLineas(i + 1)}</option>`).join('')}</select></div>
+  <div class="lam"></div>
+  <div class="plan-btns"><button class="btn" data-pcap="${p.id}">📸 Copiar lámina</button><button class="btn red" data-pmsg="${p.id}">📋 Copiar texto</button></div>`;
 }
-function pBloques(p) {
+const pLam = p => lamina($(`#p-${p.id} .lam`), tarjetaCanvas(pBloques(p)), pMensaje(p));function pBloques(p) {
   const n = pLineas[p.id], v = pValor(p, n), B = '#fff';
   return [{ t: 'head', text: 'Oferta Móvil PYME · ' + p.title },
     { t: 'grp', bg: '#f3f4f6', items: [T('PRECIO POR LÍNEA', 10, 600, '#9ca3af'), T(clp(v), 32, 800, '#1f2937'), T('+ IVA', 13, 600, '#4b5563')] },
@@ -1223,14 +1247,16 @@ function pMensaje(p) {
 function initPng() {
   PNG_PLANES.forEach(p => pLineas[p.id] = 1);
   const plan = id => PNG_PLANES.find(p => p.id === id);
-  $('#p-grid').innerHTML = PNG_PLANES.map(p => `<article class="card plan" id="p-${p.id}">${pHTML(p)}</article>`).join('');
-  $('#p-grid').addEventListener('change', e => { const s = e.target.closest('[data-plin]'); if (!s) return; pLineas[s.dataset.plin] = +s.value; $('#p-' + s.dataset.plin).innerHTML = pHTML(plan(s.dataset.plin)); });
+  $('#p-grid').innerHTML = PNG_PLANES.map(p => `<article class="card lamcard" id="p-${p.id}">${pHTML(p)}</article>`).join('');
+  PNG_PLANES.forEach(pLam);
+  lamina($('#p-tabla'), variasCanvas('Oferta Móvil PYME · RUT mayor a 50 millones', PNG_PLANES.map(p => tarjetaCanvas(pBloquesTabla(p)))));
+  $('#p-grid').addEventListener('change', e => { const s = e.target.closest('[data-plin]'); if (!s) return; pLineas[s.dataset.plin] = +s.value; pLam(plan(s.dataset.plin)); });
   $('#p-grid').addEventListener('click', e => {
     const c = e.target.closest('[data-pcap]'), m = e.target.closest('[data-pmsg]');
-    if (c) { const p = plan(c.dataset.pcap); copyCanvas(tarjetaCanvas(pBloques(p)), 'pyme-' + p.id + '.png', 'Captura copiada. Pégala en el chat.'); }
-    if (m) copyText(pMensaje(plan(m.dataset.pmsg)), 'Mensaje copiado');
+    if (c) { const p = plan(c.dataset.pcap); copyCanvas(lamCanvas(c.closest('article')), 'pyme-' + p.id + '.png', 'Lámina copiada. Pégala en el chat.'); }
+    if (m) copyText(lamTexto(m.closest('article')), 'Texto copiado');
   });
-  $('#p-todos').onclick = () => copyCanvas(variasCanvas('Oferta Móvil PYME · RUT mayor a 50 millones', PNG_PLANES.map(p => tarjetaCanvas(pBloquesTabla(p)))), 'oferta-pyme.png', 'Tabla copiada. Pégala en el chat.');
+  $('#p-todos').onclick = () => copyCanvas(lamCanvas($('#p-tabla')), 'oferta-pyme.png', 'Tabla copiada. Pégala en el chat.');
 }
 /* ════════════════════════════════════════════════════════════════
    EXCEPCIONES DE BOLETAS
@@ -1257,9 +1283,9 @@ function excCanvas() {
   return c;
 }
 function initExcepciones() {
-  $('#exc-body').innerHTML = EXCEPCIONES.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
-  $('#exc-copy').onclick = () => copyCanvas(excCanvas(), 'excepciones-boletas.png', 'Tabla copiada. Pégala en el chat.');
-  $('#exc-dl').onclick = async () => { downloadBlob(await canvasBlob(excCanvas()), 'excepciones-boletas.png'); toast('Imagen descargada'); };
+  lamina($('#exc-lam'), excCanvas());
+  $('#exc-copy').onclick = () => copyCanvas(lamCanvas($('#exc-lam')), 'excepciones-boletas.png', 'Tabla copiada. Pégala en el chat.');
+  $('#exc-dl').onclick = async () => { downloadBlob(await canvasBlob(lamCanvas($('#exc-lam'))), 'excepciones-boletas.png'); toast('Imagen descargada'); };
 }
 
 /* ════════════════════════════════════════════════════════════════

@@ -36,6 +36,14 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: lo que se ve es lo que se copia
+
+- Oferta Personas, la calculadora, Oferta PNG y Excepciones de Boletas muestran en la página la misma lámina que se copia: el botón copia esa misma imagen, no una distinta.
+- Debajo de cada lámina, "Ver el texto que se copia" muestra el mensaje exacto que copia el botón de texto.
+- La calculadora muestra la cotización al lado de las líneas (debajo en celular) y se actualiza al cambiar cada línea.
+- Oferta PNG muestra arriba la tabla de precios que se copia.
+- Los botones se llaman "Copiar lámina" y "Copiar texto" en todas las secciones.
+
 ### 13-11-2026: lámina y texto de la calculadora multilínea
 
 - La lámina de la cotización ahora muestra una tarjeta por línea (plan, gigas, roaming, larga distancia y precio), el total destacado, los íconos de redes sociales, lo que incluyen todas las líneas y la nota de evaluación comercial.
