@@ -36,6 +36,11 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: paso VDI simplificado
+
+- El paso 1 del Script usa la opción 1 elegida por Eduardo: menciona la Resolución Exenta N.º 566 de SUBTEL, el medio por el que se envió el enlace y confirma que la validación fue exitosa y quedó aprobada.
+- Nuevo selector "Enlace de validación enviado por" (correo electrónico, WhatsApp o SMS) en el formulario del Script.
+
 ### 13-11-2026: paso VDI en pasado
 
 - El paso 1 del Script de Cierre (Validación de identidad) se lee una vez que el cliente ya validó. Se redactó en pasado, con la misma información, y termina dando paso a la lectura del contrato. El aviso "Leer una vez aprobada la VDI" pasó del paso 2 al paso 1.
