@@ -36,6 +36,11 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: Prospectos y limpieza de caché sin preguntas
+
+- Enlaces: Prospectos ahora abre el formulario para responder (`/viewform`) en vez del editor del formulario (`/edit`).
+- Limpiar caché ya no muestra el cuadro de confirmación. Siempre guarda primero la planilla en el archivo del PC, limpia, recarga y avisa "Caché limpiada. Tu planilla está a salvo". La planilla y el archivo elegido nunca se borran.
+
 ### 13-11-2026: nuevo formulario de Ingreso de Venta
 
 - El formulario de Google de Ingreso de Venta cambió al enlace indicado por Eduardo (`1FAIpQLSe3nbhazUn9...`). Se usa en la sección Ingreso de Venta y en Enlaces.

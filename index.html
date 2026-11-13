@@ -719,7 +719,7 @@ const ENLACES = [
   ['👤','Buk','RRHH y Liquidación','https://cyg-phoenix.buk.cl/static_pages/portal'],
   ['📝','Ingreso Ventas','Formulario Oficial',FORM_VENTA],
   ['☁️','Bandeja','SharePoint Excel','https://phoenixservice1-my.sharepoint.com/:x:/g/personal/cortiz_phoenixservice_cl/IQAdDLYIfXiqRqqDz9Q4LaqRAcbsoheICDJ2Ru3HDvI1UGU'],
-  ['🎯','Prospectos','Campaña Digital','https://docs.google.com/forms/d/17SlUDnS9wXHYRbom3YatFv-qyP7RIYRrv1lqXmCosfI/edit']]},
+  ['🎯','Prospectos','Campaña Digital','https://docs.google.com/forms/d/17SlUDnS9wXHYRbom3YatFv-qyP7RIYRrv1lqXmCosfI/viewform']]},
  {t:'Consultas y Herramientas',items:[
   ['📶','NPC','Compañía Portados','https://www.numerosportados.cl/'],
   ['🪪','Rutificador','Confirmación Identidad','https://www.nombrerutyfirma.com/'],
@@ -1793,7 +1793,8 @@ function initSugerencias() {
    Borra cookies, localStorage, sessionStorage, Cache API, Service Workers e IndexedDB de este sitio.
    ════════════════════════════════════════════════════════════════ */
 async function limpiarCache() {
-  if (!confirm('Esto borra cookies, caché y datos temporales del portal y recarga la página. Tu planilla de control NO se borra. ¿Continuar?')) return;
+  // Sin preguntas: primero guarda la planilla y luego limpia. La planilla y el archivo elegido nunca se borran.
+  toast('Guardando tu planilla y limpiando la caché…');
   try { await respSync('limpieza'); } catch (e) {}
   let planilla = null; try { planilla = localStorage.getItem(CT_KEY); } catch (e) {}
   try {
@@ -1803,7 +1804,7 @@ async function limpiarCache() {
     });
   } catch (e) {}
   try { localStorage.clear(); if (planilla) localStorage.setItem(CT_KEY, planilla); } catch (e) {}
-  try { sessionStorage.clear(); } catch (e) {}
+  try { sessionStorage.clear(); sessionStorage.setItem('clarogo_limpio', '1'); } catch (e) {}
   try { if (window.caches) await Promise.all((await caches.keys()).map(k => caches.delete(k))); } catch (e) {}
   try { if ('serviceWorker' in navigator) await Promise.all((await navigator.serviceWorker.getRegistrations()).map(r => r.unregister())); } catch (e) {}
   try { if (window.indexedDB && indexedDB.databases) await Promise.all((await indexedDB.databases()).filter(db => db.name !== 'clarogo-respaldo').map(db => new Promise(res => { const r = indexedDB.deleteDatabase(db.name); r.onsuccess = r.onerror = r.onblocked = res; }))); } catch (e) {}
@@ -1814,6 +1815,7 @@ async function limpiarCache() {
    INICIO
    ════════════════════════════════════════════════════════════════ */
 initMenu(); initExcepciones(); initSugerencias(); iniciarRespaldo();
+try { if (sessionStorage.getItem('clarogo_limpio')) { sessionStorage.removeItem('clarogo_limpio'); setTimeout(() => toast('Caché limpiada. Tu planilla está a salvo.'), 400); } } catch (e) {}
 $('#cache-btn').onclick = limpiarCache;
 window.addEventListener('hashchange', route);
 route();
