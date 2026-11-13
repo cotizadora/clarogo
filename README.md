@@ -36,6 +36,13 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: Mi Planilla con estilo de hoja de cálculo
+
+- Una línea por registro y sin scroll horizontal: las columnas se ajustan al ancho de la pantalla.
+- Estilo de Excel: cuadrícula, encabezado gris, números de fila, celdas sin bordes y celda activa con borde verde. Las ventas se marcan en verde.
+- En pantallas medianas se ocultan Hora y Plan. En celular quedan N°, RUT, Nombre, Tipificación y el botón para pasar al Script.
+- La campaña y la cola se ven al pasar el mouse sobre el número de fila y siguen saliendo en la exportación a Excel.
+
 ### 13-11-2026: Mi Planilla de Control
 
 - Nueva sección "Mi Planilla": en Genesys se hace Ctrl+A y Ctrl+C, y el botón "Pegar desde Genesys" crea una fila con campaña, RUT, nombre, teléfono, cola, fecha y hora.

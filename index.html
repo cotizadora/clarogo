@@ -297,16 +297,31 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 @media (min-width:640px){.tiles{grid-template-columns:repeat(4,1fr)}}
 @media (max-height:520px) and (min-width:560px){.tiles{grid-template-columns:repeat(6,1fr)} .hero p,.tag{display:none}}
 /* Mi planilla de control */
-.ct-wrap{overflow-x:auto;background:#fff;border:1px solid var(--border);border-radius:12px}
-#ct-tabla{width:100%;border-collapse:collapse;min-width:980px}
-#ct-tabla th{background:#1f2430;color:#fff;text-align:left;padding:9px 8px;font-size:.74rem;white-space:nowrap}
-#ct-tabla td{padding:5px 6px;border-bottom:1px solid #eef0f3;vertical-align:top;font-size:.82rem}
-#ct-tabla td input,#ct-tabla td select,#ct-tabla td textarea{padding:6px 7px;border-radius:7px;font-size:.82rem}
-#ct-tabla td textarea{min-height:34px;resize:vertical}
-#ct-tabla .meta{font-size:.68rem;color:var(--dim);display:block;margin-top:2px;white-space:nowrap}
-#ct-tabla .acc{display:flex;gap:4px;flex-wrap:nowrap}
-#ct-tabla tr.nuevo td{background:#fff7e0}
-#ct-tabla tr.t-venta td:first-child{box-shadow:inset 4px 0 0 var(--green)}
+/* Estilo hoja de cálculo: una línea por registro, sin scroll horizontal */
+.ct-wrap{overflow:hidden;background:#fff;border:1px solid #c6c9cf;border-radius:4px;box-shadow:var(--shadow)}
+#ct-tabla{width:100%;table-layout:fixed;border-collapse:collapse;font-family:"Segoe UI",Calibri,Arial,sans-serif}
+#ct-tabla th,#ct-tabla td{border:1px solid #d4d7dc;padding:0;height:28px;font-size:.8rem;white-space:nowrap;overflow:hidden}
+#ct-tabla th{background:#f3f3f3;color:#333;font-weight:600;text-align:center;font-size:.74rem;border-bottom:2px solid #b9bcc2}
+#ct-tabla td.c-n,#ct-tabla th.c-n{background:#f3f3f3;color:#6b6f76;text-align:center;font-size:.72rem;cursor:default}
+#ct-tabla td input,#ct-tabla td select{width:100%;height:27px;border:0;border-radius:0;background:transparent;padding:0 6px;font:inherit;font-size:.8rem;color:var(--text);text-overflow:ellipsis;min-width:0}
+#ct-tabla td select{padding:0 2px;cursor:pointer}
+#ct-tabla td input:focus,#ct-tabla td select:focus{outline:2px solid #217346;outline-offset:-2px;background:#fff}
+#ct-tabla td input::placeholder{color:#b3b7be}
+#ct-tabla tbody tr:hover td{background:#f5f9ff}
+#ct-tabla tbody tr:hover td.c-n{background:#e6ecf5}
+#ct-tabla tr.nuevo td{background:#fff7d6}
+#ct-tabla tr.t-venta td.c-n{background:#d8f0dd;color:#1b6b33;font-weight:700}
+#ct-tabla tr.t-venta td.c-tipo select{color:#1b6b33;font-weight:700}
+#ct-tabla .acc{display:flex;height:27px}
+#ct-tabla .acc button{flex:1;border:0;border-left:1px solid #e3e5e8;background:transparent;font-size:.8rem;padding:0;cursor:pointer;color:var(--muted)}
+#ct-tabla .acc button:first-child{border-left:0}
+#ct-tabla .acc button:hover{background:#eef2f7}
+#ct-tabla .acc .go{color:#fff;background:var(--red);font-size:.7rem}
+#ct-tabla .acc .go:hover{background:var(--red-dk)}
+.c-n{width:34px}.c-fecha{width:94px}.c-hora{width:56px}.c-rut{width:100px}.c-tel{width:100px}.c-tipo{width:148px}.c-plan{width:88px}.c-acc{width:84px}
+.c-nombre{width:auto}.c-notas{width:22%}
+@media (max-width:1000px){.c-hora,.c-plan{display:none}.c-notas{width:18%}}
+@media (max-width:720px){.c-fecha,.c-notas,.c-tel{display:none}.c-tipo{width:96px}.c-rut{width:84px}.c-n{width:24px}.c-acc{width:48px} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
 #ct-resumen .chip b{margin-left:4px}
 /* Calculadora de líneas */.calc{padding:14px;max-width:720px}
 .cl-row{display:grid;grid-template-columns:auto 1fr auto;gap:6px 8px;align-items:center;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #eef0f3}
@@ -516,7 +531,8 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     </div>
     <div class="chips" id="ct-resumen"></div>
     <div class="ct-wrap"><table id="ct-tabla">
-      <thead><tr><th>Fecha</th><th>RUT</th><th>Nombre</th><th>Teléfono</th><th>Tipificación</th><th>Plan</th><th>Notas</th><th>Acciones</th></tr></thead>
+      <colgroup><col class="c-n"><col class="c-fecha"><col class="c-hora"><col class="c-rut"><col class="c-nombre"><col class="c-tel"><col class="c-tipo"><col class="c-plan"><col class="c-notas"><col class="c-acc"></colgroup>
+      <thead><tr><th class="c-n"></th><th class="c-fecha">Fecha</th><th class="c-hora">Hora</th><th class="c-rut">RUT</th><th class="c-nombre">Nombre</th><th class="c-tel">Teléfono</th><th class="c-tipo">Tipificación</th><th class="c-plan">Plan</th><th class="c-notas">Notas</th><th class="c-acc"></th></tr></thead>
       <tbody id="ct-body"></tbody>
     </table></div>
     <div class="empty" id="ct-vacio" hidden>No hay llamadas en este período. Pega la primera desde Genesys.</div>
@@ -1487,15 +1503,18 @@ function ctFiltradas() {
 function ctPinta() {
   const lista = ctFiltradas();
   const opt = (arr, sel, vacio) => `<option value="">${vacio}</option>` + arr.map(x => `<option${x === sel ? ' selected' : ''}>${esc(x)}</option>`).join('');
-  $('#ct-body').innerHTML = lista.map(r => `<tr data-id="${r.id}" class="${r.id === ctNuevo ? 'nuevo ' : ''}${r.tipo === 'Venta' ? 't-venta' : ''}">
-    <td><input type="date" data-k="fecha" value="${esc(r.fecha)}" style="width:132px"><input type="time" data-k="hora" value="${esc(r.hora)}" style="width:96px;margin-top:4px"><span class="meta">${esc(r.campana || '')}${r.cola ? ' · ' + esc(r.cola.replace(/^COLA_CLARO_/, '')) : ''}</span></td>
-    <td><input data-k="rut" value="${esc(r.rut)}" placeholder="RUT" style="width:118px"></td>
-    <td><input data-k="nombre" value="${esc(r.nombre)}" placeholder="Pegar nombre" style="width:190px"></td>
-    <td><input data-k="telefono" value="${esc(r.telefono)}" placeholder="9 XXXX XXXX" style="width:118px"></td>
-    <td><select data-k="tipo" style="width:150px">${opt(TIPIFICACIONES, r.tipo, 'Sin tipificar')}</select></td>
-    <td><select data-k="plan" style="width:104px">${opt(PLANES_VIGENTES.map(p => p.title), r.plan, 'Sin plan')}</select></td>
-    <td><textarea data-k="notas" rows="1" placeholder="Notas" style="width:190px">${esc(r.notas)}</textarea></td>
-    <td><div class="acc"><button class="btn sm" data-ct="rutificador" title="Copia el RUT y abre el Rutificador">🪪</button><button class="btn sm red" data-ct="script" title="Pasar al Script de Cierre">Script</button><button class="btn sm" data-ct="borrar" title="Borrar fila">✕</button></div></td>
+  const fmtF = iso => { const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/); return m ? `${m[3]}-${m[2]}-${m[1]}` : iso; };
+  $('#ct-body').innerHTML = lista.map((r, i) => `<tr data-id="${r.id}" class="${r.id === ctNuevo ? 'nuevo ' : ''}${r.tipo === 'Venta' ? 't-venta' : ''}">
+    <td class="c-n" title="${esc([r.campana, r.cola].filter(Boolean).join(' · '))}">${i + 1}</td>
+    <td class="c-fecha"><input data-k="fecha" value="${esc(fmtF(r.fecha))}" placeholder="DD-MM-AAAA" title="${esc(fmtF(r.fecha))}"></td>
+    <td class="c-hora"><input data-k="hora" value="${esc(r.hora)}" placeholder="HH:MM"></td>
+    <td class="c-rut"><input data-k="rut" value="${esc(r.rut)}" placeholder="RUT" title="${esc(r.rut)}"></td>
+    <td class="c-nombre"><input data-k="nombre" value="${esc(r.nombre)}" placeholder="Pegar nombre" title="${esc(r.nombre)}"></td>
+    <td class="c-tel"><input data-k="telefono" value="${esc(r.telefono)}" placeholder="9 XXXX XXXX" title="${esc(r.telefono)}"></td>
+    <td class="c-tipo"><select data-k="tipo">${opt(TIPIFICACIONES, r.tipo, 'Sin tipificar')}</select></td>
+    <td class="c-plan"><select data-k="plan">${opt(PLANES_VIGENTES.map(p => p.title), r.plan, 'Sin plan')}</select></td>
+    <td class="c-notas"><input data-k="notas" value="${esc(r.notas)}" placeholder="Notas" title="${esc(r.notas)}"></td>
+    <td class="c-acc"><div class="acc"><button data-ct="rutificador" class="rutif" title="Copiar RUT y abrir Rutificador">🪪</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar fila">✕</button></div></td>
   </tr>`).join('');
   $('#ct-vacio').hidden = lista.length > 0;
   const cuenta = {}; lista.forEach(r => { const k = r.tipo || 'Sin tipificar'; cuenta[k] = (cuenta[k] || 0) + 1; });
@@ -1542,7 +1561,8 @@ function initControl() {
     const el = e.target.closest('[data-k]'); if (!el) return;
     const r = CT.find(x => x.id === el.closest('tr').dataset.id); if (!r) return;
     if (el.dataset.k === 'rut' && e.type === 'change') el.value = rutFormato(el.value);
-    r[el.dataset.k] = el.value; ctGuardar();
+    if (el.dataset.k === 'fecha') { const m = el.value.trim().match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/); if (!m) return; r.fecha = `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`; ctGuardar(); return; }
+    el.title = el.value; r[el.dataset.k] = el.value; ctGuardar();
     if (el.dataset.k === 'tipo') el.closest('tr').classList.toggle('t-venta', el.value === 'Venta');
   };
   body.addEventListener('input', actualizar);
