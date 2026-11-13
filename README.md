@@ -36,6 +36,15 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: Oferta Personas más completa
+
+Fuente indicada por Eduardo: los documentos adjuntos (`PRODUCTO MÓVIL 14082026.pdf` y `producto-movil.md`). Los valores de la página de Claro no se usan, porque difieren de los documentos.
+
+- Precios sin cambios: Plan 500 $9.990, Plan 800 $12.990, Plan 1000 $17.990 y con Netflix $17.990, $20.990 y $25.990 (cargo fijo normal).
+- Cada tarjeta ahora muestra los íconos de WhatsApp, Instagram, Facebook, TikTok y X, y los atributos de los documentos: internet, minutos, 500 SMS a todo destino, roaming en 51 países los 365 días, larga distancia internacional, Netflix cuando corresponde, Claro Drive 100 GB gratis, Claro Club, equipos hasta 24 cuotas sin interés, cobro de minutos y SMS adicionales y uso justo.
+- La imagen que se copia y el mensaje para WhatsApp incluyen esos mismos atributos.
+- La portada vuelve a ser clara en PC (pantallas de 900 px o más). En celular sigue la versión oscura.
+
 ### 12-11-2026 (séptima entrega): ClaroGo! 2.0
 
 - Miniatura nueva para compartir por WhatsApp: `clarogo-2026.png` (1200x630, 130 KB). Reemplaza a `og-preview.png`, que era la imagen del sitio antiguo y sigue guardada en `original/`.
