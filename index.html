@@ -432,7 +432,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
       <button class="btn sm" id="cl-add">+ Agregar línea</button>
       <div id="cl-warn"></div>
       <div id="cl-tot"></div>
-      <div class="plan-btns" style="padding:0"><button class="btn" id="cl-cap">📸 Capturar</button><button class="btn red" id="cl-msg">📋 Copiar mensaje</button></div>
+      <div class="plan-btns" style="padding:0"><button class="btn" id="cl-cap">📸 Copiar lámina</button><button class="btn red" id="cl-msg">📋 Copiar texto</button></div>
     </div>
   </section>
 
@@ -1119,8 +1119,8 @@ const vMensaje = p => `📱 *${p.title}* · Gigas Libres · 5G\n💰 *${p.promo 
 
 // Calculadora de líneas: cada línea puede ser un plan base distinto o una línea adicional
 const CL_OPC = [
-  ...PLANES_VIGENTES.map(p => ({ id: p.id, label: p.title, gb: p.gb, base: true, m1: p.promo || p.price, m7: p.price, meses: p.promo ? PROMO_MESES : 0 })),
-  ...Object.keys(ADICIONALES).map(gb => { const a = ADICIONALES[gb]; return { id: 'a' + gb, label: 'Adicional a Plan ' + gb, gb: +gb, base: false, m1: a.promo, m7: a.luego, meses: a.meses }; })
+  ...PLANES_VIGENTES.map(p => ({ id: p.id, label: p.title, plan: p, gb: p.gb, base: true, m1: p.promo || p.price, m7: p.price, meses: p.promo ? PROMO_MESES : 0 })),
+  ...Object.keys(ADICIONALES).map(gb => { const a = ADICIONALES[gb]; return { id: 'a' + gb, label: 'Adicional a Plan ' + gb, plan: PLANES_VIGENTES.find(p => p.gb === +gb && !p.netflix), gb: +gb, base: false, m1: a.promo, m7: a.luego, meses: a.meses }; })
 ];
 const clOpc = id => CL_OPC.find(o => o.id === id);
 const clTxt = o => o.meses ? `${clp(o.m1)} por ${o.meses} meses, luego ${clp(o.m7)}` : `${clp(o.m1)} ${o.base ? 'mensual' : 'por siempre'}`;
@@ -1139,23 +1139,35 @@ function clPinta() {
   $('#cl-warn').innerHTML = c.avisos.map(a => `<div class="note" style="margin-top:8px">⚠️ ${esc(a)}</div>`).join('');
   $('#cl-tot').innerHTML = `<div class="plan-total solid" style="margin:12px 0">${c.cambia ? `TOTAL MESES 1 A ${PROMO_MESES}<b>${c.ops.length} ${c.ops.length === 1 ? 'línea' : 'líneas'} = ${clp(c.t1)}</b>DESDE EL MES 7<b>${clp(c.t7)}</b>` : `TOTAL MENSUAL<b>${c.ops.length} ${c.ops.length === 1 ? 'línea' : 'líneas'} = ${clp(c.t1)}</b>`}</div>`;
 }
+const clN = n => `${n} ${n === 1 ? 'línea' : 'líneas'}`;
 function clMensaje() {
   const c = clCalculo();
-  return `📲 *Cotización Planes Claro* · ${c.ops.length} ${c.ops.length === 1 ? 'línea' : 'líneas'}\n\n${c.ops.map((o, i) => `${i + 1}. *${o.label}:* ${clTxt(o)}`).join('\n')}\n\n${c.cambia ? `💰 *Total meses 1 a ${PROMO_MESES}:* ${clp(c.t1)}\n💰 *Total desde el mes 7:* ${clp(c.t7)}` : `💰 *Total mensual:* ${clp(c.t1)}`}\n\nTodos con Gigas Libres, 5G, llamadas ilimitadas y roaming en 51 países.\n_${VIGENCIA_PLANES}_`;
+  const lineas = c.ops.map((o, i) => { const p = o.plan || {};
+    return `*Línea ${i + 1} · ${o.label}*\n📶 ${p.data || ''}${p.netflix ? '\n🎬 Netflix Estándar incluido' : ''}\n✈️ Roaming ${p.roaming || ''}\n🌎 Larga distancia internacional ${p.ldi || ''}\n💰 ${clTxt(o)}`; }).join('\n\n');
+  const total = c.cambia ? `💰 *Total meses 1 a ${PROMO_MESES}:* ${clp(c.t1)}\n💰 *Total desde el mes 7:* ${clp(c.t7)}` : `💰 *Total mensual:* ${clp(c.t1)}`;
+  return `📲 *Cotización Planes Claro* · ${clN(c.ops.length)}\n_Gigas Libres · Red 5G · Llamadas ilimitadas_\n\n${lineas}\n\n━━━━━━━━━━━━\n${total}\n━━━━━━━━━━━━\n\n✅ *Todas tus líneas incluyen:*\n📲 Redes sociales: WhatsApp, Instagram, Facebook, TikTok y X\n📞 Llamadas ilimitadas, libres a 300 números\n💬 500 SMS a todo destino\n✈️ Roaming en 51 países los 365 días del año\n☁️ Claro Drive con 100 GB gratis\n🎁 Beneficios de Claro Club\n\n_${VIGENCIA_PLANES}_`;
 }
 function clBloques() {
   const c = clCalculo(), B = '#fff';
-  return [{ t: 'head', text: `Cotización · ${c.ops.length} ${c.ops.length === 1 ? 'línea' : 'líneas'}` },
-    { t: 'rows', rows: c.ops.map((o, i) => [`${i + 1}. ${o.label}`, clp(o.m1), true, '#1f2937']) },
-    T('', 1, 400, '', { gap: 2 }),
-    ...c.ops.filter(o => o.meses).length ? [T(`Valores de los primeros meses. Revisa abajo el valor desde el mes 7.`, 10, 400, '#6b7280', { gap: 8 })] : [],
-    { t: 'grp', bg: 'rojo', items: c.cambia
-      ? [T(`TOTAL MESES 1 A ${PROMO_MESES}`, 10, 700, B), T(clp(c.t1), 22, 800, B, { gap: 8 }), T('DESDE EL MES 7', 10, 700, B), T(clp(c.t7), 18, 800, B)]
-      : [T('TOTAL MENSUAL', 10, 700, B), T(clp(c.t1), 22, 800, B)] },
-    T('Gigas Libres · 5G · Llamadas ilimitadas · Roaming 51 países', 10, 600, '#374151', { gap: 4 }),
-    T(VIGENCIA_PLANES, 10, 400, '#6b7280', { gap: 6 })];
-}
-function initCalculadora() {
+  const lineas = c.ops.map((o, i) => { const p = o.plan || {};
+    const items = [T(`Línea ${i + 1} · ${o.label}`, 13, 800, '#e60000', { gap: 2 }),
+      T(`${p.data || ''}${p.netflix ? ' + Netflix Estándar' : ''}`, 11, 600, '#374151', { gap: 1 }),
+      T(`Roaming ${p.roaming || ''} · LDI ${p.ldi || ''}`, 10, 400, '#6b7280', { gap: 5 }),
+      T(o.meses ? `${clp(o.m1)} por ${o.meses} meses` : `${clp(o.m1)} ${o.base ? 'mensual' : 'por siempre'}`, 18, 800, '#1f2937', { gap: o.meses ? 1 : 0 })];
+    if (o.meses) items.push(T(`Luego ${clp(o.m7)} mensual`, 10, 600, '#4b5563', { gap: 0 }));
+    return { t: 'grp', bg: '#f3f4f6', pad: 9, gap: 8, items };
+  });
+  return [{ t: 'head', text: 'Cotización Planes Claro' },
+    T(`${clN(c.ops.length)} · Gigas Libres · Red 5G`, 13, 800, '#e60000', { gap: 10 }),
+    ...lineas,
+    { t: 'grp', bg: 'rojo', gap: 10, items: c.cambia
+      ? [T(`TOTAL MESES 1 A ${PROMO_MESES}`, 10, 700, B), T(clp(c.t1), 26, 800, B, { gap: 8 }), T('DESDE EL MES 7', 10, 700, B), T(clp(c.t7), 18, 800, B)]
+      : [T('TOTAL MENSUAL', 10, 700, B), T(clp(c.t1), 26, 800, B)] },
+    { t: 'icons', ids: REDES.map(r => r[0]), gap: 4 }, T('Redes sociales incluidas', 10, 500, '#6b7280', { gap: 8 }), { t: 'hr' },
+    { t: 'rows', rows: [['Llamadas', 'Ilimitadas a 300 números', false, '#374151'], ['Mensajes', '500 SMS', false, '#374151'], ['Roaming', '51 países, 365 días', false, '#374151'], ['Claro Drive', '100 GB gratis', false, '#374151'], ['Claro Club', 'Beneficios', false, '#374151']] },
+    T('', 1, 400, '', { gap: 4 }),
+    { t: 'grp', bg: '#fff1f1', pad: 8, items: [T(VIGENCIA_PLANES, 10, 600, '#b50000')] }];
+}function initCalculadora() {
   $('#cl-add').onclick = () => { const base = clLineas.map(clOpc).find(o => o.base); clLineas.push(base ? 'a' + base.gb : 'v800'); clPinta(); };
   $('#cl-rows').addEventListener('change', e => { const s = e.target.closest('[data-cl]'); if (s) { clLineas[+s.dataset.cl] = s.value; clPinta(); } });
   $('#cl-rows').addEventListener('click', e => { const b = e.target.closest('[data-clx]'); if (b) { clLineas.splice(+b.dataset.clx, 1); clPinta(); } });

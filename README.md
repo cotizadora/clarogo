@@ -36,6 +36,12 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: lámina y texto de la calculadora multilínea
+
+- La lámina de la cotización ahora muestra una tarjeta por línea (plan, gigas, roaming, larga distancia y precio), el total destacado, los íconos de redes sociales, lo que incluyen todas las líneas y la nota de evaluación comercial.
+- El texto para WhatsApp detalla cada línea con sus atributos, los totales y lo que incluyen todas las líneas.
+- Los botones se llaman "Copiar lámina" y "Copiar texto".
+
 ### 13-11-2026: ícono propio
 
 - Nuevo ícono redondo rojo con "G!" para la pestaña, los marcadores y el acceso directo en celular: `favicon.svg`, `favicon-32.png`, `icono-192.png` y `apple-touch-icon.png`. También se agregó a los tutoriales.
