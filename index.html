@@ -392,6 +392,17 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .fill.empty{background:#fff4d6;color:#8a5a00;font-weight:600;padding:0 4px;border-radius:4px}
 .tag-si{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:#f1f3f5;color:var(--muted);padding:3px 8px;border-radius:999px}
 .sc-list{margin:6px 0 0;padding-left:20px;line-height:1.9}
+#home-links{display:none}
+/* Inicio en PC: enlaces a la mano debajo del menú; el botón Enlaces se oculta */
+@media (min-width:900px){
+  #home-links{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:100%;max-width:980px;margin:clamp(8px,1.6vh,16px) auto 0;flex-shrink:0;text-align:left}
+  #home-links .links{grid-template-columns:1fr 1fr;gap:6px}
+  #home-links .lbl{margin-bottom:5px}
+  #home-links .link{padding:7px 9px;gap:8px}
+  #home-links .link small{display:none}
+  #home-links .link b{font-size:.82rem;white-space:normal;line-height:1.15}
+  .tile-enl{display:none}
+}
 /* Portada clara en PC */@media (min-width:900px){
   body[data-view="inicio"]{background:var(--bg)}
   body[data-view="inicio"] .hero{color:var(--text)}
@@ -429,6 +440,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
       <p>Portal de ventas 2026 · Elige una sección</p>
     </div>
     <div class="tiles" id="tiles"></div>
+    <div id="home-links"></div>
   </section>
 
   <!-- STOCK -->
@@ -912,8 +924,9 @@ function route() {
 function initMenu() {
   $('#tiles').innerHTML = MENU.map(m => {
     const inner = `<span class="tile-i"><svg viewBox="0 0 24 24">${m.i}</svg></span><span class="tile-t">${m.t}</span>${m.badge ? `<span class="tile-b">${m.badge}</span>` : ''}`;
-    return m.v ? `<a class="tile" href="#${m.v}">${inner}</a>` : `<a class="tile${m.soon ? ' soon' : ''}" href="#" data-modal="${m.m}">${inner}</a>`;
+    return m.v ? `<a class="tile${m.v === 'enlaces' ? ' tile-enl' : ''}" href="#${m.v}">${inner}</a>` : `<a class="tile${m.soon ? ' soon' : ''}" href="#" data-modal="${m.m}">${inner}</a>`;
   }).join('');
+  $('#home-links').innerHTML = enlacesHTML();
   $('#nav').innerHTML = MENU.filter(m => !m.soon).map(m => m.v ? `<a href="#${m.v}" data-v="${m.v}">${m.t}</a>` : `<button data-modal="${m.m}">${m.t}</button>`).join('');
   document.addEventListener('click', e => {
     const b = e.target.closest('[data-modal]'); if (!b) return;
@@ -1422,10 +1435,12 @@ function initScript() {
    INGRESO DE VENTA, ENLACES, GALERÍA, TUTORIALES
    ════════════════════════════════════════════════════════════════ */
 function initVenta() { $('#venta-link').href = FORM_VENTA; $('#venta-frame').src = FORM_VENTA + '?embedded=true'; }
-function initEnlaces() {
+// Mismo bloque de enlaces para la sección Enlaces y para el inicio en PC
+function enlacesHTML() {
   const a = (i, cls = '') => `<a class="card link${cls}" href="${esc(i[3])}" target="_blank" rel="noopener noreferrer" title="${esc(i[1] + ': ' + i[2])}"><span>${i[0]}</span><div><b>${i[1]}</b><small>${i[2]}</small></div></a>`;
-  $('#e-grid').innerHTML = ENLACES.map((g, n) => `<div><div class="lbl">${g.t}</div><div class="links">${n === 0 ? a(['📗', 'Planilla de Trabajo', 'Copia en Sheets', PLANILLA_URL], ' dest') : ''}${g.items.map(i => a(i)).join('')}</div></div>`).join('');
+  return ENLACES.map((g, n) => `<div><div class="lbl">${g.t}</div><div class="links">${n === 0 ? a(['📗', 'Planilla de Trabajo', 'Copia en Sheets', PLANILLA_URL], ' dest') : ''}${g.items.map(i => a(i)).join('')}</div></div>`).join('');
 }
+function initEnlaces() { $('#e-grid').innerHTML = enlacesHTML(); }
 let gIdx = 0;
 function gMostrar(i) { gIdx = (i + GALERIA.length) % GALERIA.length; $('#g-img').src = `galeria/${GALERIA[gIdx][0]}.jpg`; $('#g-img').alt = $('#g-name').textContent = GALERIA[gIdx][1]; }
 function initGaleria() {

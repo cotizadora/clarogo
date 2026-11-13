@@ -36,6 +36,12 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: enlaces en el inicio (PC)
+
+- En PC (pantallas de 900 px o más) los enlaces aparecen en el inicio, debajo del menú, y el botón Enlaces se oculta. Todo cabe sin bajar, probado desde 1000x700 hasta 1920x1000.
+- En el inicio se muestra solo el nombre de cada enlace; la descripción aparece al pasar el mouse.
+- En celular el inicio queda igual. La sección Enlaces sigue disponible en el menú superior.
+
 ### 13-11-2026: Enlaces compactos
 
 - La sección Enlaces pasó de botones grandes a filas compactas (ícono, nombre y descripción corta). Ahora cabe completa en pantalla sin bajar, en PC y en celular.
