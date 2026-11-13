@@ -36,6 +36,11 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: se retiran los planes con Netflix
+
+- Eduardo confirmó que los planes con Netflix (Plan 500, 800 y 1000 + Netflix) ya no van. Se quitaron de Oferta Personas, la calculadora, el Script y Preguntas y Respuestas.
+- Quedan solo Plan 500, Plan 800 y Plan 1000 con los precios de las imágenes del 13-11-2026.
+
 ### 13-11-2026: precios Planes 5G, adicionales, calculadora y enlaces nuevos
 
 Fuente: imágenes "Planes 5G Claro" y "Planes Adicionales Claro" enviadas por Eduardo el 13-11-2026.

@@ -612,9 +612,6 @@ const PLANES_VIGENTES = [
  {id:'v500',gb:500,title:'Plan 500',data:'500 GB a alta velocidad',roaming:'40 Min + 2 GB + 40 SMS',ldi:'40 minutos',promo:5994,price:9990,puj:'Al usar la cuota baja a 256 kbps. Sobre 600 GB baja a 64 kbps.'},
  {id:'v800',gb:800,title:'Plan 800',sello:'Más vendido',data:'800 GB a alta velocidad',roaming:'60 Min + 3 GB + 60 SMS',ldi:'60 minutos',promo:7923,price:12990,puj:'Al usar la cuota baja a 256 kbps. Sobre 900 GB baja a 64 kbps.'},
  {id:'v1000',gb:1000,title:'Plan 1000',data:'1000 GB de alta velocidad',roaming:'100 Min + 5 GB + 100 SMS',ldi:'100 minutos',promo:16990,price:17990,puj:'Al usar la cuota baja a 256 kbps hasta el siguiente ciclo.'},
- {id:'v500n',gb:500,title:'Plan 500 + Netflix',data:'500 GB a alta velocidad',roaming:'40 Min + 2 GB + 40 SMS',ldi:'40 minutos',price:17990,netflix:true,puj:'Al usar la cuota baja a 256 kbps. Sobre 600 GB baja a 64 kbps.'},
- {id:'v800n',gb:800,title:'Plan 800 + Netflix',data:'800 GB a alta velocidad',roaming:'60 Min + 3 GB + 60 SMS',ldi:'60 minutos',price:20990,netflix:true,puj:'Al usar la cuota baja a 256 kbps. Sobre 900 GB baja a 64 kbps.'},
- {id:'v1000n',gb:1000,title:'Plan 1000 + Netflix',data:'1000 GB libres',roaming:'100 Min + 5 GB + 100 SMS',ldi:'100 minutos',price:25990,netflix:true,puj:'Al usar la cuota baja a 256 kbps hasta el siguiente ciclo.'}
 ];
 // Líneas adicionales según el plan base (promo por PROMO_MESES meses; meses 0 = valor fijo "por siempre")
 const ADICIONALES = {
@@ -1327,7 +1324,7 @@ const FAQ_FUENTES = {
 };
 const FAQ = [
  // Planes
- ['Planes','IMG','¿Qué planes se ofrecen y cuánto cuestan?','Los <b>Planes 5G</b> con Gigas Libres y llamadas ilimitadas:<ul><li><b>Plan 500:</b> $5.994 por 6 meses, desde el mes 7 valor fijo $9.990.</li><li><b>Plan 800 (el más vendido):</b> $7.923 por 6 meses, desde el mes 7 valor fijo $12.990.</li><li><b>Plan 1000:</b> $16.990 por 6 meses, desde el mes 7 valor fijo $17.990.</li></ul>Con Netflix Estándar incluido: Plan 500 + Netflix $17.990, Plan 800 + Netflix $20.990 y Plan 1000 + Netflix $25.990 (cargo fijo del documento Producto Móvil).'],
+ ['Planes','IMG','¿Qué planes se ofrecen y cuánto cuestan?','Los <b>Planes 5G</b> con Gigas Libres y llamadas ilimitadas:<ul><li><b>Plan 500:</b> $5.994 por 6 meses, desde el mes 7 valor fijo $9.990.</li><li><b>Plan 800 (el más vendido):</b> $7.923 por 6 meses, desde el mes 7 valor fijo $12.990.</li><li><b>Plan 1000:</b> $16.990 por 6 meses, desde el mes 7 valor fijo $17.990.</li></ul>'],
  ['Planes','IMG','¿Cuánto cuesta una línea adicional?','Depende del plan base:<ul><li><b>Adicional a Plan 500:</b> $4.990 por 6 meses, después $8.990.</li><li><b>Adicional a Plan 800:</b> $6.990 por siempre.</li><li><b>Adicional a Plan 1000:</b> $4.990 por 6 meses, después $6.990.</li></ul>La línea adicional queda en la misma cuenta. En Oferta Personas está la calculadora para cotizar varias líneas, incluso con planes distintos.'],
  ['Planes','PM','¿Qué incluye cada Plan Libre?','Todos traen minutos libres a 300 números y 500 SMS a todo destino.<ul><li><b>Plan 500:</b> 500 GB, roaming de 40 min + 2 GB + 40 SMS y 40 minutos de larga distancia internacional.</li><li><b>Plan 800:</b> 800 GB, roaming de 60 min + 3 GB + 60 SMS y 60 minutos de larga distancia internacional.</li><li><b>Plan 1000:</b> 1000 GB, roaming de 100 min + 5 GB + 100 SMS y 100 minutos de larga distancia internacional.</li></ul>'],
  ['Planes','PM','¿Qué pasa cuando el cliente consume todos sus minutos o SMS?','El servicio no se corta. El consumo adicional se cobra en la boleta mensual: <b>$60 el minuto</b> y <b>$50 el SMS</b>.'],
