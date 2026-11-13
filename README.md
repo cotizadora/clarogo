@@ -36,6 +36,14 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: vuelve el Plan 500 + Netflix
+
+Fuente: imagen "Plan 500 + Netflix, entretención sin límites" enviada por Eduardo el 13-11-2026.
+
+- Se agregó Plan 500 + Netflix Estándar: $17.990 mensual, 500 GB a alta velocidad, roaming 2 GB + 40 minutos, larga distancia internacional 40 minutos, minutos libres a 300 números y 500 SMS.
+- Aparece en Oferta Personas, la calculadora, el Script, Mi Planilla y Preguntas y Respuestas.
+- No muestra valor de línea adicional porque la imagen no lo indica. Plan 800 + Netflix y Plan 1000 + Netflix siguen fuera.
+
 ### 13-11-2026: paso VDI simplificado
 
 - El paso 1 del Script usa la opción 1 elegida por Eduardo: menciona la Resolución Exenta N.º 566 de SUBTEL, el medio por el que se envió el enlace y confirma que la validación fue exitosa y quedó aprobada.
