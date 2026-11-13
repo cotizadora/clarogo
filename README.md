@@ -36,6 +36,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: paso VDI en pasado
+
+- El paso 1 del Script de Cierre (Validación de identidad) se lee una vez que el cliente ya validó. Se redactó en pasado, con la misma información, y termina dando paso a la lectura del contrato. El aviso "Leer una vez aprobada la VDI" pasó del paso 2 al paso 1.
+
 ### 13-11-2026: Mi Planilla nunca pierde registros
 
 - Guardado en un archivo único del PC (`ClaroGo-planilla-control.json`, sugerido en Documentos). Se elige una sola vez por navegador y se reemplaza en cada guardado, sin acumular copias. Funciona en Chrome y Edge.
