@@ -36,6 +36,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: se quita Prospectos
+
+- Se quitó el acceso "Prospectos" (formulario de campaña digital) de Enlaces, a pedido de Eduardo.
+
 ### 13-11-2026: Prospectos y limpieza de caché sin preguntas
 
 - Enlaces: Prospectos ahora abre el formulario para responder (`/viewform`) en vez del editor del formulario (`/edit`).
