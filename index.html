@@ -585,6 +585,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
       <input type="search" id="hz-q" placeholder="Buscar ejecutivo" autocomplete="off">
       <label class="chk" title="Horas que se descuentan por cada día trabajado">Colación por día <input type="number" id="hz-colacion" min="0" max="3" step="0.5" style="width:64px;margin-left:6px"> h</label>
     </div>
+    <div class="note" id="hz-aviso" hidden style="margin-bottom:10px"></div>
     <div class="chips" id="hz-resumen"></div>
     <div class="ct-wrap"><table id="hz-tabla">
       <thead id="hz-head"></thead>
@@ -1930,18 +1931,21 @@ function hzPinta() {
   const lista = HZ.ejecutivos.filter(e => !q || e.nombre.toLowerCase().includes(q));
   const cuenta = { ok: 0, falta: 0, sobra: 0, inc: 0 };
   $('#hz-body').innerHTML = lista.map((e, n) => {
-    let horas = 0, incompleta = 0, raro = 0;
+    let horas = 0, incompleta = 0, raro = 0, trabajados = 0;
     const celdas = dias.map(d => {
       const tieneDia = Object.prototype.hasOwnProperty.call(e.turnos, d), t = hzTurno(e.turnos[d]);
-      if (!tieneDia || t.tipo === 'vacio') { incompleta++; return `<td class="h-dia sin" title="Sin dato">—</td>`; }
+      if (!tieneDia) { incompleta++; return `<td class="h-dia sin" title="La planilla no trae este día">·</td>`; }
+      if (t.tipo === 'vacio') return `<td class="h-dia sin" title="Sin turno">—</td>`;
       if (t.tipo === 'libre') return `<td class="h-dia libre">Libre</td>`;
       if (t.tipo === 'otro') { raro++; return `<td class="h-dia raro" title="${esc(e.turnos[d])}">${esc(e.turnos[d])}</td>`; }
-      horas += t.horas;
+      horas += t.horas; trabajados++;
       return `<td class="h-dia" title="${t.ini} a ${t.fin} · ${String(t.horas).replace('.', ',')} h trabajadas">${t.ini.replace(':00', '')}–${t.fin.replace(':00', '')}</td>`;
     }).join('');
     const h = Math.round(horas * 100) / 100, dif = Math.round((h - HZ_META) * 100) / 100, hTxt = String(h).replace('.', ',');
     let est, cls;
-    if (incompleta || raro) { est = incompleta ? `Incompleta (${incompleta} ${incompleta === 1 ? 'día' : 'días'} sin dato)` : 'Revisar turno'; cls = 'inc'; cuenta.inc++; }
+    if (raro) { est = 'Revisar turno'; cls = 'inc'; cuenta.inc++; }
+    else if (!trabajados) { est = 'Sin turnos'; cls = 'inc'; cuenta.inc++; }
+    else if (incompleta) { est = `Parcial (${7 - incompleta} días en planilla)`; cls = 'inc'; cuenta.inc++; }
     else if (dif === 0) { est = '✓ 42 h'; cls = 'ok'; cuenta.ok++; }
     else if (dif < 0) { est = `Faltan ${String(-dif).replace('.', ',')} h`; cls = 'falta'; cuenta.falta++; }
     else { est = `Sobran ${String(dif).replace('.', ',')} h`; cls = 'sobra'; cuenta.sobra++; }
@@ -1950,6 +1954,9 @@ function hzPinta() {
   $('#hz-vacio').hidden = HZ.ejecutivos.length > 0;
   $('#hz-tabla').hidden = !HZ.ejecutivos.length;
   $('#hz-resumen').innerHTML = HZ.ejecutivos.length ? `<span class="chip on">Ejecutivos<b>${lista.length}</b></span><span class="chip">✓ Cumplen 42 h<b>${cuenta.ok}</b></span><span class="chip">Faltan horas<b>${cuenta.falta}</b></span><span class="chip">Sobran horas<b>${cuenta.sobra}</b></span><span class="chip">Incompletas<b>${cuenta.inc}</b></span>` : '';
+  const faltan = dias.filter(d => !HZ.ejecutivos.some(e => Object.prototype.hasOwnProperty.call(e.turnos, d)));
+  $('#hz-aviso').hidden = !HZ.ejecutivos.length || !faltan.length || faltan.length === 7;
+  $('#hz-aviso').textContent = `La planilla no trae ` + faltan.map(d => HZ_DIAS[dias.indexOf(d)] + ' ' + ddmm(d)).join(', ') + `: las horas de esta semana son solo de los días cargados.`;
   $('#hz-info').textContent = HZ.cargado ? `Horario cargado el ${new Date(HZ.cargado).toLocaleString('es-CL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}.` : '';
 }
 

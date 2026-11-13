@@ -36,6 +36,12 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 13-11-2026: horario con celdas vacías
+
+- Horario Ejecutivos: una celda vacía cuenta como día sin turno y ya no marca la semana como incompleta.
+- Si la planilla no trae algunos días de la semana (por ejemplo, esta semana parte el jueves 12), se avisa arriba de la tabla y el estado dice "Parcial".
+- Pendiente: precargar el horario con los nombres de los ejecutivos. El control de seguridad de la sesión bloqueó guardar esos nombres en el código del sitio público.
+
 ### 13-11-2026: Horario Ejecutivos
 
 - Nueva sección "Horario Ejecutivos": se copian los turnos desde la planilla (fila de días y fechas más las filas de ejecutivos) y se pegan con "Pegar horario".
