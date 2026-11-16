@@ -403,6 +403,13 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .lam-txt pre{white-space:pre-wrap;font-family:inherit;font-size:.78rem;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px;margin:6px 0 0;max-height:280px;overflow:auto}
 .lamcard .plan-btns{padding:10px 12px 12px;background:#fff}
 .calc{padding:14px;display:grid;gap:14px}
+/* Oferta Personas: fila 2 con el plan Netflix y el área multilínea enmarcada */
+.ov-f2{display:grid;gap:14px;margin-top:24px}
+.multi{background:#eef4ff;border:1px solid #c9daf8;border-radius:16px;padding:14px}
+.multi .calc{padding:0}
+.multi .calc-ctrl{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;min-width:0}
+@media (min-width:760px){#ov-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.multi .calc{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}.ov-f2{grid-template-columns:repeat(3,minmax(0,1fr));align-items:start}.multi{grid-column:span 2}}
+@media (min-width:1000px){.ov-f2{grid-template-columns:repeat(3,minmax(0,1fr));align-items:start}.multi{grid-column:span 2}.ov-nf{max-width:none}}
 .calc-out .lam{border-radius:12px}
 @media (min-width:900px){.calc{grid-template-columns:minmax(0,1fr) 400px;align-items:start}}
 .cl-row{display:grid;grid-template-columns:auto 1fr auto;gap:6px 8px;align-items:center;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #eef0f3}
@@ -508,9 +515,12 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     <div class="plans" id="ov-grid"></div>
     <p style="margin-top:16px"><button class="btn dark" id="o-todos">📸 Capturar los 3 planes en una imagen</button></p>
 
-    <div class="sec-t" style="margin-top:28px">Calculadora de <em>líneas</em></div>
-    <p class="sub">Arma la cotización línea por línea. Puedes mezclar planes distintos y sumar líneas adicionales al plan base.</p>
-    <div class="card calc">
+    <div class="ov-f2">
+    <div class="ov-nf"><div class="sec-t" style="margin:0 0 8px">Plan con <em>Netflix</em></div><div id="ov-nf"></div></div>
+    <div class="multi">
+    <div class="sec-t" style="margin:0 0 4px">Calculadora <em>multilínea</em></div>
+    <p class="sub" style="margin-bottom:10px">Arma la cotización línea por línea. Puedes mezclar planes distintos y sumar líneas adicionales al plan base. A la derecha ves la oferta lista para copiar.</p>
+    <div class="calc">
       <div class="calc-ctrl">
         <div id="cl-rows"></div>
         <button class="btn sm" id="cl-add">+ Agregar línea</button>
@@ -520,7 +530,10 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
         <div id="cl-lam" class="lam"></div>
         <div class="plan-btns" style="padding:0"><button class="btn" id="cl-cap">📸 Copiar lámina</button><button class="btn red" id="cl-msg">📋 Copiar texto</button></div>
       </div>
-    </div>  </section>
+    </div>
+    </div>
+    </div>
+  </section>
 
   <!-- OFERTA PNG -->
   <section id="v-png" class="view" hidden>
@@ -1569,9 +1582,13 @@ const lamCanvas = box => box.querySelector('canvas.lam-img');
 const lamTexto = box => (box.querySelector('.lam-txt pre') || {}).textContent || '';
 
 function initOferta() {  $('#ov-fuente').textContent = FUENTE_PLANES; $('#ov-vig').textContent = VIGENCIA_PLANES;
-  $('#ov-grid').innerHTML = PLANES_VIGENTES.map(p => `<article class="card lamcard" data-id="${p.id}"><div class="lam"></div><div class="plan-btns"><button class="btn" data-vcap="${p.id}">📸 Copiar lámina</button><button class="btn red" data-vmsg="${p.id}">📋 Copiar texto</button></div></article>`).join('');
-  PLANES_VIGENTES.forEach(p => lamina($(`#ov-grid [data-id="${p.id}"] .lam`), tarjetaCanvas(vBloques(p)), vMensaje(p)));
-  $('#ov-grid').addEventListener('click', e => {
+  const tarjeta = p => `<article class="card lamcard" data-id="${p.id}"><div class="lam"></div><div class="plan-btns"><button class="btn" data-vcap="${p.id}">📸 Copiar lámina</button><button class="btn red" data-vmsg="${p.id}">📋 Copiar texto</button></div></article>`;
+  // Fila 1: los planes sin Netflix. Fila 2: el plan con Netflix junto a la calculadora multilínea.
+  $('#ov-grid').innerHTML = PLANES_VIGENTES.filter(p => !p.netflix).map(tarjeta).join('');
+  $('#ov-nf').innerHTML = PLANES_VIGENTES.filter(p => p.netflix).map(tarjeta).join('');
+  $('.ov-nf').hidden = !PLANES_VIGENTES.some(p => p.netflix);
+  PLANES_VIGENTES.forEach(p => lamina($(`#v-oferta [data-id="${p.id}"] .lam`), tarjetaCanvas(vBloques(p)), vMensaje(p)));
+  $('#v-oferta').addEventListener('click', e => {
     const c = e.target.closest('[data-vcap]'), m = e.target.closest('[data-vmsg]'), pv = id => PLANES_VIGENTES.find(p => p.id === id);
     if (c) { const p = pv(c.dataset.vcap); copyCanvas(lamCanvas(c.closest('article')), p.id + '.png', `Lámina del ${p.title} copiada. Pégala en el chat.`); }
     if (m) copyText(lamTexto(m.closest('article')), 'Texto copiado. Pégalo con Ctrl+V.');

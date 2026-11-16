@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 16-11-2026: Oferta Personas en dos filas
+
+- Fila 1: los tres planes (500, 800 y 1000). Fila 2: el Plan 500 + Netflix a la izquierda y el área multilínea, con fondo azul propio, con la calculadora al medio y la oferta calculada a la derecha. En celular todo queda en una columna.
+
 ### 16-11-2026: enlaces sin Planilla de Trabajo ni Buk
 
 - Se quitaron los enlaces Planilla de Trabajo (ahora se usa Mi Planilla, integrada en el portal) y Buk, a pedido de Eduardo. Quedan 8 enlaces.
