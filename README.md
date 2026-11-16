@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 16-11-2026: fecha y hora de actualización del stock
+
+- El recuadro de Stock muestra en grande la fecha y la hora de la actualización, por ejemplo "Lunes 16-11-2026 · 11:01 h". Si se publicó otro día, lo indica debajo.
+
 ### 16-11-2026: ícono de escritorio para actualizar el stock
 
 - Nuevo programa `herramientas/actualizar-stock.ps1` con su ícono en el escritorio. Lee el Excel diario, muestra el resumen con la fecha y publica en GitHub con la sesión del computador, sin claves.

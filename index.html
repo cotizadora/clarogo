@@ -1088,11 +1088,15 @@ function pintarFechaStock(info, vista) {
   const [y, m, d] = info.fecha.split('-').map(Number), hoy = new Date();
   const dias = Math.round((new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()) - new Date(y, m - 1, d)) / 864e5);
   const cuando = dias <= 0 ? 'Stock de hoy' : dias === 1 ? 'Stock de ayer' : `Stock de hace ${dias} días. Pide el archivo nuevo antes de confirmar stock.`;
+  // Fecha y hora de la actualización, en grande. La hora es la de publicación (hora de Chile del equipo).
+  const pub = !vista && info.publicado ? new Date(info.publicado) : null, ok = pub && !isNaN(pub);
+  const hora = ok ? `${String(pub.getHours()).padStart(2, '0')}:${String(pub.getMinutes()).padStart(2, '0')} h` : '';
+  let grande = fechaLarga(info.fecha) + (hora ? ' · ' + hora : '');
   const extra = [];
+  if (ok && isoLocal(pub) !== info.fecha) { grande = fechaLarga(info.fecha); extra.push(`Publicado el ${fechaLarga(isoLocal(pub)).toLowerCase()} a las ${hora}`); }
   if (info.precios) extra.push('Precios: ' + info.precios);
-  if (info.publicado) extra.push('Publicado el ' + new Date(info.publicado).toLocaleString('es-CL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }));
   box.className = 's-act' + (vista ? ' ayer' : dias <= 0 ? '' : dias === 1 ? ' ayer' : ' viejo');
-  box.innerHTML = `<span class="i">📅</span><div><small>${vista ? 'Vista previa sin publicar' : 'Última actualización del stock'}</small><b>${fechaLarga(info.fecha)}</b><span>${esc([cuando, ...extra].join(' · '))}</span></div>`;
+  box.innerHTML = `<span class="i">📅</span><div><small>${vista ? 'Vista previa sin publicar' : 'Stock actualizado el'}</small><b>${grande}</b><span>${esc([cuando, ...extra].join(' · '))}</span></div>`;
 }
 
 /* ════════════════════════════════════════════════════════════════
