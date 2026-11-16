@@ -18,6 +18,10 @@ Portal de apoyo para ventas de equipos y planes con portabilidad. Es una herrami
 
 ## Cómo actualizar el stock
 
+**Lo más simple (computador de Eduardo):** doble clic en el ícono **Actualizar stock ClaroGo** del escritorio. Se abre la carpeta Descargas con el último Excel ya marcado; se elige, se revisa el resumen y se presiona Sí. Publica con la sesión de GitHub que ya tiene el computador, sin claves, y avisa cuando el stock está en línea. El programa es `herramientas/actualizar-stock.ps1` (instalado en Documentos\CLARO\ClaroGo) y usa las mismas reglas que el portal.
+
+**Desde la página:**
+
 Se hace desde el mismo portal, sin editar la página:
 
 1. Entra a **Stock de Equipos** y presiona **Actualizar stock**.
@@ -45,6 +49,11 @@ Todos los datos comerciales están al inicio del script de `index.html`, en el b
 GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza el sitio en uno o dos minutos.
 
 ## Historial de cambios
+
+### 16-11-2026: ícono de escritorio para actualizar el stock
+
+- Nuevo programa `herramientas/actualizar-stock.ps1` con su ícono en el escritorio. Lee el Excel diario, muestra el resumen con la fecha y publica en GitHub con la sesión del computador, sin claves.
+- Probado con el Excel del 16-11: genera el mismo stock.csv que el portal, byte a byte, y la publicación real quedó en línea.
 
 ### 16-11-2026: entrada directa del administrador
 
