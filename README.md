@@ -52,6 +52,7 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 - Dos SKU venían en dos filas con stock distinto (70011841 y 70016652). Ahora se suma su stock.
 - Actualizar stock ahora lee el Excel diario directo y publica para todos con un botón, usando una clave de GitHub guardada solo en el navegador de quien publica.
 - La sección Stock muestra siempre, destacada, la fecha de la última actualización (datos/stock-info.json).
+- El enlace para crear la clave de GitHub llega con el nombre, el dueño, el vencimiento de un año y el permiso Contents ya puestos.
 
 ### 13-11-2026: enlaces en el inicio (PC)
 
