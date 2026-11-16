@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "ClaroGo! Genesys",
+  "short_name": "ClaroGo!",
+  "version": "1.0.0",
+  "description": "Lee los datos del cliente en la llamada de Genesys y los copia o los envía a Mi Planilla de ClaroGo!. Herramienta no oficial.",
+  "action": {
+    "default_title": "ClaroGo!: tomar datos de Genesys (Alt+Shift+G)",
+    "default_popup": "popup.html",
+    "default_icon": { "16": "icono-16.png", "32": "icono-32.png", "48": "icono-48.png", "128": "icono-128.png" }
+  },
+  "icons": { "16": "icono-16.png", "32": "icono-32.png", "48": "icono-48.png", "128": "icono-128.png" },
+  "commands": {
+    "_execute_action": { "suggested_key": { "default": "Alt+Shift+G" }, "description": "Abrir ClaroGo! y leer los datos de Genesys" }
+  },
+  "permissions": ["activeTab", "scripting", "clipboardWrite"],
+  "host_permissions": [
+    "https://*.pure.cloud/*",
+    "https://*.mypurecloud.com/*",
+    "https://*.genesys.cloud/*",
+    "https://cotizadora.github.io/*"
+  ]
+}

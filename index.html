@@ -2251,6 +2251,13 @@ function ctFichaHTML(r) {
 }
 // Completa una fila con lo leído de Genesys: solo llena lo vacío, nunca borra lo que ya escribiste
 let ctPegarEnFila = () => {};
+// La extensión ClaroGo! Genesys llama a esta función para crear una fila nueva con los datos de la llamada
+window.clarogoDesdeGenesys = txt => {
+  const d = leerGenesys(txt || '');
+  if (location.hash !== '#control') location.hash = 'control';
+  setTimeout(() => { ctAgregar(d); if (!d.telefono) toast('Llegaron los datos de Genesys, pero sin teléfono.'); }, 120);
+  return d.telefono ? 'ok' : 'sin-telefono';
+};
 const GEN_CAMPOS = [['telefono', 'teléfono'], ['rut', 'RUT'], ['nombre', 'nombre'], ['campana', 'campaña'], ['cola', 'cola'], ['origen', 'compañía de origen'], ['oferta', 'oferta']];
 function ctCompletarFila(id, d) {
   const r = CT.find(x => x.id === id); if (!r) return;

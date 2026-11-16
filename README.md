@@ -50,6 +50,12 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 16-11-2026: extensión ClaroGo! Genesys
+
+- En Genesys los datos del cliente (FONO_CONTACTO, RUT_PERSONA, etc.) están dentro de cuadros de texto, y Ctrl+A no copia lo escrito en ellos. Nueva extensión para Chrome y Edge en la carpeta `extension/`: con un clic en su ícono (o Alt+Shift+G) lee esos cuadros en la llamada, copia los datos y puede enviarlos a Mi Planilla como fila nueva.
+- Mi Planilla recibe los datos de la extensión con `window.clarogoDesdeGenesys`.
+- Instalación: en chrome://extensions o edge://extensions activar Modo de desarrollador, Cargar descomprimida y elegir la carpeta `extension` (en el PC de Eduardo: Documentos\CLARO\ClaroGo\extension-genesys). Luego fijar el ícono con el botón de extensiones.
+
 ### 16-11-2026: lectura de Genesys con Ctrl+A en la llamada
 
 - La planilla ahora lee el texto que copia Ctrl+A y Ctrl+C en una llamada en línea de Genesys (campos CLAVE: y valor). El teléfono sale de FONO_CONTACTO (o Fono1, Fono2, LEGACY_ID). También toma RUT_PERSONA y FIRST/SECOND/THIRD_NAME cuando vienen, la campaña (vNombre_Campana), la compañía de origen (Segment_of_Origin), la oferta de la campaña (Glosa_Descripcion) y la fecha (vContactDate). Los campos vacíos, que Genesys copia con su propio nombre, se ignoran.
