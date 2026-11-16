@@ -957,13 +957,16 @@ const VIEWS = ['inicio', 'stock', 'oferta', 'png', 'script', 'control', 'horario
 const INIT = { horario: initHorario, control: initControl, faq: initFaq, stock: initStock, oferta: initOferta, png: initPng, script: initScript, venta: initVenta, enlaces: initEnlaces, galeria: initGaleria, tutoriales: initTutoriales };
 const listo = {};
 function route() {
-  let v = location.hash.slice(1) || 'inicio';
+  let v = location.hash.slice(1) || 'inicio', admin = false;
+  // Entrada directa del administrador: .../clarogo/#admin (para guardar en favoritos)
+  if (v === 'admin') { admin = true; v = 'stock'; history.replaceState(null, '', '#stock'); }
   if (!VIEWS.includes(v)) v = 'inicio';
   $$('.view').forEach(s => s.hidden = s.id !== 'v-' + v);
   document.body.dataset.view = v;
   $$('#nav a').forEach(a => a.classList.toggle('on', a.dataset.v === v));
   if (INIT[v] && !listo[v]) { listo[v] = true; INIT[v](); }
   window.scrollTo(0, 0);
+  if (admin) setTimeout(adminEntrar, 100);
 }
 function initMenu() {
   $('#tiles').innerHTML = MENU.map(m => {
@@ -1200,14 +1203,17 @@ const ADMIN = { key: 'clarogo_admin', huella: 'b3f10cf09560d00327dda6afe98ea19ce
 const esAdmin = () => { try { return localStorage.getItem(ADMIN.key) === '1'; } catch (e) { return false; } };
 const adminPinta = () => { $('#s-actualizar').hidden = !esAdmin(); };
 async function huellaDe(s) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+function adminEntrar() {
+  if (esAdmin()) return $('#s-actualizar').click();
+  $('#adm-clave').value = ''; abrir('dlg-admin'); setTimeout(() => $('#adm-clave').focus(), 50);
+}
 function adminInit() {
   adminPinta();
   let toques = [];
   $('#s-act').addEventListener('click', () => {
     const t = Date.now(); toques = toques.filter(x => t - x < 3000); toques.push(t);
     if (toques.length < 5) return; toques = [];
-    if (esAdmin()) return toast('Las herramientas de stock ya están visibles en este equipo');
-    $('#adm-clave').value = ''; abrir('dlg-admin'); setTimeout(() => $('#adm-clave').focus(), 50);
+    adminEntrar();
   });
   $('#adm-form').addEventListener('submit', async e => {
     e.preventDefault();
@@ -1215,7 +1221,7 @@ function adminInit() {
     $('#adm-clave').value = '';
     if (!ok) return toast('Clave incorrecta');
     try { localStorage.setItem(ADMIN.key, '1'); } catch (er) {}
-    $('#dlg-admin').close(); adminPinta(); toast('Listo. El botón Actualizar stock queda visible en este equipo.');
+    $('#dlg-admin').close(); adminPinta(); $('#s-actualizar').click(); toast('Listo. Este equipo queda como administrador.');
   });
   $('#adm-salir').onclick = () => { try { localStorage.removeItem(ADMIN.key); } catch (e) {} $('#dlg-stock').close(); adminPinta(); toast('Herramientas de stock ocultas en este equipo'); };
 }

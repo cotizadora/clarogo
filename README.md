@@ -46,6 +46,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 16-11-2026: entrada directa del administrador
+
+- Nueva dirección de administrador: https://cotizadora.github.io/clarogo/#admin. Pide la clave la primera vez y abre directo Actualizar stock. En ese navegador las veces siguientes entra sin pedir la clave.
+
 ### 16-11-2026: menú superior sin desplazamiento
 
 - El menú superior ya no se desplaza de lado. Es una grilla pareja de 12 botones, siempre todos visibles: 12 en una fila en PC ancho, 6 por fila en PC y tablet, 3 por fila en celular y 2 en celulares muy angostos.
