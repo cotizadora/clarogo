@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 16-11-2026: extensión 1.1, elige la pestaña de la planilla
+
+- Al enviar a Mi Planilla, la extensión usa la pestaña de ClaroGo! más antigua que ya esté en la planilla; si no hay, la más antigua que esté en otra sección libre (inicio, galería, etc.) y la lleva a la planilla. Las pestañas en Oferta, PNG, Stock o Script no se tocan: en ese caso abre una pestaña nueva en la planilla. Si la pestaña no responde, abre una nueva desde cero. Siempre termina mostrando la planilla.
+
 ### 16-11-2026: Compañía de origen en la vista simple
 
 - Mi Planilla muestra siempre la columna Compañía (de origen) en la fila, sin abrir la ficha. Se ajustaron los anchos: en PC chico se ocultan Hora, Plan y Notas (siguen en la ficha), y en celular se ven Teléfono, Compañía y Tipificación.

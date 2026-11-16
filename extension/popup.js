@@ -40,16 +40,39 @@ async function copiar(silencioso) {
   catch (e) { mostrar('No se pudo copiar: ' + e.message, 'mal'); return false; }
 }
 
-async function enviar() {
-  $('#enviar').disabled = true;
+// Secciones que un ejecutivo deja abiertas a la mano: nunca se le cambian
+const PROTEGIDAS = ['oferta', 'png', 'stock', 'script'];
+const seccionDe = url => { try { return new URL(url).hash.slice(1) || 'inicio'; } catch (e) { return ''; } };
+const esperar = ms => new Promise(r => setTimeout(r, ms));
+
+// Llama a Mi Planilla dentro de la pestaña. Devuelve false si la página no la reconoce.
+async function entregar(tabId) {
   try {
-    let [tab] = await chrome.tabs.query({ url: PLANILLA + '*' });
-    if (!tab) { tab = await chrome.tabs.create({ url: PLANILLA + '#control', active: true }); await new Promise(r => setTimeout(r, 2500)); }
     const [res] = await chrome.scripting.executeScript({
-      target: { tabId: tab.id }, world: 'MAIN', args: [TEXTO],
+      target: { tabId }, world: 'MAIN', args: [TEXTO],
       func: txt => (typeof window.clarogoDesdeGenesys === 'function') ? window.clarogoDesdeGenesys(txt) : 'sin-planilla'
     });
-    if (res && res.result === 'sin-planilla') throw new Error('la página de ClaroGo! no respondió. Recárgala y vuelve a intentarlo');
+    return !!res && res.result !== 'sin-planilla';
+  } catch (e) { return false; }
+}
+// Abre una pestaña nueva en la planilla y espera hasta que la página esté lista (máximo 15 segundos)
+async function abrirNueva() {
+  const tab = await chrome.tabs.create({ url: PLANILLA + '#control', active: true });
+  for (let i = 0; i < 30; i++) { await esperar(500); if (await entregar(tab.id)) return tab; }
+  throw new Error('la planilla tardó demasiado en abrir');
+}
+async function enviar() {
+  $('#enviar').disabled = true;
+  mostrar('Enviando a Mi Planilla…', 'ok');
+  try {
+    // De la más antigua a la más nueva
+    const tabs = (await chrome.tabs.query({ url: PLANILLA + '*' })).sort((a, b) => a.id - b.id);
+    // 1. Una pestaña que ya está en la planilla. 2. Una pestaña de ClaroGo! en el inicio u otra sección libre.
+    // Las pestañas en Oferta, PNG, Stock o Script no se tocan: en ese caso se abre una pestaña nueva.
+    const candidata = tabs.find(t => seccionDe(t.url) === 'control') || tabs.find(t => !PROTEGIDAS.includes(seccionDe(t.url)));
+    let tab = null;
+    if (candidata && await entregar(candidata.id)) tab = candidata;
+    else tab = await abrirNueva();       // no hay pestaña libre o no se reconoce: se abre desde cero
     await chrome.tabs.update(tab.id, { active: true });
     await chrome.windows.update(tab.windowId, { focused: true });
     window.close();
