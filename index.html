@@ -109,6 +109,23 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 .chk input{width:16px;height:16px;accent-color:var(--red)}
 .f-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
 .s-meta{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-bottom:8px;padding:0 2px}
+/* Fecha de actualización del stock: siempre visible y destacada */
+.s-act{display:flex;align-items:center;gap:12px;border-radius:12px;padding:10px 14px;margin:0 0 12px;background:#e8f5e9;border:1px solid #9fd3a6;border-left:6px solid #1e8e3e;color:#14532d}
+.s-act .i{font-size:1.6rem;line-height:1;flex:none}
+.s-act small{display:block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;opacity:.8}
+.s-act b{display:block;font-size:1.15rem;line-height:1.25}
+.s-act span{display:block;font-size:.78rem;opacity:.9}
+.s-act.ayer{background:#fff8e1;border-color:#f3dc9a;border-left-color:#e0a800;color:#6b4e00}
+.s-act.viejo,.s-act.mal{background:var(--red-bg);border-color:#f5c2c2;border-left-color:var(--red);color:#8a1010}
+.u-drop{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;border:2px dashed #c9daf8;background:#f5f8ff;border-radius:12px;padding:18px 12px;cursor:pointer;color:var(--text);margin:0}
+.u-drop b{font-size:1rem}
+.u-drop small{color:var(--muted);font-size:.78rem}
+.u-drop.sobre,.u-drop:hover{border-color:var(--red);background:#fff5f5}
+.u-fecha{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0 0;font-size:.86rem}
+.u-fecha label{font-weight:700;margin:0}
+.u-mas{margin-top:12px;border-top:1px solid var(--border);padding-top:10px;font-size:.84rem}
+.u-mas summary{cursor:pointer;font-weight:700;color:var(--muted)}
+.u-mas[open] summary{margin-bottom:8px}
 #s-table{width:100%;border-collapse:collapse}
 #s-table thead{display:none}
 #s-table tr{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px}
@@ -447,6 +464,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <section id="v-stock" class="view" hidden>
     <h1 class="h">Stock de Equipos</h1>
     <p class="sub">Busca por modelo, marca o SKU. Toca un SKU para copiarlo.</p>
+    <div class="s-act mal" id="s-act"><span class="i">📅</span><div><small>Última actualización del stock</small><b>Cargando fecha…</b></div></div>
     <div class="card filters">
       <input class="full" type="search" id="s-q" placeholder="Buscar modelo, marca o SKU" autocomplete="off">
       <select id="s-marca"><option value="">Todas las marcas</option></select>
@@ -683,24 +701,39 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 </dialog>
 
 <dialog id="dlg-stock" style="max-width:min(620px,96vw)">
-  <div class="d-head"><div><h2>Actualizar stock</h2><p>Pega la tabla desde Excel o elige un archivo CSV</p></div><button class="d-x" data-close>✕</button></div>
+  <div class="d-head"><div><h2>Actualizar stock</h2><p>Elige el Excel del stock diario tal como llega y publícalo</p></div><button class="d-x" data-close>✕</button></div>
   <div class="d-body">
-    <div class="note blue">
-      <b>1.</b> En Excel selecciona las columnas <b>SKU, Marca, Modelo, Stock, Pie y Cuotas</b> con su fila de títulos y copia.<br>
-      <b>2.</b> Pega aquí y presiona "Revisar".<br>
-      <b>3.</b> Descarga <b>stock.csv</b> y súbelo a GitHub. El sitio se actualiza solo en uno o dos minutos.
-    </div>
-    <textarea id="u-text" rows="6" placeholder="Pega aquí las filas copiadas de Excel"></textarea>
-    <div class="d-foot" style="justify-content:flex-start">
-      <button class="btn red" id="u-check">Revisar</button>
-      <label class="btn" style="margin:0;color:var(--text)">Elegir archivo<input type="file" id="u-file" accept=".csv,.txt,.tsv" hidden></label>
-    </div>
-    <div id="u-result"></div>
+    <label class="u-drop" id="u-drop"><input type="file" id="u-file" accept=".xlsx,.csv,.txt,.tsv" hidden><b>📂 Elegir el Excel del stock diario</b><small>Por ejemplo "Stock Diario + Planilla de precios 16-11.xlsx". También puedes arrastrarlo aquí.</small></label>
+    <div id="u-result" style="margin-top:10px"></div>
+    <div class="u-fecha" id="u-fecha-box" hidden><label for="u-fecha">📅 Fecha del stock</label><input type="date" id="u-fecha"><small class="dim">Se lee del nombre del archivo. Corrígela si no corresponde.</small></div>
     <div class="d-foot" id="u-actions" hidden>
       <button class="btn" id="u-preview">Ver en la tabla</button>
-      <button class="btn red" id="u-download">Descargar stock.csv</button>
-      <a class="btn dark" id="u-github" target="_blank" rel="noopener">Abrir GitHub para subirlo</a>
+      <button class="btn red" id="u-publicar">Publicar para todos</button>
     </div>
+    <details class="u-mas" id="u-gh"><summary>Conexión con GitHub: <span id="u-gh-estado">sin conectar</span></summary>
+      <div id="u-gh-ok" hidden>Este navegador puede publicar el stock. <button class="btn sm" id="u-gh-salir">Desconectar</button></div>
+      <div id="u-gh-form">
+        <p>Se hace una sola vez en tu computador. Después basta con elegir el Excel y presionar Publicar.</p>
+        <ol class="sc-list">
+          <li>Con la cuenta de GitHub cotizadora abre <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Crear clave en GitHub</a>.</li>
+          <li>Nombre: ClaroGo stock. Vencimiento: el que prefieras.</li>
+          <li>En Repository access elige Only select repositories y marca clarogo.</li>
+          <li>En Permissions agrega Contents con acceso Read and write.</li>
+          <li>Presiona Generate token, copia la clave y pégala aquí.</li>
+        </ol>
+        <div class="d-foot" style="justify-content:flex-start;margin-top:6px"><input type="password" id="u-token" placeholder="github_pat_..." autocomplete="off" style="flex:1;min-width:200px"><button class="btn dark" id="u-gh-guardar">Conectar</button></div>
+        <small class="dim">La clave queda guardada solo en este navegador y no se borra al limpiar la caché. No la compartas. Si se filtra, bórrala en GitHub y crea otra.</small>
+      </div>
+    </details>
+    <details class="u-mas"><summary>Otras formas de cargar</summary>
+      <p>Pega columnas copiadas de Excel (SKU, Marca, Modelo, Stock, Pie y Cuotas con sus títulos) y presiona Revisar. Si no tienes la conexión con GitHub, descarga stock.csv y súbelo a la carpeta datos.</p>
+      <textarea id="u-text" rows="4" placeholder="Pega aquí las filas copiadas de Excel"></textarea>
+      <div class="d-foot" style="justify-content:flex-start">
+        <button class="btn" id="u-check">Revisar</button>
+        <button class="btn" id="u-download" disabled>Descargar stock.csv</button>
+        <a class="btn dark" id="u-github" target="_blank" rel="noopener">Abrir GitHub para subirlo</a>
+      </div>
+    </details>
   </div>
 </dialog>
 
@@ -1005,20 +1038,211 @@ function usarStock(rows, etiqueta) {
 }
 async function cargarStock() {
   $('#s-msg').hidden = false; $('#s-msg').textContent = 'Cargando stock…';
+  const v = Date.now();
+  const pInfo = fetch('datos/stock-info.json?v=' + v, { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null);
   try {
-    const r = await fetch('datos/stock.csv?v=' + Date.now(), { cache: 'no-store' });
+    const r = await fetch('datos/stock.csv?v=' + v, { cache: 'no-store' });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const res = leerStock(await r.text());
     if (!res.rows.length) throw new Error(res.errores[0] || 'archivo vacío');
-    const lm = r.headers.get('last-modified');
-    const f = lm ? new Date(lm).toLocaleString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
-    usarStock(res.rows, f ? 'Stock actualizado el ' + f : '');
+    usarStock(res.rows, '');
+    let info = await pInfo;
+    if (!info || !info.fecha) { const lm = r.headers.get('last-modified'); info = lm ? { fecha: isoLocal(new Date(lm)), publicado: new Date(lm).toISOString() } : null; }
+    pintarFechaStock(info);
   } catch (e) {
     $('#s-body').innerHTML = ''; $('#s-count').textContent = '';
     $('#s-msg').hidden = false;
     $('#s-msg').innerHTML = 'No se pudo cargar el stock (' + esc(e.message) + '). <button class="btn sm" id="s-retry">Reintentar</button>';
     $('#s-retry').onclick = cargarStock;
+    pintarFechaStock(null);
   }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   FECHA DEL STOCK (datos/stock-info.json), siempre visible en Stock
+   ════════════════════════════════════════════════════════════════ */
+const DIAS_SEMANA = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+const isoLocal = d => { const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
+const fechaLarga = iso => { const [y, m, d] = iso.split('-').map(Number), f = new Date(y, m - 1, d), dia = DIAS_SEMANA[f.getDay()]; return `${dia[0].toUpperCase() + dia.slice(1)} ${iso.slice(8, 10)}-${iso.slice(5, 7)}-${y}`; };
+function pintarFechaStock(info, vista) {
+  const box = $('#s-act');
+  if (!info || !/^\d{4}-\d{2}-\d{2}$/.test(info.fecha || '')) {
+    box.className = 's-act mal';
+    box.innerHTML = '<span class="i">📅</span><div><small>Última actualización del stock</small><b>Sin fecha de actualización</b><span>No se pudo leer la fecha del stock. Avísale a Eduardo antes de ofrecer equipos.</span></div>';
+    return;
+  }
+  const [y, m, d] = info.fecha.split('-').map(Number), hoy = new Date();
+  const dias = Math.round((new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()) - new Date(y, m - 1, d)) / 864e5);
+  const cuando = dias <= 0 ? 'Stock de hoy' : dias === 1 ? 'Stock de ayer' : `Stock de hace ${dias} días. Pide el archivo nuevo antes de confirmar stock.`;
+  const extra = [];
+  if (info.precios) extra.push('Precios: ' + info.precios);
+  if (info.publicado) extra.push('Publicado el ' + new Date(info.publicado).toLocaleString('es-CL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }));
+  box.className = 's-act' + (vista ? ' ayer' : dias <= 0 ? '' : dias === 1 ? ' ayer' : ' viejo');
+  box.innerHTML = `<span class="i">📅</span><div><small>${vista ? 'Vista previa sin publicar' : 'Última actualización del stock'}</small><b>${fechaLarga(info.fecha)}</b><span>${esc([cuando, ...extra].join(' · '))}</span></div>`;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   LECTURA DIRECTA DEL EXCEL DEL STOCK DIARIO (.xlsx), sin librerías
+   Hoja Stock: Material, Marca, Modelo, Stock disp., Pie Referencial, 18 cuotas referenciales (Financiamiento Portabilidad)
+   Hoja Planilla: Modelo Comercial para el nombre y equipos Vigentes sin stock
+   ════════════════════════════════════════════════════════════════ */
+async function abrirZip(buf) {
+  const v = new DataView(buf), u8 = new Uint8Array(buf), td = new TextDecoder();
+  let e = buf.byteLength - 22; while (e >= 0 && v.getUint32(e, true) !== 0x06054b50) e--;
+  if (e < 0) throw new Error('el archivo no es un Excel .xlsx (si es .xls, ábrelo en Excel y guárdalo como .xlsx)');
+  const n = v.getUint16(e + 10, true), arch = {}; let p = v.getUint32(e + 16, true);
+  for (let i = 0; i < n; i++) {
+    const ln = v.getUint16(p + 28, true), lx = v.getUint16(p + 30, true), lc = v.getUint16(p + 32, true);
+    arch[td.decode(u8.subarray(p + 46, p + 46 + ln))] = { metodo: v.getUint16(p + 10, true), comp: v.getUint32(p + 20, true), off: v.getUint32(p + 42, true) };
+    p += 46 + ln + lx + lc;
+  }
+  return async nombre => {
+    const f = arch[nombre]; if (!f) return null;
+    const ini = f.off + 30 + v.getUint16(f.off + 26, true) + v.getUint16(f.off + 28, true), datos = u8.subarray(ini, ini + f.comp);
+    if (f.metodo === 0) return td.decode(datos);
+    return new Response(new Blob([datos]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();
+  };
+}
+async function leerXlsx(buf) {
+  const zip = await abrirZip(buf), xml = s => new DOMParser().parseFromString(s || '<x/>', 'application/xml');
+  const texto = el => [...el.getElementsByTagName('t')].map(t => t.textContent).join('');
+  const ss = await zip('xl/sharedStrings.xml'), S = ss ? [...xml(ss).getElementsByTagName('si')].map(texto) : [];
+  const wb = xml(await zip('xl/workbook.xml')), rels = xml(await zip('xl/_rels/workbook.xml.rels')), destino = {};
+  [...rels.getElementsByTagName('Relationship')].forEach(r => { destino[r.getAttribute('Id')] = r.getAttribute('Target'); });
+  const hojas = [];
+  for (const h of [...wb.getElementsByTagName('sheet')]) {
+    let t = destino[h.getAttribute('r:id')] || ''; t = t.startsWith('/') ? t.slice(1) : 'xl/' + t;
+    const filas = [];
+    for (const row of [...xml(await zip(t)).getElementsByTagName('row')]) {
+      const f = []; let col = -1;
+      for (const c of [...row.getElementsByTagName('c')]) {
+        const ref = c.getAttribute('r');
+        col = ref ? ref.replace(/\d+/g, '').split('').reduce((a, ch) => a * 26 + ch.charCodeAt(0) - 64, 0) - 1 : col + 1;
+        const tipo = c.getAttribute('t'), ve = c.getElementsByTagName('v')[0];
+        let val = ve ? ve.textContent : '';
+        if (tipo === 's') val = S[+val] ?? ''; else if (tipo === 'inlineStr') val = texto(c); else if (tipo === 'e') val = '#N/A';
+        f[col] = val;
+      }
+      filas[(+row.getAttribute('r') || filas.length + 1) - 1] = f;
+    }
+    hojas.push({ nombre: h.getAttribute('name') || '', filas: Array.from(filas, f => f || []) });
+  }
+  return hojas;
+}
+// Fecha desde el nombre del archivo: "... 16-11.xlsx" o "... 16-11-2026.xlsx"
+function fechaDeNombre(nombre) {
+  const m = String(nombre).match(/(?:^|\D)(\d{1,2})[-_.](\d{1,2})(?:[-_.](\d{4}|\d{2}))?(?=\D|$)/);
+  if (!m || +m[2] < 1 || +m[2] > 12 || +m[1] < 1 || +m[1] > 31) return '';
+  const hoy = new Date();
+  let y = m[3] ? (m[3].length === 2 ? 2000 + +m[3] : +m[3]) : hoy.getFullYear();
+  if (!m[3] && new Date(y, +m[2] - 1, +m[1]) - hoy > 30 * 864e5) y--;
+  return isoLocal(new Date(y, +m[2] - 1, +m[1]));
+}
+function stockDesdeExcel(hojas, archivo) {
+  const N = s => normal(String(s ?? '')), txt = s => String(s ?? '').trim();
+  const num = s => { const x = parseFloat(String(s ?? '').replace(',', '.')); return isFinite(x) ? Math.round(x) : NaN; };
+  const cab = (h, req) => { for (let i = 0; i < Math.min(h.filas.length, 25); i++) { const f = (h.filas[i] || []).map(N); if (req.every(r => f.includes(r))) return { i, f, h }; } return null; };
+  let cS = null, cP = null;
+  for (const h of hojas) {
+    if (!cS) { const c = cab(h, ['material', 'marca', 'stockdisp', 'piereferencial', '18cuotasreferenciales']); if (c) { cS = c; continue; } }
+    if (!cP) { const c = cab(h, ['status', 'sku', 'modelocomercial', 'piereferencial', '18cuotasreferenciales']); if (c) cP = c; }
+  }
+  if (!cS) throw new Error('no encontré la hoja Stock con las columnas Material, Marca, Stock disp., Pie Referencial y 18 cuotas referenciales');
+  const S = { sku: cS.f.indexOf('material'), marca: cS.f.indexOf('marca'), modelo: cS.f.indexOf('modelo'), stock: cS.f.indexOf('stockdisp'), pie: cS.f.indexOf('piereferencial'), cuotas: cS.f.indexOf('18cuotasreferenciales') };
+  const P = cP && { status: cP.f.indexOf('status'), sku: cP.f.indexOf('sku'), marca: cP.f.indexOf('marca'), modelo: cP.f.indexOf('modelocomercial'), pie: cP.f.indexOf('piereferencial'), cuotas: cP.f.indexOf('18cuotasreferenciales') };
+  const pl = new Map();
+  if (P) cP.h.filas.slice(cP.i + 1).forEach(f => { const sku = txt(f[P.sku]); if (sku && !pl.has(sku)) pl.set(sku, f); });
+  const res = { rows: [], errores: [], avisos: [] }, vistos = new Set(), sinPrecio = [];
+  let dup = 0, conStock = 0, sinStock = 0, antiguos = 0;
+  cS.h.filas.slice(cS.i + 1).forEach(f => {
+    const sku = txt(f[S.sku]); if (!sku || !/\d/.test(sku)) return;
+    if (vistos.has(sku)) { const y = res.rows.find(r => r.sku === sku); if (y) { y.stock += Math.max(0, num(f[S.stock]) || 0); dup++; } return; }
+    const p = pl.get(sku), modelo = (p && txt(p[P.modelo])) || txt(f[S.modelo]), pie = num(f[S.pie]), cuotas = num(f[S.cuotas]);
+    if (isNaN(pie) || isNaN(cuotas)) { sinPrecio.push(modelo || sku); return; }
+    vistos.add(sku); conStock++;
+    res.rows.push({ sku, marca: txt(f[S.marca]).toUpperCase(), modelo, stock: Math.max(0, num(f[S.stock]) || 0), pie, cuotas });
+  });
+  if (P) pl.forEach((f, sku) => {
+    if (vistos.has(sku)) return;
+    if (N(f[P.status]) !== 'vigente') { antiguos++; return; }
+    const pie = num(f[P.pie]), cuotas = num(f[P.cuotas]); if (isNaN(pie) || isNaN(cuotas) || !txt(f[P.modelo])) return;
+    vistos.add(sku); sinStock++;
+    res.rows.push({ sku, marca: txt(f[P.marca]).toUpperCase(), modelo: txt(f[P.modelo]), stock: 0, pie, cuotas });
+  });
+  res.avisos.push(`${conStock} equipos de la hoja Stock y ${sinStock} vigentes sin stock de la hoja ${cP ? cP.h.nombre : 'Planilla'}.`);
+  if (!P) res.avisos.push('No encontré la hoja Planilla: los nombres quedan como vienen en la hoja Stock y no se agregan equipos sin stock.');
+  if (sinPrecio.length) res.avisos.push(`${sinPrecio.length} productos con stock no traen pie o cuota (#N/A) y no se incluyen: ${sinPrecio.slice(0, 5).join(', ')}${sinPrecio.length > 5 ? '…' : ''}`);
+  if (antiguos) res.avisos.push(`${antiguos} equipos sin stock que no están Vigentes en la planilla no se incluyen.`);
+  if (dup) res.avisos.push(`${dup} SKU vienen en más de una fila de la hoja Stock. Sumé su stock.`);
+  res.info = { fecha: fechaDeNombre(archivo), archivo, precios: cP ? cP.h.nombre : '' };
+  return res;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PUBLICAR EL STOCK EN GITHUB desde el portal
+   La clave de GitHub queda solo en el navegador de quien publica.
+   ════════════════════════════════════════════════════════════════ */
+const GH = { repo: 'cotizadora/clarogo', rama: 'main', key: 'clarogo_gh_token' };
+const ghToken = () => { try { return localStorage.getItem(GH.key) || ''; } catch (e) { return ''; } };
+const b64utf8 = s => { const b = new TextEncoder().encode(s); let bin = ''; for (let i = 0; i < b.length; i += 8192) bin += String.fromCharCode(...b.subarray(i, i + 8192)); return btoa(bin); };
+async function ghFetch(url, token, opt = {}) {
+  const r = await fetch('https://api.github.com/repos/' + GH.repo + url, Object.assign({}, opt, { cache: 'no-store', headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json' } }));
+  if (r.status === 401) throw new Error('La clave de GitHub no es válida o venció. Crea una nueva y vuelve a conectar.');
+  if (r.status === 403) throw new Error('La clave de GitHub no tiene permiso para escribir. Revisa que Contents tenga Read and write.');
+  return r;
+}
+async function ghGuardarArchivo(ruta, texto, mensaje, token) {
+  const r0 = await ghFetch(`/contents/${ruta}?ref=${GH.rama}&t=${Date.now()}`, token);
+  if (!r0.ok && r0.status !== 404) throw new Error('GitHub respondió ' + r0.status + ' al leer ' + ruta);
+  const sha = r0.ok ? (await r0.json()).sha : undefined;
+  const r = await ghFetch(`/contents/${ruta}`, token, { method: 'PUT', body: JSON.stringify({ message: mensaje, content: b64utf8(texto), sha, branch: GH.rama }) });
+  if (!r.ok) throw new Error(r.status === 404 ? 'La clave no tiene acceso al repositorio clarogo.' : 'GitHub respondió ' + r.status + ' al guardar ' + ruta);
+}
+function ghPintaEstado() {
+  const ok = !!ghToken();
+  $('#u-gh-estado').textContent = ok ? 'conectado ✓' : 'sin conectar';
+  $('#u-gh-ok').hidden = !ok; $('#u-gh-form').hidden = ok;
+  $('#u-publicar').textContent = ok ? 'Publicar para todos' : 'Publicar para todos (conecta GitHub)';
+}
+async function ghConectar() {
+  const t = $('#u-token').value.trim(); if (!t) return toast('Pega la clave de GitHub');
+  const b = $('#u-gh-guardar'); b.disabled = true; b.textContent = 'Revisando…';
+  try {
+    const r = await ghFetch('', t);
+    if (!r.ok) throw new Error(r.status === 404 ? 'La clave no tiene acceso al repositorio clarogo.' : 'GitHub respondió ' + r.status);
+    localStorage.setItem(GH.key, t); $('#u-token').value = ''; ghPintaEstado(); $('#u-gh').open = false;
+    toast('Conectado con GitHub. Ya puedes publicar el stock.');
+  } catch (e) { toast(e.message); } finally { b.disabled = false; b.textContent = 'Conectar'; }
+}
+async function publicarStock() {
+  if (!sPendiente) return;
+  const token = ghToken(); if (!token) { $('#u-gh').open = true; return toast('Primero conecta este navegador con GitHub (se hace una sola vez).'); }
+  const fecha = $('#u-fecha').value; if (!fecha) { $('#u-fecha').focus(); return toast('Indica la fecha del stock'); }
+  const info = Object.assign({}, sInfoPend, { fecha, publicado: new Date().toISOString(), equipos: sPendiente.length, conStock: sPendiente.filter(r => r.stock > 0).length });
+  const b = $('#u-publicar'); b.disabled = true; b.textContent = 'Publicando…';
+  try {
+    const f = fecha.split('-').reverse().join('-');
+    await ghGuardarArchivo('datos/stock.csv', aCSV(sPendiente), `Stock del ${f} (desde el portal)`, token);
+    await ghGuardarArchivo('datos/stock-info.json', JSON.stringify(info, null, 1) + '\n', `Fecha del stock ${f}`, token);
+    usarStock(sPendiente, ''); pintarFechaStock(info); $('#dlg-stock').close();
+    toast('Stock publicado. En uno o dos minutos lo verán todos.');
+    esperarPublicacion(info.publicado);
+  } catch (e) { toast(e.message); } finally { b.disabled = false; ghPintaEstado(); }
+}
+// Avisa cuando el stock nuevo ya está en línea para todos
+async function esperarPublicacion(marca, n = 0) {
+  if (n > 16) return toast('GitHub está tardando. Revisa el stock en unos minutos.');
+  await new Promise(r => setTimeout(r, 15000));
+  try { const r = await fetch('datos/stock-info.json?v=' + Date.now(), { cache: 'no-store' }); if (r.ok && (await r.json()).publicado === marca) return toast('✓ El stock nuevo ya está en línea para todos.'); } catch (e) {}
+  esperarPublicacion(marca, n + 1);
+}
+async function procesarArchivoStock(f) {
+  const out = $('#u-result'); out.innerHTML = '<div class="note blue">Leyendo ' + esc(f.name) + '…</div>'; $('#u-actions').hidden = true;
+  try {
+    const res = /\.xlsx$/i.test(f.name) ? stockDesdeExcel(await leerXlsx(await f.arrayBuffer()), f.name)
+      : Object.assign(leerStock(await f.text()), { info: { fecha: fechaDeNombre(f.name), archivo: f.name } });
+    mostrarRevision(res);
+  } catch (e) { out.innerHTML = `<div class="note red">No pude leer el archivo: ${esc(e.message)}.</div>`; sPendiente = null; $('#u-fecha-box').hidden = true; }
 }
 const tier = s => s >= 30 ? 1 : s >= 1 ? 2 : 3;
 const total = e => e.pie + e.cuotas * 18;
@@ -1082,16 +1306,25 @@ function initStock() {
     copyText(`*Financiamiento:* \n\n*SKU:* ${eq.sku}\n*MARCA:* ${eq.marca}\n*MODELO:* ${eq.modelo}\n*PIE:* ${clp(eq.pie)}\n*18 CUOTAS DE:* ${clp(eq.cuotas)}\n*PRECIO TOTAL:* ${clp(total(eq))}\n*STOCK:* ${eq.stock} unidades`, 'Información copiada');
   });
   // Actualizar stock
-  $('#s-actualizar').onclick = () => { $('#u-result').innerHTML = ''; $('#u-actions').hidden = true; abrir('dlg-stock'); };
+  $('#s-actualizar').onclick = () => { $('#u-result').innerHTML = ''; $('#u-actions').hidden = true; $('#u-fecha-box').hidden = true; ghPintaEstado(); abrir('dlg-stock'); };
   $('#u-github').href = GITHUB_SUBIR;
-  $('#u-file').addEventListener('change', async e => { const f = e.target.files[0]; if (!f) return; $('#u-text').value = await f.text(); e.target.value = ''; revisarStock(); });
+  $('#u-file').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (f) procesarArchivoStock(f); });
+  const zona = $('#u-drop');
+  ['dragenter', 'dragover'].forEach(ev => zona.addEventListener(ev, e => { e.preventDefault(); zona.classList.add('sobre'); }));
+  ['dragleave', 'drop'].forEach(ev => zona.addEventListener(ev, () => zona.classList.remove('sobre')));
+  zona.addEventListener('drop', e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) procesarArchivoStock(f); });
   $('#u-check').onclick = revisarStock;
-  $('#u-download').onclick = () => { downloadBlob(new Blob([aCSV(sPendiente)], { type: 'text/csv;charset=utf-8' }), 'stock.csv'); toast('stock.csv descargado. Ahora súbelo a GitHub.'); };
-  $('#u-preview').onclick = () => { usarStock(sPendiente, 'Vista previa sin publicar'); $('#dlg-stock').close(); toast('Vista previa aplicada solo en este navegador'); };
+  $('#u-download').onclick = () => { if (!sPendiente) return; downloadBlob(new Blob([aCSV(sPendiente)], { type: 'text/csv;charset=utf-8' }), 'stock.csv'); toast('stock.csv descargado. Ahora súbelo a GitHub.'); };
+  $('#u-preview').onclick = () => { usarStock(sPendiente, 'Vista previa sin publicar'); pintarFechaStock(Object.assign({}, sInfoPend, { fecha: $('#u-fecha').value }), true); $('#dlg-stock').close(); toast('Vista previa aplicada solo en este navegador'); };
+  $('#u-publicar').onclick = publicarStock;
+  $('#u-gh-guardar').onclick = ghConectar;
+  $('#u-gh-salir').onclick = () => { try { localStorage.removeItem(GH.key); } catch (e) {} ghPintaEstado(); toast('Este navegador ya no puede publicar el stock'); };
   cargarStock();
 }
-function revisarStock() {
-  const res = leerStock($('#u-text').value), out = $('#u-result');
+let sInfoPend = null;
+function revisarStock() { mostrarRevision(Object.assign(leerStock($('#u-text').value), { info: { fecha: isoLocal(new Date()), archivo: 'pegado desde Excel' } })); }
+function mostrarRevision(res) {
+  const out = $('#u-result');
   let html = '';
   if (res.rows.length) {
     const viejo = new Map(EQ.map(e => [e.sku, e])), nuevo = new Set(res.rows.map(r => r.sku));
@@ -1104,7 +1337,10 @@ function revisarStock() {
   if (res.errores.length) html += `<div class="note red" style="margin-top:8px"><b>${res.errores.length} filas con problemas (no se incluyen):</b><br>${res.errores.slice(0, 8).map(esc).join('<br>')}${res.errores.length > 8 ? '<br>…y ' + (res.errores.length - 8) + ' más.' : ''}</div>`;
   out.innerHTML = html;
   sPendiente = res.rows.length ? res.rows : null;
-  $('#u-actions').hidden = !sPendiente;
+  sInfoPend = res.info || null;
+  $('#u-actions').hidden = !sPendiente; $('#u-fecha-box').hidden = !sPendiente; $('#u-download').disabled = !sPendiente;
+  $('#u-fecha').value = (res.info && res.info.fecha) || isoLocal(new Date());
+  ghPintaEstado();
 }
 
 /* ════════════════════════════════════════════════════════════════
@@ -2061,14 +2297,14 @@ async function limpiarCache() {
   // Sin preguntas: primero guarda la planilla y luego limpia. La planilla y el archivo elegido nunca se borran.
   toast('Guardando tu planilla y limpiando la caché…');
   try { await respSync('limpieza'); } catch (e) {}
-  let planilla = null; try { planilla = localStorage.getItem(CT_KEY); } catch (e) {}
+  let planilla = null, clave = null; try { planilla = localStorage.getItem(CT_KEY); clave = localStorage.getItem(GH.key); } catch (e) {}
   try {
     document.cookie.split(';').forEach(c => {
       const name = c.split('=')[0].trim(); if (!name) return;
       [location.hostname, '.' + location.hostname, ''].forEach(dom => { document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/' + (dom ? ';domain=' + dom : ''); });
     });
   } catch (e) {}
-  try { localStorage.clear(); if (planilla) localStorage.setItem(CT_KEY, planilla); } catch (e) {}
+  try { localStorage.clear(); if (planilla) localStorage.setItem(CT_KEY, planilla); if (clave) localStorage.setItem(GH.key, clave); } catch (e) {}
   try { sessionStorage.clear(); sessionStorage.setItem('clarogo_limpio', '1'); } catch (e) {}
   try { if (window.caches) await Promise.all((await caches.keys()).map(k => caches.delete(k))); } catch (e) {}
   try { if ('serviceWorker' in navigator) await Promise.all((await navigator.serviceWorker.getRegistrations()).map(r => r.unregister())); } catch (e) {}

@@ -18,14 +18,24 @@ Portal de apoyo para ventas de equipos y planes con portabilidad. Es una herrami
 
 ## Cómo actualizar el stock
 
-1. Abre el sitio, entra a **Stock de Equipos** y presiona **Actualizar stock**.
-2. Copia desde Excel las columnas SKU, Marca, Modelo, Stock, Pie y Cuotas con su fila de títulos, pégalas y presiona **Revisar**. También puedes elegir un archivo CSV.
-3. El portal avisa si hay filas con errores o SKU repetidos y muestra cuántos equipos son nuevos, cuántos ya no vienen y cuántos cambiaron de stock o precio.
-4. Presiona **Descargar stock.csv**.
-5. Presiona **Abrir GitHub para subirlo**, arrastra el archivo y confirma con "Commit changes". El sitio se actualiza solo en uno o dos minutos.
+Se hace desde el mismo portal, sin editar la página:
 
-El archivo usa punto y coma como separador, así se abre directo en Excel. La fecha que muestra el portal ("Stock actualizado el...") es la de la última subida.
+1. Entra a **Stock de Equipos** y presiona **Actualizar stock**.
+2. Elige o arrastra el Excel del stock diario tal como llega (por ejemplo `Stock Diario + Planilla de precios 16-11.xlsx`). El portal lo lee directo, sin convertirlo.
+3. Revisa el resumen y la **fecha del stock**, que se toma del nombre del archivo. Corrígela si no corresponde.
+4. Presiona **Publicar para todos**. En uno o dos minutos todos ven el stock nuevo, y el portal avisa cuando ya está en línea.
 
+Cómo se arma el stock desde el Excel:
+
+- Hoja Stock: Material (SKU), Marca, Stock disp., Pie Referencial y 18 cuotas referenciales (Financiamiento Portabilidad). Si un SKU viene en más de una fila, se suma su stock.
+- Hoja Planilla: el nombre del equipo es el Modelo Comercial. Los equipos Vigentes sin stock se agregan con stock 0, para que al buscarlos aparezcan como sin stock.
+- Se omiten los productos sin pie o cuota (#N/A) y los equipos que no están Vigentes.
+
+La fecha se guarda en `datos/stock-info.json` y aparece destacada arriba de la tabla de Stock: verde si es de hoy, amarilla si es de ayer y roja si es más antigua.
+
+**Conexión con GitHub (una sola vez por computador):** en el mismo cuadro, en "Conexión con GitHub", sigue los pasos para crear una clave de GitHub con acceso solo al repositorio clarogo (Contents: Read and write) y pégala. La clave queda guardada solo en ese navegador, y Limpiar caché no la borra. Si se pierde o se filtra, bórrala en GitHub y crea otra.
+
+Sin la conexión, en "Otras formas de cargar" se puede descargar `stock.csv` y subirlo a la carpeta `datos` del repositorio.
 ## Cómo cambiar precios y planes
 
 Todos los datos comerciales están al inicio del script de `index.html`, en el bloque "DATOS COMERCIALES": Excepciones de Boletas, Oferta Personas, Oferta PNG y los planes del Script. Cada cambio se anota más abajo con fecha y fuente.
@@ -35,6 +45,13 @@ Todos los datos comerciales están al inicio del script de `index.html`, en el b
 GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza el sitio en uno o dos minutos.
 
 ## Historial de cambios
+
+### 16-11-2026: stock del 16-11 y actualización diaria desde el portal
+
+- datos/stock.csv se reemplazó con `Stock Diario + Planilla de precios 16-11.xlsx` (fuente: archivo enviado por Eduardo; precios de la hoja Planilla 13-11). Quedaron 315 equipos: 130 con stock y 185 vigentes sin stock. No se incluyen 22 productos sin pie o cuota (#N/A).
+- Dos SKU venían en dos filas con stock distinto (70011841 y 70016652). Ahora se suma su stock.
+- Actualizar stock ahora lee el Excel diario directo y publica para todos con un botón, usando una clave de GitHub guardada solo en el navegador de quien publica.
+- La sección Stock muestra siempre, destacada, la fecha de la última actualización (datos/stock-info.json).
 
 ### 13-11-2026: enlaces en el inicio (PC)
 
