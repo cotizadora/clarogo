@@ -50,6 +50,13 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 16-11-2026: lectura de Genesys con Ctrl+A en la llamada
+
+- La planilla ahora lee el texto que copia Ctrl+A y Ctrl+C en una llamada en línea de Genesys (campos CLAVE: y valor). El teléfono sale de FONO_CONTACTO (o Fono1, Fono2, LEGACY_ID). También toma RUT_PERSONA y FIRST/SECOND/THIRD_NAME cuando vienen, la campaña (vNombre_Campana), la compañía de origen (Segment_of_Origin), la oferta de la campaña (Glosa_Descripcion) y la fecha (vContactDate). Los campos vacíos, que Genesys copia con su propio nombre, se ignoran.
+- Se dejó de leer el HTML del portapapeles, que traía un número fijo que no era del cliente. Se quitó la opción del archivo guardado.
+- Pegar desde Genesys (arriba) crea siempre una fila nueva. El botón 📞 de una fila reemplaza su teléfono por el copiado y completa lo que falte.
+- La ficha suma Compañía de origen y Oferta de la campaña, y se exportan a Excel.
+
 ### 16-11-2026: botón Genesys en cada fila
 
 - Cada fila de Mi Planilla tiene el botón 📞, siempre visible sin abrir la ficha: pega en esa fila los datos que traiga lo copiado de Genesys (hoy, el teléfono). Solo llena lo vacío y nunca reemplaza lo que ya está escrito.

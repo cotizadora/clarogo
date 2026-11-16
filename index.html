@@ -818,8 +818,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <div class="d-body">
     <p style="font-size:.86rem">Haz clic en el cuadro, presiona <b>Ctrl+V</b> y luego "Agregar a la planilla".</p>
     <textarea id="ct-texto" rows="7" placeholder="Pega aquí lo copiado desde Genesys"></textarea>
-    <div class="d-foot"><label class="btn" style="margin:0;color:var(--text);margin-right:auto">📄 Elegir archivo de Genesys<input type="file" id="ct-archivo" accept=".html,.htm,.mhtml,.txt" hidden></label><button class="btn" data-close>Cancelar</button><button class="btn red" id="ct-procesar">Agregar a la planilla</button></div>
-    <p class="dim" style="font-size:.76rem;margin:6px 0 0">Si el teléfono no aparece, en Genesys presiona Ctrl+S para guardar la página y elige ese archivo aquí.</p>
+    <div class="d-foot"><button class="btn" data-close>Cancelar</button><button class="btn red" id="ct-procesar">Agregar a la planilla</button></div>
   </div>
 </dialog>
 
@@ -2184,31 +2183,44 @@ async function iniciarRespaldo() {
 // El título de la interacción viene como CAMPAÑA|RUT|NOMBRE, por ejemplo CONECTADOS|123456789|NOMBRE APELLIDO.
 // Genesys guarda el teléfono solo en una etiqueta oculta (aria-label y tooltip de "Mobile Number, Chile"),
 // que Ctrl+A y Ctrl+C no copian como texto. Por eso también se lee el HTML copiado o el archivo guardado.
-function textoDeHtml(html) {
-  try {
-    const d = new DOMParser().parseFromString(html, 'text/html');
-    const etiquetas = [...d.querySelectorAll('[aria-label],[title]')].map(e => (e.getAttribute('aria-label') || '') + '\n' + (e.getAttribute('title') || ''));
-    return etiquetas.join('\n') + '\n' + (d.title || '') + '\n' + (d.body ? d.body.textContent : '');
-  } catch (e) { return ''; }
-}
-function leerGenesys(txt, html) {
-  const r = {};
-  txt = String(txt || '').replace(/[   ]/g, ' ');
-  if (html) txt += '\n' + textoDeHtml(html).replace(/[   ]/g, ' ');
-  else if (/<html|<div|aria-label=/i.test(txt)) txt += '\n' + textoDeHtml(txt);
-  const tit = txt.match(/([A-ZÁÉÍÓÚÑ0-9_ ]{2,40})\|\s*(\d{1,2}\.?\d{3}\.?\d{3}-?[\dkK])\s*\|?([^\n|(]*)/i);
-  if (tit) { r.campana = tit[1].trim(); r.rut = rutFormato(tit[2]); r.nombre = tit[3].trim().replace(/\s+/g, ' '); }
-  const tel = txt.match(/Tel[eé]fono:\s*\+?\s*56[\s-]*(\d[\d\s-]{7,13}\d)/i) || txt.match(/\+\s*56[\s-]*(9[\d\s-]{7,12}\d)/) || txt.match(/(?:^|\D)56(9\d{8})(?!\d)/);
-  if (tel) { const d = tel[1].replace(/\D/g, ''); r.telefono = d.length === 9 ? `${d[0]} ${d.slice(1, 5)} ${d.slice(5)}` : d; }
-  const cola = txt.match(/\b(COLA_[A-Z0-9_]+)/i);
-  if (cola) r.cola = cola[1];
-  // La hora puede venir en 24 horas ("12:34") o con a. m. / p. m.
-  const f = txt.match(/Conectado a la conversaci[oó]n a la\(s\)\s*(\d{1,2}) de (\w+) de (\d{4})\s+(\d{1,2}):(\d{2})(?:\s*([ap])\.?\s*m\.?)?/i);
-  if (f) {
-    let h = +f[4]; if (f[6]) { h %= 12; if (f[6].toLowerCase() === 'p') h += 12; }
-    const m = MESES.indexOf(f[2].toLowerCase()) + 1, p = n => String(n).padStart(2, '0');
-    if (m) { r.fecha = `${f[3]}-${p(m)}-${p(+f[1])}`; r.hora = `${p(h)}:${f[5]}`; }
+// Ctrl+A y Ctrl+C en la llamada de Genesys copian los datos del cliente así:
+//   FONO_CONTACTO:      (en una línea)
+//   56912345678         (el valor en la línea siguiente)
+// Si el campo viene vacío, Genesys repite el nombre del campo (FIRST_NAME: / FIRST_NAME), y eso se ignora.
+function camposGenesys(txt) {
+  const L = String(txt || '').replace(/\r/g, '').replace(/[   ]/g, ' ').split('\n').map(x => x.trim());
+  const clave = /^([A-Za-z][A-Za-z0-9_]*):\s*(.*)$/, c = {};
+  for (let i = 0; i < L.length; i++) {
+    const m = L[i].match(clave); if (!m) continue;
+    let v = m[2].trim();
+    if (!v && i + 1 < L.length && !clave.test(L[i + 1])) { v = L[i + 1]; i++; }
+    if (v && v.toUpperCase() !== m[1].toUpperCase()) c[m[1].toUpperCase()] = v;
   }
+  return c;
+}
+const telFormato = s => {
+  let d = String(s || '').replace(/\D/g, '');
+  if (d.length === 11 && d.startsWith('56')) d = d.slice(2);
+  return d.length === 9 ? `${d[0]} ${d.slice(1, 5)} ${d.slice(5)}` : '';
+};
+const fechaGenesys = s => { const m = String(s || '').match(/^(\d{4})(\d{2})(\d{2})$/); return m ? `${m[1]}-${m[2]}-${m[3]}` : ''; };
+function leerGenesys(txt) {
+  const r = {}, c = camposGenesys(txt);
+  // Teléfono: FONO_CONTACTO manda; si no viene, Fono1, Fono2 o LEGACY_ID
+  for (const k of ['FONO_CONTACTO', 'FONO1', 'FONO2', 'LEGACY_ID']) { const t = telFormato(c[k]); if (t) { r.telefono = t; break; } }
+  if (c.RUT_PERSONA && /\d{6,}/.test(c.RUT_PERSONA.replace(/\D/g, ''))) r.rut = rutFormato(c.RUT_PERSONA);
+  const nombre = [c.FIRST_NAME, c.SECOND_NAME, c.THIRD_NAME].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
+  if (nombre) r.nombre = nombre;
+  if (c.VNOMBRE_CAMPANA || c.CAMPAIGNDESCRIPTION) r.campana = c.VNOMBRE_CAMPANA || c.CAMPAIGNDESCRIPTION;
+  if (c.SEGMENT_OF_ORIGIN) r.origen = c.SEGMENT_OF_ORIGIN;
+  if (c.GLOSA_DESCRIPCION) r.oferta = c.GLOSA_DESCRIPCION;
+  if (fechaGenesys(c.VCONTACTDATE)) r.fecha = fechaGenesys(c.VCONTACTDATE);
+  // Formato antiguo del título de la interacción: CAMPAÑA|RUT|NOMBRE
+  const tit = String(txt || '').match(/([A-ZÁÉÍÓÚÑ0-9_ ]{2,40})\|\s*(\d{1,2}\.?\d{3}\.?\d{3}-?[\dkK])\s*\|?([^\n|(]*)/i);
+  if (tit) { r.campana = r.campana || tit[1].trim(); r.rut = r.rut || rutFormato(tit[2]); r.nombre = r.nombre || tit[3].trim().replace(/\s+/g, ' '); }
+  if (!r.telefono) { const t = String(txt || '').match(/Tel[eé]fono:\s*\+?\s*56[\s-]*(9[\d\s-]{7,11}\d)/i); if (t) r.telefono = telFormato(t[1]); }
+  const cola = String(txt || '').match(/\b(COLA_[A-Z0-9_]+)/i);
+  if (cola) r.cola = cola[1];
   return r;
 }
 
@@ -2218,8 +2230,8 @@ function leerGenesys(txt, html) {
 const MEDIOS = ['correo electrónico', 'WhatsApp', 'SMS'];
 const TVENTA = [['port', 'PortIn Post-Post'], ['portpre', 'PortIn Pre-Post'], ['migra', 'Migración'], ['ln', 'Línea nueva']];
 const FICHA = [
-  ['Cliente', [['nac', 'Fecha de nacimiento', 'DD-MM-AAAA'], ['mail', 'Correo electrónico', 'correo@ejemplo.com'], ['fono', 'Número a portar', '9 XXXX XXXX'], ['contacto', 'Teléfono de contacto', '9 XXXX XXXX']]],
-  ['Venta', [['medio', 'Validación enviada por', 'MEDIOS'], ['tventa', 'Tipo de venta', 'TVENTA'], ['adic', 'Líneas adicionales', '9 1111 1111, 9 2222 2222']]],
+  ['Cliente', [['nac', 'Fecha de nacimiento', 'DD-MM-AAAA'], ['mail', 'Correo electrónico', 'correo@ejemplo.com'], ['fono', 'Número a portar', '9 XXXX XXXX'], ['contacto', 'Teléfono de contacto', '9 XXXX XXXX'], ['origen', 'Compañía de origen', 'Ej: Movistar']]],
+  ['Venta', [['medio', 'Validación enviada por', 'MEDIOS'], ['tventa', 'Tipo de venta', 'TVENTA'], ['adic', 'Líneas adicionales', '9 1111 1111, 9 2222 2222'], ['oferta', 'Oferta de la campaña (Genesys)', '']]],
   ['Equipo', [['eq', 'Equipo', 'Ej: Samsung A17 5G 128GB'], ['eqtotal', 'Monto total', '$0'], ['eqpie', 'Pago inicial', '$0'], ['eqforma', 'Forma de pago', 'Ej: 18 cuotas de $22.000']]],
   ['Despacho', [['calle', 'Calle o pasaje', ''], ['num', 'Número', ''], ['int', 'N° interior', 'Depto, block, casa'], ['comuna', 'Comuna', ''], ['region', 'Región', ''], ['ref', 'Referencia o entrecalles', ''], ['eta', 'Tiempo de despacho', '']]]
 ];
@@ -2239,17 +2251,16 @@ function ctFichaHTML(r) {
 }
 // Completa una fila con lo leído de Genesys: solo llena lo vacío, nunca borra lo que ya escribiste
 let ctPegarEnFila = () => {};
-const GEN_CAMPOS = [['telefono', 'teléfono'], ['rut', 'RUT'], ['nombre', 'nombre'], ['campana', 'campaña'], ['cola', 'cola']];
+const GEN_CAMPOS = [['telefono', 'teléfono'], ['rut', 'RUT'], ['nombre', 'nombre'], ['campana', 'campaña'], ['cola', 'cola'], ['origen', 'compañía de origen'], ['oferta', 'oferta']];
 function ctCompletarFila(id, d) {
   const r = CT.find(x => x.id === id); if (!r) return;
-  const puestos = GEN_CAMPOS.filter(([k]) => d[k] && !String(r[k] || '').trim());
-  puestos.forEach(([k]) => { r[k] = d[k]; });
-  if (puestos.length) { r.upd = Date.now(); ctNuevo = r.id; ctGuardar(); ctPinta(); }
-  const otroTel = d.telefono && r.telefono && d.telefono.replace(/\D/g, '') !== r.telefono.replace(/\D/g, '') && !puestos.some(([k]) => k === 'telefono');
-  if (puestos.length) toast('Agregado desde Genesys: ' + puestos.map(([, n]) => n).join(', ') + (otroTel ? '. Esta fila ya tenía otro teléfono y no lo cambié.' : '.'));
-  else if (otroTel) toast('Esta fila ya tiene otro teléfono. No lo cambié: si es otro cliente, usa "Pegar desde Genesys" arriba.');
-  else if (d.telefono || d.rut) toast('Esta fila ya tenía esos datos de Genesys.');
-  else toast('No encontré datos de Genesys. En Genesys presiona Ctrl+A y Ctrl+C con el cliente en pantalla y vuelve a intentarlo.');
+  if (!d.telefono && !d.rut && !d.nombre) return toast('No encontré datos de Genesys. En la llamada presiona Ctrl+A y Ctrl+C y vuelve a presionar 📞.');
+  const cambios = [];
+  if (d.telefono && d.telefono !== r.telefono) { r.telefono = d.telefono; cambios.push('teléfono'); }
+  GEN_CAMPOS.filter(([k]) => k !== 'telefono' && d[k] && !String(r[k] || '').trim()).forEach(([k, n]) => { r[k] = d[k]; cambios.push(n); });
+  if (!cambios.length) return toast('Esta fila ya tenía esos datos de Genesys.');
+  r.upd = Date.now(); ctNuevo = r.id; ctGuardar(); ctPinta();
+  toast('Actualizado desde Genesys: ' + cambios.join(', ') + (d.telefono ? ` (${d.telefono})` : '') + '.');
 }
 const ctExtras = r => FICHA.reduce((n, [, cs]) => n + cs.filter(([k]) => r[k]).length, 0);
 
@@ -2258,7 +2269,7 @@ const ctExtras = r => FICHA.reduce((n, [, cs]) => n + cs.filter(([k]) => r[k]).l
 function ctAgregar(datos, silencioso) {
   const d = new Date(), p = n => String(n).padStart(2, '0');
   const fila = Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), fecha: hoyISO(), hora: `${p(d.getHours())}:${p(d.getMinutes())}`, campana: '', cola: '', rut: '', nombre: '', telefono: '', tipo: '', plan: '', notas: '' }, datos, { upd: Date.now() });
-  const dup = fila.rut && CT.find(x => !x.borrado && x.rut === fila.rut && x.fecha === fila.fecha && (silencioso || x.telefono === fila.telefono));
+  const dup = silencioso && fila.rut && CT.find(x => !x.borrado && x.rut === fila.rut && x.fecha === fila.fecha);
   if (dup) { if (!silencioso) { ctNuevo = dup.id; ctPinta(); toast('Este cliente ya está en la planilla de hoy'); } return dup; }
   CT.unshift(fila); ctGuardar();
   if (silencioso) { ctRepintar(); return fila; }
@@ -2319,7 +2330,7 @@ function ctExcel() {
   const lista = ctFiltradas(); if (!lista.length) return toast('No hay filas para exportar');
   const q = s => /[;"\n]/.test(s) ? '"' + String(s).replace(/"/g, '""') + '"' : s;
   const cols = [['fecha', 'Fecha'], ['hora', 'Hora'], ['campana', 'Campaña'], ['cola', 'Cola'], ['rut', 'RUT'], ['nombre', 'Nombre'], ['telefono', 'Teléfono'], ['tipo', 'Tipificación'], ['plan', 'Plan'], ['notas', 'Observaciones'],
-    ['nac', 'Nacimiento'], ['mail', 'Correo'], ['fono', 'Número a portar'], ['contacto', 'Teléfono de contacto'], ['medio', 'Validación enviada por'], ['tventa', 'Tipo de venta'], ['adic', 'Líneas adicionales'],
+    ['nac', 'Nacimiento'], ['mail', 'Correo'], ['fono', 'Número a portar'], ['contacto', 'Teléfono de contacto'], ['origen', 'Compañía de origen'], ['oferta', 'Oferta de la campaña'], ['medio', 'Validación enviada por'], ['tventa', 'Tipo de venta'], ['adic', 'Líneas adicionales'],
     ['eq', 'Equipo'], ['eqtotal', 'Monto total'], ['eqpie', 'Pago inicial'], ['eqforma', 'Forma de pago'], ['calle', 'Calle'], ['num', 'Número'], ['int', 'Interior'], ['comuna', 'Comuna'], ['region', 'Región'], ['ref', 'Referencia'], ['eta', 'Despacho']];
   const csv = String.fromCharCode(0xFEFF) + cols.map(c => c[1]).join(';') + '\r\n' + lista.map(r => cols.map(c => q(r[c[0]] || '')).join(';')).join('\r\n') + '\r\n';
   downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8' }), `planilla-control-${hoyISO()}.csv`);
@@ -2329,40 +2340,25 @@ function initControl() {
   ctListo = true;
   $('#ct-tipo').innerHTML = '<option value="">Todas las tipificaciones</option><option>Sin tipificar</option>' + TIPIFICACIONES.map(x => `<option>${x}</option>`).join('');
   $('#ct-desde').value = isoMenos(6); $('#ct-hasta').value = hoyISO();
-  let htmlPegado = '', destino = '';
-  // Sin destino crea una fila nueva. Con destino completa esa fila (solo los datos que le falten).
-  const procesar = (txt, html) => {
-    const d = leerGenesys(txt || '', html || ''), id = destino; destino = '';
+  let destino = '';
+  // Arriba (sin destino) crea siempre una fila nueva. El botón 📞 de una fila reemplaza su teléfono.
+  const procesar = txt => {
+    const d = leerGenesys(txt || ''), id = destino; destino = '';
     if (id) return ctCompletarFila(id, d);
     ctAgregar(d);
-    if ((d.rut || d.nombre) && !d.telefono) toast('Agregué el cliente, pero no encontré el teléfono. Usa "Elegir archivo de Genesys" o escríbelo a mano.');
+    if (!d.telefono) toast(d.rut || d.nombre ? 'Agregué el cliente, pero no venía el teléfono. Escríbelo a mano.' : 'No encontré datos de Genesys. Agregué una fila vacía: en la llamada presiona Ctrl+A y Ctrl+C y usa 📞 en la fila.');
   };
-  const leerPortapapeles = async () => {
-    let txt = '', html = '';
-    if (navigator.clipboard.read) {
-      for (const it of await navigator.clipboard.read()) {
-        if (it.types.includes('text/html')) html = await (await it.getType('text/html')).text();
-        if (it.types.includes('text/plain')) txt = await (await it.getType('text/plain')).text();
-      }
-    } else txt = await navigator.clipboard.readText();
-    if (!txt.trim() && !html.trim()) throw new Error('vacío');
-    return [txt, html];
-  };
+  const leerPortapapeles = async () => { const txt = await navigator.clipboard.readText(); if (!txt.trim()) throw new Error('vacío'); return txt; };
   const pegarGenesys = async id => {
     destino = id || '';
-    try { const [txt, html] = await leerPortapapeles(); procesar(txt, html); }
-    catch (e) { htmlPegado = ''; $('#ct-texto').value = ''; abrir('dlg-pegar'); setTimeout(() => $('#ct-texto').focus(), 50); }
+    try { const txt = await leerPortapapeles(); procesar(txt); }
+    catch (e) { $('#ct-texto').value = ''; abrir('dlg-pegar'); setTimeout(() => $('#ct-texto').focus(), 50); }
   };
   ctPegarEnFila = pegarGenesys;
   $('#ct-pegar').onclick = () => pegarGenesys('');
   $('#dlg-pegar').addEventListener('close', () => setTimeout(() => { destino = ''; }, 0));
-  // Al pegar con Ctrl+V en el cuadro también se guarda el HTML, que trae el teléfono
-  $('#ct-texto').addEventListener('paste', e => { htmlPegado = (e.clipboardData && e.clipboardData.getData('text/html')) || ''; });
-  $('#ct-procesar').onclick = () => { const txt = $('#ct-texto').value, d = destino; $('#dlg-pegar').close(); destino = d; procesar(txt, htmlPegado); htmlPegado = ''; };
-  $('#ct-archivo').addEventListener('change', async e => {
-    const f = e.target.files[0]; e.target.value = ''; if (!f) return;
-    const html = await f.text(), d = destino; $('#dlg-pegar').close(); destino = d; procesar('', html);
-  });
+  // El cuadro de pegar usa solo el texto copiado
+  $('#ct-procesar').onclick = () => { const txt = $('#ct-texto').value, d = destino; $('#dlg-pegar').close(); destino = d; procesar(txt); };
   $('#ct-nueva').onclick = () => ctAgregar({});
   $('#ct-excel').onclick = ctExcel;
   $('#ct-q').addEventListener('input', ctPinta);
