@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 16-11-2026: enlaces sin Planilla de Trabajo ni Buk
+
+- Se quitaron los enlaces Planilla de Trabajo (ahora se usa Mi Planilla, integrada en el portal) y Buk, a pedido de Eduardo. Quedan 8 enlaces.
+
 ### 16-11-2026: reintento al publicar desde el escritorio
 
 - Si alguien publica al mismo tiempo, el programa del escritorio se pone al día y reintenta la subida, en vez de mostrar error.

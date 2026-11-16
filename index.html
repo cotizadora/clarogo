@@ -789,7 +789,6 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
-const PLANILLA_URL = 'https://docs.google.com/spreadsheets/d/1KnWZ-M0LeIIrwQq5CuGLJkHHAANNq_MUKoaTXR8K6Ck/copy';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
 // Excepciones de Boletas
@@ -843,7 +842,6 @@ const ENLACES = [
   ['🎧','Genesys','Llamadas salientes','https://login.mypurecloud.com/?rid=RfxEnXqBw64-d10nnWwT9ZW4z1e1KGhk3LTKrBF5W0E#/authenticate-adv/org/clarochilepersonas'],
   ['🚀','Front FVC','Evaluación y cierre','https://fvc-dev.clarovtrcloud.com/#/login']]},
  {t:'Gestión Operativa',items:[
-  ['👤','Buk','RRHH y Liquidación','https://cyg-phoenix.buk.cl/static_pages/portal'],
   ['📝','Ingreso Ventas','Formulario Oficial',FORM_VENTA],
   ['☁️','Bandeja','SharePoint Excel','https://phoenixservice1-my.sharepoint.com/:x:/g/personal/cortiz_phoenixservice_cl/IQAdDLYIfXiqRqqDz9Q4LaqRAcbsoheICDJ2Ru3HDvI1UGU']]},
  {t:'Consultas y Herramientas',items:[
@@ -1722,7 +1720,7 @@ function initVenta() { $('#venta-link').href = FORM_VENTA; $('#venta-frame').src
 // Mismo bloque de enlaces para la sección Enlaces y para el inicio en PC
 function enlacesHTML() {
   const a = (i, cls = '') => `<a class="card link${cls}" href="${esc(i[3])}" target="_blank" rel="noopener noreferrer" title="${esc(i[1] + ': ' + i[2])}"><span>${i[0]}</span><div><b>${i[1]}</b><small>${i[2]}</small></div></a>`;
-  return ENLACES.map((g, n) => `<div><div class="lbl">${g.t}</div><div class="links">${n === 0 ? a(['📗', 'Planilla de Trabajo', 'Copia en Sheets', PLANILLA_URL], ' dest') : ''}${g.items.map(i => a(i)).join('')}</div></div>`).join('');
+  return ENLACES.map(g => `<div><div class="lbl">${g.t}</div><div class="links">${g.items.map(i => a(i)).join('')}</div></div>`).join('');
 }
 function initEnlaces() { $('#e-grid').innerHTML = enlacesHTML(); }
 let gIdx = 0;
