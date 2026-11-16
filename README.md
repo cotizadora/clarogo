@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 16-11-2026: sin enlace a la Bandeja
+
+- Se quitó el enlace Bandeja (SharePoint Excel), a pedido de Eduardo. Quedan 7 enlaces.
+
 ### 16-11-2026: ficha completa por cliente, planilla y Script conectados, copia cada hora
 
 - Mi Planilla: cada fila tiene una ficha que se abre bajo ella (botón ▾ o clic en el número) con todos los datos que pide el Script de Cierre: nacimiento, correo, número a portar, contacto, validación, tipo de venta, líneas adicionales, equipo, despacho y observaciones con frases rápidas. Al cerrarla, la fila muestra los datos principales. Al pegar desde Genesys la ficha se abre sola.
