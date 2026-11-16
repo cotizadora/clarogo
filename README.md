@@ -50,6 +50,13 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 16-11-2026: teléfono desde Genesys
+
+- Genesys guarda el teléfono solo en una etiqueta oculta (la que aparece al pasar el mouse sobre "Mobile Number, Chile"), que Ctrl+A y Ctrl+C no copian como texto. Ahora la planilla lee también el formato HTML que se copia junto al texto, y de ahí saca el teléfono.
+- Nuevo botón "Elegir archivo de Genesys" en el cuadro de pegar, para usar la página guardada con Ctrl+S.
+- La hora de conexión se lee también en formato de 24 horas.
+- Probado con una página real de Genesys enviada por Eduardo (no se guardó en el repositorio).
+
 ### 16-11-2026: títulos fijos en la tabla de Stock
 
 - En Stock de Equipos, al bajar por los resultados la fila negra de títulos (Modelo, SKU, Marca, Pie, Cuotas, Total, Stock) queda fija bajo el menú. En celular la tabla se muestra como tarjetas con sus etiquetas, como antes.

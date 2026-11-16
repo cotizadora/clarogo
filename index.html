@@ -816,7 +816,8 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <div class="d-body">
     <p style="font-size:.86rem">Haz clic en el cuadro, presiona <b>Ctrl+V</b> y luego "Agregar a la planilla".</p>
     <textarea id="ct-texto" rows="7" placeholder="Pega aquí lo copiado desde Genesys"></textarea>
-    <div class="d-foot"><button class="btn" data-close>Cancelar</button><button class="btn red" id="ct-procesar">Agregar a la planilla</button></div>
+    <div class="d-foot"><label class="btn" style="margin:0;color:var(--text);margin-right:auto">📄 Elegir archivo de Genesys<input type="file" id="ct-archivo" accept=".html,.htm,.mhtml,.txt" hidden></label><button class="btn" data-close>Cancelar</button><button class="btn red" id="ct-procesar">Agregar a la planilla</button></div>
+    <p class="dim" style="font-size:.76rem;margin:6px 0 0">Si el teléfono no aparece, en Genesys presiona Ctrl+S para guardar la página y elige ese archivo aquí.</p>
   </div>
 </dialog>
 
@@ -2179,17 +2180,30 @@ async function iniciarRespaldo() {
 
 /* ── Lectura de Genesys ─────────────────────────────────────────── */
 // El título de la interacción viene como CAMPAÑA|RUT|NOMBRE, por ejemplo CONECTADOS|123456789|NOMBRE APELLIDO.
-function leerGenesys(txt) {
+// Genesys guarda el teléfono solo en una etiqueta oculta (aria-label y tooltip de "Mobile Number, Chile"),
+// que Ctrl+A y Ctrl+C no copian como texto. Por eso también se lee el HTML copiado o el archivo guardado.
+function textoDeHtml(html) {
+  try {
+    const d = new DOMParser().parseFromString(html, 'text/html');
+    const etiquetas = [...d.querySelectorAll('[aria-label],[title]')].map(e => (e.getAttribute('aria-label') || '') + '\n' + (e.getAttribute('title') || ''));
+    return etiquetas.join('\n') + '\n' + (d.title || '') + '\n' + (d.body ? d.body.textContent : '');
+  } catch (e) { return ''; }
+}
+function leerGenesys(txt, html) {
   const r = {};
+  txt = String(txt || '').replace(/[   ]/g, ' ');
+  if (html) txt += '\n' + textoDeHtml(html).replace(/[   ]/g, ' ');
+  else if (/<html|<div|aria-label=/i.test(txt)) txt += '\n' + textoDeHtml(txt);
   const tit = txt.match(/([A-ZÁÉÍÓÚÑ0-9_ ]{2,40})\|\s*(\d{1,2}\.?\d{3}\.?\d{3}-?[\dkK])\s*\|?([^\n|(]*)/i);
   if (tit) { r.campana = tit[1].trim(); r.rut = rutFormato(tit[2]); r.nombre = tit[3].trim().replace(/\s+/g, ' '); }
-  const tel = txt.match(/Tel[eé]fono:\s*\+?\s*56\s*([\d ]{8,14})/i) || txt.match(/\+56\s*(9[\d ]{8,12})/);
-  if (tel) r.telefono = tel[1].replace(/\s+/g, ' ').trim();
+  const tel = txt.match(/Tel[eé]fono:\s*\+?\s*56[\s-]*(\d[\d\s-]{7,13}\d)/i) || txt.match(/\+\s*56[\s-]*(9[\d\s-]{7,12}\d)/) || txt.match(/(?:^|\D)56(9\d{8})(?!\d)/);
+  if (tel) { const d = tel[1].replace(/\D/g, ''); r.telefono = d.length === 9 ? `${d[0]} ${d.slice(1, 5)} ${d.slice(5)}` : d; }
   const cola = txt.match(/\b(COLA_[A-Z0-9_]+)/i);
   if (cola) r.cola = cola[1];
-  const f = txt.match(/Conectado a la conversaci[oó]n a la\(s\)\s*(\d{1,2}) de (\w+) de (\d{4})\s+(\d{1,2}):(\d{2})\s*([ap])\.?\s*m\.?/i);
+  // La hora puede venir en 24 horas ("12:34") o con a. m. / p. m.
+  const f = txt.match(/Conectado a la conversaci[oó]n a la\(s\)\s*(\d{1,2}) de (\w+) de (\d{4})\s+(\d{1,2}):(\d{2})(?:\s*([ap])\.?\s*m\.?)?/i);
   if (f) {
-    let h = +f[4] % 12; if (f[6].toLowerCase() === 'p') h += 12;
+    let h = +f[4]; if (f[6]) { h %= 12; if (f[6].toLowerCase() === 'p') h += 12; }
     const m = MESES.indexOf(f[2].toLowerCase()) + 1, p = n => String(n).padStart(2, '0');
     if (m) { r.fecha = `${f[3]}-${p(m)}-${p(+f[1])}`; r.hora = `${p(h)}:${f[5]}`; }
   }
@@ -2299,12 +2313,32 @@ function initControl() {
   ctListo = true;
   $('#ct-tipo').innerHTML = '<option value="">Todas las tipificaciones</option><option>Sin tipificar</option>' + TIPIFICACIONES.map(x => `<option>${x}</option>`).join('');
   $('#ct-desde').value = isoMenos(6); $('#ct-hasta').value = hoyISO();
-  const procesar = txt => ctAgregar(leerGenesys(txt || ''));
-  $('#ct-pegar').onclick = async () => {
-    try { const txt = await navigator.clipboard.readText(); if (!txt.trim()) throw new Error('vacío'); procesar(txt); }
-    catch (e) { $('#ct-texto').value = ''; abrir('dlg-pegar'); setTimeout(() => $('#ct-texto').focus(), 50); }
+  let htmlPegado = '';
+  const procesar = (txt, html) => {
+    const d = leerGenesys(txt || '', html || '');
+    ctAgregar(d);
+    if ((d.rut || d.nombre) && !d.telefono) toast('Agregué el cliente, pero no encontré el teléfono. Usa "Elegir archivo de Genesys" o escríbelo a mano.');
   };
-  $('#ct-procesar').onclick = () => { const txt = $('#ct-texto').value; $('#dlg-pegar').close(); procesar(txt); };
+  $('#ct-pegar').onclick = async () => {
+    try {
+      let txt = '', html = '';
+      if (navigator.clipboard.read) {
+        for (const it of await navigator.clipboard.read()) {
+          if (it.types.includes('text/html')) html = await (await it.getType('text/html')).text();
+          if (it.types.includes('text/plain')) txt = await (await it.getType('text/plain')).text();
+        }
+      } else txt = await navigator.clipboard.readText();
+      if (!txt.trim() && !html.trim()) throw new Error('vacío');
+      procesar(txt, html);
+    } catch (e) { htmlPegado = ''; $('#ct-texto').value = ''; abrir('dlg-pegar'); setTimeout(() => $('#ct-texto').focus(), 50); }
+  };
+  // Al pegar con Ctrl+V en el cuadro también se guarda el HTML, que trae el teléfono
+  $('#ct-texto').addEventListener('paste', e => { htmlPegado = (e.clipboardData && e.clipboardData.getData('text/html')) || ''; });
+  $('#ct-procesar').onclick = () => { const txt = $('#ct-texto').value; $('#dlg-pegar').close(); procesar(txt, htmlPegado); htmlPegado = ''; };
+  $('#ct-archivo').addEventListener('change', async e => {
+    const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    const html = await f.text(); $('#dlg-pegar').close(); procesar('', html);
+  });
   $('#ct-nueva').onclick = () => ctAgregar({});
   $('#ct-excel').onclick = ctExcel;
   $('#ct-q').addEventListener('input', ctPinta);
