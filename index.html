@@ -42,13 +42,17 @@ main{flex:1;width:100%;max-width:1200px;margin:0 auto;padding:16px 12px 40px}
 
 /* Barra superior */
 .top{position:sticky;top:0;z-index:20;background:var(--red);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-.top-in{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:0 12px}
+.top-in{max-width:1400px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:0 14px;padding:0 12px}
 .logo{font-weight:900;font-size:1.35rem;letter-spacing:-.01em;text-decoration:none;padding:10px 0;white-space:nowrap}
-#nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1}
-#nav::-webkit-scrollbar{display:none}
-#nav a,#nav button{background:none;border:0;color:#fff;text-decoration:none;font-size:.86rem;padding:14px 10px;white-space:nowrap;border-bottom:3px solid transparent;opacity:.88}
+/* Menú superior: grilla simétrica, nunca se desplaza de lado y todos los botones siempre visibles */
+#nav{flex:1;min-width:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;padding:4px 0 6px}
+#nav a,#nav button{display:flex;align-items:center;justify-content:center;text-align:center;min-width:0;background:rgba(0,0,0,.1);border:0;border-radius:7px;color:#fff;text-decoration:none;font-size:.74rem;line-height:1.15;padding:6px 4px;white-space:normal;overflow-wrap:anywhere;border-bottom:3px solid transparent;opacity:.92}
+@media (max-width:699px){.top{position:relative}.logo{font-size:1.15rem;padding:7px 0 1px}#nav{flex-basis:100%}}
+@media (max-width:359px){#nav{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:700px){#nav{grid-template-columns:repeat(6,minmax(0,1fr))}#nav a,#nav button{font-size:.8rem;padding:7px 6px}}
+@media (min-width:1280px){#nav{grid-template-columns:repeat(12,minmax(0,1fr));padding:6px 0}#nav a,#nav button{background:none}}
 #nav a:hover,#nav button:hover{opacity:1;background:rgba(0,0,0,.12)}
-#nav a.on{opacity:1;font-weight:700;border-bottom-color:#fff}
+#nav a.on{opacity:1;font-weight:700;border-bottom-color:#fff;background:rgba(0,0,0,.22)}
 body[data-view="inicio"] #nav{visibility:hidden}
 
 /* Inicio */
@@ -958,7 +962,6 @@ function route() {
   $$('.view').forEach(s => s.hidden = s.id !== 'v-' + v);
   document.body.dataset.view = v;
   $$('#nav a').forEach(a => a.classList.toggle('on', a.dataset.v === v));
-  const on = $('#nav a.on'); if (on) on.scrollIntoView({ block: 'nearest', inline: 'center' });
   if (INIT[v] && !listo[v]) { listo[v] = true; INIT[v](); }
   window.scrollTo(0, 0);
 }
@@ -968,7 +971,7 @@ function initMenu() {
     return m.v ? `<a class="tile${m.v === 'enlaces' ? ' tile-enl' : ''}" href="#${m.v}">${inner}</a>` : `<a class="tile${m.soon ? ' soon' : ''}" href="#" data-modal="${m.m}">${inner}</a>`;
   }).join('');
   $('#home-links').innerHTML = enlacesHTML();
-  $('#nav').innerHTML = MENU.filter(m => !m.soon).map(m => m.v ? `<a href="#${m.v}" data-v="${m.v}">${m.t}</a>` : `<button data-modal="${m.m}">${m.t}</button>`).join('');
+  $('#nav').innerHTML = '<a href="#inicio" data-v="inicio">Inicio</a>' + MENU.filter(m => !m.soon && m.v !== 'enlaces').map(m => m.v ? `<a href="#${m.v}" data-v="${m.v}">${m.t}</a>` : `<button data-modal="${m.m}">${m.t}</button>`).join('');
   document.addEventListener('click', e => {
     const b = e.target.closest('[data-modal]'); if (!b) return;
     e.preventDefault(); abrir(b.dataset.modal);

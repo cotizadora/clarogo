@@ -46,6 +46,11 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 16-11-2026: menú superior sin desplazamiento
+
+- El menú superior ya no se desplaza de lado. Es una grilla pareja de 12 botones, siempre todos visibles: 12 en una fila en PC ancho, 6 por fila en PC y tablet, 3 por fila en celular y 2 en celulares muy angostos.
+- Se agregó Inicio al menú y se quitó Enlaces, porque los enlaces ya están en el inicio. En celular el inicio mantiene el botón Enlaces.
+
 ### 16-11-2026: herramientas de stock ocultas
 
 - El botón Actualizar stock ya no se ve para el público. Se activa en un equipo tocando 5 veces la fecha del stock e ingresando la clave de administrador. En el código solo queda su huella SHA-256, no la clave.
