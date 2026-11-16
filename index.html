@@ -386,10 +386,10 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla .acc button:hover{background:#eef2f7}
 #ct-tabla .acc .go{color:#fff;background:var(--red);font-size:.7rem}
 #ct-tabla .acc .go:hover{background:var(--red-dk)}
-.c-n{width:34px}.c-fecha{width:94px}.c-hora{width:56px}.c-rut{width:100px}.c-tel{width:100px}.c-tipo{width:148px}.c-plan{width:88px}.c-acc{width:112px}
+.c-n{width:34px}.c-fecha{width:94px}.c-hora{width:56px}.c-rut{width:100px}.c-tel{width:100px}.c-tipo{width:148px}.c-plan{width:88px}.c-acc{width:140px}
 .c-nombre{width:auto}.c-notas{width:22%}
 @media (max-width:1000px){.c-hora,.c-plan{display:none}.c-notas{width:18%}}
-@media (max-width:720px){.c-fecha,.c-notas,.c-tel{display:none}.c-tipo{width:96px}.c-rut{width:84px}.c-n{width:24px}.c-acc{width:72px} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
+@media (max-width:720px){.c-fecha,.c-notas,.c-tel{display:none}.c-tipo{width:96px}.c-rut{width:84px}.c-n{width:24px}.c-acc{width:96px} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
 #ct-resumen .chip b{margin-left:4px}
 .resp{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:.84rem}
 .resp .resp-b{display:flex;gap:6px;flex-wrap:wrap}
@@ -399,6 +399,8 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla tr.borrado td input,#ct-tabla tr.borrado td select{text-decoration:line-through;color:#9aa0a6}
 /* Ficha ampliable del cliente: se abre bajo la fila para tomar todos los datos */
 #ct-tabla .acc .fic{font-size:.8rem;color:#1a56b8;font-weight:700}
+#ct-tabla .acc .gen{background:#e8f5e9}
+#ct-tabla .acc .gen:hover{background:#c8e6c9}
 #ct-tabla tr.abierta td{background:#eaf1ff}
 #ct-tabla tr.abierta td.c-n{background:#d6e4ff;color:#1a56b8}
 #ct-tabla tr.ficha td{height:auto;white-space:normal;overflow:visible;background:#f6f9ff;padding:10px 12px 12px;border-top:0;border-left:3px solid #1a56b8}
@@ -2235,6 +2237,20 @@ function ctFichaHTML(r) {
     <div class="fi-t">Observaciones</div><div class="fi-obs"><div class="fi-chips">${OBS_RAPIDAS.map(o => `<button type="button" data-obs="${esc(o)}">+ ${esc(o)}</button>`).join('')}</div><textarea data-k="notas" rows="3" placeholder="Pega o escribe aquí todo lo que conversaste con el cliente">${esc(r.notas || '')}</textarea></div>
     <div class="fi-pie"><small class="dim">Todo se guarda solo, sea venta o no.</small><span><button type="button" class="btn sm red" data-ct="script">▶ Pasar al Script de Cierre</button><button type="button" class="btn sm" data-ct="ficha">Cerrar ficha ▴</button></span></div></td></tr>`;
 }
+// Completa una fila con lo leído de Genesys: solo llena lo vacío, nunca borra lo que ya escribiste
+let ctPegarEnFila = () => {};
+const GEN_CAMPOS = [['telefono', 'teléfono'], ['rut', 'RUT'], ['nombre', 'nombre'], ['campana', 'campaña'], ['cola', 'cola']];
+function ctCompletarFila(id, d) {
+  const r = CT.find(x => x.id === id); if (!r) return;
+  const puestos = GEN_CAMPOS.filter(([k]) => d[k] && !String(r[k] || '').trim());
+  puestos.forEach(([k]) => { r[k] = d[k]; });
+  if (puestos.length) { r.upd = Date.now(); ctNuevo = r.id; ctGuardar(); ctPinta(); }
+  const otroTel = d.telefono && r.telefono && d.telefono.replace(/\D/g, '') !== r.telefono.replace(/\D/g, '') && !puestos.some(([k]) => k === 'telefono');
+  if (puestos.length) toast('Agregado desde Genesys: ' + puestos.map(([, n]) => n).join(', ') + (otroTel ? '. Esta fila ya tenía otro teléfono y no lo cambié.' : '.'));
+  else if (otroTel) toast('Esta fila ya tiene otro teléfono. No lo cambié: si es otro cliente, usa "Pegar desde Genesys" arriba.');
+  else if (d.telefono || d.rut) toast('Esta fila ya tenía esos datos de Genesys.');
+  else toast('No encontré datos de Genesys. En Genesys presiona Ctrl+A y Ctrl+C con el cliente en pantalla y vuelve a intentarlo.');
+}
 const ctExtras = r => FICHA.reduce((n, [, cs]) => n + cs.filter(([k]) => r[k]).length, 0);
 
 /* ── Planilla ───────────────────────────────────────────────────── */
@@ -2243,12 +2259,12 @@ function ctAgregar(datos, silencioso) {
   const d = new Date(), p = n => String(n).padStart(2, '0');
   const fila = Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), fecha: hoyISO(), hora: `${p(d.getHours())}:${p(d.getMinutes())}`, campana: '', cola: '', rut: '', nombre: '', telefono: '', tipo: '', plan: '', notas: '' }, datos, { upd: Date.now() });
   const dup = fila.rut && CT.find(x => !x.borrado && x.rut === fila.rut && x.fecha === fila.fecha && (silencioso || x.telefono === fila.telefono));
-  if (dup) { if (!silencioso) { ctNuevo = ctAbierto = dup.id; ctPinta(); toast('Este cliente ya está en la planilla de hoy'); } return dup; }
+  if (dup) { if (!silencioso) { ctNuevo = dup.id; ctPinta(); toast('Este cliente ya está en la planilla de hoy'); } return dup; }
   CT.unshift(fila); ctGuardar();
   if (silencioso) { ctRepintar(); return fila; }
-  ctNuevo = ctAbierto = fila.id; ctPinta();
+  ctNuevo = fila.id; ctPinta();
   if (!datos || (!datos.rut && !datos.telefono)) toast(datos && Object.keys(datos).length === 0 ? 'Fila vacía agregada' : 'No encontré datos de Genesys. Agregué una fila vacía para completar a mano.');
-  else toast('Cliente agregado. Completa su ficha con todos los datos que vayas tomando.' + (fila.nombre ? '' : ' Falta el nombre: usa el Rutificador.'));
+  else toast('Cliente agregado' + (fila.telefono ? ' con su teléfono' : '') + '. Si conversas con él, abre su ficha con ▾.');
   return fila;
 }
 function ctRango() {
@@ -2285,7 +2301,7 @@ function ctPinta() {
     <td class="c-notas"><input data-k="notas" value="${esc(r.notas)}" placeholder="Notas" title="${esc(r.notas)}"></td>
     <td class="c-acc"><div class="acc">${r.borrado
       ? `<button data-ct="restaurar" class="go" title="Recuperar registro">↺</button>`
-      : `<button data-ct="ficha" class="fic" title="${r.id === ctAbierto ? 'Cerrar la ficha' : 'Abrir la ficha con todos los datos'}">${r.id === ctAbierto ? '▴' : '▾'}</button><button data-ct="rutificador" class="rutif" title="Copiar RUT y abrir Rutificador">🪪</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
+      : `<button data-ct="genesys" class="gen" title="Pegar datos de Genesys en esta fila (copia antes con Ctrl+A y Ctrl+C en Genesys)">📞</button><button data-ct="ficha" class="fic" title="${r.id === ctAbierto ? 'Cerrar la ficha' : 'Abrir la ficha con todos los datos'}">${r.id === ctAbierto ? '▴' : '▾'}</button><button data-ct="rutificador" class="rutif" title="Copiar RUT y abrir Rutificador">🪪</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
   </tr>${r.id === ctAbierto && !r.borrado ? ctFichaHTML(r) : ''}`).join('');
   $('#ct-vacio').hidden = lista.length > 0;
   $('#ct-vacio').textContent = verBorr ? 'No hay registros borrados en este período.' : 'No hay llamadas en este período. Pega la primera desde Genesys.';
@@ -2313,31 +2329,39 @@ function initControl() {
   ctListo = true;
   $('#ct-tipo').innerHTML = '<option value="">Todas las tipificaciones</option><option>Sin tipificar</option>' + TIPIFICACIONES.map(x => `<option>${x}</option>`).join('');
   $('#ct-desde').value = isoMenos(6); $('#ct-hasta').value = hoyISO();
-  let htmlPegado = '';
+  let htmlPegado = '', destino = '';
+  // Sin destino crea una fila nueva. Con destino completa esa fila (solo los datos que le falten).
   const procesar = (txt, html) => {
-    const d = leerGenesys(txt || '', html || '');
+    const d = leerGenesys(txt || '', html || ''), id = destino; destino = '';
+    if (id) return ctCompletarFila(id, d);
     ctAgregar(d);
     if ((d.rut || d.nombre) && !d.telefono) toast('Agregué el cliente, pero no encontré el teléfono. Usa "Elegir archivo de Genesys" o escríbelo a mano.');
   };
-  $('#ct-pegar').onclick = async () => {
-    try {
-      let txt = '', html = '';
-      if (navigator.clipboard.read) {
-        for (const it of await navigator.clipboard.read()) {
-          if (it.types.includes('text/html')) html = await (await it.getType('text/html')).text();
-          if (it.types.includes('text/plain')) txt = await (await it.getType('text/plain')).text();
-        }
-      } else txt = await navigator.clipboard.readText();
-      if (!txt.trim() && !html.trim()) throw new Error('vacío');
-      procesar(txt, html);
-    } catch (e) { htmlPegado = ''; $('#ct-texto').value = ''; abrir('dlg-pegar'); setTimeout(() => $('#ct-texto').focus(), 50); }
+  const leerPortapapeles = async () => {
+    let txt = '', html = '';
+    if (navigator.clipboard.read) {
+      for (const it of await navigator.clipboard.read()) {
+        if (it.types.includes('text/html')) html = await (await it.getType('text/html')).text();
+        if (it.types.includes('text/plain')) txt = await (await it.getType('text/plain')).text();
+      }
+    } else txt = await navigator.clipboard.readText();
+    if (!txt.trim() && !html.trim()) throw new Error('vacío');
+    return [txt, html];
   };
+  const pegarGenesys = async id => {
+    destino = id || '';
+    try { const [txt, html] = await leerPortapapeles(); procesar(txt, html); }
+    catch (e) { htmlPegado = ''; $('#ct-texto').value = ''; abrir('dlg-pegar'); setTimeout(() => $('#ct-texto').focus(), 50); }
+  };
+  ctPegarEnFila = pegarGenesys;
+  $('#ct-pegar').onclick = () => pegarGenesys('');
+  $('#dlg-pegar').addEventListener('close', () => setTimeout(() => { destino = ''; }, 0));
   // Al pegar con Ctrl+V en el cuadro también se guarda el HTML, que trae el teléfono
   $('#ct-texto').addEventListener('paste', e => { htmlPegado = (e.clipboardData && e.clipboardData.getData('text/html')) || ''; });
-  $('#ct-procesar').onclick = () => { const txt = $('#ct-texto').value; $('#dlg-pegar').close(); procesar(txt, htmlPegado); htmlPegado = ''; };
+  $('#ct-procesar').onclick = () => { const txt = $('#ct-texto').value, d = destino; $('#dlg-pegar').close(); destino = d; procesar(txt, htmlPegado); htmlPegado = ''; };
   $('#ct-archivo').addEventListener('change', async e => {
     const f = e.target.files[0]; e.target.value = ''; if (!f) return;
-    const html = await f.text(); $('#dlg-pegar').close(); procesar('', html);
+    const html = await f.text(), d = destino; $('#dlg-pegar').close(); destino = d; procesar('', html);
   });
   $('#ct-nueva').onclick = () => ctAgregar({});
   $('#ct-excel').onclick = ctExcel;
@@ -2366,6 +2390,7 @@ function initControl() {
     if (o) { const r = CT.find(x => x.id === o.closest('tr').dataset.id); if (!r) return; r.notas = (r.notas ? r.notas.trim().replace(/[.\s]*$/, '. ') : '') + o.dataset.obs; r.upd = Date.now(); ctGuardar(); $$(`#ct-body [data-id="${r.id}"] [data-k="notas"]`).forEach(x => { x.value = r.notas; x.title = r.notas; }); return; }
     const b = e.target.closest('[data-ct]'); if (!b) return;
     const r = CT.find(x => x.id === b.closest('tr').dataset.id); if (!r) return;
+    if (b.dataset.ct === 'genesys') return ctPegarEnFila(r.id);
     if (b.dataset.ct === 'ficha') { ctAbierto = ctAbierto === r.id ? '' : r.id; ctPinta(); if (ctAbierto) { const t = $(`#ct-body tr.ficha[data-id="${r.id}"] input`); if (t) t.focus(); } return; }
     if (b.dataset.ct === 'borrar') { r.borrado = true; r.upd = Date.now(); ctGuardar(); ctPinta(); toast('Registro borrado. Puedes recuperarlo con "Ver borrados".'); }
     if (b.dataset.ct === 'restaurar') { r.borrado = false; r.upd = Date.now(); ctGuardar(); ctPinta(); toast('Registro recuperado'); }

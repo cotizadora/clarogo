@@ -50,6 +50,11 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 16-11-2026: botón Genesys en cada fila
+
+- Cada fila de Mi Planilla tiene el botón 📞, siempre visible sin abrir la ficha: pega en esa fila los datos que traiga lo copiado de Genesys (hoy, el teléfono). Solo llena lo vacío y nunca reemplaza lo que ya está escrito.
+- Pegar desde Genesys ya no abre la ficha. Se abre solo cuando se presiona ▾.
+
 ### 16-11-2026: teléfono desde Genesys
 
 - Genesys guarda el teléfono solo en una etiqueta oculta (la que aparece al pasar el mouse sobre "Mobile Number, Chile"), que Ctrl+A y Ctrl+C no copian como texto. Ahora la planilla lee también el formato HTML que se copia junto al texto, y de ahí saca el teléfono.
