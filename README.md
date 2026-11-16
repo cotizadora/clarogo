@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 16-11-2026: reintento al publicar desde el escritorio
+
+- Si alguien publica al mismo tiempo, el programa del escritorio se pone al día y reintenta la subida, en vez de mostrar error.
+
 ### 16-11-2026: fecha y hora de actualización del stock
 
 - El recuadro de Stock muestra en grande la fecha y la hora de la actualización, por ejemplo "Lunes 16-11-2026 · 11:01 h". Si se publicó otro día, lo indica debajo.

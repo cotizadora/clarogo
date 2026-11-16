@@ -198,7 +198,13 @@ try {
   GitOk -C $Repo add datos/stock.csv datos/stock-info.json
   Write-Host 'Publicando...'
   GitOk -C $Repo commit -q -m "Stock del $($fecha.ToString('dd-MM-yyyy')) (desde el escritorio)"
-  GitOk -C $Repo push -q origin main
+  # Si alguien publicó al mismo tiempo, se pone al día y reintenta
+  $subido = $false
+  for ($k = 0; $k -lt 3 -and -not $subido; $k++) {
+    & git -C $Repo push -q origin main
+    if ($LASTEXITCODE -eq 0) { $subido = $true } else { Start-Sleep -Seconds 3; GitOk -C $Repo pull -q --rebase origin main }
+  }
+  if (-not $subido) { throw 'No se pudo subir a GitHub. Revisa la conexión a internet e inténtalo de nuevo.' }
 
   # 5. Esperar a que esté en línea
   Write-Host 'Publicado. Esperando que el sitio se actualice (uno o dos minutos)...'
