@@ -480,7 +480,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
         <button class="btn red sm" id="s-rapido">Filtro rápido (Pie $0 + stock)</button>
         <button class="btn sm" id="s-limpiar">Limpiar</button>
         <button class="btn sm" id="s-copiar">Copiar lista filtrada</button>
-        <button class="btn dark sm" id="s-actualizar">Actualizar stock</button>
+        <button class="btn dark sm" id="s-actualizar" hidden>Actualizar stock</button>
       </div>
     </div>
     <div class="s-meta"><span id="s-count"></span><span id="s-fecha"></span></div>
@@ -700,6 +700,13 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   </div>
 </dialog>
 
+<dialog id="dlg-admin" style="max-width:min(360px,94vw)">
+  <div class="d-head"><div><h2>Acceso de administrador</h2><p>Solo para quien actualiza el stock</p></div><button class="d-x" data-close>✕</button></div>
+  <div class="d-body">
+    <form id="adm-form" class="d-foot" style="justify-content:flex-start;margin:0"><input type="password" id="adm-clave" placeholder="Clave" autocomplete="off" style="flex:1;min-width:150px"><button class="btn red" type="submit">Entrar</button></form>
+  </div>
+</dialog>
+
 <dialog id="dlg-stock" style="max-width:min(620px,96vw)">
   <div class="d-head"><div><h2>Actualizar stock</h2><p>Elige el Excel del stock diario tal como llega y publícalo</p></div><button class="d-x" data-close>✕</button></div>
   <div class="d-body">
@@ -725,6 +732,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
         <small class="dim">La clave queda guardada solo en este navegador y no se borra al limpiar la caché. No la compartas. Si se filtra, bórrala en GitHub y crea otra.</small>
       </div>
     </details>
+    <div class="u-mas"><button class="btn sm" id="adm-salir">Ocultar herramientas en este equipo</button> <small class="dim">El botón Actualizar stock deja de verse aquí hasta volver a entrar con la clave.</small></div>
     <details class="u-mas"><summary>Otras formas de cargar</summary>
       <p>Pega columnas copiadas de Excel (SKU, Marca, Modelo, Stock, Pie y Cuotas con sus títulos) y presiona Revisar. Si no tienes la conexión con GitHub, descarga stock.csv y súbelo a la carpeta datos.</p>
       <textarea id="u-text" rows="4" placeholder="Pega aquí las filas copiadas de Excel"></textarea>
@@ -1182,6 +1190,32 @@ function stockDesdeExcel(hojas, archivo) {
    PUBLICAR EL STOCK EN GITHUB desde el portal
    La clave de GitHub queda solo en el navegador de quien publica.
    ════════════════════════════════════════════════════════════════ */
+/* Acceso de administrador: el botón Actualizar stock solo se ve en el equipo de quien publica.
+   Se abre tocando 5 veces seguidas la fecha del stock e ingresando la clave. Solo esconde la herramienta:
+   lo que de verdad protege la publicación es la clave de GitHub, que nunca está en el código. */
+const ADMIN = { key: 'clarogo_admin', huella: 'b3f10cf09560d00327dda6afe98ea19ceae17609aff10f97174d68d0c8231f3e' };
+const esAdmin = () => { try { return localStorage.getItem(ADMIN.key) === '1'; } catch (e) { return false; } };
+const adminPinta = () => { $('#s-actualizar').hidden = !esAdmin(); };
+async function huellaDe(s) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+function adminInit() {
+  adminPinta();
+  let toques = [];
+  $('#s-act').addEventListener('click', () => {
+    const t = Date.now(); toques = toques.filter(x => t - x < 3000); toques.push(t);
+    if (toques.length < 5) return; toques = [];
+    if (esAdmin()) return toast('Las herramientas de stock ya están visibles en este equipo');
+    $('#adm-clave').value = ''; abrir('dlg-admin'); setTimeout(() => $('#adm-clave').focus(), 50);
+  });
+  $('#adm-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    let ok = false; try { ok = (await huellaDe($('#adm-clave').value)) === ADMIN.huella; } catch (er) {}
+    $('#adm-clave').value = '';
+    if (!ok) return toast('Clave incorrecta');
+    try { localStorage.setItem(ADMIN.key, '1'); } catch (er) {}
+    $('#dlg-admin').close(); adminPinta(); toast('Listo. El botón Actualizar stock queda visible en este equipo.');
+  });
+  $('#adm-salir').onclick = () => { try { localStorage.removeItem(ADMIN.key); } catch (e) {} $('#dlg-stock').close(); adminPinta(); toast('Herramientas de stock ocultas en este equipo'); };
+}
 const GH = { repo: 'cotizadora/clarogo', rama: 'main', key: 'clarogo_gh_token' };
 const ghToken = () => { try { return localStorage.getItem(GH.key) || ''; } catch (e) { return ''; } };
 const b64utf8 = s => { const b = new TextEncoder().encode(s); let bin = ''; for (let i = 0; i < b.length; i += 8192) bin += String.fromCharCode(...b.subarray(i, i + 8192)); return btoa(bin); };
@@ -1306,6 +1340,7 @@ function initStock() {
     copyText(`*Financiamiento:* \n\n*SKU:* ${eq.sku}\n*MARCA:* ${eq.marca}\n*MODELO:* ${eq.modelo}\n*PIE:* ${clp(eq.pie)}\n*18 CUOTAS DE:* ${clp(eq.cuotas)}\n*PRECIO TOTAL:* ${clp(total(eq))}\n*STOCK:* ${eq.stock} unidades`, 'Información copiada');
   });
   // Actualizar stock
+  adminInit();
   $('#s-actualizar').onclick = () => { $('#u-result').innerHTML = ''; $('#u-actions').hidden = true; $('#u-fecha-box').hidden = true; ghPintaEstado(); abrir('dlg-stock'); };
   $('#u-github').href = GITHUB_SUBIR;
   $('#u-file').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (f) procesarArchivoStock(f); });
@@ -2297,14 +2332,14 @@ async function limpiarCache() {
   // Sin preguntas: primero guarda la planilla y luego limpia. La planilla y el archivo elegido nunca se borran.
   toast('Guardando tu planilla y limpiando la caché…');
   try { await respSync('limpieza'); } catch (e) {}
-  let planilla = null, clave = null; try { planilla = localStorage.getItem(CT_KEY); clave = localStorage.getItem(GH.key); } catch (e) {}
+  let planilla = null, clave = null, admin = null; try { planilla = localStorage.getItem(CT_KEY); clave = localStorage.getItem(GH.key); admin = localStorage.getItem(ADMIN.key); } catch (e) {}
   try {
     document.cookie.split(';').forEach(c => {
       const name = c.split('=')[0].trim(); if (!name) return;
       [location.hostname, '.' + location.hostname, ''].forEach(dom => { document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/' + (dom ? ';domain=' + dom : ''); });
     });
   } catch (e) {}
-  try { localStorage.clear(); if (planilla) localStorage.setItem(CT_KEY, planilla); if (clave) localStorage.setItem(GH.key, clave); } catch (e) {}
+  try { localStorage.clear(); if (planilla) localStorage.setItem(CT_KEY, planilla); if (clave) localStorage.setItem(GH.key, clave); if (admin) localStorage.setItem(ADMIN.key, admin); } catch (e) {}
   try { sessionStorage.clear(); sessionStorage.setItem('clarogo_limpio', '1'); } catch (e) {}
   try { if (window.caches) await Promise.all((await caches.keys()).map(k => caches.delete(k))); } catch (e) {}
   try { if ('serviceWorker' in navigator) await Promise.all((await navigator.serviceWorker.getRegistrations()).map(r => r.unregister())); } catch (e) {}

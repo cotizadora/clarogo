@@ -46,6 +46,11 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 16-11-2026: herramientas de stock ocultas
+
+- El botón Actualizar stock ya no se ve para el público. Se activa en un equipo tocando 5 veces la fecha del stock e ingresando la clave de administrador. En el código solo queda su huella SHA-256, no la clave.
+- La activación queda guardada en ese navegador y Limpiar caché no la borra.
+
 ### 16-11-2026: stock del 16-11 y actualización diaria desde el portal
 
 - datos/stock.csv se reemplazó con `Stock Diario + Planilla de precios 16-11.xlsx` (fuente: archivo enviado por Eduardo; precios de la hoja Planilla 13-11). Quedaron 315 equipos: 130 con stock y 185 vigentes sin stock. No se incluyen 22 productos sin pie o cuota (#N/A).
