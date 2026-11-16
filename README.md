@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 16-11-2026: Compañía de origen en la vista simple
+
+- Mi Planilla muestra siempre la columna Compañía (de origen) en la fila, sin abrir la ficha. Se ajustaron los anchos: en PC chico se ocultan Hora, Plan y Notas (siguen en la ficha), y en celular se ven Teléfono, Compañía y Tipificación.
+
 ### 16-11-2026: extensión ClaroGo! Genesys
 
 - En Genesys los datos del cliente (FONO_CONTACTO, RUT_PERSONA, etc.) están dentro de cuadros de texto, y Ctrl+A no copia lo escrito en ellos. Nueva extensión para Chrome y Edge en la carpeta `extension/`: con un clic en su ícono (o Alt+Shift+G) lee esos cuadros en la llamada, copia los datos y puede enviarlos a Mi Planilla como fila nueva.

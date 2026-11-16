@@ -386,10 +386,10 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla .acc button:hover{background:#eef2f7}
 #ct-tabla .acc .go{color:#fff;background:var(--red);font-size:.7rem}
 #ct-tabla .acc .go:hover{background:var(--red-dk)}
-.c-n{width:34px}.c-fecha{width:94px}.c-hora{width:56px}.c-rut{width:100px}.c-tel{width:100px}.c-tipo{width:148px}.c-plan{width:88px}.c-acc{width:140px}
-.c-nombre{width:auto}.c-notas{width:22%}
-@media (max-width:1000px){.c-hora,.c-plan{display:none}.c-notas{width:18%}}
-@media (max-width:720px){.c-fecha,.c-notas,.c-tel{display:none}.c-tipo{width:96px}.c-rut{width:84px}.c-n{width:24px}.c-acc{width:96px} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
+.c-n{width:34px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:94px}.c-tel{width:94px}.c-orig{width:76px}.c-tipo{width:126px}.c-plan{width:80px}.c-acc{width:124px}
+.c-nombre{width:auto}.c-notas{width:17%}
+@media (max-width:1100px){.c-hora,.c-plan,.c-notas{display:none}}
+@media (max-width:720px){.c-fecha,.c-notas,.c-rut,.c-nombre{display:none}.c-tel{width:auto}.c-orig{width:64px}.c-tipo{width:86px}.c-n{width:22px}.c-acc{width:90px} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
 #ct-resumen .chip b{margin-left:4px}
 .resp{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:.84rem}
 .resp .resp-b{display:flex;gap:6px;flex-wrap:wrap}
@@ -695,8 +695,8 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
       <label class="chk"><input type="checkbox" id="ct-verborr"> Ver borrados</label>
     </div>
     <div class="chips" id="ct-resumen"></div>    <div class="ct-wrap"><table id="ct-tabla">
-      <colgroup><col class="c-n"><col class="c-fecha"><col class="c-hora"><col class="c-rut"><col class="c-nombre"><col class="c-tel"><col class="c-tipo"><col class="c-plan"><col class="c-notas"><col class="c-acc"></colgroup>
-      <thead><tr><th class="c-n"></th><th class="c-fecha">Fecha</th><th class="c-hora">Hora</th><th class="c-rut">RUT</th><th class="c-nombre">Nombre</th><th class="c-tel">Teléfono</th><th class="c-tipo">Tipificación</th><th class="c-plan">Plan</th><th class="c-notas">Notas</th><th class="c-acc"></th></tr></thead>
+      <colgroup><col class="c-n"><col class="c-fecha"><col class="c-hora"><col class="c-rut"><col class="c-nombre"><col class="c-tel"><col class="c-orig"><col class="c-tipo"><col class="c-plan"><col class="c-notas"><col class="c-acc"></colgroup>
+      <thead><tr><th class="c-n"></th><th class="c-fecha">Fecha</th><th class="c-hora">Hora</th><th class="c-rut">RUT</th><th class="c-nombre">Nombre</th><th class="c-tel">Teléfono</th><th class="c-orig" title="Compañía de origen">Compañía</th><th class="c-tipo">Tipificación</th><th class="c-plan">Plan</th><th class="c-notas">Notas</th><th class="c-acc"></th></tr></thead>
       <tbody id="ct-body"></tbody>
     </table></div>
     <div class="empty" id="ct-vacio" hidden>No hay llamadas en este período. Pega la primera desde Genesys.</div>
@@ -2245,7 +2245,7 @@ function ctFichaHTML(r) {
     else inp = `<input data-k="${k}" value="${esc(r[k] || '')}" placeholder="${esc(ph)}"${k === 'region' ? ' list="sc-regiones"' : k === 'eta' ? ' list="sc-etas"' : ''}>`;
     return `<div><label>${l}</label>${inp}</div>`;
   };
-  return `<tr class="ficha" data-id="${r.id}"><td colspan="10">${FICHA.map(([t, cs]) => `<div class="fi-t">${t}</div><div class="fi-g">${cs.map(campo).join('')}</div>`).join('')}
+  return `<tr class="ficha" data-id="${r.id}"><td colspan="11">${FICHA.map(([t, cs]) => `<div class="fi-t">${t}</div><div class="fi-g">${cs.map(campo).join('')}</div>`).join('')}
     <div class="fi-t">Observaciones</div><div class="fi-obs"><div class="fi-chips">${OBS_RAPIDAS.map(o => `<button type="button" data-obs="${esc(o)}">+ ${esc(o)}</button>`).join('')}</div><textarea data-k="notas" rows="3" placeholder="Pega o escribe aquí todo lo que conversaste con el cliente">${esc(r.notas || '')}</textarea></div>
     <div class="fi-pie"><small class="dim">Todo se guarda solo, sea venta o no.</small><span><button type="button" class="btn sm red" data-ct="script">▶ Pasar al Script de Cierre</button><button type="button" class="btn sm" data-ct="ficha">Cerrar ficha ▴</button></span></div></td></tr>`;
 }
@@ -2314,6 +2314,7 @@ function ctPinta() {
     <td class="c-rut"><input data-k="rut" value="${esc(r.rut)}" placeholder="RUT" title="${esc(r.rut)}"></td>
     <td class="c-nombre"><input data-k="nombre" value="${esc(r.nombre)}" placeholder="Pegar nombre" title="${esc(r.nombre)}"></td>
     <td class="c-tel"><input data-k="telefono" value="${esc(r.telefono)}" placeholder="9 XXXX XXXX" title="${esc(r.telefono)}"></td>
+    <td class="c-orig"><input data-k="origen" value="${esc(r.origen || '')}" placeholder="Compañía" title="Compañía de origen${r.origen ? ': ' + esc(r.origen) : ''}"></td>
     <td class="c-tipo"><select data-k="tipo">${opt(TIPIFICACIONES, r.tipo, 'Sin tipificar')}</select></td>
     <td class="c-plan"><select data-k="plan">${opt(PLANES_VIGENTES.map(p => p.title), r.plan, 'Sin plan')}</select></td>
     <td class="c-notas"><input data-k="notas" value="${esc(r.notas)}" placeholder="Notas" title="${esc(r.notas)}"></td>
