@@ -50,6 +50,13 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 16-11-2026: ficha completa por cliente, planilla y Script conectados, copia cada hora
+
+- Mi Planilla: cada fila tiene una ficha que se abre bajo ella (botón ▾ o clic en el número) con todos los datos que pide el Script de Cierre: nacimiento, correo, número a portar, contacto, validación, tipo de venta, líneas adicionales, equipo, despacho y observaciones con frases rápidas. Al cerrarla, la fila muestra los datos principales. Al pegar desde Genesys la ficha se abre sola.
+- Planilla y Script conectados: el botón ▶ carga todos los datos de la fila en el Script y lo deja vinculado. Lo que se completa en el Script se guarda en la misma fila, sea venta o no. Si el Script se usa sin venir de la planilla, al escribir el RUT o el nombre se crea la fila sola.
+- Copia automática en silencio cada hora en el navegador (se guardan las de las últimas 24 horas y una por día del último mes). Botón "Copias automáticas" para recuperar clientes que falten (suma, nunca borra) o descargar una copia. Limpiar caché no las borra.
+- Exportar a Excel incluye todos los datos de la ficha.
+
 ### 16-11-2026: Oferta Personas en dos filas
 
 - Fila 1: los tres planes (500, 800 y 1000). Fila 2: el Plan 500 + Netflix a la izquierda y el área multilínea, con fondo azul propio, con la calculadora al medio y la oferta calculada a la derecha. En celular todo queda en una columna.

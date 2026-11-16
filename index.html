@@ -380,10 +380,10 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla .acc button:hover{background:#eef2f7}
 #ct-tabla .acc .go{color:#fff;background:var(--red);font-size:.7rem}
 #ct-tabla .acc .go:hover{background:var(--red-dk)}
-.c-n{width:34px}.c-fecha{width:94px}.c-hora{width:56px}.c-rut{width:100px}.c-tel{width:100px}.c-tipo{width:148px}.c-plan{width:88px}.c-acc{width:84px}
+.c-n{width:34px}.c-fecha{width:94px}.c-hora{width:56px}.c-rut{width:100px}.c-tel{width:100px}.c-tipo{width:148px}.c-plan{width:88px}.c-acc{width:112px}
 .c-nombre{width:auto}.c-notas{width:22%}
 @media (max-width:1000px){.c-hora,.c-plan{display:none}.c-notas{width:18%}}
-@media (max-width:720px){.c-fecha,.c-notas,.c-tel{display:none}.c-tipo{width:96px}.c-rut{width:84px}.c-n{width:24px}.c-acc{width:48px} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
+@media (max-width:720px){.c-fecha,.c-notas,.c-tel{display:none}.c-tipo{width:96px}.c-rut{width:84px}.c-n{width:24px}.c-acc{width:72px} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
 #ct-resumen .chip b{margin-left:4px}
 .resp{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:.84rem}
 .resp .resp-b{display:flex;gap:6px;flex-wrap:wrap}
@@ -391,6 +391,26 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .ct-rango label{margin:0}
 .ct-rango input{width:auto}
 #ct-tabla tr.borrado td input,#ct-tabla tr.borrado td select{text-decoration:line-through;color:#9aa0a6}
+/* Ficha ampliable del cliente: se abre bajo la fila para tomar todos los datos */
+#ct-tabla .acc .fic{font-size:.8rem;color:#1a56b8;font-weight:700}
+#ct-tabla tr.abierta td{background:#eaf1ff}
+#ct-tabla tr.abierta td.c-n{background:#d6e4ff;color:#1a56b8}
+#ct-tabla tr.ficha td{height:auto;white-space:normal;overflow:visible;background:#f6f9ff;padding:10px 12px 12px;border-top:0;border-left:3px solid #1a56b8}
+#ct-tabla tr.ficha:hover td{background:#f6f9ff}
+.fi-t{font-size:.68rem;font-weight:800;color:var(--red);text-transform:uppercase;letter-spacing:.08em;margin:10px 0 5px}
+.fi-t:first-child{margin-top:0}
+.fi-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px 10px}
+@media (min-width:900px){.fi-g{grid-template-columns:repeat(auto-fill,minmax(165px,1fr))}}
+.fi-g label{display:block;font-size:.68rem;font-weight:700;color:var(--muted);margin:0 0 2px}
+#ct-tabla .fi-g input,#ct-tabla .fi-g select{height:30px;border:1px solid #c9ced6;border-radius:6px;background:#fff;padding:0 8px;width:100%}
+#ct-tabla .fi-obs textarea{width:100%;min-height:72px;border:1px solid #c9ced6;border-radius:6px;background:#fff;padding:6px 8px;font:inherit;font-size:.82rem;resize:vertical}
+.fi-chips{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 6px}
+.fi-chips button{border:1px solid #c9daf8;background:#fff;color:#1a56b8;border-radius:999px;font-size:.72rem;padding:3px 9px;cursor:pointer}
+.fi-chips button:hover{background:#eef4ff}
+.fi-pie{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-top:10px}
+.fi-pie span{display:flex;gap:6px;flex-wrap:wrap}
+.cp-fila{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.84rem}
+.cp-fila span{display:flex;gap:6px}
 @media (min-width:640px){#v-control .filters{grid-template-columns:2fr 1fr 1fr 1fr auto}}
 /* Calculadora de líneas *//* Vista previa idéntica a lo que se copia */
 .lamcard{padding:0;display:flex;flex-direction:column;overflow:hidden}
@@ -548,7 +568,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <section id="v-script" class="view" hidden>
     <h1 class="h">Script de Cierre de Ventas</h1>
     <p class="sub">Portabilidades conectados. Completa los datos de la venta y el guion de abajo se arma solo. Los datos deben concordar con los del Front de ventas.</p>
-    <div class="note blue" style="margin-bottom:12px">La carga automática de datos desde Genesys se configurará más adelante. Por ahora los datos se ingresan a mano.</div>
+    <div class="note blue" id="sc-vinc" style="margin-bottom:12px"></div>
     <form id="sc-form" class="card sc" autocomplete="off">
       <h2><i>✎</i> Datos de la venta</h2>
       <div class="lbl">Cliente</div>
@@ -774,6 +794,14 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     <p style="font-size:.86rem">Haz clic en el cuadro, presiona <b>Ctrl+V</b> y luego "Cargar horario".</p>
     <textarea id="hz-texto" rows="7" placeholder="Pega aquí los turnos copiados desde la planilla"></textarea>
     <div class="d-foot"><button class="btn" data-close>Cancelar</button><button class="btn red" id="hz-procesar">Cargar horario</button></div>
+  </div>
+</dialog>
+
+<dialog id="dlg-copias" style="max-width:min(560px,96vw)">
+  <div class="d-head"><div><h2>Copias automáticas</h2><p>Se guardan solas cada hora en este navegador</p></div><button class="d-x" data-close>✕</button></div>
+  <div class="d-body">
+    <p style="font-size:.84rem;margin-top:0">Quedan las copias de las últimas 24 horas y una por día del último mes. <b>Recuperar</b> suma a tu planilla los clientes que falten: no borra ni cambia nada de lo que tienes ahora.</p>
+    <div id="cp-lista"></div>
   </div>
 </dialog>
 
@@ -1683,6 +1711,47 @@ function rutFormato(v) {
   const c = v.replace(/[^0-9kK]/g, '').replace(/^0+/, ''); if (c.length <= 1) return c;
   return c.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '-' + c.slice(-1).toUpperCase();
 }
+/* ── Script de Cierre ↔ Mi Planilla ─────────────────────────────────
+   Todo lo que se escribe en el Script queda en la fila del cliente en Mi Planilla.
+   Si el Script se abre sin venir de la planilla, al escribir el RUT o el nombre se crea la fila sola. */
+const SC_CAMPOS = ['nombre', 'rut', 'nac', 'mail', 'fono', 'contacto', 'medio', 'tipo', 'adic', 'eq', 'eqtotal', 'eqpie', 'eqforma', 'calle', 'num', 'int', 'comuna', 'region', 'ref', 'eta'];
+const scClave = id => id === 'tipo' ? 'tventa' : id;
+let SC_FILA = ''; try { SC_FILA = sessionStorage.getItem('clarogo_sc_fila') || ''; } catch (e) {}
+function scVincular(id) { SC_FILA = id || ''; try { if (id) sessionStorage.setItem('clarogo_sc_fila', id); else sessionStorage.removeItem('clarogo_sc_fila'); } catch (e) {} scPintaVinculo(); }
+function scPintaVinculo() {
+  const el = $('#sc-vinc'); if (!el) return;
+  const r = CT.find(x => x.id === SC_FILA && !x.borrado);
+  el.className = 'note ' + (r ? 'green' : 'blue');
+  el.innerHTML = r ? `📋 Vinculado con <b>${esc(r.nombre || r.rut || 'cliente sin nombre')}</b> de Mi Planilla. Todo lo que completes aquí queda guardado en su fila. <button type="button" class="btn sm" data-sc="planilla">Ver en la planilla</button> <button type="button" class="btn sm" data-sc="desv">Desvincular</button>`
+    : '📋 Al escribir el RUT o el nombre, el cliente queda guardado solo en Mi Planilla, sea venta o no. También puedes abrirlo desde la planilla con el botón ▶.';
+}
+let scCargando = false;
+function scCargar(r) {
+  scCargando = true;
+  SC_CAMPOS.forEach(id => { const e = $('#sc-' + id); if (!e) return; const v = r[scClave(id)] || ''; if (e.tagName === 'SELECT') { if (v) e.value = v; else e.selectedIndex = 0; } else e.value = v; });
+  if (!r.contacto && r.telefono) $('#sc-contacto').value = r.telefono;
+  if (!r.fono && r.telefono) $('#sc-fono').value = r.telefono;
+  const p = PLANES_VIGENTES.find(x => x.title === r.plan); if (p) $('#sc-plan').value = p.id;
+  $('#sc-rut').dispatchEvent(new Event('input', { bubbles: true }));
+  scCargando = false;
+}
+function scGuardarEnFila(e) {
+  if (scCargando) return;
+  const id = (e.target.id || '').replace(/^sc-/, '');
+  if (!id || id === 'agente' || !(SC_CAMPOS.includes(id) || id === 'plan')) return;
+  let r = CT.find(x => x.id === SC_FILA && !x.borrado);
+  if (!r) {
+    const rut = $('#sc-rut').value.trim(), nom = $('#sc-nombre').value.trim();
+    if (e.type !== 'change' || !((rut && rutValido(rut)) || nom.length >= 3)) return;
+    r = ctAgregar({ rut: rutValido(rut) ? rut : '', nombre: nom, telefono: $('#sc-contacto').value.trim() || $('#sc-fono').value.trim() }, true);
+    SC_CAMPOS.forEach(k => { const el = $('#sc-' + k); if (el && el.tagName !== 'SELECT' && el.value.trim() && !r[scClave(k)]) r[scClave(k)] = el.value.trim(); });
+    scVincular(r.id); toast('Cliente guardado en Mi Planilla');
+  }
+  if (id === 'plan') { const p = PLANES_VIGENTES.find(x => x.id === e.target.value); if (p) r.plan = p.title; }
+  else r[scClave(id)] = e.target.value.trim();
+  if (!r.telefono && (r.contacto || r.fono)) r.telefono = r.contacto || r.fono;
+  r.upd = Date.now(); ctGuardar(); ctRepintar();
+}
 function initScript() {
   const $v = id => $('#sc-' + id).value.trim(), rut = $('#sc-rut');
   const F = (val, ph) => val ? `<b class="fill">${esc(val)}</b>` : `<b class="fill empty">[${esc(ph)}]</b>`;
@@ -1725,7 +1794,16 @@ function initScript() {
   };
   $('#sc-form').addEventListener('input', e => { if (e.target === rut) validarRut(); if (e.target.id === 'sc-agente') { try { localStorage.setItem('agentName', e.target.value); } catch (x) {} } pinta(); });
   $('#sc-form').addEventListener('change', pinta);
-  $('#sc-reset').onclick = () => { const ag = $('#sc-agente').value; $('#sc-form').reset(); $('#sc-agente').value = ag; validarRut(); pinta(); };
+  $('#sc-reset').onclick = () => { const ag = $('#sc-agente').value; $('#sc-form').reset(); $('#sc-agente').value = ag; scVincular(''); validarRut(); pinta(); toast('Script limpio. Los datos siguen guardados en Mi Planilla.'); };
+  $('#sc-form').addEventListener('input', scGuardarEnFila);
+  $('#sc-form').addEventListener('change', scGuardarEnFila);
+  $('#sc-vinc').addEventListener('click', e => {
+    const b = e.target.closest('[data-sc]'); if (!b) return;
+    if (b.dataset.sc === 'desv') { scVincular(''); toast('Script desvinculado. La fila sigue en Mi Planilla.'); }
+    if (b.dataset.sc === 'planilla') { ctAbierto = SC_FILA; location.hash = 'control'; setTimeout(() => { ctPinta(); const t = $(`#ct-body tr.ficha[data-id="${SC_FILA}"]`); if (t) t.scrollIntoView({ block: 'center' }); }, 150); }
+  });
+  { const r = CT.find(x => x.id === SC_FILA && !x.borrado); if (r) scCargar(r); }
+  scPintaVinculo();
   try { $('#sc-agente').value = localStorage.getItem('agentName') || ''; } catch (e) {}
   setInterval(pinta, 60000);
   pinta();
@@ -1928,18 +2006,62 @@ const soportaArchivo = 'showSaveFilePicker' in window && 'showOpenFilePicker' in
 const RESP = { handle: null, estado: soportaArchivo ? 'sin' : 'noSoportado', ultimo: 0, error: '' };
 const TIPO_ARCH = [{ description: 'Planilla ClaroGo!', accept: { 'application/json': ['.json'] } }];
 // Guarda en IndexedDB qué archivo eligió el usuario (es la única forma de recordarlo entre visitas)
-const idb = (op, val) => new Promise(res => {
+// Base clarogo-respaldo: "kv" guarda el archivo elegido y "copias" las copias automáticas de cada hora
+const idbDb = () => new Promise(res => {
   try {
-    const rq = indexedDB.open('clarogo-respaldo', 1);
-    rq.onupgradeneeded = () => rq.result.createObjectStore('kv');
-    rq.onerror = () => res(null);
-    rq.onsuccess = () => {
-      const tx = rq.result.transaction('kv', op === 'get' ? 'readonly' : 'readwrite'), st = tx.objectStore('kv');
-      const r = op === 'get' ? st.get('archivo') : st.put(val, 'archivo');
-      r.onsuccess = () => res(op === 'get' ? (r.result || null) : true); r.onerror = () => res(null);
-    };
+    const rq = indexedDB.open('clarogo-respaldo', 2);
+    rq.onupgradeneeded = () => { const db = rq.result; ['kv', 'copias'].forEach(n => { if (!db.objectStoreNames.contains(n)) db.createObjectStore(n); }); };
+    rq.onsuccess = () => res(rq.result); rq.onerror = rq.onblocked = () => res(null);
   } catch (e) { res(null); }
 });
+const idbHacer = (store, modo, fn) => idbDb().then(db => new Promise(res => {
+  if (!db) return res(null);
+  try { const tx = db.transaction(store, modo), r = fn(tx.objectStore(store)); tx.oncomplete = () => { res(r && 'result' in r ? r.result : true); db.close(); }; tx.onerror = tx.onabort = () => { res(null); db.close(); }; }
+  catch (e) { res(null); db.close(); }
+}));
+const idb = (op, val) => idbHacer('kv', op === 'get' ? 'readonly' : 'readwrite', s => op === 'get' ? s.get('archivo') : s.put(val, 'archivo')).then(v => v || null);
+
+/* ── Copias automáticas: en silencio cada hora, sin pedir nada ───── */
+const COPIA_MIN = 60, COPIAS_HORA = 24, COPIAS_DIA = 30;
+let copiaFirma = '', copiaUltima = '';
+const ctFirma = () => CT.length + ':' + CT.reduce((m, r) => Math.max(m, r.upd || 0), 0);
+const claveLocal = d => `${isoLocal(d)}T${d.toTimeString().slice(0, 8)}`;
+async function copiaGuardar(forzar) {
+  if (!CT.length) return;
+  const claves = ((await idbHacer('copias', 'readonly', s => s.getAllKeys())) || []).map(String).sort();
+  copiaUltima = claves[claves.length - 1] || '';
+  if (!forzar && copiaUltima && Date.now() - Date.parse(copiaUltima) < (COPIA_MIN - 1) * 60000) return;
+  if (!forzar && ctFirma() === copiaFirma) return;
+  const clave = claveLocal(new Date());
+  if (!(await idbHacer('copias', 'readwrite', s => s.put({ registros: CT, n: CT.filter(r => !r.borrado).length }, clave)))) return;
+  copiaFirma = ctFirma(); copiaUltima = clave; respPinta();
+  // Quedan las copias de las últimas 24 horas y la última de cada día del último mes
+  const todas = [...claves, clave].sort(), quedan = new Set(todas.slice(-COPIAS_HORA)), dia = new Map();
+  todas.forEach(k => dia.set(k.slice(0, 10), k)); [...dia.values()].slice(-COPIAS_DIA).forEach(k => quedan.add(k));
+  const sobran = todas.filter(k => !quedan.has(k));
+  if (sobran.length) await idbHacer('copias', 'readwrite', s => sobran.forEach(k => s.delete(k)));
+}
+async function copiasAbrir() {
+  const claves = ((await idbHacer('copias', 'readonly', s => s.getAllKeys())) || []).map(String).sort().reverse();
+  const fmt = k => { const d = new Date(Date.parse(k)); return `${DIAS_SEMANA[d.getDay()]} ${k.slice(8, 10)}-${k.slice(5, 7)}-${k.slice(0, 4)} a las ${k.slice(11, 16)} h`; };
+  const filas = await Promise.all(claves.map(async k => { const c = await idbHacer('copias', 'readonly', s => s.get(k)); return `<div class="cp-fila"><div><b>${fmt(k)}</b><br><small class="dim">${c ? c.n : '?'} clientes</small></div><span><button class="btn sm red" data-cp="rec" data-k="${k}">Recuperar</button><button class="btn sm" data-cp="bajar" data-k="${k}">Descargar</button></span></div>`; }));
+  $('#cp-lista').innerHTML = filas.join('') || '<p class="dim">Todavía no hay copias. La primera se guarda en unos minutos.</p>';
+  abrir('dlg-copias');
+}
+function initCopias() {
+  $('#cp-lista').addEventListener('click', async e => {
+    const b = e.target.closest('[data-cp]'); if (!b) return;
+    const c = await idbHacer('copias', 'readonly', s => s.get(b.dataset.k)); if (!c) return toast('No se pudo leer esa copia');
+    if (b.dataset.cp === 'bajar') return downloadBlob(new Blob([JSON.stringify({ app: 'ClaroGo!', version: 1, guardado: b.dataset.k, registros: c.registros })], { type: 'application/json' }), `ClaroGo-copia-${b.dataset.k.replace(/[:T]/g, '-')}.json`);
+    const antes = new Set(CT.map(r => r.id));
+    CT = ctMezclar(CT, c.registros || []); ctGuardar(); ctRepintar();
+    const nuevos = CT.filter(r => !antes.has(r.id)).length;
+    toast(nuevos ? (nuevos === 1 ? "Se recuperó 1 cliente que faltaba." : `Se recuperaron ${nuevos} clientes que faltaban.`) : 'Tu planilla ya tenía todos los clientes de esa copia.');
+  });
+  setTimeout(() => copiaGuardar(false), 60000);
+  setInterval(() => copiaGuardar(false), 5 * 60000);
+  idbHacer('copias', 'readonly', s => s.getAllKeys()).then(k => { if (k && k.length) { copiaUltima = k.map(String).sort().pop(); respPinta(); } });
+}
 async function respLeer() {
   const txt = await (await RESP.handle.getFile()).text();
   if (!txt.trim()) return [];
@@ -2001,7 +2123,8 @@ function respPinta() {
   }[RESP.estado];
   el.className = 'note resp ' + v[0];
   const n = PEST.otras.size, otras = n ? `<br><small>🗂️ Hay ${n === 1 ? 'otra pestaña' : n + ' pestañas más'} de ClaroGo! abierta${n === 1 ? '' : 's'}. Los registros se combinan entre todas: ninguna borra lo que guardó otra.</small>` : '';
-  el.innerHTML = `<span>${v[1]}${otras}</span><span class="resp-b">${v[2]}</span>`;
+  const copia = `<br><small>🕐 Además se guarda en silencio una copia cada hora en este navegador${copiaUltima ? ' · última copia ' + copiaUltima.slice(11, 16) + ' h' + (copiaUltima.slice(0, 10) !== hoyISO() ? ' del ' + copiaUltima.slice(8, 10) + '-' + copiaUltima.slice(5, 7) : '') : ''}.</small>`;
+  el.innerHTML = `<span>${v[1]}${otras}${copia}</span><span class="resp-b">${v[2]}${B('copias', 'Copias automáticas')}</span>`;
 }
 const PEST = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), otras: new Map(), canal: null };
 function iniciarPestanas() {
@@ -2039,6 +2162,7 @@ async function iniciarRespaldo() {
   window.addEventListener('pagehide', () => respSync('cierre'));
   window.addEventListener('focus', () => respSync('foco'));
   window.addEventListener('hashchange', () => respSync('sección'));
+  initCopias();
 }
 
 /* ── Lectura de Genesys ─────────────────────────────────────────── */
@@ -2060,15 +2184,46 @@ function leerGenesys(txt) {
   return r;
 }
 
+/* ── Ficha completa del cliente ─────────────────────────────────────
+   Cada fila guarda todos los datos que pide el Script de Cierre, sea venta o no.
+   La ficha se abre bajo la fila para completarlos y al cerrarla quedan los datos principales. */
+const MEDIOS = ['correo electrónico', 'WhatsApp', 'SMS'];
+const TVENTA = [['port', 'PortIn Post-Post'], ['portpre', 'PortIn Pre-Post'], ['migra', 'Migración'], ['ln', 'Línea nueva']];
+const FICHA = [
+  ['Cliente', [['nac', 'Fecha de nacimiento', 'DD-MM-AAAA'], ['mail', 'Correo electrónico', 'correo@ejemplo.com'], ['fono', 'Número a portar', '9 XXXX XXXX'], ['contacto', 'Teléfono de contacto', '9 XXXX XXXX']]],
+  ['Venta', [['medio', 'Validación enviada por', 'MEDIOS'], ['tventa', 'Tipo de venta', 'TVENTA'], ['adic', 'Líneas adicionales', '9 1111 1111, 9 2222 2222']]],
+  ['Equipo', [['eq', 'Equipo', 'Ej: Samsung A17 5G 128GB'], ['eqtotal', 'Monto total', '$0'], ['eqpie', 'Pago inicial', '$0'], ['eqforma', 'Forma de pago', 'Ej: 18 cuotas de $22.000']]],
+  ['Despacho', [['calle', 'Calle o pasaje', ''], ['num', 'Número', ''], ['int', 'N° interior', 'Depto, block, casa'], ['comuna', 'Comuna', ''], ['region', 'Región', ''], ['ref', 'Referencia o entrecalles', ''], ['eta', 'Tiempo de despacho', '']]]
+];
+const OBS_RAPIDAS = ['Interesado, llamar más tarde', 'Pide la oferta por WhatsApp', 'Evaluación pendiente', 'Tiene deuda', 'Quiere equipo', 'Comparando con otra compañía', 'No contesta, reintentar'];
+let ctAbierto = '';
+function ctFichaHTML(r) {
+  const campo = ([k, l, ph]) => {
+    let inp;
+    if (ph === 'MEDIOS') inp = `<select data-k="${k}"><option value="">Elegir</option>${MEDIOS.map(x => `<option${r[k] === x ? ' selected' : ''}>${x}</option>`).join('')}</select>`;
+    else if (ph === 'TVENTA') inp = `<select data-k="${k}"><option value="">Elegir</option>${TVENTA.map(([v, t]) => `<option value="${v}"${r[k] === v ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
+    else inp = `<input data-k="${k}" value="${esc(r[k] || '')}" placeholder="${esc(ph)}"${k === 'region' ? ' list="sc-regiones"' : k === 'eta' ? ' list="sc-etas"' : ''}>`;
+    return `<div><label>${l}</label>${inp}</div>`;
+  };
+  return `<tr class="ficha" data-id="${r.id}"><td colspan="10">${FICHA.map(([t, cs]) => `<div class="fi-t">${t}</div><div class="fi-g">${cs.map(campo).join('')}</div>`).join('')}
+    <div class="fi-t">Observaciones</div><div class="fi-obs"><div class="fi-chips">${OBS_RAPIDAS.map(o => `<button type="button" data-obs="${esc(o)}">+ ${esc(o)}</button>`).join('')}</div><textarea data-k="notas" rows="3" placeholder="Pega o escribe aquí todo lo que conversaste con el cliente">${esc(r.notas || '')}</textarea></div>
+    <div class="fi-pie"><small class="dim">Todo se guarda solo, sea venta o no.</small><span><button type="button" class="btn sm red" data-ct="script">▶ Pasar al Script de Cierre</button><button type="button" class="btn sm" data-ct="ficha">Cerrar ficha ▴</button></span></div></td></tr>`;
+}
+const ctExtras = r => FICHA.reduce((n, [, cs]) => n + cs.filter(([k]) => r[k]).length, 0);
+
 /* ── Planilla ───────────────────────────────────────────────────── */
-function ctAgregar(datos) {
+// Devuelve la fila creada (o la que ya existía hoy con el mismo cliente)
+function ctAgregar(datos, silencioso) {
   const d = new Date(), p = n => String(n).padStart(2, '0');
   const fila = Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), fecha: hoyISO(), hora: `${p(d.getHours())}:${p(d.getMinutes())}`, campana: '', cola: '', rut: '', nombre: '', telefono: '', tipo: '', plan: '', notas: '' }, datos, { upd: Date.now() });
-  const dup = fila.rut && CT.find(x => !x.borrado && x.rut === fila.rut && x.fecha === fila.fecha && x.telefono === fila.telefono);
-  if (dup) { ctNuevo = dup.id; ctPinta(); toast('Este cliente ya está en la planilla de hoy'); return; }
-  CT.unshift(fila); ctNuevo = fila.id; ctGuardar(); ctPinta();
+  const dup = fila.rut && CT.find(x => !x.borrado && x.rut === fila.rut && x.fecha === fila.fecha && (silencioso || x.telefono === fila.telefono));
+  if (dup) { if (!silencioso) { ctNuevo = ctAbierto = dup.id; ctPinta(); toast('Este cliente ya está en la planilla de hoy'); } return dup; }
+  CT.unshift(fila); ctGuardar();
+  if (silencioso) { ctRepintar(); return fila; }
+  ctNuevo = ctAbierto = fila.id; ctPinta();
   if (!datos || (!datos.rut && !datos.telefono)) toast(datos && Object.keys(datos).length === 0 ? 'Fila vacía agregada' : 'No encontré datos de Genesys. Agregué una fila vacía para completar a mano.');
-  else toast('Cliente agregado a la planilla' + (fila.nombre ? '' : '. Falta el nombre: usa el Rutificador.'));
+  else toast('Cliente agregado. Completa su ficha con todos los datos que vayas tomando.' + (fila.nombre ? '' : ' Falta el nombre: usa el Rutificador.'));
+  return fila;
 }
 function ctRango() {
   const per = $('#ct-periodo').value;
@@ -2083,7 +2238,7 @@ function ctFiltradas() {
   const [desde, hasta] = ctRango(), tipo = $('#ct-tipo').value, seg = $('#ct-seg').value, q = $('#ct-q').value.trim().toLowerCase(), verBorr = $('#ct-verborr').checked;
   return CT.filter(r => (verBorr ? r.borrado : !r.borrado) && (!desde || r.fecha >= desde) && (!hasta || r.fecha <= hasta)
     && (!tipo || (tipo === 'Sin tipificar' ? !r.tipo : r.tipo === tipo)) && (!seg || ctSeg(r) === seg)
-    && (!q || [r.rut, r.nombre, r.telefono, r.notas].join(' ').toLowerCase().includes(q)));
+    && (!q || [r.rut, r.nombre, r.telefono, r.notas, r.mail, r.contacto, r.fono, r.comuna, r.calle, r.eq].join(' ').toLowerCase().includes(q)));
 }
 function ctPinta() {
   if (!ctListo) return;
@@ -2092,8 +2247,8 @@ function ctPinta() {
   const lista = ctFiltradas(), verBorr = $('#ct-verborr').checked;
   const opt = (arr, sel, vacio) => `<option value="">${vacio}</option>` + arr.map(x => `<option${x === sel ? ' selected' : ''}>${esc(x)}</option>`).join('');
   const fmtF = iso => { const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/); return m ? `${m[3]}-${m[2]}-${m[1]}` : iso; };
-  $('#ct-body').innerHTML = lista.map((r, i) => `<tr data-id="${r.id}" class="${r.id === ctNuevo ? 'nuevo ' : ''}${r.tipo === 'Venta' ? 't-venta ' : ''}${r.borrado ? 'borrado' : ''}">
-    <td class="c-n" title="${esc(ctSeg(r))}">${i + 1}</td>
+  $('#ct-body').innerHTML = lista.map((r, i) => `<tr data-id="${r.id}" class="${r.id === ctNuevo ? 'nuevo ' : ''}${r.tipo === 'Venta' ? 't-venta ' : ''}${r.borrado ? 'borrado ' : ''}${r.id === ctAbierto ? 'abierta' : ''}">
+    <td class="c-n" data-ct="ficha" title="${esc(ctSeg(r))} · ${ctExtras(r)} datos en la ficha. Clic para abrir la ficha." style="cursor:pointer">${i + 1}</td>
     <td class="c-fecha"><input data-k="fecha" value="${esc(fmtF(r.fecha))}" placeholder="DD-MM-AAAA" title="${esc(fmtF(r.fecha))}"></td>
     <td class="c-hora"><input data-k="hora" value="${esc(r.hora)}" placeholder="HH:MM"></td>
     <td class="c-rut"><input data-k="rut" value="${esc(r.rut)}" placeholder="RUT" title="${esc(r.rut)}"></td>
@@ -2104,28 +2259,26 @@ function ctPinta() {
     <td class="c-notas"><input data-k="notas" value="${esc(r.notas)}" placeholder="Notas" title="${esc(r.notas)}"></td>
     <td class="c-acc"><div class="acc">${r.borrado
       ? `<button data-ct="restaurar" class="go" title="Recuperar registro">↺</button>`
-      : `<button data-ct="rutificador" class="rutif" title="Copiar RUT y abrir Rutificador">🪪</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
-  </tr>`).join('');
+      : `<button data-ct="ficha" class="fic" title="${r.id === ctAbierto ? 'Cerrar la ficha' : 'Abrir la ficha con todos los datos'}">${r.id === ctAbierto ? '▴' : '▾'}</button><button data-ct="rutificador" class="rutif" title="Copiar RUT y abrir Rutificador">🪪</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
+  </tr>${r.id === ctAbierto && !r.borrado ? ctFichaHTML(r) : ''}`).join('');
   $('#ct-vacio').hidden = lista.length > 0;
   $('#ct-vacio').textContent = verBorr ? 'No hay registros borrados en este período.' : 'No hay llamadas en este período. Pega la primera desde Genesys.';
   const cuenta = {}; lista.forEach(r => { const k = r.tipo || 'Sin tipificar'; cuenta[k] = (cuenta[k] || 0) + 1; });
   $('#ct-resumen').innerHTML = `<span class="chip on">${verBorr ? 'Borrados' : 'Llamadas'}<b>${lista.length}</b></span>` + Object.keys(cuenta).sort((a, b) => cuenta[b] - cuenta[a]).map(k => `<span class="chip">${esc(k)}<b>${cuenta[k]}</b></span>`).join('')
     + `<span class="chip">Total histórico<b>${CT.filter(r => !r.borrado).length}</b></span>`;
 }
+// De la planilla al Script: carga todos los datos de la fila y deja el Script vinculado a ella
 function ctAScript(r) {
+  scVincular(r.id);
   location.hash = 'script';
-  setTimeout(() => {
-    const set = (id, v) => { const e = $('#sc-' + id); if (e && v) e.value = v; };
-    set('nombre', r.nombre); set('rut', r.rut); set('fono', r.telefono); set('contacto', r.telefono);
-    const p = PLANES_VIGENTES.find(x => x.title === r.plan); if (p) set('plan', p.id);
-    $('#sc-rut').dispatchEvent(new Event('input', { bubbles: true }));
-    toast('Datos cargados en el Script. Revisa y completa lo que falte.');
-  }, 150);
+  setTimeout(() => { scCargar(r); scPintaVinculo(); toast('Datos cargados en el Script. Lo que completes ahí también queda en la planilla.'); }, 150);
 }
 function ctExcel() {
   const lista = ctFiltradas(); if (!lista.length) return toast('No hay filas para exportar');
   const q = s => /[;"\n]/.test(s) ? '"' + String(s).replace(/"/g, '""') + '"' : s;
-  const cols = [['fecha', 'Fecha'], ['hora', 'Hora'], ['campana', 'Campaña'], ['cola', 'Cola'], ['rut', 'RUT'], ['nombre', 'Nombre'], ['telefono', 'Teléfono'], ['tipo', 'Tipificación'], ['plan', 'Plan'], ['notas', 'Notas']];
+  const cols = [['fecha', 'Fecha'], ['hora', 'Hora'], ['campana', 'Campaña'], ['cola', 'Cola'], ['rut', 'RUT'], ['nombre', 'Nombre'], ['telefono', 'Teléfono'], ['tipo', 'Tipificación'], ['plan', 'Plan'], ['notas', 'Observaciones'],
+    ['nac', 'Nacimiento'], ['mail', 'Correo'], ['fono', 'Número a portar'], ['contacto', 'Teléfono de contacto'], ['medio', 'Validación enviada por'], ['tventa', 'Tipo de venta'], ['adic', 'Líneas adicionales'],
+    ['eq', 'Equipo'], ['eqtotal', 'Monto total'], ['eqpie', 'Pago inicial'], ['eqforma', 'Forma de pago'], ['calle', 'Calle'], ['num', 'Número'], ['int', 'Interior'], ['comuna', 'Comuna'], ['region', 'Región'], ['ref', 'Referencia'], ['eta', 'Despacho']];
   const csv = String.fromCharCode(0xFEFF) + cols.map(c => c[1]).join(';') + '\r\n' + lista.map(r => cols.map(c => q(r[c[0]] || '')).join(';')).join('\r\n') + '\r\n';
   downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8' }), `planilla-control-${hoyISO()}.csv`);
   toast(`${lista.length} registros exportados. Ábrelo con Excel.`);
@@ -2147,7 +2300,7 @@ function initControl() {
   $('#ct-periodo').addEventListener('change', () => { $('#ct-rango').hidden = $('#ct-periodo').value !== 'rango'; ctPinta(); });
   $('#ct-resp').addEventListener('click', e => {
     const b = e.target.closest('[data-resp]'); if (!b) return;
-    ({ crear: () => respElegir(true), usar: () => respElegir(false), autorizar: respAutorizar, ahora: async () => { if (await respSync('manual')) toast('Planilla guardada'); } })[b.dataset.resp]();
+    ({ crear: () => respElegir(true), usar: () => respElegir(false), autorizar: respAutorizar, ahora: async () => { if (await respSync('manual')) toast('Planilla guardada'); }, copias: copiasAbrir })[b.dataset.resp]();
   });
   const body = $('#ct-body');
   const actualizar = e => {
@@ -2155,7 +2308,7 @@ function initControl() {
     const r = CT.find(x => x.id === el.closest('tr').dataset.id); if (!r) return;
     if (el.dataset.k === 'rut' && e.type === 'change') el.value = rutFormato(el.value);
     if (el.dataset.k === 'fecha') { const m = el.value.trim().match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/); if (!m) return; r.fecha = `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`; }
-    else { el.title = el.value; r[el.dataset.k] = el.value; }
+    else { el.title = el.value; r[el.dataset.k] = el.value; $$(`#ct-body [data-id="${r.id}"] [data-k="${el.dataset.k}"]`).forEach(x => { if (x !== el) x.value = el.value; }); }
     r.upd = Date.now(); ctGuardar();
     if (el.dataset.k === 'tipo') el.closest('tr').classList.toggle('t-venta', el.value === 'Venta');
   };
@@ -2163,8 +2316,11 @@ function initControl() {
   body.addEventListener('change', actualizar);
   body.addEventListener('focusout', () => setTimeout(() => { if (!body.contains(document.activeElement)) { if (ctRepintarPend) ctRepintar(); respSync('edición'); } }, 50));
   body.addEventListener('click', e => {
+    const o = e.target.closest('[data-obs]');
+    if (o) { const r = CT.find(x => x.id === o.closest('tr').dataset.id); if (!r) return; r.notas = (r.notas ? r.notas.trim().replace(/[.\s]*$/, '. ') : '') + o.dataset.obs; r.upd = Date.now(); ctGuardar(); $$(`#ct-body [data-id="${r.id}"] [data-k="notas"]`).forEach(x => { x.value = r.notas; x.title = r.notas; }); return; }
     const b = e.target.closest('[data-ct]'); if (!b) return;
     const r = CT.find(x => x.id === b.closest('tr').dataset.id); if (!r) return;
+    if (b.dataset.ct === 'ficha') { ctAbierto = ctAbierto === r.id ? '' : r.id; ctPinta(); if (ctAbierto) { const t = $(`#ct-body tr.ficha[data-id="${r.id}"] input`); if (t) t.focus(); } return; }
     if (b.dataset.ct === 'borrar') { r.borrado = true; r.upd = Date.now(); ctGuardar(); ctPinta(); toast('Registro borrado. Puedes recuperarlo con "Ver borrados".'); }
     if (b.dataset.ct === 'restaurar') { r.borrado = false; r.upd = Date.now(); ctGuardar(); ctPinta(); toast('Registro recuperado'); }
     if (b.dataset.ct === 'script') ctAScript(r);
