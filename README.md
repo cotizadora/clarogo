@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 16-11-2026: títulos fijos en la tabla de Stock
+
+- En Stock de Equipos, al bajar por los resultados la fila negra de títulos (Modelo, SKU, Marca, Pie, Cuotas, Total, Stock) queda fija bajo el menú. En celular la tabla se muestra como tarjetas con sus etiquetas, como antes.
+
 ### 16-11-2026: sin enlace a la Bandeja
 
 - Se quitó el enlace Bandeja (SharePoint Excel), a pedido de Eduardo. Quedan 7 enlaces.

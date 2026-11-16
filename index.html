@@ -289,7 +289,13 @@ footer a,footer button{color:inherit;background:none;border:0;padding:0;text-dec
 @media (min-width:860px){
   #s-table thead{display:table-header-group}
   #s-table tr{display:table-row;border:0;border-radius:0;padding:0;margin:0}
-  #s-table{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;border-collapse:separate;border-spacing:0}
+  #s-table{background:#fff;border:1px solid var(--border);border-radius:12px;border-collapse:separate;border-spacing:0}
+  /* La fila de títulos queda fija bajo el menú al bajar por los resultados */
+  #s-table thead th{position:sticky;top:var(--top-h,0px);z-index:5;box-shadow:0 2px 4px rgba(0,0,0,.15)}
+  #s-table thead th:first-child{border-top-left-radius:11px}
+  #s-table thead th:last-child{border-top-right-radius:11px}
+  #s-table tbody tr:last-child td:first-child{border-bottom-left-radius:11px}
+  #s-table tbody tr:last-child td:last-child{border-bottom-right-radius:11px}
   #s-table th{background:#1f2430;color:#fff;text-align:left;padding:10px 12px;font-size:.78rem;cursor:pointer;user-select:none;white-space:nowrap}
   #s-table th.on{background:var(--red)}
   #s-table td{padding:9px 12px;border-bottom:1px solid #eef0f3;font-size:.88rem;vertical-align:middle}
@@ -1006,7 +1012,14 @@ function route() {
   window.scrollTo(0, 0);
   if (admin) setTimeout(adminEntrar, 100);
 }
+// Alto del menú superior fijo, para que las filas de títulos fijas queden justo debajo
+function medirMenu() {
+  const top = $('.top'); if (!top) return;
+  const fijar = () => { const fijo = getComputedStyle(top).position === 'sticky' && top.offsetParent !== null; document.documentElement.style.setProperty('--top-h', (fijo ? top.offsetHeight : 0) + 'px'); };
+  fijar(); if ('ResizeObserver' in window) new ResizeObserver(fijar).observe(top); window.addEventListener('resize', fijar); window.addEventListener('hashchange', () => setTimeout(fijar, 0));
+}
 function initMenu() {
+  medirMenu();
   $('#tiles').innerHTML = MENU.map(m => {
     const inner = `<span class="tile-i"><svg viewBox="0 0 24 24">${m.i}</svg></span><span class="tile-t">${m.t}</span>${m.badge ? `<span class="tile-b">${m.badge}</span>` : ''}`;
     return m.v ? `<a class="tile${m.v === 'enlaces' ? ' tile-enl' : ''}" href="#${m.v}">${inner}</a>` : `<a class="tile${m.soon ? ' soon' : ''}" href="#" data-modal="${m.m}">${inner}</a>`;
