@@ -50,6 +50,12 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: favoritos, colores por tipificación y extensión 1.9.2
+
+- Mi Planilla: estrella al inicio de cada fila para marcar clientes favoritos, y filtro "★ Solo favoritos".
+- Color de toda la fila según la tipificación: verde (Venta y Volver a llamar), amarillo (Buzón de voz, No contesta, Mudo o corta llamada, Otro) y rojo (No interesado, No molestar, Ya es cliente Claro, Rechazo de evaluación, Número equivocado).
+- Extensión 1.9.2: en el modo rápido de WhatsApp, si WhatsApp borra el mensaje al terminar de cargar el chat, la extensión lo vuelve a pegar.
+
 ### 17-11-2026: equipo desde el Stock y Sin equipo
 
 - Ficha de Mi Planilla, sección Equipo: casilla "Sin equipo" (bloquea y limpia los campos del equipo) y botón "Pegar equipo del Stock", que lee el texto del botón Copiar de Stock de Equipos y llena equipo (marca y modelo), SKU, pago inicial, forma de pago (18 cuotas de ...) y monto total. Nuevo campo SKU. El copiado para WhatsApp, la exportación y el Script usan estos datos; con Sin equipo el Script no muestra el paso del equipo.

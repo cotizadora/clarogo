@@ -397,8 +397,23 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla td input:focus,#ct-tabla td select:focus{outline:2px solid #217346;outline-offset:-2px;background:#fff}
 #ct-tabla td input::placeholder{color:#b3b7be}
 #ct-tabla tbody tr:hover td{background:#f5f9ff}
+#ct-tabla tr.t-verde td{background:#e3f5e7}
+#ct-tabla tr.t-amarillo td{background:#fff6d1}
+#ct-tabla tr.t-rojo td{background:#fde4e4}
+#ct-tabla tbody tr.t-verde:hover td{background:#d2eed9}
+#ct-tabla tbody tr.t-amarillo:hover td{background:#ffeeb0}
+#ct-tabla tbody tr.t-rojo:hover td{background:#f9d0d0}
+#ct-tabla tr.t-verde td.c-n{background:#c6e9cf}
+#ct-tabla tr.t-amarillo td.c-n{background:#ffe7a3}
+#ct-tabla tr.t-rojo td.c-n{background:#f6c4c4}
+#ct-tabla td.c-n{white-space:nowrap}
+#ct-tabla td.c-n span{cursor:pointer}
+#ct-tabla .estrella{border:0;background:transparent;padding:0 2px 0 0;font-size:.9rem;line-height:1;cursor:pointer;color:#b0b5bd;vertical-align:middle}
+#ct-tabla .estrella:hover{color:#f5a400}
+#ct-tabla tr.fav .estrella{color:#f5a400}
+#ct-tabla tr.fav td.c-n{box-shadow:inset 3px 0 0 #f5a400}
 #ct-tabla tbody tr:hover td.c-n{background:#e6ecf5}
-#ct-tabla tr.nuevo td{background:#fff7d6}
+#ct-tabla tr.nuevo:not(.t-verde):not(.t-amarillo):not(.t-rojo) td{background:#eaf1ff}
 #ct-tabla tr.t-venta td.c-n{background:#d8f0dd;color:#1b6b33;font-weight:700}
 #ct-tabla tr.t-venta td.c-tipo select{color:#1b6b33;font-weight:700}
 #ct-tabla .acc{display:flex;height:27px}
@@ -407,11 +422,11 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla .acc button:hover{background:#eef2f7}
 #ct-tabla .acc .go{color:#fff;background:var(--red);font-size:.7rem}
 #ct-tabla .acc .go:hover{background:var(--red-dk)}
-.c-n{width:34px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:94px}.c-tel{width:94px}.c-orig{width:76px}.c-tipo{width:126px}.c-plan{width:80px}.c-acc{width:282px}
+.c-n{width:46px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:94px}.c-tel{width:94px}.c-orig{width:76px}.c-tipo{width:126px}.c-plan{width:80px}.c-acc{width:282px}
 .c-nombre{width:auto}.c-notas{width:17%}
 @media (max-width:1500px){.c-notas{display:none}}
 @media (max-width:1100px){.c-hora,.c-plan{display:none}}
-@media (max-width:720px){.c-fecha,.c-notas,.c-rut,.c-nombre{display:none}.c-tel{width:auto}.c-orig{width:60px}.c-tipo{width:80px}.c-n{width:22px}.c-acc{width:128px} #ct-tabla .acc .gen-t{display:none} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
+@media (max-width:720px){.c-fecha,.c-notas,.c-rut,.c-nombre{display:none}.c-tel{width:auto}.c-orig{width:60px}.c-tipo{width:80px}.c-n{width:36px}.c-acc{width:128px} #ct-tabla .acc .gen-t{display:none} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
 #ct-resumen .chip b{margin-left:4px}
 .resp{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:.84rem}
 .resp .resp-b{display:flex;gap:6px;flex-wrap:wrap}
@@ -2117,6 +2132,10 @@ function initFaq() {
    ════════════════════════════════════════════════════════════════ */
 // Códigos de conclusión de Genesys según la Inducción VR (Venta, Buzón de voz, Mudo o corta llamada, No molestar) y otros frecuentes
 const TIPIFICACIONES = ['Venta', 'Volver a llamar', 'Buzón de voz', 'No contesta', 'Mudo o corta llamada', 'No interesado', 'No molestar', 'Ya es cliente Claro', 'Rechazo de evaluación', 'Número equivocado', 'Otro'];
+// Color de la fila según la tipificación: verde (venta o por cerrar), amarillo (neutra) y rojo (negativa)
+const TIPO_VERDE = ['Venta', 'Volver a llamar'];
+const TIPO_ROJO = ['No interesado', 'No molestar', 'Ya es cliente Claro', 'Rechazo de evaluación', 'Número equivocado'];
+const tipoColor = t => !t ? '' : TIPO_VERDE.includes(t) ? 't-verde' : TIPO_ROJO.includes(t) ? 't-rojo' : 't-amarillo';
 const CT_KEY = 'clarogo_control_v1';
 const ARCH_NOMBRE = 'ClaroGo-planilla-control.json';
 const AUTO_MIN = 30;           // guardado programado
@@ -2715,7 +2734,7 @@ function ctRango() {
 function ctFiltradas() {
   const [desde, hasta] = ctRango(), tipo = $('#ct-tipo').value, seg = $('#ct-seg').value, q = $('#ct-q').value.trim().toLowerCase(), verBorr = $('#ct-verborr').checked;
   return CT.filter(r => (verBorr ? r.borrado : !r.borrado) && (!desde || r.fecha >= desde) && (!hasta || r.fecha <= hasta)
-    && (!tipo || (tipo === 'Sin tipificar' ? !r.tipo : r.tipo === tipo)) && (!seg || ctSeg(r) === seg)
+    && (!tipo || (tipo === '__fav' ? r.fav : tipo === 'Sin tipificar' ? !r.tipo : r.tipo === tipo)) && (!seg || ctSeg(r) === seg)
     && (!q || [r.rut, r.nombre, r.telefono, r.notas, r.mail, r.contacto, r.fono, dirTexto(r), r.eq].join(' ').toLowerCase().includes(q)));
 }
 function ctPinta() {
@@ -2725,8 +2744,8 @@ function ctPinta() {
   const lista = ctFiltradas(), verBorr = $('#ct-verborr').checked;
   const opt = (arr, sel, vacio) => `<option value="">${vacio}</option>` + arr.map(x => `<option${x === sel ? ' selected' : ''}>${esc(x)}</option>`).join('');
   const fmtF = iso => { const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/); return m ? `${m[3]}-${m[2]}-${m[1]}` : iso; };
-  $('#ct-body').innerHTML = lista.map((r, i) => `<tr data-id="${r.id}" class="${r.id === ctNuevo ? 'nuevo ' : ''}${r.tipo === 'Venta' ? 't-venta ' : ''}${r.borrado ? 'borrado ' : ''}${r.id === ctAbierto ? 'abierta' : ''}">
-    <td class="c-n" data-ct="ficha" title="${esc(ctSeg(r))} · ${ctExtras(r)} datos en la ficha. Clic para abrir la ficha." style="cursor:pointer">${i + 1}</td>
+  $('#ct-body').innerHTML = lista.map((r, i) => `<tr data-id="${r.id}" class="${r.id === ctNuevo ? 'nuevo ' : ''}${r.tipo === 'Venta' ? 't-venta ' : ''}${tipoColor(r.tipo)} ${r.fav ? 'fav ' : ''}${r.borrado ? 'borrado ' : ''}${r.id === ctAbierto ? 'abierta' : ''}">
+    <td class="c-n"><button class="estrella" data-ct="fav" title="${r.fav ? 'Quitar de favoritos' : 'Marcar como cliente favorito'}">${r.fav ? '★' : '☆'}</button><span data-ct="ficha" title="${esc(ctSeg(r))} · ${ctExtras(r)} datos en la ficha. Clic para abrir la ficha.">${i + 1}</span></td>
     <td class="c-fecha"><input data-k="fecha" value="${esc(fmtF(r.fecha))}" placeholder="DD-MM-AAAA" title="${esc(fmtF(r.fecha))}"></td>
     <td class="c-hora"><input data-k="hora" value="${esc(r.hora)}" placeholder="HH:MM"></td>
     <td class="c-rut"><input data-k="rut" value="${esc(r.rut)}" placeholder="RUT" title="${esc(r.rut)}"></td>
@@ -2768,7 +2787,7 @@ function ctExcel() {
 }
 function initControl() {
   ctListo = true;
-  $('#ct-tipo').innerHTML = '<option value="">Todas las tipificaciones</option><option>Sin tipificar</option>' + TIPIFICACIONES.map(x => `<option>${x}</option>`).join('');
+  $('#ct-tipo').innerHTML = '<option value="">Todas las tipificaciones</option><option value="__fav">★ Solo favoritos</option><option>Sin tipificar</option>' + TIPIFICACIONES.map(x => `<option>${x}</option>`).join('');
   $('#ct-desde').value = isoMenos(6); $('#ct-hasta').value = hoyISO();
   // Siempre parte sin filtros, aunque el navegador intente recordar los de la visita anterior
   const sinFiltros = () => { $('#ct-periodo').value = 'todo'; $('#ct-tipo').value = ''; $('#ct-seg').value = ''; $('#ct-q').value = ''; $('#ct-verborr').checked = false; $('#ct-rango').hidden = true; };
@@ -2814,7 +2833,7 @@ function initControl() {
     else if (el.type === 'checkbox') { r[el.dataset.k] = el.checked; if (el.dataset.k === 'sineq' && el.checked) Object.assign(r, { eq: '', eqsku: '', eqtotal: '', eqpie: '', eqforma: '' }); if (e.type === 'change') setTimeout(ctPinta, 0); }
     else { el.title = el.value; r[el.dataset.k] = el.value; $$(`#ct-body [data-id="${r.id}"] [data-k="${el.dataset.k}"]`).forEach(x => { if (x !== el) x.value = el.value; }); }
     r.upd = Date.now(); ctGuardar();
-    if (el.dataset.k === 'tipo') el.closest('tr').classList.toggle('t-venta', el.value === 'Venta');
+    if (el.dataset.k === 'tipo') { const tr = el.closest('tr'); tr.classList.toggle('t-venta', el.value === 'Venta'); tr.classList.remove('t-verde', 't-rojo', 't-amarillo'); if (tipoColor(el.value)) tr.classList.add(tipoColor(el.value)); }
     if (el.dataset.k === 'tipo' && e.type === 'change' && el.value === 'Volver a llamar' && !(r.agenda && !r.agendaHecho)) agDialogo(r);
   };
   body.addEventListener('input', actualizar);
@@ -2826,6 +2845,7 @@ function initControl() {
     if (o) { const r = CT.find(x => x.id === o.closest('tr').dataset.id); if (!r) return; r.notas = (r.notas ? r.notas.trim().replace(/[.\s]*$/, '. ') : '') + o.dataset.obs; r.upd = Date.now(); ctGuardar(); $$(`#ct-body [data-id="${r.id}"] [data-k="notas"]`).forEach(x => { x.value = r.notas; x.title = r.notas; }); return; }
     const b = e.target.closest('[data-ct]'); if (!b) return;
     const r = CT.find(x => x.id === b.closest('tr').dataset.id); if (!r) return;
+    if (b.dataset.ct === 'fav') { r.fav = !r.fav; r.upd = Date.now(); ctGuardar(); ctPinta(); return toast(r.fav ? '★ Cliente marcado como favorito' : 'Cliente quitado de favoritos'); }
     if (b.dataset.ct === 'genesys') return ctPegarEnFila(r.id);
     if (b.dataset.ct === 'wa') return waDialogo(r);
     if (b.dataset.ct === 'copiar') return copyText(ctResumen(r), 'Datos del cliente copiados. Pégalos en WhatsApp con Ctrl+V.');

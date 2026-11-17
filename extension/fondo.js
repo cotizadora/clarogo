@@ -34,13 +34,29 @@ async function chatRapido(numero, texto) {
     if (reales.length !== 1) return 'resultados-' + reales.length;
     (reales[0].querySelector('[role="gridcell"], span[title]') || reales[0]).click();
     // 4. Cuadro para escribir del chat abierto
-    const caja = await hasta(() => document.querySelector('footer [contenteditable="true"]'), 3000);
-    if (!caja) return 'sin-caja';
-    if (caja.textContent.trim()) return 'ok';      // ya había un borrador: no se pisa
-    pegar(caja, texto);
-    await esperar(200);
-    if (!caja.textContent.trim()) document.execCommand('insertText', false, texto.replace(/\n/g, ' '));
-    return 'ok';
+    const cajaActual = () => document.querySelector('footer [contenteditable="true"]');
+    if (!await hasta(cajaActual, 3000)) return 'sin-caja';
+    // WhatsApp termina de cargar el chat (y su borrador) un instante después de mostrarlo:
+    // se espera, se pega y se revisa que el mensaje siga ahí. Si WhatsApp lo borró, se vuelve a pegar.
+    await esperar(700);
+    const inicio = texto.replace(/\s+/g, ' ').trim().slice(0, 25);
+    const estaPegado = c => c && c.textContent.replace(/\s+/g, ' ').includes(inicio);
+    let c0 = cajaActual();
+    if (c0 && c0.textContent.trim() && !estaPegado(c0)) return 'ok';   // ya había un borrador del ejecutivo: no se pisa
+    for (let i = 0; i < 5; i++) {
+      const caja = cajaActual();
+      if (!caja) { await esperar(300); continue; }
+      if (!estaPegado(caja)) {
+        if (caja.textContent.trim()) return 'ok';
+        pegar(caja, texto);
+        await esperar(250);
+        if (!caja.textContent.trim()) document.execCommand('insertText', false, texto);
+      }
+      await esperar(800);
+      const ahora = cajaActual();
+      if (estaPegado(ahora)) { await esperar(600); if (estaPegado(cajaActual())) return 'ok'; }
+    }
+    return estaPegado(cajaActual()) ? 'ok' : 'ok-sin-texto';
   } catch (e) { return 'error: ' + e.message; }
 }
 
