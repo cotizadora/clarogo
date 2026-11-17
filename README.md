@@ -70,6 +70,7 @@ Opción con Tampermonkey:
 
 ### 17-11-2026: extensión ClaroGo! Genesys para descargar
 
+- Extensión 1.13.0 enviada a la tienda de Edge (Edge Add-ons), visibilidad oculta, en revisión. Política de privacidad en ext/privacidad.html.
 - Se publica la extensión 1.13.0 como zip en ext/clarogo-genesys-extension.zip para que los compañeros la instalen con "Cargar desempaquetada".
 
 ### 17-11-2026: script ClaroGo! Genesys 2.0 (Tampermonkey)
