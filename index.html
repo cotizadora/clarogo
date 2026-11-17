@@ -878,7 +878,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     <label for="pf-nombre">Tu nombre</label><input id="pf-nombre" placeholder="Ej: Eduardo Pérez" autocomplete="off">
     <label for="pf-plantilla" style="margin-top:10px">Tu mensaje de presentación</label>
     <textarea id="pf-plantilla" rows="4"></textarea>
-    <p class="dim" style="font-size:.76rem;margin:4px 0 0">Escribe <b>{saludo}</b> donde va "muy buenos días", "muy buenas tardes" o "muy buenas noches" (cambia solo según la hora) y <b>{nombre}</b> donde va tu nombre. Después del mensaje se agrega el plan que elijas.</p>
+    <p class="dim" style="font-size:.76rem;margin:4px 0 0">Escribe <b>{saludo}</b> donde va "muy buenos días", "muy buenas tardes" o "muy buenas noches" (cambia solo según la hora) , <b>{nombre}</b> donde va tu nombre, <b>{cliente}</b> donde va el primer nombre del cliente (si la planilla no lo tiene, se omite solo) y <b>{compania}</b> para su compañía de origen. Después del mensaje se agrega el plan que elijas.</p>
     <label style="margin-top:10px">Así se ve ahora</label><pre id="pf-vista"></pre>
     <div class="d-foot"><button class="btn" id="pf-defecto">Volver al mensaje original</button><button class="btn red" id="pf-guardar">Guardar</button></div>
   </div>
@@ -2367,12 +2367,24 @@ const WA_DEFECTO = 'v500';
    Cada ejecutivo personaliza su nombre y su presentación (se guardan en su navegador).
    {saludo} cambia según la hora y {nombre} es su nombre. Por defecto: Eduardo Pérez y el mensaje original. */
 const NOMBRE_DEFECTO = 'Eduardo Pérez';
-const PLANTILLA_DEFECTO = 'Hola, {saludo}, mi nombre es {nombre}. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.';
+const PLANTILLA_DEFECTO = 'Hola {cliente}, {saludo}, mi nombre es {nombre}. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.';
+// Mensaje original anterior (sin {cliente}): si alguien lo tenía guardado, se actualiza solo al nuevo
+const PLANTILLA_ANTERIOR = 'Hola, {saludo}, mi nombre es {nombre}. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.';
+// Primer nombre del cliente con mayúscula inicial: "JUAN ANDRÉS PÉREZ" → "Juan"
+const primerNombre = n => { const p = String(n || '').trim().split(/\s+/)[0] || ''; return p.length > 1 ? p.charAt(0).toUpperCase() + p.slice(1).toLowerCase() : ''; };
 const agenteNombre = () => { try { return (localStorage.getItem('agentName') || '').trim() || NOMBRE_DEFECTO; } catch (e) { return NOMBRE_DEFECTO; } };
-const plantillaMsg = () => { try { return (localStorage.getItem('clarogo_plantilla') || '').trim() || PLANTILLA_DEFECTO; } catch (e) { return PLANTILLA_DEFECTO; } };
+const plantillaMsg = () => { try { const p = (localStorage.getItem('clarogo_plantilla') || '').trim(); return p && p !== PLANTILLA_ANTERIOR ? p : PLANTILLA_DEFECTO; } catch (e) { return PLANTILLA_DEFECTO; } };
 const saludoHora = (d = new Date()) => { const h = d.getHours(); return h >= 5 && h < 12 ? 'muy buenos días' : h >= 12 && h < 20 ? 'muy buenas tardes' : 'muy buenas noches'; };
 const mayusInicial = t => t.charAt(0).toUpperCase() + t.slice(1);
-const presentacion = (plantilla, nombre) => mayusInicial((plantilla || plantillaMsg()).replace(/\{saludo\}/gi, saludoHora()).replace(/\{nombre\}/gi, nombre || agenteNombre()));
+// cli: datos del cliente de la planilla. {cliente} = su primer nombre (si no se sabe, desaparece sin dejar espacios ni comas sueltas)
+// y {compania} = su compañía de origen.
+const presentacion = (plantilla, nombre, cli = {}) => {
+  const pn = primerNombre(cli.nombre);
+  let t = (plantilla || plantillaMsg()).replace(/\{saludo\}/gi, saludoHora()).replace(/\{nombre\}/gi, nombre || agenteNombre());
+  t = pn ? t.replace(/\{cliente\}/gi, pn) : t.replace(/\s*\{cliente\}\s*(?=[,.!?])/gi, '').replace(/\s*\{cliente\}/gi, '');
+  t = cli.origen ? t.replace(/\{compania\}/gi, cli.origen) : t.replace(/\s*\{compania\}/gi, '');
+  return mayusInicial(t.replace(/ {2,}/g, ' '));
+};
 function perfilGuardar(nombre, plantilla) {
   try {
     localStorage.setItem('agentName', nombre.trim());
@@ -2386,15 +2398,15 @@ function perfilGuardar(nombre, plantilla) {
 const perfilPintaBoton = () => { const b = $('#perfil-btn'); if (b) b.textContent = '👤 ' + agenteNombre() + ' · Mi mensaje'; };
 function initPerfil() {
   perfilPintaBoton();
-  const vista = () => { $('#pf-vista').textContent = presentacion($('#pf-plantilla').value.trim() || PLANTILLA_DEFECTO, $('#pf-nombre').value.trim() || NOMBRE_DEFECTO); };
+  const vista = () => { const p = $('#pf-plantilla').value.trim() || PLANTILLA_DEFECTO, n = $('#pf-nombre').value.trim() || NOMBRE_DEFECTO; $('#pf-vista').textContent = 'Con un cliente que tiene nombre:\n' + presentacion(p, n, { nombre: 'JUAN PÉREZ', origen: 'Entel' }) + '\n\nSin nombre del cliente:\n' + presentacion(p, n); };
   $('#perfil-btn').onclick = () => { $('#pf-nombre').value = agenteNombre(); $('#pf-plantilla').value = plantillaMsg(); vista(); abrir('dlg-perfil'); };
   $('#pf-nombre').addEventListener('input', vista); $('#pf-plantilla').addEventListener('input', vista);
   $('#pf-defecto').onclick = () => { $('#pf-plantilla').value = PLANTILLA_DEFECTO; vista(); };
   $('#pf-guardar').onclick = () => { perfilGuardar($('#pf-nombre').value || NOMBRE_DEFECTO, $('#pf-plantilla').value); $('#dlg-perfil').close(); toast('Listo. Tu mensaje quedó guardado.'); };
   setTimeout(() => window.postMessage({ tipo: 'clarogo-perfil', nombre: agenteNombre(), plantilla: plantillaMsg() }, location.origin), 500);
 }
-function waTexto(planId) {
-  const hola = presentacion();
+function waTexto(planId, cli) {
+  const hola = presentacion('', '', cli || {});
   if (planId === PLAN_MAYOR.id) return `${hola}\n\n${mayorMensaje()}`;
   const p = PLANES_VIGENTES.find(x => x.id === planId);
   return p ? `${hola}\n\n${vMensaje(p)}` : hola;
@@ -2413,13 +2425,14 @@ function waDialogo(r) {
   $('#wa-tel').value = r.telefono || r.contacto || '';
   $('#wa-agente').value = agenteNombre();
   $('#wa-para').textContent = r.nombre || r.telefono || 'Cliente';
-  $('#wa-texto').value = waTexto(WA_DEFECTO);
+  $('#wa-texto').value = waTexto(WA_DEFECTO, r);
   $('#wa-nota').textContent = document.documentElement.dataset.clarogoExt ? 'Se usará la pestaña de WhatsApp Web que ya tengas abierta.' : 'Se abre WhatsApp Web en una pestaña aparte y las próximas veces usa esa misma. Con la extensión ClaroGo! Genesys también reutiliza la que ya tengas abierta.';
   abrir('dlg-wa');
 }
 function initWhatsApp() {
-  $('#wa-plan').addEventListener('change', () => { $('#wa-texto').value = waTexto($('#wa-plan').value); });
-  $('#wa-agente').addEventListener('input', e => { perfilGuardar(e.target.value || NOMBRE_DEFECTO, plantillaMsg()); $('#wa-texto').value = waTexto($('#wa-plan').value); });
+  const filaWa = () => CT.find(x => x.id === waFila) || {};
+  $('#wa-plan').addEventListener('change', () => { $('#wa-texto').value = waTexto($('#wa-plan').value, filaWa()); });
+  $('#wa-agente').addEventListener('input', e => { perfilGuardar(e.target.value || NOMBRE_DEFECTO, plantillaMsg()); $('#wa-texto').value = waTexto($('#wa-plan').value, filaWa()); });
   $('#wa-abrir').onclick = () => {
     const txt = $('#wa-texto').value;
     try { navigator.clipboard.writeText(txt); } catch (e) {}
@@ -2561,7 +2574,14 @@ function initAgenda() {
 }
 
 // La extensión pide los mensajes de cada plan para su botón de WhatsApp
-window.clarogoMensajesWA = () => PLANES_WA().map(p => ({ id: p.id, titulo: p.title, texto: waTexto(p.id) })).concat([{ id: '', titulo: 'Solo la presentación, sin plan', texto: waTexto('') }]);
+// La extensión pide los mensajes con el nombre que trae Genesys y el teléfono: si el cliente ya está en la planilla,
+// se usan sus datos (nombre y compañía) para personalizar el saludo
+window.clarogoMensajesWA = (nombre, tel) => {
+  const d = String(tel || '').replace(/\D/g, '').slice(-9);
+  const fila = d ? CT.filter(r => !r.borrado && String(r.telefono || '').replace(/\D/g, '').slice(-9) === d).sort((a, b) => (b.upd || 0) - (a.upd || 0))[0] : null;
+  const cli = { nombre: (fila && fila.nombre) || nombre || '', origen: fila && fila.origen || '' };
+  return PLANES_WA().map(p => ({ id: p.id, titulo: p.title, texto: waTexto(p.id, cli) })).concat([{ id: '', titulo: 'Solo la presentación, sin plan', texto: waTexto('', cli) }]);
+};
 
 // La extensión ClaroGo! Genesys llama a esta función para crear una fila nueva con los datos de la llamada
 window.clarogoDesdeGenesys = txt => {

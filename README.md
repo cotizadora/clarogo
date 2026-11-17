@@ -50,6 +50,11 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: saludo con el nombre del cliente (extensión 1.9)
+
+- El mensaje saluda al cliente por su primer nombre cuando la planilla lo tiene ("Hola María, muy buenos días..."); si no lo tiene, queda "Hola, muy buenos días...". Nuevas marcas para el mensaje personal: {cliente} (primer nombre) y {compania} (compañía de origen).
+- La extensión busca al cliente en la planilla por su teléfono para usar su nombre; si no está, usa el nombre que traiga Genesys.
+
 ### 17-11-2026: mi nombre y mi mensaje (extensión 1.8)
 
 - Inicio: botón "👤 Nombre · Mi mensaje" para que cada ejecutivo ponga su nombre (por defecto Eduardo Pérez) y personalice su presentación, con vista previa. {saludo} cambia solo según la hora (muy buenos días, muy buenas tardes, muy buenas noches) y {nombre} es su nombre. Se usa en WhatsApp, la planilla, el Script y la extensión.

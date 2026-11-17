@@ -125,11 +125,14 @@ async function iniciar() {
 let MENSAJES = [], TEL = '';
 // Presentación de respaldo: usa el nombre y el mensaje guardados desde ClaroGo! y el saludo según la hora
 const NOMBRE_DEFECTO = 'Eduardo Pérez';
-const PLANTILLA_DEFECTO = 'Hola, {saludo}, mi nombre es {nombre}. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.';
+const PLANTILLA_DEFECTO = 'Hola {cliente}, {saludo}, mi nombre es {nombre}. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.';
 const saludoHora = () => { const h = new Date().getHours(); return h >= 5 && h < 12 ? 'muy buenos días' : h >= 12 && h < 20 ? 'muy buenas tardes' : 'muy buenas noches'; };
-async function presentacionGuardada() {
+async function presentacionGuardada(cliente) {
   let p = {}; try { p = await chrome.storage.local.get(['nombre', 'plantilla']); } catch (e) {}
-  const txt = (p.plantilla || PLANTILLA_DEFECTO).replace(/\{saludo\}/gi, saludoHora()).replace(/\{nombre\}/gi, p.nombre || NOMBRE_DEFECTO);
+  const pn = (() => { const x = String(cliente || '').trim().split(/\s+/)[0] || ''; return x.length > 1 ? x.charAt(0).toUpperCase() + x.slice(1).toLowerCase() : ''; })();
+  let txt = (p.plantilla || PLANTILLA_DEFECTO).replace(/\{saludo\}/gi, saludoHora()).replace(/\{nombre\}/gi, p.nombre || NOMBRE_DEFECTO);
+  txt = pn ? txt.replace(/\{cliente\}/gi, pn) : txt.replace(/\s*\{cliente\}\s*(?=[,.!?])/gi, '').replace(/\s*\{cliente\}/gi, '');
+  txt = txt.replace(/\s*\{compania\}/gi, '').replace(/ {2,}/g, ' ');
   return txt.charAt(0).toUpperCase() + txt.slice(1);
 }
 function pintarPlanes() {
@@ -140,12 +143,12 @@ function pintarPlanes() {
 async function prepararWhatsApp(tel, nombre) {
   TEL = tel.replace(/\D/g, '');
   // El botón aparece de inmediato; los planes se completan si alguna pestaña de ClaroGo! responde
-  MENSAJES = [{ id: '', titulo: 'Solo la presentación (abre ClaroGo! para ver los planes)', texto: await presentacionGuardada() }]; pintarPlanes(); $('#wa').hidden = false;
+  MENSAJES = [{ id: '', titulo: 'Solo la presentación (abre ClaroGo! para ver los planes)', texto: await presentacionGuardada(nombre) }]; pintarPlanes(); $('#wa').hidden = false;
   try {
     const tabs = (await chrome.tabs.query({ url: PLANILLA + '*' })).filter(t => !t.discarded).sort((a, b) => a.id - b.id);
     for (const t of tabs) {
       try {
-        const [r] = await conLimite(chrome.scripting.executeScript({ target: { tabId: t.id }, world: 'MAIN', args: [nombre || ''], func: n => typeof window.clarogoMensajesWA === 'function' ? window.clarogoMensajesWA(n) : null }), 1500);
+        const [r] = await conLimite(chrome.scripting.executeScript({ target: { tabId: t.id }, world: 'MAIN', args: [nombre || '', TEL], func: (n, t) => typeof window.clarogoMensajesWA === 'function' ? window.clarogoMensajesWA(n, t) : null }), 1500);
         if (r && Array.isArray(r.result) && r.result.length) { MENSAJES = r.result; pintarPlanes(); break; }
       } catch (e) {}
     }
