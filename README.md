@@ -48,6 +48,14 @@ Todos los datos comerciales están al inicio del script de `index.html`, en el b
 
 GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza el sitio en uno o dos minutos.
 
+## Instalar ClaroGo! Genesys (para ejecutivos)
+
+1. Instalar Tampermonkey (gratis): https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd
+2. En edge://extensions, Detalles de Tampermonkey: activar "Permitir scripts de usuario".
+3. Abrir https://cotizadora.github.io/clarogo/ext/clarogo-genesys.user.js y presionar Instalar.
+4. En Genesys: botón rojo ClaroGo! o Alt+Shift+G. Abrir ClaroGo! una vez para cargar nombre, firma y láminas.
+5. No tener activa a la vez la extensión antigua ClaroGo! Genesys.
+
 ## Historial de cambios
 
 ### 17-11-2026: script ClaroGo! Genesys 2.0 (Tampermonkey)
