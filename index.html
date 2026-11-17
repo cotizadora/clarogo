@@ -2515,8 +2515,11 @@ function perfilGuardar(nombre, plantilla) {
   const ag = $('#sc-agente'); if (ag) ag.value = nombre.trim();
   perfilPintaBoton();
   // Avisa a la extensión para que use el mismo nombre y mensaje
-  window.postMessage({ tipo: 'clarogo-perfil', nombre: agenteNombre(), plantilla: plantillaMsg() }, location.origin);
+  perfilAvisar();
 }
+/* La extension recibe el nombre, el mensaje y el detalle de cada plan, para armar saludo + oferta aunque ClaroGo! no responda */
+const perfilAvisar = () => window.postMessage({ tipo: 'clarogo-perfil', nombre: agenteNombre(), plantilla: plantillaMsg(),
+  planes: PLANES_WA().map(p => ({ id: p.id, titulo: p.title, detalle: p.id === PLAN_MAYOR.id ? mayorMensaje() : vMensaje(p) })) }, location.origin);
 const perfilPintaBoton = () => { const b = $('#perfil-btn'); if (b) b.textContent = '👤 ' + agenteNombre() + ' · Mi mensaje'; };
 function initPerfil() {
   perfilPintaBoton();
@@ -2525,7 +2528,7 @@ function initPerfil() {
   $('#pf-nombre').addEventListener('input', vista); $('#pf-plantilla').addEventListener('input', vista);
   $('#pf-defecto').onclick = () => { $('#pf-plantilla').value = PLANTILLA_DEFECTO; vista(); };
   $('#pf-guardar').onclick = () => { perfilGuardar($('#pf-nombre').value || NOMBRE_DEFECTO, $('#pf-plantilla').value); $('#dlg-perfil').close(); toast('Listo. Tu mensaje quedó guardado.'); };
-  setTimeout(() => window.postMessage({ tipo: 'clarogo-perfil', nombre: agenteNombre(), plantilla: plantillaMsg() }, location.origin), 500);
+  setTimeout(perfilAvisar, 500);
 }
 function waTexto(planId, cli) {
   const hola = presentacion('', '', cli || {});

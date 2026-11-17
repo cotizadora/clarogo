@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: extensión 1.10, saludo y oferta juntos
+
+- ClaroGo! le entrega a la extensión el detalle de cada plan junto con el nombre y el mensaje del ejecutivo. La extensión arma al instante el saludo según la hora más la oferta, con el Plan 500 elegido por defecto, y copia todo junto, aunque la pestaña de ClaroGo! esté dormida. Si ClaroGo! responde, usa sus mensajes, que saludan al cliente por su nombre si está en la planilla.
+
 ### 17-11-2026: Deshacer y Guardar
 
 - Mi Planilla y Script de Cierre: barra fija arriba con "↶ Deshacer" (también Ctrl+Z fuera de los cuadros de texto), "💾 Guardar" y la hora del último guardado. Deshacer vuelve atrás paso a paso (hasta 60 pasos) sin perder nada: lo que se había agregado queda en Ver borrados. Guardar fuerza la copia local, el archivo y una copia automática, aunque todo ya se guarda solo con cada cambio.

@@ -135,15 +135,24 @@ async function presentacionGuardada(cliente) {
   txt = txt.replace(/\s*\{compania\}/gi, '').replace(/ {2,}/g, ' ');
   return txt.charAt(0).toUpperCase() + txt.slice(1);
 }
+// Selector de planes: por defecto el Plan 500 (el más barato); si el ejecutivo ya eligió otro, se respeta
+let PLAN_ELEGIDO = 'v500';
 function pintarPlanes() {
-  const pref = MENSAJES.findIndex(m => m.id === 'v500');   // por defecto el Plan 500, el más barato
-  $('#wa-plan').innerHTML = MENSAJES.map((m, i) => `<option value="${i}"${i === (pref < 0 ? 0 : pref) ? ' selected' : ''}></option>`).join('');
+  let pref = MENSAJES.findIndex(m => m.id === PLAN_ELEGIDO);
+  if (pref < 0) pref = MENSAJES.findIndex(m => m.id === 'v500');
+  if (pref < 0) pref = 0;
+  $('#wa-plan').innerHTML = MENSAJES.map((m, i) => `<option value="${i}"${i === pref ? ' selected' : ''}></option>`).join('');
   [...$('#wa-plan').options].forEach((o, i) => { o.textContent = MENSAJES[i].titulo; });
 }
 async function prepararWhatsApp(tel, nombre) {
   TEL = tel.replace(/\D/g, '');
-  // El botón aparece de inmediato; los planes se completan si alguna pestaña de ClaroGo! responde
-  MENSAJES = [{ id: '', titulo: 'Solo la presentación (abre ClaroGo! para ver los planes)', texto: await presentacionGuardada(nombre) }]; pintarPlanes(); $('#wa').hidden = false;
+  // 1. Al instante: saludo + oferta, con los planes que ClaroGo! dejó guardados en la extensión
+  const pres = await presentacionGuardada(nombre);
+  let guardados = []; try { guardados = (await chrome.storage.local.get('planes')).planes || []; } catch (e) {}
+  MENSAJES = guardados.map(p => ({ id: p.id, titulo: p.titulo, texto: `${pres}\n\n${p.detalle}` }))
+    .concat([{ id: '', titulo: guardados.length ? 'Solo la presentación, sin plan' : 'Solo la presentación (abre ClaroGo! una vez para cargar los planes)', texto: pres }]);
+  pintarPlanes(); $('#wa').hidden = false;
+  // 2. Si alguna pestaña de ClaroGo! responde, se usan sus mensajes (saludan con el nombre del cliente si está en la planilla)
   try {
     const tabs = (await chrome.tabs.query({ url: PLANILLA + '*' })).filter(t => !t.discarded).sort((a, b) => a.id - b.id);
     for (const t of tabs) {
@@ -154,6 +163,7 @@ async function prepararWhatsApp(tel, nombre) {
     }
   } catch (e) {}
 }
+$('#wa-plan').addEventListener('change', () => { const m = MENSAJES[+$('#wa-plan').value]; PLAN_ELEGIDO = m ? m.id : ''; });
 $('#wa-abrir').onclick = async () => {
   const m = MENSAJES[+$('#wa-plan').value] || MENSAJES[0];
   const url = `https://web.whatsapp.com/send?phone=56${TEL}&text=${encodeURIComponent(m.texto)}`;
