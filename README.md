@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: Deshacer y Guardar
+
+- Mi Planilla y Script de Cierre: barra fija arriba con "↶ Deshacer" (también Ctrl+Z fuera de los cuadros de texto), "💾 Guardar" y la hora del último guardado. Deshacer vuelve atrás paso a paso (hasta 60 pasos) sin perder nada: lo que se había agregado queda en Ver borrados. Guardar fuerza la copia local, el archivo y una copia automática, aunque todo ya se guarda solo con cada cambio.
+
 ### 17-11-2026: favoritos, colores por tipificación y extensión 1.9.2
 
 - Mi Planilla: estrella al inicio de cada fila para marcar clientes favoritos, y filtro "★ Solo favoritos".

@@ -397,6 +397,11 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla td input:focus,#ct-tabla td select:focus{outline:2px solid #217346;outline-offset:-2px;background:#fff}
 #ct-tabla td input::placeholder{color:#b3b7be}
 #ct-tabla tbody tr:hover td{background:#f5f9ff}
+/* Barra fija de Deshacer y Guardar */
+.gbarra{position:sticky;top:var(--top-h,0px);z-index:6;display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--bg);padding:8px 0;margin:-4px 0 8px;border-bottom:1px solid var(--border)}
+.gbarra .gestado{font-size:.8rem;font-weight:700;color:#1b6b33}
+.gbarra .gestado.pend{color:#8a6100}
+.gbarra .btn[disabled]{opacity:.45;cursor:default}
 #ct-tabla tr.t-verde td{background:#e3f5e7}
 #ct-tabla tr.t-amarillo td{background:#fff6d1}
 #ct-tabla tr.t-rojo td{background:#fde4e4}
@@ -650,6 +655,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <!-- SCRIPT -->
   <section id="v-script" class="view" hidden>
     <h1 class="h">Script de Cierre de Ventas</h1>
+    <div class="gbarra" data-gbarra><button class="btn sm" data-undo disabled title="Deshacer el último cambio (Ctrl+Z)">↶ Deshacer</button><button class="btn sm dark" data-guardar title="Guardar ahora">💾 Guardar</button><span class="gestado" data-gestado>✓ Todo guardado</span></div>
     <p class="sub">Portabilidades conectados. Completa los datos de la venta y el guion de abajo se arma solo. Los datos deben concordar con los del Front de ventas.</p>
     <div class="note blue" id="sc-vinc" style="margin-bottom:12px"></div>
     <form id="sc-form" class="card sc" autocomplete="off">
@@ -754,6 +760,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <!-- MI PLANILLA DE CONTROL -->
   <section id="v-control" class="view" hidden>
     <h1 class="h">Mi Planilla de Control</h1>
+    <div class="gbarra" data-gbarra><button class="btn sm" data-undo disabled title="Deshacer el último cambio (Ctrl+Z)">↶ Deshacer</button><button class="btn sm dark" data-guardar title="Guardar ahora">💾 Guardar</button><span class="gestado" data-gestado>✓ Todo guardado</span></div>
     <p class="sub">En Genesys presiona Ctrl+A y Ctrl+C con el cliente en pantalla, y aquí presiona "Pegar desde Genesys". Todo se puede editar y ningún registro se pierde.</p>
     <div id="ct-resp" class="note resp"></div>
     <div class="card filters">
@@ -2153,10 +2160,76 @@ const ctSeg = r => [r.campana, (r.cola || '').replace(/^COLA_CLARO_/, '')].filte
 const ctLeerLocal = () => { try { const v = JSON.parse(localStorage.getItem(CT_KEY) || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
 // Antes de escribir combina con lo que dejó otra pestaña, así una pestaña antigua nunca borra registros nuevos
 let ctRepintarPend = false;
-const ctRepintar = () => { if (!ctListo) return; if ($('#ct-body').contains(document.activeElement)) { ctRepintarPend = true; return; } ctRepintarPend = false; ctPinta(); };
+const ctRepintar = () => { if (!undoGrupo) undoBase = JSON.stringify(CT); if (!ctListo) return; if ($('#ct-body').contains(document.activeElement)) { ctRepintarPend = true; return; } ctRepintarPend = false; ctPinta(); };
 const ctGuardarLocal = () => { try { const antes = JSON.stringify(CT); CT = ctMezclar(CT, ctLeerLocal()); localStorage.setItem(CT_KEY, JSON.stringify(CT)); if (JSON.stringify(CT) !== antes) ctRepintar(); } catch (e) { if (!ctAviso) { ctAviso = true; toast('El navegador no dejó guardar la copia local. Revisa que el archivo de respaldo esté activo.'); } } };
 // Cada cambio: copia local inmediata y guardado en el archivo a los pocos segundos
-function ctGuardar() { ctGuardarLocal(); clearTimeout(ctTimer); ctTimer = setTimeout(() => respSync('edición'), AUTO_EDIT_SEG * 1000); }
+function ctGuardar() { undoRegistrar(); ctGuardarLocal(); gMarcarGuardado(); clearTimeout(ctTimer); ctTimer = setTimeout(() => respSync('edición'), AUTO_EDIT_SEG * 1000); }
+
+/* ── Deshacer y Guardar ─────────────────────────────────────────────
+   Antes de cada grupo de cambios (los cambios seguidos con menos de 1,2 segundos entre sí cuentan como uno)
+   se guarda cómo estaba la planilla. Deshacer vuelve a ese estado sin perder nada: lo que se había agregado
+   queda como borrado (se puede recuperar con "Ver borrados"). Se guardan hasta 60 pasos. */
+let undoPila = [], undoBase = '', undoGrupo = false, undoTimer = 0, gUltimo = 0;
+function undoRegistrar() {
+  if (!undoBase) undoBase = '[]';
+  if (!undoGrupo) { undoPila.push(undoBase); if (undoPila.length > 60) undoPila.shift(); undoGrupo = true; }
+  clearTimeout(undoTimer); undoTimer = setTimeout(() => { undoGrupo = false; undoBase = JSON.stringify(CT); }, 1200);
+  gPintaBarra();
+}
+function deshacer() {
+  if (!undoPila.length) return toast('No hay cambios para deshacer');
+  clearTimeout(undoTimer); undoGrupo = false;
+  const antes = JSON.parse(undoPila.pop()), mapa = new Map(antes.map(r => [r.id, r])), ahora = Date.now(), sinUpd = r => JSON.stringify(Object.assign({}, r, { upd: 0 }));
+  let n = 0;
+  CT = CT.map(r => {
+    const p = mapa.get(r.id);
+    if (!p) { if (r.borrado) return r; n++; return Object.assign({}, r, { borrado: true, upd: ahora }); }
+    if (sinUpd(p) === sinUpd(r)) return r;
+    n++; return Object.assign({}, p, { upd: ahora });
+  });
+  antes.forEach(p => { if (!CT.some(r => r.id === p.id)) { CT.push(Object.assign({}, p, { upd: ahora })); n++; } });
+  undoBase = JSON.stringify(CT);
+  ctGuardarLocal(); gMarcarGuardado(); respSync('deshacer');
+  if (ctListo) ctPinta(); if (typeof agPinta === 'function') agPinta();
+  const sc = CT.find(x => x.id === SC_FILA && !x.borrado); if (sc && location.hash === '#script') scCargar(sc);
+  gPintaBarra();
+  toast(n ? 'Cambio deshecho' : 'No había diferencias que deshacer');
+}
+function gMarcarGuardado() { gUltimo = Date.now(); gPintaBarra(); }
+function gPintaBarra() {
+  const hora = gUltimo ? new Date(gUltimo).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
+  $$('[data-gbarra]').forEach(b => {
+    b.querySelector('[data-undo]').disabled = !undoPila.length;
+    b.querySelector('[data-undo]').textContent = undoPila.length ? `↶ Deshacer (${undoPila.length})` : '↶ Deshacer';
+    const e = b.querySelector('[data-gestado]');
+    e.className = 'gestado';
+    e.textContent = hora ? `✓ Guardado a las ${hora}` : '✓ Todo guardado';
+  });
+}
+async function guardarAhora() {
+  $$('[data-gestado]').forEach(e => { e.className = 'gestado pend'; e.textContent = 'Guardando…'; });
+  ctGuardarLocal();
+  try { await respSync('manual'); } catch (e) {}
+  try { await copiaGuardar(true); } catch (e) {}
+  gMarcarGuardado();
+  toast('💾 Guardado. Tus datos están a salvo.');
+}
+function initDeshacer() {
+  undoBase = JSON.stringify(CT);
+  document.addEventListener('click', e => {
+    if (e.target.closest('[data-undo]')) deshacer();
+    if (e.target.closest('[data-guardar]')) guardarAhora();
+  });
+  // Ctrl+Z fuera de los cuadros de texto (dentro de un cuadro, Ctrl+Z deshace lo que se está escribiendo, como siempre)
+  document.addEventListener('keydown', e => {
+    if (!(e.ctrlKey || e.metaKey) || e.shiftKey || e.key.toLowerCase() !== 'z') return;
+    const t = e.target; if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+    if (!['#control', '#script'].includes(location.hash)) return;
+    e.preventDefault(); deshacer();
+  });
+  setInterval(gPintaBarra, 30000);
+  gPintaBarra();
+}
 
 // Une dos listas sin perder registros: si un registro está en ambas, gana la versión editada más tarde
 function ctMezclar(a, b) {
@@ -3064,7 +3137,7 @@ async function limpiarCache() {
 /* ════════════════════════════════════════════════════════════════
    INICIO
    ════════════════════════════════════════════════════════════════ */
-initMenu(); initExcepciones(); initSugerencias(); iniciarRespaldo(); initWhatsApp(); initAgenda(); initPerfil();
+initMenu(); initExcepciones(); initSugerencias(); iniciarRespaldo(); initWhatsApp(); initAgenda(); initPerfil(); initDeshacer();
 try { if (sessionStorage.getItem('clarogo_limpio')) { sessionStorage.removeItem('clarogo_limpio'); setTimeout(() => toast('Caché limpiada. Tu planilla está a salvo.'), 400); } } catch (e) {}
 $('#cache-btn').onclick = limpiarCache;
 window.addEventListener('hashchange', route);
