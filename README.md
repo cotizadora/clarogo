@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 17-11-2026: Stock, solo pasan por el Front los equipos con más de 60 unidades
+
+- Stock en verde si tiene más de 60 unidades y en rojo si tiene 60 o menos. Los verdes se ordenan primero.
+- "Copiar lista filtrada" copia solo los equipos con más de 60 unidades. Aviso para los ejecutivos arriba de la tabla y al copiar un equipo de 60 o menos.
+
 ### 17-11-2026: Oferta PNG solo para Persona Natural con Giro
 
 - Se quita la oferta PYME "RUT mayor a 50 millones" (otro segmento, pendiente de confirmar).

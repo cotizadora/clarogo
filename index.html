@@ -632,6 +632,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <section id="v-stock" class="view" hidden>
     <h1 class="h">Stock de Equipos</h1>
     <p class="sub">Busca por modelo, marca o SKU. Toca un SKU para copiarlo.</p>
+    <div class="note" style="margin-bottom:10px;border-left:4px solid var(--red)"><b>Importante:</b> en el Front solo pasan los equipos con <b>más de 60 unidades</b> en stock. En <span class="st st-hi" style="padding:1px 7px">verde</span> los que pasan y en <span class="st st-lo" style="padding:1px 7px">rojo</span> los de 60 o menos: no los ofrezcas. "Copiar lista filtrada" copia solo los verdes.</div>
     <div class="s-act mal" id="s-act"><span class="i">📅</span><div><small>Última actualización del stock</small><b>Cargando fecha…</b></div></div>
     <div class="card filters">
       <input class="full" type="search" id="s-q" placeholder="Buscar modelo, marca o SKU" autocomplete="off">
@@ -1548,7 +1549,10 @@ async function procesarArchivoStock(f) {
     mostrarRevision(res);
   } catch (e) { out.innerHTML = `<div class="note red">No pude leer el archivo: ${esc(e.message)}.</div>`; sPendiente = null; $('#u-fecha-box').hidden = true; }
 }
-const tier = s => s >= 30 ? 1 : s >= 1 ? 2 : 3;
+// En el Front solo pasan los equipos con más de 60 unidades en stock
+const STOCK_FRONT = 60;
+const stockOk = e => e.stock > STOCK_FRONT;
+const tier = s => s > STOCK_FRONT ? 1 : s >= 1 ? 2 : 3;
 const total = e => e.pie + e.cuotas * 18;
 function pintarStock() {
   const q = $('#s-q').value.trim().toLowerCase(), marca = $('#s-marca').value, pie = $('#s-pie').value, solo = $('#s-solo').checked;
@@ -1568,7 +1572,7 @@ function pintarStock() {
   $('#s-count').textContent = `${list.length} equipos · ${conStock} con stock`;
   const ver = sTodo ? list : list.slice(0, LIMITE);
   $('#s-body').innerHTML = ver.map(e => {
-    const st = e.stock >= 30 ? 'hi' : e.stock > 0 ? 'md' : 'lo';
+    const st = stockOk(e) ? 'hi' : 'lo';
     return `<tr><td class="mod" data-l="Modelo">${esc(e.modelo)}</td><td data-l="SKU"><button class="sku" data-sku="${esc(e.sku)}" title="Copiar SKU">${esc(e.sku)}</button></td><td data-l="Marca">${esc(e.marca)}</td><td data-l="Pie inicial">${clp(e.pie)}</td><td data-l="18 cuotas de">${clp(e.cuotas)}</td><td class="tot" data-l="Precio total">${clp(total(e))}</td><td data-l="Stock"><span class="st st-${st}">${e.stock}</span></td><td class="act"><button class="btn sm${sCopiados.has(e.sku) ? ' done' : ''}" data-copy="${esc(e.sku)}">${sCopiados.has(e.sku) ? 'Copiado' : 'Copiar'}</button></td></tr>`;
   }).join('');
   const msg = $('#s-msg');
@@ -1591,10 +1595,10 @@ function initStock() {
   };
   $('#s-rapido').onclick = () => { $('#s-pie').value = '0-0'; $('#s-solo').checked = true; sOrden = { col: 'cuotas', dir: 1 }; repintar(); };
   $('#s-copiar').onclick = () => {
-    const items = sFiltrados.filter(e => e.stock >= 30);
-    if (!items.length) return toast('No hay equipos con stock suficiente (30 o más) para copiar.');
+    const items = sFiltrados.filter(stockOk);
+    if (!items.length) return toast('No hay equipos con más de 60 unidades en stock. Solo esos pasan por el Front.');
     copyText(items.map(e => `SKU: ${e.sku}\nMarca: ${e.marca}\nModelo: ${e.modelo}\nPie: ${clp(e.pie)}\nCuota: ${clp(e.cuotas)}\nTotal: ${clp(total(e))}\nStock: ${e.stock}\n----------------`).join('\n\n'),
-      `Lista de ${items.length} equipos (stock 30 o más) copiada`);
+      `Lista de ${items.length} equipos con más de 60 unidades copiada. Los de 60 o menos no pasan por el Front.`);
   };
   $('#s-table thead').addEventListener('click', e => {
     const th = e.target.closest('th[data-col]'); if (!th) return;
@@ -1607,7 +1611,7 @@ function initStock() {
     const eq = EQ.find(x => x.sku === b.dataset.copy); if (!eq) return;
     sCopiados.add(eq.sku); sessionStorage.setItem('copiedEquipment', JSON.stringify([...sCopiados]));
     b.classList.add('done'); b.textContent = 'Copiado';
-    copyText(`*Financiamiento:* \n\n*SKU:* ${eq.sku}\n*MARCA:* ${eq.marca}\n*MODELO:* ${eq.modelo}\n*PIE:* ${clp(eq.pie)}\n*18 CUOTAS DE:* ${clp(eq.cuotas)}\n*PRECIO TOTAL:* ${clp(total(eq))}\n*STOCK:* ${eq.stock} unidades`, 'Información copiada');
+    copyText(`*Financiamiento:* \n\n*SKU:* ${eq.sku}\n*MARCA:* ${eq.marca}\n*MODELO:* ${eq.modelo}\n*PIE:* ${clp(eq.pie)}\n*18 CUOTAS DE:* ${clp(eq.cuotas)}\n*PRECIO TOTAL:* ${clp(total(eq))}\n*STOCK:* ${eq.stock} unidades`, stockOk(eq) ? 'Información copiada' : `Copiado, pero ojo: tiene ${eq.stock} unidades. Con 60 o menos no pasa por el Front.`);
   });
   // Actualizar stock
   adminInit();
