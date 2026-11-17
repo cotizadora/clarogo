@@ -50,6 +50,12 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: copiado más ordenado
+
+- Copiado para la supervisora: el equipo va en varias líneas (Equipo, SKU, Pie, Cuotas y Precio total).
+- Dirección ordenada al terminar de escribirla: número y comuna separados por coma y mayúscula inicial en calle y comuna ("Las Zinnias 5790, Huechuraba, Región Metropolitana"), también si el número venía pegado a la comuna.
+- Referencia o entrecalles con mayúscula inicial en cada palabra (salvo y, e, o, de, del) y sin espacios de más, en la ficha y en el Script.
+
 ### 17-11-2026: extensión 1.10, saludo y oferta juntos
 
 - ClaroGo! le entrega a la extensión el detalle de cada plan junto con el nombre y el mensaje del ejecutivo. La extensión arma al instante el saludo según la hora más la oferta, con el Plan 500 elegido por defecto, y copia todo junto, aunque la pestaña de ClaroGo! esté dormida. Si ClaroGo! responde, usa sus mensajes, que saludan al cliente por su nombre si está en la planilla.

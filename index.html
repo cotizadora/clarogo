@@ -1899,6 +1899,8 @@ function scCargar(r) {
 }
 function scGuardarEnFila(e) {
   if (scCargando) return;
+  if (e.type === 'change' && e.target.id === 'sc-ref') e.target.value = tituloCalle(e.target.value);
+  if (e.type === 'change' && ['sc-calle', 'sc-comuna'].includes(e.target.id)) e.target.value = tituloCalle(e.target.value);
   const id = (e.target.id || '').replace(/^sc-/, '');
   if (!id || id === 'agente' || !(SC_CAMPOS.includes(id) || id === 'plan')) return;
   let r = CT.find(x => x.id === SC_FILA && !x.borrado);
@@ -2730,30 +2732,45 @@ function ctCompletarFila(id, d) {
 /* ── Dirección en una sola línea ─────────────────────────────────────
    En la planilla se escribe como se copia: "Las Zinnias 5790 Huechuraba, Región Metropolitana".
    Para el Script de Cierre se separa sola en calle, número, comuna y región. */
-const dirArmar = r => { const reg = String(r.region || '').trim().replace(/^regi[oó]n\s+/i, ''); return [[r.calle, r.num].filter(Boolean).join(' ') + (r.int ? ', ' + r.int : ''), r.comuna].filter(Boolean).join(' ').trim() + (reg ? `, Región ${reg}` : ''); };
+const CONECTORES = ['y', 'e', 'o', 'de', 'del'];
+const tituloCalle = v => String(v || '').replace(/\s+/g, ' ').trim().split(' ').map((w, i) => {
+  if (!w) return w;
+  const min = w.toLowerCase();
+  if (i > 0 && CONECTORES.includes(min)) return min;
+  return /\d/.test(w) ? w : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+}).join(' ');
+// Dirección ordenada: "Las Zinnias 5790, Huechuraba, Región Metropolitana" (número y comuna siempre separados)
+const dirFormato = txt => { const d = dirSeparar(txt); return d.num && d.comuna ? dirArmar(d) : String(txt || '').replace(/\s+/g, ' ').trim(); };
+const dirArmar = r => { const reg = String(r.region || '').trim().replace(/^regi[oó]n\s+/i, ''); return [[tituloCalle(r.calle), r.num].filter(Boolean).join(' ') + (r.int ? ' ' + r.int : ''), tituloCalle(r.comuna)].filter(Boolean).join(', ').trim() + (reg ? `, Región ${/^(de|del)\s/i.test(reg) ? reg.replace(/^(de|del)\s/i, m => m.toLowerCase()) : reg.charAt(0).toUpperCase() + reg.slice(1)}` : ''); };
 const dirTexto = r => r.direccion || (r.calle || r.num || r.comuna ? dirArmar(r) : '');
 function dirSeparar(txt) {
   const t = String(txt || '').trim(); if (!t) return {};
-  const [antes, ...resto] = t.split(','), region = resto.join(',').trim().replace(/^regi[oó]n\s+/i, '');
-  let base = antes.trim(), int = '';
+  const partes = t.split(',').map(x => x.trim()).filter(Boolean);
+  let region = '';
+  if (partes.length > 1 && /^regi[oó]n\s+/i.test(partes[partes.length - 1])) region = partes.pop().replace(/^regi[oó]n\s+/i, '');
+  else if (partes.length > 2) region = partes.pop();
+  const comunaAparte = partes.length > 1 ? partes.slice(1).join(', ') : '';
+  const antes = partes[0] || '';
+  let base = antes.trim().replace(/(\d)([A-Za-zÁÉÍÓÚÑáéíóúñ]{3,})/g, '$1 $2'), int = '';
   // Primero el interior (depto, block, casa...), para que su número no se confunda con el de la calle
   const i = base.match(/\s((?:depto|dpto|dep|departamento|block|casa|of|oficina|torre|piso)\.?\s*[\w-]+)/i);
   if (i) { int = i[1].trim(); base = (base.slice(0, i.index) + base.slice(i.index + i[0].length)).replace(/\s{2,}/g, ' ').trim(); }
   // El número de la casa es el último número antes de la comuna ("Calle 5 Norte 890 Viña del Mar" → 890)
   const m = base.match(/^(.*)\s+(\d+[a-z]?)\b\s*(.*)$/i);
   if (!m) return { calle: base, int, region };
-  return { calle: m[1].trim(), num: m[2], int, comuna: m[3].trim(), region };
-}function ctResumen(r) {
+  return { calle: m[1].trim(), num: m[2], int, comuna: comunaAparte || m[3].trim(), region };
+}
+function ctResumen(r) {
   const tv = (TVENTA.find(([v]) => v === r.tventa) || [])[1] || '';
   const fecha = String(r.fecha || '').replace(/^(\d{4})-(\d{2})-(\d{2})$/, '$3-$2-$1');
-  const equipo = r.sineq ? 'Sin equipo' : [r.eq, r.eqsku && `SKU ${r.eqsku}`, r.eqpie && `pie ${r.eqpie}`, r.eqforma, r.eqtotal && `total ${r.eqtotal}`].filter(Boolean).join(' · ');
+  const equipo = r.sineq ? [['Equipo', 'Sin equipo']] : [['Equipo', r.eq], ['SKU', r.eqsku], ['Pie', r.eqpie], ['Cuotas', r.eqforma], ['Precio total', r.eqtotal]];
   const filas = [
     ['Cliente', r.nombre], ['RUT', r.rut], ['Teléfono', r.telefono],
     ['Teléfono de contacto', r.contacto && r.contacto.replace(/\D/g, '') !== String(r.telefono || '').replace(/\D/g, '') ? r.contacto : ''],
     ['Número a portar', r.fono && r.fono.replace(/\D/g, '') !== String(r.telefono || '').replace(/\D/g, '') ? r.fono : ''],
     ['Fecha de nacimiento', r.nac], ['Correo', r.mail], ['Compañía de origen', r.origen],
-    ['Dirección', dirTexto(r)], ['Referencia', r.ref],
-    ['Plan', r.plan], ['Líneas adicionales', r.adic], ['Tipo de venta', tv], ['Equipo', equipo],
+    ['Dirección', dirFormato(dirTexto(r))], ['Referencia', tituloCalle(r.ref)],
+    ['Plan', r.plan], ['Líneas adicionales', r.adic], ['Tipo de venta', tv], ...equipo,
     ['Tipificación', r.tipo], ['Observaciones', r.notas]
   ].filter(([, v]) => String(v || '').trim());
   return `📋 *Datos del cliente*${fecha ? ' · ' + fecha : ''}\n\n` + filas.map(([k, v]) => `*${k}:* ${String(v).trim()}`).join('\n');
@@ -2905,6 +2922,8 @@ function initControl() {
     if (el.dataset.k === 'rut' && e.type === 'change') el.value = rutFormato(el.value);
     if (el.dataset.k === 'mail' && el.value !== correoLimpio(el.value)) el.value = correoLimpio(el.value);
     if (TEL_CAMPOS.includes(el.dataset.k) && el.value !== telLimpio(el.value)) el.value = telLimpio(el.value);
+    if (e.type === 'change' && el.dataset.k === 'ref') el.value = tituloCalle(el.value);
+    if (e.type === 'change' && el.dataset.k === 'direccion') el.value = dirFormato(el.value);
     if (el.dataset.k === 'fecha') { const m = el.value.trim().match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/); if (!m) return; r.fecha = `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`; }
     else if (el.type === 'checkbox') { r[el.dataset.k] = el.checked; if (el.dataset.k === 'sineq' && el.checked) Object.assign(r, { eq: '', eqsku: '', eqtotal: '', eqpie: '', eqforma: '' }); if (e.type === 'change') setTimeout(ctPinta, 0); }
     else { el.title = el.value; r[el.dataset.k] = el.value; $$(`#ct-body [data-id="${r.id}"] [data-k="${el.dataset.k}"]`).forEach(x => { if (x !== el) x.value = el.value; }); }
