@@ -198,6 +198,14 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 .link:hover{border-left-color:var(--red);background:#fff5f5}
 .link.dest{border-left-color:#0f9d58}
 .link span{font-size:1.15rem;flex:none}
+.fi-deuda{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0 4px;padding:7px 9px;border:1px dashed var(--border);border-radius:9px}
+.fi-deuda b{font-size:.8rem;margin-right:2px}
+.fi-deuda .btn{display:inline-flex;align-items:center;gap:5px}
+.fi-deuda .btn span{display:inline-grid}
+.fi-deuda .lk-logo{width:16px;height:16px;border-radius:4px}
+.fi-deuda .lk-wom{display:grid;place-items:center;width:16px;height:16px;border-radius:4px;background:#3d0f6b;color:#fff;font-size:.38rem;font-weight:900}
+.fi-deuda-r{font-size:.8rem;font-weight:700;color:var(--dim)}
+.fi-deuda-r.ok{color:#14804a}.fi-deuda-r.mal{color:#c00000}
 .link .lk-logo{display:block;width:22px;height:22px;border-radius:5px}
 .link .lk-wom{display:grid;place-items:center;width:22px;height:22px;border-radius:5px;background:#3d0f6b;color:#fff;font-size:.5rem;font-weight:900;letter-spacing:.02em}
 .link div{min-width:0;line-height:1.2}
@@ -2524,6 +2532,29 @@ const FICHA = [
 ];
 const OBS_RAPIDAS = ['Interesado, llamar más tarde', 'Pide la oferta por WhatsApp', 'Evaluación pendiente', 'Tiene deuda', 'Quiere equipo', 'Comparando con otra compañía', 'No contesta, reintentar'];
 let ctAbierto = '';
+/* ── ¿Tiene deuda? ──────────────────────────────────────────────────
+   En la ficha, un botón por compañía: copia el RUT del cliente y abre el portal de pago de esa compañía.
+   Con la extensión ClaroGo! Genesys (1.14.0 o más nueva) el RUT se escribe solo y el resultado vuelve a la fila. */
+const DEUDA_PORTALES = [['claro', 'Claro', 'img:logos/claro.png', 'https://sucursalvirtual.clarochile.cl/PagoExpress'], ['entel', 'Entel', 'img:logos/entel.png', 'https://miperfil.entel.cl/PagoUnificado/Home'], ['movistar', 'Movistar', 'img:logos/movistar.png', 'https://pagos.movistar.cl/publico/'], ['wom', 'WOM', 'wom', 'https://www.wom.cl/paga-aqui/']];
+const deudaBarra = r => `<div class="fi-deuda"><b>¿Tiene deuda?</b>${DEUDA_PORTALES.map(([c, n, ico]) => `<button type="button" class="btn sm" data-deuda="${c}" title="Copia el RUT y revisa la deuda en ${n}">${icoEnlace(ico)} ${n}</button>`).join('')}<span class="fi-deuda-r${/tiene deuda/i.test(r.deuda || '') ? ' mal' : r.deuda ? ' ok' : ''}">${esc(r.deuda || (r.rut ? '' : 'Primero escribe el RUT del cliente'))}</span></div>`;
+function deudaRevisar(id, comp) {
+  const r = CT.find(x => x.id === id), port = DEUDA_PORTALES.find(x => x[0] === comp); if (!r || !port) return;
+  const rut = String(r.rut || '').replace(/[^0-9kK]/g, '').toUpperCase();
+  if (rut.length < 7) return toast('Primero escribe el RUT del cliente en la fila.');
+  const rutG = rut.slice(0, -1) + '-' + rut.slice(-1);
+  if (document.documentElement.dataset.clarogoExt) window.postMessage({ tipo: 'clarogo-deuda', comp, rut: rutG, id }, location.origin);
+  try { navigator.clipboard.writeText(rutG); } catch (e) {}
+  window.open(port[3], '_blank', 'noopener');
+  toast(document.documentElement.dataset.clarogoExt ? `Revisando la deuda en ${port[1]}. Si aparece "No soy un robot", resuélvelo.` : `RUT copiado. Pégalo en ${port[1]} con Ctrl+V.`);
+}
+window.addEventListener('message', e => {
+  if (e.source !== window || !e.data || e.data.tipo !== 'clarogo-deuda-res') return;
+  const r = CT.find(x => x.id === e.data.id); if (!r) return;
+  const h = new Date(e.data.ts || Date.now());
+  r.deuda = `${String(e.data.texto || '').slice(0, 80)} (${String(h.getDate()).padStart(2, '0')}-${String(h.getMonth() + 1).padStart(2, '0')} ${String(h.getHours()).padStart(2, '0')}:${String(h.getMinutes()).padStart(2, '0')})`;
+  r.upd = Date.now(); ctGuardar(); ctPinta();
+  toast((e.data.deuda ? '⚠️ ' : '✅ ') + (r.nombre ? r.nombre + ': ' : '') + e.data.texto);
+});
 function ctFichaHTML(r) {
   const campo = ([k, l, ph]) => {
     let inp;
@@ -2535,7 +2566,7 @@ function ctFichaHTML(r) {
   };
   return `<tr class="ficha" data-id="${r.id}"><td colspan="11">${FICHA.map(([t, cs]) => t === 'Equipo'
       ? `<div class="fi-t fi-eq">Equipo <label class="fi-sin"><input type="checkbox" data-k="sineq"${r.sineq ? ' checked' : ''}> Sin equipo</label><button type="button" class="btn sm" data-eqpegar${r.sineq ? ' disabled' : ''}>📋 Pegar equipo del Stock</button></div><div class="fi-g${r.sineq ? ' fi-off' : ''}">${cs.map(campo).join('')}</div>`
-      : `<div class="fi-t">${t}</div><div class="fi-g">${cs.map(campo).join('')}</div>`).join('')}
+      : `<div class="fi-t">${t}</div><div class="fi-g">${cs.map(campo).join('')}</div>${t === 'Cliente' ? deudaBarra(r) : ''}`).join('')}
     <div class="fi-t">Observaciones</div><div class="fi-obs"><div class="fi-chips">${OBS_RAPIDAS.map(o => `<button type="button" data-obs="${esc(o)}">+ ${esc(o)}</button>`).join('')}</div><textarea data-k="notas" rows="3" placeholder="Pega o escribe aquí todo lo que conversaste con el cliente">${esc(r.notas || '')}</textarea></div>
     <div class="fi-pie"><small class="dim">Todo se guarda solo, sea venta o no.</small><span><button type="button" class="btn sm" data-ct="copiar">📋 Copiar datos para WhatsApp</button><button type="button" class="btn sm red" data-ct="script">▶ Pasar al Script de Cierre</button><button type="button" class="btn sm" data-ct="ficha">Cerrar ficha ▴</button></span></div></td></tr>`;
 }
@@ -3164,6 +3195,7 @@ function initControl() {
   $('#ct-nueva').onclick = () => ctAgregar({});
   initColumnas();
   initNotaZoom();
+  $('#ct-body').addEventListener('click', e => { const b = e.target.closest('[data-deuda]'); if (b) deudaRevisar(b.closest('tr').dataset.id, b.dataset.deuda); });
   $('#eq-procesar').onclick = () => { const t = $('#eq-texto').value; $('#dlg-equipo').close(); ctPonerEquipo(eqFila, t); };
   $('#ct-vacio').addEventListener('click', e => { const b = e.target.closest('[data-ver]'); if (!b) return; $('#ct-periodo').value = b.dataset.ver; $('#ct-rango').hidden = true; ctPinta(); });
   $('#ct-excel').onclick = ctExcel;

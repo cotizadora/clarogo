@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 17-11-2026: revisar deuda desde Mi Planilla (extensión 1.14.0)
+
+- En la ficha del cliente, bajo "Cliente", hay botones "¿Tiene deuda?" de Claro, Entel, Movistar y WOM: copian el RUT y abren el portal de pago de esa compañía.
+- Extensión 1.14.0 (deuda.js): escribe el RUT en el portal, presiona el botón y lee el resultado; muestra un aviso y lo devuelve a la fila (campo "deuda"). El captcha de cada portal lo resuelve el ejecutivo. Política de privacidad actualizada.
+
 ### 17-11-2026: accesos para revisar deuda en otras compañías
 
 - Nuevo grupo de enlaces "¿Tiene deuda? Pago de cuentas con RUT" en el Inicio y en Enlaces: Claro (Pago Express), Entel, Movistar y WOM, con sus íconos en logos/. Los enlaces salen de los sitios oficiales de cada compañía (17-11-2026).
