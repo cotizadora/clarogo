@@ -1,8 +1,10 @@
-// Puente entre ClaroGo! y la extensión: avisa a la página que la extensión está instalada
-// y le permite pedir que se abra WhatsApp Web en la pestaña que ya esté abierta.
+// Puente entre ClaroGo! y la extensión:
+// 1. Avisa a la página que la extensión está instalada.
+// 2. Le permite pedir que se abra WhatsApp Web en la pestaña que ya esté abierta.
+// 3. Guarda en la extensión el nombre y el mensaje del ejecutivo, para usarlos aunque ClaroGo! no responda.
 document.documentElement.dataset.clarogoExt = '1';
 window.addEventListener('message', e => {
-  if (e.source !== window || !e.data || e.data.tipo !== 'clarogo-wa') return;
-  if (!/^https:\/\/web\.whatsapp\.com\/send\?/.test(String(e.data.url || ''))) return;
-  chrome.runtime.sendMessage({ tipo: 'wa', url: e.data.url });
+  if (e.source !== window || !e.data) return;
+  if (e.data.tipo === 'clarogo-wa' && /^https:\/\/web\.whatsapp\.com\/send\?/.test(String(e.data.url || ''))) chrome.runtime.sendMessage({ tipo: 'wa', url: e.data.url });
+  if (e.data.tipo === 'clarogo-perfil') chrome.storage.local.set({ nombre: String(e.data.nombre || '').slice(0, 80), plantilla: String(e.data.plantilla || '').slice(0, 2000) });
 });

@@ -123,7 +123,15 @@ async function iniciar() {
 /* ── WhatsApp Web con la oferta ───────────────────────────────────── */
 // Los mensajes de cada plan vienen de ClaroGo! (así siempre están al día). Si no hay ClaroGo! abierto, queda el saludo.
 let MENSAJES = [], TEL = '';
-const PRESENTACION = { id: '', titulo: 'Solo la presentación (abre ClaroGo! para ver los planes)', texto: 'Hola, muy buen día. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.' };
+// Presentación de respaldo: usa el nombre y el mensaje guardados desde ClaroGo! y el saludo según la hora
+const NOMBRE_DEFECTO = 'Eduardo Pérez';
+const PLANTILLA_DEFECTO = 'Hola, {saludo}, mi nombre es {nombre}. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.';
+const saludoHora = () => { const h = new Date().getHours(); return h >= 5 && h < 12 ? 'muy buenos días' : h >= 12 && h < 20 ? 'muy buenas tardes' : 'muy buenas noches'; };
+async function presentacionGuardada() {
+  let p = {}; try { p = await chrome.storage.local.get(['nombre', 'plantilla']); } catch (e) {}
+  const txt = (p.plantilla || PLANTILLA_DEFECTO).replace(/\{saludo\}/gi, saludoHora()).replace(/\{nombre\}/gi, p.nombre || NOMBRE_DEFECTO);
+  return txt.charAt(0).toUpperCase() + txt.slice(1);
+}
 function pintarPlanes() {
   const pref = MENSAJES.findIndex(m => m.id === 'v500');   // por defecto el Plan 500, el más barato
   $('#wa-plan').innerHTML = MENSAJES.map((m, i) => `<option value="${i}"${i === (pref < 0 ? 0 : pref) ? ' selected' : ''}></option>`).join('');
@@ -132,7 +140,7 @@ function pintarPlanes() {
 async function prepararWhatsApp(tel, nombre) {
   TEL = tel.replace(/\D/g, '');
   // El botón aparece de inmediato; los planes se completan si alguna pestaña de ClaroGo! responde
-  MENSAJES = [PRESENTACION]; pintarPlanes(); $('#wa').hidden = false;
+  MENSAJES = [{ id: '', titulo: 'Solo la presentación (abre ClaroGo! para ver los planes)', texto: await presentacionGuardada() }]; pintarPlanes(); $('#wa').hidden = false;
   try {
     const tabs = (await chrome.tabs.query({ url: PLANILLA + '*' })).filter(t => !t.discarded).sort((a, b) => a.id - b.id);
     for (const t of tabs) {
@@ -147,6 +155,8 @@ $('#wa-abrir').onclick = async () => {
   const m = MENSAJES[+$('#wa-plan').value] || MENSAJES[0];
   const url = `https://web.whatsapp.com/send?phone=56${TEL}&text=${encodeURIComponent(m.texto)}`;
   $('#wa-abrir').disabled = true;
+  // El mensaje también queda copiado: si no aparece escrito en WhatsApp, se pega con Ctrl+V
+  try { await navigator.clipboard.writeText(m.texto); } catch (e) {}
   // Primero el modo rápido del proceso de fondo (abre el chat sin recargar WhatsApp Web).
   // Si el proceso de fondo no responde, se abre desde aquí mismo como antes.
   try { const r = await chrome.runtime.sendMessage({ tipo: 'wa', url }); if (r) { window.close(); return; } } catch (e) {}

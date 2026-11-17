@@ -50,6 +50,12 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: mi nombre y mi mensaje (extensión 1.8)
+
+- Inicio: botón "👤 Nombre · Mi mensaje" para que cada ejecutivo ponga su nombre (por defecto Eduardo Pérez) y personalice su presentación, con vista previa. {saludo} cambia solo según la hora (muy buenos días, muy buenas tardes, muy buenas noches) y {nombre} es su nombre. Se usa en WhatsApp, la planilla, el Script y la extensión.
+- Al abrir WhatsApp (planilla y extensión) el mensaje completo, presentación y plan, también queda copiado para pegarlo con Ctrl+V.
+- Extensión 1.8: guarda el nombre y el mensaje del ejecutivo (permiso storage) para usarlos aunque ClaroGo! no responda. El modo rápido de WhatsApp también se usa desde la planilla cuando la extensión está instalada.
+
 ### 17-11-2026: extensión 1.7.1, sin esperas trabadas
 
 - Ninguna pestaña puede dejar la ventanita esperando: cada consulta tiene un límite de tiempo y se ignoran las pestañas dormidas de Edge. El botón de WhatsApp aparece de inmediato (con la presentación) y se completan los planes si ClaroGo! responde. Si la planilla no responde, Enviar a Mi Planilla abre una pestaña nueva.
