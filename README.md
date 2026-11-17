@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 17-11-2026: Oferta PNG solo para Persona Natural con Giro
+
+- Se quita la oferta PYME "RUT mayor a 50 millones" (otro segmento, pendiente de confirmar).
+- Oferta PNG Móvil: 500 GB $7.555 monolínea y $6.716 multilínea; 800 GB $8.733 y $7.423; 1000 GB $9.071 y $8.315 (por línea, más IVA, 12 meses de descuento; multilínea desde 2 líneas; full $9.990, $12.990 y $17.990). Fuente: láminas "Oferta PNG Móvil" enviadas por Eduardo el 17-11-2026.
+- La tabla de precios es la lámina oficial (ofertas/png-tabla.webp). Aviso para validar al cliente en el SII y pregunta frecuente actualizada.
+
 ### 17-11-2026: columna Deuda y RUT desde la extensión (1.15.0)
 
 - Compañía ahora es un menú (Claro, Entel, Movistar, WOM, VTR, Virgin, Otra). Parte con la compañía que trae Genesys.
