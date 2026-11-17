@@ -911,7 +911,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     <label for="pf-telefono" style="margin-top:10px">Tu teléfono (va en la firma)</label><input id="pf-telefono" placeholder="+56 9 1234 5678" autocomplete="off">
     <label for="pf-plantilla" style="margin-top:10px">Tu mensaje de presentación</label>
     <textarea id="pf-plantilla" rows="4"></textarea>
-    <p class="dim" style="font-size:.76rem;margin:4px 0 0">Escribe <b>{saludo}</b> donde va "muy buenos días", "muy buenas tardes" o "muy buenas noches" (cambia solo según la hora) , <b>{nombre}</b> donde va tu nombre, <b>{cliente}</b> donde va el primer nombre del cliente (si la planilla no lo tiene, se omite solo) y <b>{compania}</b> para su compañía de origen. Después del mensaje se agrega el plan que elijas.</p>
+    <p class="dim" style="font-size:.76rem;margin:4px 0 0">Escribe <b>{saludo}</b> donde va "muy buenos días", "muy buenas tardes" o "muy buenas noches" (cambia solo según la hora) , <b>{nombre}</b> donde va tu nombre, <b>{trato}</b> donde va ", estimada María" o ", estimado Juan" (solo desde la planilla y si se sabe el nombre; si no, se omite), <b>{cliente}</b> donde va el primer nombre del cliente (si la planilla no lo tiene, se omite solo) y <b>{compania}</b> para su compañía de origen. Después del mensaje se agrega el plan que elijas.</p>
     <label for="pf-firma" style="margin-top:10px">Tu firma (va al final, después de la oferta)</label>
     <textarea id="pf-firma" rows="5"></textarea>
     <p class="dim" style="font-size:.76rem;margin:4px 0 0">En la firma, <b>{nombre}</b> es tu nombre y <b>{telefono}</b> tu teléfono. Lo que va entre asteriscos (*Claro Chile*) sale en negrita en WhatsApp.</p>
@@ -924,7 +924,8 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <div class="d-head"><div><h2>Enviar oferta por WhatsApp</h2><p id="wa-para"></p></div><button class="d-x" data-close>✕</button></div>
   <div class="d-body">
     <div class="form2"><div><label for="wa-plan">Plan que quieres ofrecer</label><select id="wa-plan"></select></div><div><label for="wa-tel">Teléfono</label><input id="wa-tel" placeholder="9XXXXXXXX"></div>
-    <div style="grid-column:1/-1"><label for="wa-agente">Tu nombre (va en la presentación)</label><input id="wa-agente" placeholder="Ej: Eduardo Pérez" autocomplete="off"></div></div>
+    <div><label for="wa-genero">Trato del cliente</label><select id="wa-genero"><option value="">Automático por el nombre</option><option value="F">Mujer: estimada</option><option value="M">Hombre: estimado</option><option value="N">Sin estimado(a)</option></select></div>
+    <div><label for="wa-agente">Tu nombre (va en la presentación)</label><input id="wa-agente" placeholder="Ej: Eduardo Pérez" autocomplete="off"></div></div>
     <label for="wa-texto" style="margin-top:10px">Mensaje (puedes editarlo antes de abrir WhatsApp)</label>
     <textarea id="wa-texto" rows="12"></textarea>
     <label class="chk" style="margin-top:8px"><input type="checkbox" id="wa-lamina"> 🖼️ Adjuntar la lámina del plan</label>
@@ -2462,7 +2463,7 @@ function leerGenesys(txt) {
 const MEDIOS = ['correo electrónico', 'WhatsApp', 'SMS'];
 const TVENTA = [['port', 'PortIn Post-Post'], ['portpre', 'PortIn Pre-Post'], ['migra', 'Migración'], ['ln', 'Línea nueva']];
 const FICHA = [
-  ['Cliente', [['nac', 'Fecha de nacimiento', 'DD-MM-AAAA'], ['mail', 'Correo electrónico', 'correo@ejemplo.com'], ['fono', 'Número a portar', '9XXXXXXXX'], ['contacto', 'Teléfono de contacto', '9XXXXXXXX'], ['origen', 'Compañía de origen', 'Ej: Movistar']]],
+  ['Cliente', [['nac', 'Fecha de nacimiento', 'DD-MM-AAAA'], ['mail', 'Correo electrónico', 'correo@ejemplo.com'], ['fono', 'Número a portar', '9XXXXXXXX'], ['contacto', 'Teléfono de contacto', '9XXXXXXXX'], ['origen', 'Compañía de origen', 'Ej: Movistar'], ['genero', 'Trato en WhatsApp', 'GENERO']]],
   ['Venta', [['medio', 'Validación enviada por', 'MEDIOS'], ['tventa', 'Tipo de venta', 'TVENTA'], ['adic', 'Líneas adicionales', '9 1111 1111, 9 2222 2222'], ['oferta', 'Oferta de la campaña (Genesys)', '']]],
   ['Equipo', [['eq', 'Equipo', 'Ej: Samsung A17 5G 128GB'], ['eqsku', 'SKU', 'Ej: 70016839'], ['eqtotal', 'Monto total', '$0'], ['eqpie', 'Pago inicial', '$0'], ['eqforma', 'Forma de pago', 'Ej: 18 cuotas de $22.000']]],
   ['Despacho', [['direccion', 'Dirección', 'Ej: Las Zinnias 5790 Huechuraba, Región Metropolitana'], ['ref', 'Referencia o entrecalles', ''], ['eta', 'Tiempo de despacho', '']]]
@@ -2473,6 +2474,7 @@ function ctFichaHTML(r) {
   const campo = ([k, l, ph]) => {
     let inp;
     if (ph === 'MEDIOS') inp = `<select data-k="${k}"><option value="">Elegir</option>${MEDIOS.map(x => `<option${r[k] === x ? ' selected' : ''}>${x}</option>`).join('')}</select>`;
+    else if (ph === 'GENERO') { const auto = generoPorNombre(r.nombre); inp = `<select data-k="${k}"><option value="">Automático${auto ? ` (${auto === 'F' ? 'estimada' : 'estimado'})` : r.nombre ? ' (solo el nombre)' : ''}</option><option value="F"${r[k] === 'F' ? ' selected' : ''}>Mujer: estimada</option><option value="M"${r[k] === 'M' ? ' selected' : ''}>Hombre: estimado</option><option value="N"${r[k] === 'N' ? ' selected' : ''}>Sin estimado(a), solo el nombre</option></select>`; }
     else if (ph === 'TVENTA') inp = `<select data-k="${k}"><option value="">Elegir</option>${TVENTA.map(([v, t]) => `<option value="${v}"${r[k] === v ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
     else inp = `<input data-k="${k}" value="${esc(k === 'direccion' ? dirTexto(r) : (r[k] || ''))}" placeholder="${esc(ph)}"${k === 'region' ? ' list="sc-regiones"' : k === 'eta' ? ' list="sc-etas"' : ''}>`;
     return `<div${k === 'direccion' ? ' style="grid-column:1/-1"' : ''}><label>${l}</label>${inp}</div>`;
@@ -2498,10 +2500,37 @@ const WA_DEFECTO = 'v500';
 const NOMBRE_DEFECTO = 'Eduardo Pérez';
 const TELEFONO_DEFECTO = '+56 9 9796 6724';
 // Mensaje corporativo: siempre "desde Claro Chile", con el nombre del ejecutivo y la compañía en negrita (*...* en WhatsApp)
-const PLANTILLA_DEFECTO = '{saludo}, estimado(a) {cliente}. Mi nombre es *{nombre}*, desde *Claro Chile*. Hablamos hace poco telefónicamente y, tal como acordamos, le envío la información sobre la propuesta.';
+const PLANTILLA_DEFECTO = 'Hola, {saludo}{trato}. Mi nombre es *{nombre}*, desde *Claro Chile*. Hablamos hace poco telefónicamente y, tal como acordamos, le envío la información sobre la propuesta.';
 const FIRMA_DEFECTO = 'Quedo a su disposición para cualquier consulta.\n\nSaludos cordiales,\n*{nombre}*\nEjecutivo(a) de ventas · *Claro Chile*\n📱 {telefono}';
 // Mensajes por defecto anteriores: si alguien los tenía guardados, pasan solos al mensaje corporativo
-const PLANTILLAS_ANTERIORES = ['Hola, {saludo}, mi nombre es {nombre}. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.', 'Hola {cliente}, {saludo}, mi nombre es {nombre}. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.'];
+const PLANTILLAS_ANTERIORES = ['{saludo}, estimado(a) {cliente}. Mi nombre es *{nombre}*, desde *Claro Chile*. Hablamos hace poco telefónicamente y, tal como acordamos, le envío la información sobre la propuesta.', 'Hola, {saludo}, mi nombre es {nombre}. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.', 'Hola {cliente}, {saludo}, mi nombre es {nombre}. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.'];
+/* ── Género por nombre (solo en la planilla) ────────────────────────
+   Diccionario de nombres frecuentes en Chile, Latinoamérica, España y otros países.
+   Si el nombre no está, se usa la terminación (-a mujer, -o hombre) salvo excepciones.
+   Si no se puede saber, no se adivina: el saludo usa solo el nombre, sin "estimado" ni "estimada". */
+const NOMBRES_H = new Set(('aaron abdul abel abelardo abraham adan adolfo adrian agustin ahmed aimar alain alan alano albert alberto aldo alejandro alejo alessandro alex alexander alexis alfonso alfredo ali alonso alvaro amador amaro ambrosio amir anderson andre andres andrew angel angelo anibal anselmo anthony antonio apolinario aquiles archibaldo ariel aristides armando arnaldo arnold arsenio arturo augusto aurelio axel baltasar bartolome basilio bastian bautista ben benicio benito benjamin bernardo bladimir blas boris braulio brayan brian bruno camilo carlos carmelo casimiro cayetano cesar charles christian christopher cipriano ciro claudio clemente constantino cristian cristobal cristofer cristopher dagoberto damian dan daniel dante dario david demian denis diego dimas dmitri domingo donato dylan edgar edgardo edmundo eduardo edward edwin efrain eladio elias eliseo elmer elvis emanuel emerson emiliano emilio enrique eric erick erik ernesto esteban eugenio eusebio evaristo ezequiel fabian fabio facundo fausto federico felipe felix fermin fernando fidel flavio florencio francisco franco frank franklin fredy gabriel gael gaspar gaston genaro george gerardo german gilberto gino giovanni giuseppe gonzalo gregorio gualberto guido guillermo gustavo hans harold harry hassan hector henry heriberto hernan hiroshi horacio hugo humberto ian ignacio igor isaac isaias ismael israel ivan jack jacob jacobo jaime james jason javier jean jeremias jesus jhon joaquin joel john johnny jonas jonathan jordan jorge jose josue juan julian julio justo kenji kevin klaus lautaro leandro leon leonardo leonel leopoldo liam lino lisandro lorenzo louis luca lucas luciano lucio luis luka lukas manuel marcelo marcial marco marcos mariano mario martin mateo matias matthew mauricio maximiliano maximo michael miguel milton misael mohamed mohammed moises muhammad nahuel napoleon narciso natalio nathan nelson nestor nicanor nicola nicolas noah noe norberto octavio olegario oliver omar orlando oscar osvaldo otto pablo pascual patricio patrick paul pedro peter pierre rafael rahul raimundo raj ramiro ramon raul reinaldo renato rene ricardo richard robert roberto robinson rodolfo rodrigo rogelio rolando roman romeo ronald ruben rufino ryan salomon salvador samuel santiago santino saul sebastian segundo sergei sergio silvio simon stefan steven teodoro thiago tiago timoteo tobias tomas tristan ulises uriel valentin valentino vicente victor vladimir waldo walter wilfredo william wilson xavier yerko yonatan yuri zacarias').split(' '));
+const NOMBRES_M = new Set(('abigail ada adela adelaida adriana agueda agustina aida aisha alba alejandra alexandra alicia alma alondra amalia amanda amelia amparo ana anabel anastasia andrea angela angelica angelina anita anna antonella antonia araceli ariadna astrid aurora azucena barbara beatriz belen benedicta berenice bernarda bernardita betsabe blanca brenda brigida camila camille candelaria carla carlota carmen carolina casandra catalina catherine cecilia celeste celia charlotte chiara chloe cinthia clara claudia clemencia concepcion constanza consuelo cristina dafne daniela debora delfina delia denisse diana dolores dominga dominique dora edith elena eliana elisa elizabeth eloisa elsa elvira emilia emily emma erika esmeralda esperanza estefania estela ester esther eugenia eva evelyn fabiola fatima fernanda filomena fiorella flor flora florencia francesca francisca gabriela genesis georgina gilda gina giovanna gisela giulia gladys gloria grace graciela guadalupe hannah helena hilda ignacia ines ingrid irene iris irma isabel isabella isidora itzel ivonne jacqueline janet janeth javiera jazmin jeannette jennifer jesica jessica jimena joana joaquina johanna josefa josefina juana judith julia juliana julieta karen karina karla katherine katia kimberly laura leila leonor leticia lia lidia liliana lina linda lisa lizbeth lorena lourdes lucia luciana lucy luisa luz macarena magdalena maite manuela marcela margarita maria mariana maribel maricel mariela marina marisol marjorie marta martina mary matilde maura mayra megan melany melisa mercedes michelle micaela milagros mireya miriam monica monserrat nadia nancy natalia natasha nataly nelly nicole noelia noemi nora norma olga olivia pamela paola patricia paula paulina pia pilar priscila rachel rafaela raquel rebeca regina renata rita rocio romina rosa rosalia rosario rossana ruth sabrina sakura salome samanta sandra sara sarah scarlett selena silvia simona socorro sofia sol soledad sonia sophia sophie stefania susana svetlana tamara tania teresa trinidad valentina valeria vanesa vanessa veronica victoria vilma violeta virginia viviana wendy ximena yaneth yanet yasmin yasna yesenia yolanda yuki zoe zulema').split(' '));
+// Terminan en -a pero son de hombre, o en -o y son de mujer
+const EXC_H = new Set('luca nicola josua joshua borja'.split(' '));
+const EXC_M = new Set('rocio consuelo rosario amparo socorro'.split(' '));
+const normNombre = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-zñ]/g, '');
+function generoPorNombre(nombre) {
+  const n = normNombre(String(nombre || '').trim().split(/\s+/)[0]);
+  if (n.length < 2) return '';
+  if (NOMBRES_M.has(n) || EXC_M.has(n)) return 'F';
+  if (NOMBRES_H.has(n) || EXC_H.has(n)) return 'M';
+  if (/a$/.test(n)) return 'F';
+  if (/o$/.test(n)) return 'M';
+  return '';
+}
+
+// Trato del cliente: manual en su ficha (genero: F, M o N = sin estimado) o automático por el nombre
+const generoDe = cli => ['F', 'M', 'N'].includes(cli.genero) ? cli.genero : generoPorNombre(cli.nombre);
+function tratoTexto(cli = {}) {
+  const pn = primerNombre(cli.nombre); if (!pn) return '';
+  const g = generoDe(cli);
+  return g === 'F' ? `, estimada ${pn}` : g === 'M' ? `, estimado ${pn}` : `, ${pn}`;
+}
 const agenteTelefono = () => { try { return (localStorage.getItem('clarogo_telefono') || '').trim() || TELEFONO_DEFECTO; } catch (e) { return TELEFONO_DEFECTO; } };
 const firmaMsg = () => { try { return (localStorage.getItem('clarogo_firma') || '').trim() || FIRMA_DEFECTO; } catch (e) { return FIRMA_DEFECTO; } };
 const firmaTexto = (firma, nombre, tel) => (firma || firmaMsg()).replace(/\{nombre\}/gi, nombre || agenteNombre()).replace(/\{telefono\}/gi, tel || agenteTelefono());
@@ -2516,6 +2545,7 @@ const mayusInicial = t => t.charAt(0).toUpperCase() + t.slice(1);
 const presentacion = (plantilla, nombre, cli = {}) => {
   const pn = primerNombre(cli.nombre);
   let t = (plantilla || plantillaMsg()).replace(/\{saludo\}/gi, saludoHora()).replace(/\{nombre\}/gi, nombre || agenteNombre()).replace(/\{telefono\}/gi, agenteTelefono());
+  t = t.replace(/\{trato\}/gi, tratoTexto(cli));
   t = pn ? t.replace(/\{cliente\}/gi, pn) : t.replace(/\s*\{cliente\}\s*(?=[,.!?])/gi, '').replace(/\s*\{cliente\}/gi, '');
   t = cli.origen ? t.replace(/\{compania\}/gi, cli.origen) : t.replace(/\s*\{compania\}/gi, '');
   return mayusInicial(t.replace(/ {2,}/g, ' '));
@@ -2563,7 +2593,7 @@ const pngDeData = d => new Promise(res => { if (/^data:image\/png/.test(d)) retu
 const perfilPintaBoton = () => { const b = $('#perfil-btn'); if (b) b.textContent = '👤 ' + agenteNombre() + ' · Mi mensaje'; };
 function initPerfil() {
   perfilPintaBoton();
-  const vista = () => { const p = $('#pf-plantilla').value.trim() || PLANTILLA_DEFECTO, n = $('#pf-nombre').value.trim() || NOMBRE_DEFECTO, t = $('#pf-telefono').value.trim() || TELEFONO_DEFECTO, fi = $('#pf-firma').value.trim() || FIRMA_DEFECTO; $('#pf-vista').textContent = presentacion(p, n, { nombre: 'JUAN PÉREZ', origen: 'Entel' }) + '\n\n[detalle del plan elegido]\n\n' + firmaTexto(fi, n, t); };
+  const vista = () => { const p = $('#pf-plantilla').value.trim() || PLANTILLA_DEFECTO, n = $('#pf-nombre').value.trim() || NOMBRE_DEFECTO, t = $('#pf-telefono').value.trim() || TELEFONO_DEFECTO, fi = $('#pf-firma').value.trim() || FIRMA_DEFECTO; $('#pf-vista').textContent = 'Desde la planilla, con el nombre del cliente:\n' + presentacion(p, n, { nombre: 'MARÍA SOTO' }) + '\n' + presentacion(p, n, { nombre: 'JUAN PÉREZ' }) + '\n\nSin nombre (siempre en la extensión):\n' + presentacion(p, n) + '\n\n[detalle del plan elegido]\n\n' + firmaTexto(fi, n, t); };
   $('#perfil-btn').onclick = () => { $('#pf-nombre').value = agenteNombre(); $('#pf-telefono').value = agenteTelefono(); $('#pf-plantilla').value = plantillaMsg(); $('#pf-firma').value = firmaMsg(); vista(); abrir('dlg-perfil'); };
   ['#pf-nombre', '#pf-telefono', '#pf-plantilla', '#pf-firma'].forEach(id => $(id).addEventListener('input', vista));
   $('#pf-defecto').onclick = () => { $('#pf-plantilla').value = PLANTILLA_DEFECTO; $('#pf-firma').value = FIRMA_DEFECTO; vista(); };
@@ -2589,6 +2619,7 @@ function waDialogo(r) {
   $('#wa-plan').innerHTML = PLANES_WA().map(p => `<option value="${p.id}"${p.id === WA_DEFECTO ? ' selected' : ''}>${esc(p.title)}</option>`).join('') + '<option value="">Solo la presentación, sin plan</option>';
   $('#wa-tel').value = telLimpio(r.telefono || r.contacto || '');
   $('#wa-agente').value = agenteNombre();
+  $('#wa-genero').value = ['F', 'M', 'N'].includes(r.genero) ? r.genero : '';
   $('#wa-para').textContent = r.nombre || r.telefono || 'Cliente';
   $('#wa-texto').value = waTexto(WA_DEFECTO, r);
   $('#wa-lamina').checked = waAdjuntar();
@@ -2599,6 +2630,7 @@ function initWhatsApp() {
   const filaWa = () => CT.find(x => x.id === waFila) || {};
   $('#wa-tel').addEventListener('input', e => { if (e.target.value !== telLimpio(e.target.value)) e.target.value = telLimpio(e.target.value); });
   $('#wa-plan').addEventListener('change', () => { $('#wa-texto').value = waTexto($('#wa-plan').value, filaWa()); });
+  $('#wa-genero').addEventListener('change', e => { const r = CT.find(x => x.id === waFila); if (r) { r.genero = e.target.value; r.upd = Date.now(); ctGuardar(); } $('#wa-texto').value = waTexto($('#wa-plan').value, filaWa()); });
   $('#wa-agente').addEventListener('input', e => { perfilGuardar(e.target.value || NOMBRE_DEFECTO, plantillaMsg()); $('#wa-texto').value = waTexto($('#wa-plan').value, filaWa()); });
   $('#wa-lamina').addEventListener('change', e => { try { localStorage.setItem('clarogo_adjuntar', e.target.checked ? '1' : '0'); } catch (x) {} });
   $('#wa-abrir').onclick = async () => {
@@ -2754,7 +2786,8 @@ function initAgenda() {
 window.clarogoMensajesWA = (nombre, tel) => {
   const d = String(tel || '').replace(/\D/g, '').slice(-9);
   const fila = d ? CT.filter(r => !r.borrado && String(r.telefono || '').replace(/\D/g, '').slice(-9) === d).sort((a, b) => (b.upd || 0) - (a.upd || 0))[0] : null;
-  const cli = { nombre: (fila && fila.nombre) || nombre || '', origen: fila && fila.origen || '' };
+  // La extensión no tiene los datos del cliente: el mensaje va sin nombre ni género (saludo cordial)
+  const cli = {};
   return PLANES_WA().map(p => ({ id: p.id, titulo: p.title, texto: waTexto(p.id, cli) })).concat([{ id: '', titulo: 'Solo la presentación, sin plan', texto: waTexto('', cli) }]);
 };
 

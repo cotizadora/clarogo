@@ -126,14 +126,16 @@ let MENSAJES = [], TEL = '', IMGS = {};
 // Respaldo del mensaje corporativo: usa el nombre, el teléfono, el mensaje y la firma guardados desde ClaroGo!
 const NOMBRE_DEFECTO = 'Eduardo Pérez';
 const TELEFONO_DEFECTO = '+56 9 9796 6724';
-const PLANTILLA_DEFECTO = '{saludo}, estimado(a) {cliente}. Mi nombre es *{nombre}*, desde *Claro Chile*. Hablamos hace poco telefónicamente y, tal como acordamos, le envío la información sobre la propuesta.';
+const PLANTILLA_DEFECTO = 'Hola, {saludo}{trato}. Mi nombre es *{nombre}*, desde *Claro Chile*. Hablamos hace poco telefónicamente y, tal como acordamos, le envío la información sobre la propuesta.';
 const FIRMA_DEFECTO = 'Quedo a su disposición para cualquier consulta.\n\nSaludos cordiales,\n*{nombre}*\nEjecutivo(a) de ventas · *Claro Chile*\n📱 {telefono}';
 const saludoHora = () => { const h = new Date().getHours(); return h >= 5 && h < 12 ? 'muy buenos días' : h >= 12 && h < 20 ? 'muy buenas tardes' : 'muy buenas noches'; };
 async function piezasGuardadas(cliente) {
   let p = {}; try { p = await chrome.storage.local.get(['nombre', 'plantilla', 'firma', 'telefono']); } catch (e) {}
   const nom = p.nombre || NOMBRE_DEFECTO, tel = p.telefono || TELEFONO_DEFECTO;
-  const pn = (() => { const x = String(cliente || '').trim().split(/\s+/)[0] || ''; return x.length > 1 ? x.charAt(0).toUpperCase() + x.slice(1).toLowerCase() : ''; })();
+  // La extensión no tiene los datos del cliente: nunca pone su nombre ni un "estimado" o "estimada"
+  const pn = '';
   let txt = (p.plantilla || PLANTILLA_DEFECTO).replace(/\{saludo\}/gi, saludoHora()).replace(/\{nombre\}/gi, nom).replace(/\{telefono\}/gi, tel);
+  txt = txt.replace(/\{trato\}/gi, '');
   txt = pn ? txt.replace(/\{cliente\}/gi, pn) : txt.replace(/\s*\{cliente\}\s*(?=[,.!?])/gi, '').replace(/\s*\{cliente\}/gi, '');
   txt = txt.replace(/\s*\{compania\}/gi, '').replace(/ {2,}/g, ' ');
   const firma = (p.firma || FIRMA_DEFECTO).replace(/\{nombre\}/gi, nom).replace(/\{telefono\}/gi, tel);

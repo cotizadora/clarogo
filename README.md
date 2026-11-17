@@ -50,6 +50,12 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: trato según el género (extensión 1.12)
+
+- Sin nombre del cliente (y siempre en la extensión) el saludo es cordial y sin "estimado(a)": "Hola, muy buenas tardes. Mi nombre es..."
+- Desde la planilla, con el nombre del cliente: "estimada María" o "estimado Juan", según un diccionario de unos 600 nombres frecuentes (Chile, Latinoamérica, España y otros países) y, si no está, la terminación del nombre (-a, -o). Si no se puede saber, solo el nombre ("Hola, muy buenas tardes, Kyrie.").
+- Trato manual por cliente en la ficha y en el cuadro de WhatsApp: Automático, Mujer, Hombre o Sin estimado(a). Nueva marca {trato} para el mensaje personal.
+
 ### 17-11-2026: mensaje corporativo y lámina adjunta (extensión 1.11)
 
 - Mensaje corporativo para clientes: saludo según la hora, "estimado(a)" con el nombre del cliente si se sabe, nombre del ejecutivo y *Claro Chile* en negrita, oferta del plan y firma con nombre, cargo, *Claro Chile* y teléfono (+56 9 9796 6724 por defecto). En Inicio > Mi mensaje se cambian nombre, teléfono, presentación y firma.
