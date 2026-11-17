@@ -50,6 +50,12 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: botón Ficha, sonidos y trucos
+
+- Mi Planilla: el botón de la ficha ahora dice "▾ Ficha", es más ancho y azul, con una ola de luz que recorre las filas una tras otra para que se note que hace algo. En celular muestra solo la flecha.
+- Sonido muy suave al pasar el mouse por botones y opciones que se pueden presionar. Se activa después del primer clic en la página (así lo exige el navegador) y se apaga o prende en el pie de página ("Sonidos: sí/no").
+- Inicio: una línea en cursiva con un truco distinto en cada visita (22 trucos sobre las distintas secciones). Clic en ella para ver otro.
+
 ### 17-11-2026: columna Nombre con ancho fijo y hasta dos líneas
 
 - La columna Nombre parte con 150 px (antes quedaba casi sin ancho en algunas pantallas) y Notas toma el espacio que sobra. El nombre se ve en hasta dos líneas; el completo aparece al pasar el mouse o al hacer clic en él.

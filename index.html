@@ -344,6 +344,9 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .perfil-btn{border:1px solid currentColor;background:transparent;color:inherit;border-radius:999px;padding:1px 10px;font:inherit;font-size:.95em;cursor:pointer;opacity:.95}
 .perfil-btn:hover{opacity:1;background:rgba(255,255,255,.15)}
 #pf-vista{white-space:pre-wrap;font:inherit;font-size:.84rem;background:#f1fbf4;border:1px solid #c8eed6;border-radius:10px;padding:10px;margin:6px 0 0}
+.hero p.truco{font-style:italic;font-size:clamp(.68rem,1.6vh,.84rem);opacity:.9;cursor:pointer;margin-top:clamp(2px,.8vh,8px);max-width:760px;margin-left:auto;margin-right:auto;animation:trucoEntra .6s ease-out}
+.hero p.truco b{font-style:normal}
+@keyframes trucoEntra{from{opacity:0;transform:translateY(-4px)}to{opacity:.9;transform:none}}
 .hero p{color:rgba(255,255,255,.8);font-size:clamp(.72rem,1.8vh,.9rem);margin-top:clamp(2px,1vh,10px)}
 .tag{color:#fff;border-color:rgba(255,255,255,.4);margin-bottom:clamp(4px,1.2vh,14px);font-size:.62rem}
 .tiles{flex:1;min-height:0;width:100%;max-width:980px;grid-template-columns:repeat(3,1fr);grid-auto-rows:minmax(0,1fr);gap:clamp(6px,1.2vh,12px)}
@@ -436,11 +439,11 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla .acc button:hover{background:#eef2f7}
 #ct-tabla .acc .go{color:#fff;background:var(--red);font-size:.7rem}
 #ct-tabla .acc .go:hover{background:var(--red-dk)}
-.c-n{width:46px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:94px}.c-tel{width:94px}.c-orig{width:76px}.c-tipo{width:126px}.c-plan{width:80px}.c-acc{width:282px}
+.c-n{width:46px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:94px}.c-tel{width:94px}.c-orig{width:76px}.c-tipo{width:126px}.c-plan{width:80px}.c-acc{width:320px}
 .c-nombre{width:150px}.c-notas{width:auto}
 @media (max-width:1500px){.c-notas{display:none}}
-@media (max-width:1100px){.c-hora,.c-plan{display:none}}
-@media (max-width:720px){#ct-tabla .tel-nom{display:block;font-size:.66rem;font-weight:700;line-height:1.2;padding:3px 4px 0;white-space:normal;word-break:break-word;color:var(--text)} #ct-tabla td.c-tel{white-space:normal;height:auto}.c-fecha,.c-notas,.c-rut,.c-nombre{display:none}.c-tel{width:auto}.c-orig{width:60px}.c-tipo{width:80px}.c-n{width:36px}.c-acc{width:128px} #ct-tabla .acc .gen-t{display:none} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
+@media (max-width:1100px){.c-hora,.c-plan{display:none} #ct-tabla .acc .gen-t{display:none} .c-acc{width:270px}}
+@media (max-width:720px){#ct-tabla .tel-nom{display:block;font-size:.66rem;font-weight:700;line-height:1.2;padding:3px 4px 0;white-space:normal;word-break:break-word;color:var(--text)} #ct-tabla td.c-tel{white-space:normal;height:auto}.c-fecha,.c-notas,.c-rut,.c-nombre{display:none}.c-tel{width:auto}.c-orig{width:60px}.c-tipo{width:80px}.c-n{width:36px}.c-acc{width:140px} #ct-tabla .acc .fic{padding:0 6px} #ct-tabla .acc .fic .fic-t{display:none} #ct-tabla .acc .gen-t{display:none} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
 #ct-resumen .chip b{margin-left:4px}
 .resp{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:.84rem}
 .resp .resp-b{display:flex;gap:6px;flex-wrap:wrap}
@@ -449,7 +452,12 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .ct-rango input{width:auto}
 #ct-tabla tr.borrado td input,#ct-tabla tr.borrado td select{text-decoration:line-through;color:#9aa0a6}
 /* Ficha ampliable del cliente: se abre bajo la fila para tomar todos los datos */
-#ct-tabla .acc .fic{font-size:.8rem;color:#1a56b8;font-weight:700}
+#ct-tabla .acc .fic{flex:0 0 auto;padding:0 8px;font-size:.72rem;color:#fff;font-weight:800;background:#1a56b8;letter-spacing:.02em;animation:fichaOla 3s ease-in-out infinite;animation-delay:calc(var(--i, 0) * .12s)}
+#ct-tabla .acc .fic:hover{background:#0f3f8f;animation:none}
+#ct-tabla .acc .fic.on{background:#5b6472;animation:none}
+/* Ola: cada fila se ilumina un poco después que la anterior, todas al mismo ritmo */
+@keyframes fichaOla{0%,70%,100%{background:#1a56b8;box-shadow:none}35%{background:#3f7ef0;box-shadow:inset 0 0 0 2px #9cc0ff}}
+@media (prefers-reduced-motion:reduce){#ct-tabla .acc .fic{animation:none}}
 #ct-tabla .acc .gen{background:#fff4ef;flex:0 0 auto;padding:0 7px;display:flex;align-items:center;gap:4px;color:#c2410c;font-weight:700;font-size:.72rem}
 #ct-tabla .acc .rutif{flex:0 0 auto;padding:0 7px;font-weight:800;font-size:.64rem;letter-spacing:.03em;color:#1f2430;background:#f1f3f5}
 #ct-tabla .acc .rutif:hover{background:#e3e6eb}
@@ -578,6 +586,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
       <div class="tag" id="hoy">Portal de ventas</div>
       <h1>Claro<em>Go!</em> <span class="ver">2.0</span></h1>
       <p>Portal de ventas 2026 · Elige una sección · <button class="perfil-btn" id="perfil-btn" title="Tu nombre y tu mensaje de WhatsApp"></button></p>
+      <p class="truco" id="truco" title="Clic para ver otro truco"></p>
     </div>
     <div class="tiles" id="tiles"></div>
     <div id="home-links"></div>
@@ -805,7 +814,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 
 <footer>
   <div class="sig"><a href="https://wa.me/56927690949" target="_blank" rel="noopener">Desarrollado por Eduardo Pérez</a> · ClaroGo! 2.0 · 2026</div>
-  <div class="leg">Herramienta no oficial, no es de Claro Chile · <button id="cache-btn">Limpiar caché</button></div>
+  <div class="leg">Herramienta no oficial, no es de Claro Chile · <button id="cache-btn">Limpiar caché</button> · <button id="sonido-btn" title="Sonido suave al pasar el mouse por los botones"></button></div>
 </footer>
 
 <button id="sugg-btn" title="Enviar sugerencia" aria-label="Enviar sugerencia por WhatsApp">
@@ -2600,6 +2609,68 @@ const dataABlob = d => { const [cab, b64] = String(d).split(','), tipo = (cab.ma
 // El portapapeles solo acepta PNG: si la lámina es JPG (Persona Mayor) se convierte
 const pngDeData = d => new Promise(res => { if (/^data:image\/png/.test(d)) return res(dataABlob(d)); const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = i.naturalWidth; c.height = i.naturalHeight; c.getContext('2d').drawImage(i, 0, 0); c.toBlob(res, 'image/png'); }; i.onerror = () => res(null); i.src = d; });
 const perfilPintaBoton = () => { const b = $('#perfil-btn'); if (b) b.textContent = '👤 ' + agenteNombre() + ' · Mi mensaje'; };
+/* ── Sonido al pasar el mouse ───────────────────────────────────────
+   Un "tic" muy corto y suave cuando el mouse entra a algo que se puede presionar. Se puede apagar en el pie de página. */
+const SONIDO_KEY = 'clarogo_sonido';
+const sonidoOn = () => { try { return localStorage.getItem(SONIDO_KEY) !== '0'; } catch (e) { return true; } };
+let tickUltimo = 0, tickCtx = null;
+function tick() {
+  const ahora = Date.now(); if (ahora - tickUltimo < 90 || !sonidoOn()) return; tickUltimo = ahora;
+  try {
+    tickCtx = tickCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (tickCtx.state !== 'running') return;   // el navegador lo habilita después del primer clic
+    const t0 = tickCtx.currentTime, o = tickCtx.createOscillator(), g = tickCtx.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(1500, t0); o.frequency.exponentialRampToValueAtTime(900, t0 + .05);
+    g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(.045, t0 + .006); g.gain.exponentialRampToValueAtTime(.0001, t0 + .07);
+    o.connect(g); g.connect(tickCtx.destination); o.start(t0); o.stop(t0 + .08);
+  } catch (e) {}
+}
+function initSonido() {
+  const pinta = () => { $('#sonido-btn').textContent = sonidoOn() ? '🔊 Sonidos: sí' : '🔈 Sonidos: no'; };
+  $('#sonido-btn').onclick = () => { try { localStorage.setItem(SONIDO_KEY, sonidoOn() ? '0' : '1'); } catch (e) {} pinta(); if (sonidoOn()) { tickUltimo = 0; tick(); } };
+  pinta();
+  const abrirAudio = () => { try { tickCtx = tickCtx || new (window.AudioContext || window.webkitAudioContext)(); if (tickCtx.state === 'suspended') tickCtx.resume(); } catch (e) {} };
+  document.addEventListener('pointerdown', abrirAudio, { capture: true });
+  const INTERACTIVO = 'button:not([disabled]), a[href], select, .tile, .link, [data-ct], [data-agb], [data-resp], .chip, summary, label.chk, .estrella, .col-res';
+  document.addEventListener('pointerover', e => {
+    if (e.pointerType && e.pointerType !== 'mouse') return;
+    const el = e.target.closest(INTERACTIVO); if (!el) return;
+    if (e.relatedTarget && el.contains(e.relatedTarget)) return;   // solo al entrar, no al moverse dentro
+    tick();
+  });
+}
+const TRUCOS = [
+  'En Mi Planilla, haz clic en el espacio vacío de una celda o doble clic en un cuadro vacío para abrir la ficha completa del cliente.',
+  'Con el botón ⏰ de cada fila agendas una llamada y ClaroGo! te avisa con un sonido y un reloj rojo en todas las secciones.',
+  'En Stock de Equipos, el botón Copiar deja el equipo listo para pegarlo en la ficha con "Pegar equipo del Stock".',
+  'El botón 📋 de cada fila copia todos los datos del cliente ordenados, listos para enviárselos a tu supervisora.',
+  'La estrella ☆ al inicio de cada fila marca a tus clientes favoritos. Fíltralos con "Solo favoritos".',
+  'Ctrl+Z deshace el último cambio de la planilla, incluso si borraste un cliente por error.',
+  'En "Mi mensaje" cambias tu nombre, tu teléfono y tu firma para los mensajes de WhatsApp.',
+  'El saludo de WhatsApp cambia solo según la hora: buenos días, buenas tardes o buenas noches.',
+  'Si el cliente está en la planilla con su nombre, el mensaje lo saluda como estimado o estimada.',
+  'Arrastra el borde derecho de un título de la planilla para ensanchar esa columna. Doble clic lo deja como estaba.',
+  'Oferta Personas tiene una calculadora multilínea que arma la lámina y el texto para varias líneas a la vez.',
+  'Excepciones de Boletas muestra la deuda máxima permitida según cuántas líneas porta el cliente.',
+  'En Stock, el Filtro rápido muestra de inmediato los equipos con pie $0 y con stock disponible.',
+  'Pega la dirección tal como la copias: ClaroGo! la ordena sola y la separa en calle, número y comuna para el Script.',
+  'Cada hora se guarda en silencio una copia de tu planilla. Si algo falta, búscalo en "Copias automáticas".',
+  'Con la extensión ClaroGo! Genesys (Alt+Shift+G) mandas el teléfono de la llamada directo a tu planilla.',
+  'Las filas se pintan verde, amarillo o rojo según la tipificación, para ver de un vistazo cómo vas.',
+  'El botón Genesys de una fila reemplaza su teléfono por el de la llamada que tengas copiada.',
+  'Lo que completes en Ver Script queda guardado también en la fila del cliente en tu planilla.',
+  'Horario Ejecutivos calcula si cada persona cumple las 42 horas de la semana.',
+  'En el cuadro de WhatsApp de la planilla puedes elegir otro plan y adjuntar su lámina antes de enviar.',
+  'El botón 💾 Guardar muestra la hora del último guardado, aunque todo se guarda solo con cada cambio.'
+];
+let trucoN = -1;
+function mostrarTruco() {
+  let n; do { n = Math.floor(Math.random() * TRUCOS.length); } while (TRUCOS.length > 1 && n === trucoN);
+  trucoN = n;
+  const p = $('#truco'); if (!p) return;
+  p.style.animation = 'none'; void p.offsetWidth; p.style.animation = '';
+  p.innerHTML = '<b>✨ Truco:</b> ' + esc(TRUCOS[n]);
+}
 function initPerfil() {
   perfilPintaBoton();
   const vista = () => { const p = $('#pf-plantilla').value.trim() || PLANTILLA_DEFECTO, n = $('#pf-nombre').value.trim() || NOMBRE_DEFECTO, t = $('#pf-telefono').value.trim() || TELEFONO_DEFECTO, fi = $('#pf-firma').value.trim() || FIRMA_DEFECTO; $('#pf-vista').textContent = 'Desde la planilla, con el nombre del cliente:\n' + presentacion(p, n, { nombre: 'MARÍA SOTO' }) + '\n' + presentacion(p, n, { nombre: 'JUAN PÉREZ' }) + '\n\nSin nombre (siempre en la extensión):\n' + presentacion(p, n) + '\n\n[detalle del plan elegido]\n\n' + firmaTexto(fi, n, t); };
@@ -2968,7 +3039,7 @@ function ctPinta() {
     <td class="c-notas"><input data-k="notas" value="${esc(r.notas)}" placeholder="Notas" title="${esc(r.notas)}"></td>
     <td class="c-acc"><div class="acc">${r.borrado
       ? `<button data-ct="restaurar" class="go" title="Recuperar registro">↺</button>`
-      : `<button data-ct="agenda" class="ag${agClase(r)}" title="${esc(agTitulo(r))}">⏰</button><button data-ct="wa" class="wa" title="Abrir WhatsApp Web con este cliente y enviarle la oferta"><svg viewBox="0 0 16 16"><path d="${ICONOS.wa}"/></svg></button><button data-ct="genesys" class="gen" title="Traer el teléfono desde Genesys (reemplaza el de esta fila)"><svg class="gico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="11.2" cy="2.6" r="1.8"/><rect x="4.2" y="5.4" width="6" height="9.4" rx="3"/></svg><span class="gen-t">Genesys</span></button><button data-ct="copiar" class="cop" title="Copiar los datos del cliente para WhatsApp (por ejemplo, para enviarlos a la supervisora)">📋</button><button data-ct="ficha" class="fic" title="${r.id === ctAbierto ? 'Cerrar la ficha' : 'Abrir la ficha con todos los datos'}">${r.id === ctAbierto ? '▴' : '▾'}</button><button data-ct="rutificador" class="rutif" title="Copiar el RUT y abrir el Rutificador">RUTIFICADOR</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
+      : `<button data-ct="agenda" class="ag${agClase(r)}" title="${esc(agTitulo(r))}">⏰</button><button data-ct="wa" class="wa" title="Abrir WhatsApp Web con este cliente y enviarle la oferta"><svg viewBox="0 0 16 16"><path d="${ICONOS.wa}"/></svg></button><button data-ct="genesys" class="gen" title="Traer el teléfono desde Genesys (reemplaza el de esta fila)"><svg class="gico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="11.2" cy="2.6" r="1.8"/><rect x="4.2" y="5.4" width="6" height="9.4" rx="3"/></svg><span class="gen-t">Genesys</span></button><button data-ct="copiar" class="cop" title="Copiar los datos del cliente para WhatsApp (por ejemplo, para enviarlos a la supervisora)">📋</button><button data-ct="ficha" class="fic${r.id === ctAbierto ? ' on' : ''}" style="--i:${i}" title="${r.id === ctAbierto ? 'Cerrar la ficha' : 'Abrir la ficha con todos los datos del cliente'}">${r.id === ctAbierto ? '▴<span class="fic-t"> Cerrar</span>' : '▾<span class="fic-t"> Ficha</span>'}</button><button data-ct="rutificador" class="rutif" title="Copiar el RUT y abrir el Rutificador">RUTIFICADOR</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
   </tr>${r.id === ctAbierto && !r.borrado ? ctFichaHTML(r) : ''}`).join('');
   $$('#ct-body textarea.nom').forEach(nomAlto);
   $('#ct-vacio').hidden = lista.length > 0;
@@ -3284,7 +3355,7 @@ async function limpiarCache() {
 /* ════════════════════════════════════════════════════════════════
    INICIO
    ════════════════════════════════════════════════════════════════ */
-initMenu(); initExcepciones(); initSugerencias(); iniciarRespaldo(); initWhatsApp(); initAgenda(); initPerfil(); initDeshacer();
+initMenu(); initExcepciones(); initSugerencias(); iniciarRespaldo(); initWhatsApp(); initAgenda(); initPerfil(); initDeshacer(); initSonido(); mostrarTruco(); $('#truco').onclick = mostrarTruco; window.addEventListener('hashchange', () => { if ((location.hash || '#inicio') === '#inicio') mostrarTruco(); });
 try { if (sessionStorage.getItem('clarogo_limpio')) { sessionStorage.removeItem('clarogo_limpio'); setTimeout(() => toast('Caché limpiada. Tu planilla está a salvo.'), 400); } } catch (e) {}
 $('#cache-btn').onclick = limpiarCache;
 window.addEventListener('hashchange', route);
