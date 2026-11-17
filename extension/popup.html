@@ -22,6 +22,10 @@
   .rojo { background: var(--red); color: #fff; }
   .gris { background: #f1f3f5; color: var(--text); }
   button:disabled { opacity: .5; cursor: default; }
+  .verde { background: #25d366; color: #fff; }
+  .wa { margin: 12px 0 4px; padding: 10px; border: 1px solid #c8eed6; background: #f1fbf4; border-radius: 10px; }
+  .wa label { display: block; font-size: .74rem; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
+  .wa select { width: 100%; padding: 7px; border: 1px solid var(--border); border-radius: 8px; font: inherit; }
   p.nota { font-size: .72rem; color: var(--muted); margin: 10px 0 0; }
 </style>
 </head>
@@ -31,6 +35,11 @@
   <p id="estado">Leyendo la llamada de Genesys…</p>
   <table id="datos" hidden></table>
   <button class="rojo" id="enviar" disabled>➕ Enviar a Mi Planilla (fila nueva)</button>
+  <div class="wa" id="wa" hidden>
+    <label for="wa-plan">WhatsApp con la oferta</label>
+    <select id="wa-plan"></select>
+    <button class="verde" id="wa-abrir">WhatsApp Web</button>
+  </div>
   <button class="gris" id="copiar" disabled>📋 Copiar de nuevo</button>
   <p class="nota">Los datos ya quedan copiados al abrir esta ventana. En Mi Planilla puedes usar "Pegar desde Genesys" (fila nueva) o 📞 en una fila (reemplaza su teléfono). Atajo: Alt+Shift+G.</p>
 </main>

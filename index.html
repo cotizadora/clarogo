@@ -386,10 +386,10 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla .acc button:hover{background:#eef2f7}
 #ct-tabla .acc .go{color:#fff;background:var(--red);font-size:.7rem}
 #ct-tabla .acc .go:hover{background:var(--red-dk)}
-.c-n{width:34px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:94px}.c-tel{width:94px}.c-orig{width:76px}.c-tipo{width:126px}.c-plan{width:80px}.c-acc{width:124px}
+.c-n{width:34px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:94px}.c-tel{width:94px}.c-orig{width:76px}.c-tipo{width:126px}.c-plan{width:80px}.c-acc{width:150px}
 .c-nombre{width:auto}.c-notas{width:17%}
 @media (max-width:1100px){.c-hora,.c-plan,.c-notas{display:none}}
-@media (max-width:720px){.c-fecha,.c-notas,.c-rut,.c-nombre{display:none}.c-tel{width:auto}.c-orig{width:64px}.c-tipo{width:86px}.c-n{width:22px}.c-acc{width:90px} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
+@media (max-width:720px){.c-fecha,.c-notas,.c-rut,.c-nombre{display:none}.c-tel{width:auto}.c-orig{width:64px}.c-tipo{width:86px}.c-n{width:22px}.c-acc{width:112px} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
 #ct-resumen .chip b{margin-left:4px}
 .resp{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:.84rem}
 .resp .resp-b{display:flex;gap:6px;flex-wrap:wrap}
@@ -400,6 +400,11 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 /* Ficha ampliable del cliente: se abre bajo la fila para tomar todos los datos */
 #ct-tabla .acc .fic{font-size:.8rem;color:#1a56b8;font-weight:700}
 #ct-tabla .acc .gen{background:#e8f5e9}
+#ct-tabla .acc .wa{background:#25d366}
+#ct-tabla .acc .wa:hover{background:#1da851}
+#ct-tabla .acc .wa svg{width:14px;height:14px;fill:#fff;vertical-align:middle}
+.wa-btn{background:#25d366;color:#fff}
+.wa-btn:hover{background:#1da851}
 #ct-tabla .acc .gen:hover{background:#c8e6c9}
 #ct-tabla tr.abierta td{background:#eaf1ff}
 #ct-tabla tr.abierta td.c-n{background:#d6e4ff;color:#1a56b8}
@@ -802,6 +807,17 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     <p style="font-size:.86rem">Haz clic en el cuadro, presiona <b>Ctrl+V</b> y luego "Cargar horario".</p>
     <textarea id="hz-texto" rows="7" placeholder="Pega aquí los turnos copiados desde la planilla"></textarea>
     <div class="d-foot"><button class="btn" data-close>Cancelar</button><button class="btn red" id="hz-procesar">Cargar horario</button></div>
+  </div>
+</dialog>
+
+<dialog id="dlg-wa" style="max-width:min(560px,96vw)">
+  <div class="d-head"><div><h2>Enviar oferta por WhatsApp</h2><p id="wa-para"></p></div><button class="d-x" data-close>✕</button></div>
+  <div class="d-body">
+    <div class="form2"><div><label for="wa-plan">Plan que quieres ofrecer</label><select id="wa-plan"></select></div><div><label for="wa-tel">Teléfono</label><input id="wa-tel" placeholder="9 XXXX XXXX"></div></div>
+    <label for="wa-texto" style="margin-top:10px">Mensaje (puedes editarlo antes de abrir WhatsApp)</label>
+    <textarea id="wa-texto" rows="12"></textarea>
+    <div class="d-foot"><button class="btn" data-close>Cancelar</button><button class="btn wa-btn" id="wa-abrir">Abrir WhatsApp Web</button></div>
+    <p class="dim" style="font-size:.76rem;margin:6px 0 0" id="wa-nota"></p>
   </div>
 </dialog>
 
@@ -2251,6 +2267,53 @@ function ctFichaHTML(r) {
 }
 // Completa una fila con lo leído de Genesys: solo llena lo vacío, nunca borra lo que ya escribiste
 let ctPegarEnFila = () => {};
+/* ── WhatsApp Web con la oferta ─────────────────────────────────────
+   Con la extensión ClaroGo! Genesys se reutiliza la pestaña de WhatsApp Web que ya esté abierta.
+   Sin la extensión se usa siempre la misma pestaña que abrió ClaroGo! (nombre "clarogo-whatsapp"). */
+const waNumero = tel => { let d = String(tel || '').replace(/\D/g, ''); if (d.length === 11 && d.startsWith('56')) d = d.slice(2); return d.length === 9 ? '56' + d : ''; };
+function waTexto(planId, nombre) {
+  let agente = ''; try { agente = localStorage.getItem('agentName') || ''; } catch (e) {}
+  const pn = String(nombre || '').trim().split(/\s+/)[0] || '';
+  const hola = `Hola${pn ? ' ' + pn.charAt(0).toUpperCase() + pn.slice(1).toLowerCase() : ''}, ${agente ? `soy ${agente}, ` : ''}te escribo por la oferta de Claro que conversamos.`;
+  const p = PLANES_VIGENTES.find(x => x.id === planId);
+  return p ? `${hola} Te dejo el detalle del plan:\n\n${vMensaje(p)}` : `${hola} ¿Tienes un momento para revisarla?`;
+}
+function waAbrir(tel, texto) {
+  const n = waNumero(tel); if (!n) { toast('El teléfono no es válido. Debe tener 9 dígitos, por ejemplo 9 1234 5678.'); return false; }
+  const url = `https://web.whatsapp.com/send?phone=${n}&text=${encodeURIComponent(texto || '')}`;
+  if (document.documentElement.dataset.clarogoExt) window.postMessage({ tipo: 'clarogo-wa', url }, location.origin);
+  else window.open(url, 'clarogo-whatsapp');
+  return true;
+}
+let waFila = '';
+function waDialogo(r) {
+  waFila = r.id;
+  const plan = PLANES_VIGENTES.find(p => p.title === r.plan) || PLANES_VIGENTES.find(p => /más vendido/i.test(p.sello || '')) || PLANES_VIGENTES[0];
+  $('#wa-plan').innerHTML = PLANES_VIGENTES.map(p => `<option value="${p.id}"${p === plan ? ' selected' : ''}>${esc(p.title)}</option>`).join('') + '<option value="">Solo saludo, sin plan</option>';
+  $('#wa-tel').value = r.telefono || r.contacto || '';
+  $('#wa-para').textContent = r.nombre || r.telefono || 'Cliente';
+  $('#wa-texto').value = waTexto(plan.id, r.nombre);
+  $('#wa-nota').textContent = document.documentElement.dataset.clarogoExt ? 'Se usará la pestaña de WhatsApp Web que ya tengas abierta.' : 'Se abre WhatsApp Web en una pestaña aparte y las próximas veces usa esa misma. Con la extensión ClaroGo! Genesys también reutiliza la que ya tengas abierta.';
+  abrir('dlg-wa');
+}
+function initWhatsApp() {
+  $('#wa-plan').addEventListener('change', () => { const r = CT.find(x => x.id === waFila); $('#wa-texto').value = waTexto($('#wa-plan').value, r && r.nombre); });
+  $('#wa-abrir').onclick = () => {
+    if (!waAbrir($('#wa-tel').value, $('#wa-texto').value)) return;
+    const r = CT.find(x => x.id === waFila), p = PLANES_VIGENTES.find(x => x.id === $('#wa-plan').value);
+    if (r) {
+      if (!r.telefono && waNumero($('#wa-tel').value)) r.telefono = $('#wa-tel').value.trim();
+      if (p && !r.plan) r.plan = p.title;
+      const hora = new Date().toTimeString().slice(0, 5);
+      r.notas = (r.notas ? r.notas.trim().replace(/[.\s]*$/, '. ') : '') + `Oferta enviada por WhatsApp${p ? ' (' + p.title + ')' : ''} a las ${hora}`;
+      r.upd = Date.now(); ctGuardar(); ctRepintar();
+    }
+    $('#dlg-wa').close();
+  };
+}
+// La extensión pide los mensajes de cada plan para su botón de WhatsApp
+window.clarogoMensajesWA = nombre => PLANES_VIGENTES.map(p => ({ id: p.id, titulo: p.title, texto: waTexto(p.id, nombre) })).concat([{ id: '', titulo: 'Solo saludo, sin plan', texto: waTexto('', nombre) }]);
+
 // La extensión ClaroGo! Genesys llama a esta función para crear una fila nueva con los datos de la llamada
 window.clarogoDesdeGenesys = txt => {
   const d = leerGenesys(txt || '');
@@ -2320,7 +2383,7 @@ function ctPinta() {
     <td class="c-notas"><input data-k="notas" value="${esc(r.notas)}" placeholder="Notas" title="${esc(r.notas)}"></td>
     <td class="c-acc"><div class="acc">${r.borrado
       ? `<button data-ct="restaurar" class="go" title="Recuperar registro">↺</button>`
-      : `<button data-ct="genesys" class="gen" title="Pegar datos de Genesys en esta fila (copia antes con Ctrl+A y Ctrl+C en Genesys)">📞</button><button data-ct="ficha" class="fic" title="${r.id === ctAbierto ? 'Cerrar la ficha' : 'Abrir la ficha con todos los datos'}">${r.id === ctAbierto ? '▴' : '▾'}</button><button data-ct="rutificador" class="rutif" title="Copiar RUT y abrir Rutificador">🪪</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
+      : `<button data-ct="wa" class="wa" title="Abrir WhatsApp Web con este cliente y enviarle la oferta"><svg viewBox="0 0 16 16"><path d="${ICONOS.wa}"/></svg></button><button data-ct="genesys" class="gen" title="Pegar datos de Genesys en esta fila (copia antes con Ctrl+A y Ctrl+C en Genesys)">📞</button><button data-ct="ficha" class="fic" title="${r.id === ctAbierto ? 'Cerrar la ficha' : 'Abrir la ficha con todos los datos'}">${r.id === ctAbierto ? '▴' : '▾'}</button><button data-ct="rutificador" class="rutif" title="Copiar RUT y abrir Rutificador">🪪</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
   </tr>${r.id === ctAbierto && !r.borrado ? ctFichaHTML(r) : ''}`).join('');
   $('#ct-vacio').hidden = lista.length > 0;
   $('#ct-vacio').textContent = verBorr ? 'No hay registros borrados en este período.' : 'No hay llamadas en este período. Pega la primera desde Genesys.';
@@ -2395,6 +2458,7 @@ function initControl() {
     const b = e.target.closest('[data-ct]'); if (!b) return;
     const r = CT.find(x => x.id === b.closest('tr').dataset.id); if (!r) return;
     if (b.dataset.ct === 'genesys') return ctPegarEnFila(r.id);
+    if (b.dataset.ct === 'wa') return waDialogo(r);
     if (b.dataset.ct === 'ficha') { ctAbierto = ctAbierto === r.id ? '' : r.id; ctPinta(); if (ctAbierto) { const t = $(`#ct-body tr.ficha[data-id="${r.id}"] input`); if (t) t.focus(); } return; }
     if (b.dataset.ct === 'borrar') { r.borrado = true; r.upd = Date.now(); ctGuardar(); ctPinta(); toast('Registro borrado. Puedes recuperarlo con "Ver borrados".'); }
     if (b.dataset.ct === 'restaurar') { r.borrado = false; r.upd = Date.now(); ctGuardar(); ctPinta(); toast('Registro recuperado'); }
@@ -2609,7 +2673,7 @@ async function limpiarCache() {
 /* ════════════════════════════════════════════════════════════════
    INICIO
    ════════════════════════════════════════════════════════════════ */
-initMenu(); initExcepciones(); initSugerencias(); iniciarRespaldo();
+initMenu(); initExcepciones(); initSugerencias(); iniciarRespaldo(); initWhatsApp();
 try { if (sessionStorage.getItem('clarogo_limpio')) { sessionStorage.removeItem('clarogo_limpio'); setTimeout(() => toast('Caché limpiada. Tu planilla está a salvo.'), 400); } } catch (e) {}
 $('#cache-btn').onclick = limpiarCache;
 window.addEventListener('hashchange', route);

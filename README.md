@@ -50,6 +50,11 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: WhatsApp Web con la oferta
+
+- Mi Planilla: botón de WhatsApp en cada fila. Abre un cuadro para elegir el plan (por defecto el de la fila o el Plan 800), revisar el mensaje (saludo con el nombre del cliente y del ejecutivo, más el detalle del plan) y abrir WhatsApp Web con ese cliente. Anota en Observaciones la hora y el plan enviado.
+- Extensión 1.2: botón WhatsApp Web en la ventanita, con los mensajes de los planes tomados de ClaroGo!. Reutiliza la pestaña de WhatsApp Web que ya esté abierta (la más antigua) y si no hay, abre una nueva. Con la extensión instalada, el botón de la planilla también reutiliza esa pestaña. Sin la extensión, la planilla usa siempre la misma pestaña que abrió.
+
 ### 16-11-2026: extensión 1.1, elige la pestaña de la planilla
 
 - Al enviar a Mi Planilla, la extensión usa la pestaña de ClaroGo! más antigua que ya esté en la planilla; si no hay, la más antigua que esté en otra sección libre (inicio, galería, etc.) y la lleva a la planilla. Las pestañas en Oferta, PNG, Stock o Script no se tocan: en ese caso abre una pestaña nueva en la planilla. Si la pestaña no responde, abre una nueva desde cero. Siempre termina mostrando la planilla.

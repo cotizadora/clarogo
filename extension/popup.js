@@ -102,7 +102,34 @@ async function iniciar() {
   $('#datos').hidden = false;
   if (await copiar(true)) mostrar(tel ? '✓ Datos copiados.' : 'Datos copiados, pero esta llamada no trae teléfono.', tel ? 'ok' : 'mal');
   $('#enviar').disabled = $('#copiar').disabled = false;
+  if (tel) prepararWhatsApp(tel, nombre);
 }
+
+/* ── WhatsApp Web con la oferta ───────────────────────────────────── */
+// Los mensajes de cada plan vienen de ClaroGo! (así siempre están al día). Si no hay ClaroGo! abierto, queda el saludo.
+let MENSAJES = [], TEL = '';
+async function prepararWhatsApp(tel, nombre) {
+  TEL = tel.replace(/\D/g, '');
+  try {
+    const tabs = (await chrome.tabs.query({ url: PLANILLA + '*' })).sort((a, b) => a.id - b.id);
+    for (const t of tabs) {
+      const [r] = await chrome.scripting.executeScript({ target: { tabId: t.id }, world: 'MAIN', args: [nombre || ''], func: n => typeof window.clarogoMensajesWA === 'function' ? window.clarogoMensajesWA(n) : null });
+      if (r && Array.isArray(r.result) && r.result.length) { MENSAJES = r.result; break; }
+    }
+  } catch (e) {}
+  if (!MENSAJES.length) MENSAJES = [{ id: '', titulo: 'Solo saludo (abre ClaroGo! para ver los planes)', texto: 'Hola, te escribo por la oferta de Claro que conversamos. ¿Tienes un momento para revisarla?' }];
+  const pref = MENSAJES.findIndex(m => m.id === 'v800');
+  $('#wa-plan').innerHTML = MENSAJES.map((m, i) => `<option value="${i}"${i === (pref < 0 ? 0 : pref) ? ' selected' : ''}></option>`).join('');
+  [...$('#wa-plan').options].forEach((o, i) => { o.textContent = MENSAJES[i].titulo; });
+  $('#wa').hidden = false;
+}
+$('#wa-abrir').onclick = async () => {
+  const m = MENSAJES[+$('#wa-plan').value] || MENSAJES[0];
+  const url = `https://web.whatsapp.com/send?phone=56${TEL}&text=${encodeURIComponent(m.texto)}`;
+  $('#wa-abrir').disabled = true;
+  const ok = await chrome.runtime.sendMessage({ tipo: 'wa', url }).catch(() => false);
+  if (ok) window.close(); else { mostrar('No se pudo abrir WhatsApp Web.', 'mal'); $('#wa-abrir').disabled = false; }
+};
 
 $('#copiar').onclick = () => copiar(false);
 $('#enviar').onclick = enviar;
