@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: script ClaroGo! Genesys 2.0 (Tampermonkey)
+
+- `ext/clarogo-genesys.user.js` 2.0.0 queda igual de completo que la extensión: botón "ClaroGo!" y panel dentro de Genesys (Alt+Shift+G), datos copiados, comentario y plan que llegan a Mi Planilla, y WhatsApp Web con el mensaje corporativo y la lámina (abre el chat sin recargar en la pestaña de WhatsApp ya abierta). Gratis, se instala desde un enlace y se actualiza solo.
+
 ### 17-11-2026: script ClaroGo! Genesys para Tampermonkey
 
 - Nuevo `ext/clarogo-genesys.user.js` (versión 1.1.0): la misma lectura de Genesys de la extensión, instalable desde un enlace con Tampermonkey y con actualización automática. Publicado en https://cotizadora.github.io/clarogo/ext/clarogo-genesys.user.js
