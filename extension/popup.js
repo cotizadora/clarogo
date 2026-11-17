@@ -139,8 +139,16 @@ $('#wa-abrir').onclick = async () => {
   const m = MENSAJES[+$('#wa-plan').value] || MENSAJES[0];
   const url = `https://web.whatsapp.com/send?phone=56${TEL}&text=${encodeURIComponent(m.texto)}`;
   $('#wa-abrir').disabled = true;
-  const ok = await chrome.runtime.sendMessage({ tipo: 'wa', url }).catch(() => false);
-  if (ok) window.close(); else { mostrar('No se pudo abrir WhatsApp Web.', 'mal'); $('#wa-abrir').disabled = false; }
+  // Se abre desde aquí mismo (no depende del proceso de fondo): reutiliza la pestaña de WhatsApp Web más antigua o abre una nueva
+  try {
+    let tabs = [];
+    try { tabs = (await chrome.tabs.query({ url: 'https://web.whatsapp.com/*' })).sort((a, b) => a.id - b.id); } catch (e) {}
+    if (tabs.length) {
+      await chrome.tabs.update(tabs[0].id, { url, active: true });
+      await chrome.windows.update(tabs[0].windowId, { focused: true });
+    } else await chrome.tabs.create({ url, active: true });
+    window.close();
+  } catch (e) { mostrar('No se pudo abrir WhatsApp Web: ' + e.message, 'mal'); $('#wa-abrir').disabled = false; }
 };
 
 $('#copiar').onclick = () => copiar(false);

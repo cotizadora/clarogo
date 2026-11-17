@@ -50,6 +50,11 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: todo el historial por defecto y extensión 1.5
+
+- Mi Planilla abre siempre con Todo el historial a la vista.
+- Extensión 1.5: el botón WhatsApp Web abre la pestaña directamente desde la ventanita, sin depender del proceso de fondo. Reutiliza la pestaña de WhatsApp Web abierta o abre una nueva.
+
 ### 17-11-2026: aviso de registros de otros días
 
 - Si el período elegido (por ejemplo Hoy) no tiene llamadas pero hay registros de otros días, Mi Planilla lo dice con la cantidad y ofrece botones para ver todo el historial o los últimos 7 días. Los registros no se habían borrado: el filtro Hoy los ocultaba.

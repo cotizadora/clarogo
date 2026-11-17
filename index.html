@@ -693,7 +693,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
         <button class="btn sm" id="ct-excel">⬇ Exportar a Excel</button>
       </div>
       <input class="full" type="search" id="ct-q" placeholder="Buscar RUT, nombre, teléfono o notas" autocomplete="off">
-      <select id="ct-periodo"><option value="hoy">Hoy</option><option value="7">Últimos 7 días</option><option value="30">Últimos 30 días</option><option value="mes">Este mes</option><option value="rango">Entre fechas</option><option value="todo">Todo el historial</option></select>
+      <select id="ct-periodo"><option value="todo" selected>Todo el historial</option><option value="hoy">Hoy</option><option value="7">Últimos 7 días</option><option value="30">Últimos 30 días</option><option value="mes">Este mes</option><option value="rango">Entre fechas</option></select>
       <select id="ct-tipo"><option value="">Todas las tipificaciones</option></select>
       <select id="ct-seg"><option value="">Todos los segmentos</option></select>
       <div class="ct-rango full" id="ct-rango" hidden><label for="ct-desde">Desde</label><input type="date" id="ct-desde"><label for="ct-hasta">Hasta</label><input type="date" id="ct-hasta"></div>
