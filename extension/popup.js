@@ -52,7 +52,7 @@ const conLimite = (p, ms) => Promise.race([p, esperar(ms).then(() => { throw new
 function extraEnvio() {
   let plan = '';
   try { const m = (typeof MENSAJES !== 'undefined' && MENSAJES[+document.querySelector('#wa-plan').value]) || null; if (m && m.id) plan = m.titulo; } catch (e) {}
-  return { plan, notas: (document.querySelector('#comentario').value || '').trim() };
+  return { plan, notas: (document.querySelector('#comentario').value || '').trim(), rut: (document.querySelector('#rut-cli').value || '').trim() };
 }
 // Llama a Mi Planilla dentro de la pestaña. Devuelve false si la página no la reconoce.
 async function entregar(tabId) {
@@ -117,6 +117,7 @@ async function iniciar() {
   TEXTO = Object.entries(d).map(([k, v]) => `${k}:\n${v || k}`).join('\n');
   const tel = telFormato(d.FONO_CONTACTO) || telFormato(d.Fono1) || telFormato(d.Fono2) || telFormato(d.LEGACY_ID);
   const nombre = [d.FIRST_NAME, d.SECOND_NAME, d.THIRD_NAME].filter(Boolean).join(' ');
+  if (d.RUT_PERSONA && /\d{6,}/.test(d.RUT_PERSONA) && !document.querySelector('#rut-cli').value) document.querySelector('#rut-cli').value = d.RUT_PERSONA;
   const filas = [['Teléfono', tel || 'No viene'], ['RUT', d.RUT_PERSONA], ['Nombre', nombre], ['Campaña', d.vNombre_Campana || d.CampaignDescription], ['Viene de', d.Segment_of_Origin]].filter(([, v]) => v);
   $('#datos').innerHTML = filas.map(([k, v]) => `<tr><td>${k}</td><td${k === 'Teléfono' ? ' class="tel"' : ''}></td></tr>`).join('');
   [...$('#datos').querySelectorAll('tr')].forEach((tr, i) => { tr.lastChild.textContent = filas[i][1]; });

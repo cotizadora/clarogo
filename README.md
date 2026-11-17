@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 17-11-2026: columna Deuda y RUT desde la extensión (1.15.0)
+
+- Compañía ahora es un menú (Claro, Entel, Movistar, WOM, VTR, Virgin, Otra). Parte con la compañía que trae Genesys.
+- Nueva columna Deuda al lado: botón con el logo de la compañía elegida que revisa el RUT de la fila en esa compañía. Para revisar otra, se cambia la compañía en el menú.
+- Extensión 1.15.0: casilla "RUT del cliente" en la ventana; el RUT llega a la fila nueva de Mi Planilla.
+
 ### 17-11-2026: botón de deuda en cada fila
 
 - En la columna Compañía de Mi Planilla hay un botón con el logo de la compañía del cliente para revisar su deuda, y una flecha ▾ para elegir otra compañía.

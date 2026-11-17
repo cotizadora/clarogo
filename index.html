@@ -198,20 +198,14 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 .link:hover{border-left-color:var(--red);background:#fff5f5}
 .link.dest{border-left-color:#0f9d58}
 .link span{font-size:1.15rem;flex:none}
-#ct-tabla .orig-w{display:flex;align-items:center;gap:2px}
-#ct-tabla .orig-w input{flex:1;min-width:0}
-#ct-tabla .deu-b{flex:none;display:grid;place-items:center;width:24px;height:24px;padding:0;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer}
-#ct-tabla .deu-b:hover{border-color:var(--red)}
-#ct-tabla .deu-b .lk-logo{width:18px;height:18px;border-radius:4px}
-#ct-tabla .deu-b .lk-wom{display:grid;place-items:center;width:18px;height:18px;border-radius:4px;background:#3d0f6b;color:#fff;font-size:.4rem;font-weight:900}
-#ct-tabla .deu-q{font-size:.62rem;font-weight:900;color:#c00000}
-#ct-tabla .deu-m{flex:none;width:14px;height:24px;padding:0;border:0;background:none;color:var(--dim);font-size:.7rem;cursor:pointer}
-#deuda-menu{position:fixed;z-index:60;min-width:180px;padding:6px;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.2)}
-#deuda-menu .dm-t{font-size:.72rem;font-weight:700;color:var(--dim);padding:2px 6px 6px}
-#deuda-menu button{display:flex;align-items:center;gap:8px;width:100%;padding:7px 8px;border:0;border-radius:7px;background:none;font:inherit;font-size:.85rem;cursor:pointer;text-align:left}
-#deuda-menu button:hover{background:#fff5f5}
-#deuda-menu .lk-logo{width:20px;height:20px;border-radius:4px}
-#deuda-menu .lk-wom{display:grid;place-items:center;width:20px;height:20px;border-radius:4px;background:#3d0f6b;color:#fff;font-size:.42rem;font-weight:900}
+#ct-tabla td.c-orig select{width:100%}
+#ct-tabla .deu-b{display:flex;align-items:center;justify-content:center;gap:3px;width:100%;height:26px;padding:0 3px;border:1px solid var(--border);border-radius:7px;background:#fff;font:inherit;font-size:.7rem;font-weight:800;color:#1f2430;cursor:pointer;white-space:nowrap}
+#ct-tabla .deu-b:hover{border-color:var(--red);background:#fff5f5}
+#ct-tabla .deu-b.ok{border-color:#14804a;color:#14804a;background:#effaf3}
+#ct-tabla .deu-b.mal{border-color:#c00000;color:#fff;background:#c00000}
+#ct-tabla .deu-b span{display:inline}
+#ct-tabla .deu-b .lk-logo{width:16px;height:16px;border-radius:4px}
+#ct-tabla .deu-b .lk-wom{display:grid;place-items:center;width:16px;height:16px;border-radius:4px;background:#3d0f6b;color:#fff;font-size:.38rem;font-weight:900}
 .fi-deuda{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0 4px;padding:7px 9px;border:1px dashed var(--border);border-radius:9px}
 .fi-deuda b{font-size:.8rem;margin-right:2px}
 .fi-deuda .btn{display:inline-flex;align-items:center;gap:5px}
@@ -475,7 +469,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla .acc button:hover{background:#eef2f7}
 #ct-tabla .acc .go{color:#fff;background:var(--red);font-size:.7rem}
 #ct-tabla .acc .go:hover{background:var(--red-dk)}
-.c-n{width:46px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:94px}.c-tel{width:94px}.c-orig{width:100px}.c-tipo{width:126px}.c-plan{width:86px}.c-acc{width:320px}
+.c-n{width:44px}.c-fecha{width:80px}.c-hora{width:44px}.c-rut{width:88px}.c-tel{width:88px}.c-orig{width:84px}.c-deu{width:48px}.c-tipo{width:122px}.c-plan{width:86px}.c-acc{width:320px}
 .c-nombre{width:150px}.c-notas{width:auto}
 @media (max-width:1500px){.c-notas{display:none}}
 @media (max-width:1100px){.c-hora,.c-plan{display:none} #ct-tabla .acc .gen-t{display:none} .c-acc{width:270px}}
@@ -838,8 +832,8 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     </div>
     <div class="card" id="ag-panel" hidden style="padding:12px 14px"></div>
     <div class="chips" id="ct-resumen"></div>    <div class="ct-wrap"><table id="ct-tabla">
-      <colgroup><col class="c-n"><col class="c-fecha"><col class="c-hora"><col class="c-rut"><col class="c-nombre"><col class="c-tel"><col class="c-orig"><col class="c-tipo"><col class="c-plan"><col class="c-notas"><col class="c-acc"></colgroup>
-      <thead><tr><th class="c-n"></th><th class="c-fecha">Fecha</th><th class="c-hora">Hora</th><th class="c-rut">RUT</th><th class="c-nombre">Nombre</th><th class="c-tel">Teléfono</th><th class="c-orig" title="Compañía de origen">Compañía</th><th class="c-tipo">Tipificación</th><th class="c-plan">Plan</th><th class="c-notas">Notas</th><th class="c-acc"></th></tr></thead>
+      <colgroup><col class="c-n"><col class="c-fecha"><col class="c-hora"><col class="c-rut"><col class="c-nombre"><col class="c-tel"><col class="c-orig"><col class="c-deu"><col class="c-tipo"><col class="c-plan"><col class="c-notas"><col class="c-acc"></colgroup>
+      <thead><tr><th class="c-n"></th><th class="c-fecha">Fecha</th><th class="c-hora">Hora</th><th class="c-rut">RUT</th><th class="c-nombre">Nombre</th><th class="c-tel">Teléfono</th><th class="c-orig" title="Compañía de origen">Compañía</th><th class="c-deu" title="Revisar si el cliente tiene deuda en su compañía">Deuda</th><th class="c-tipo">Tipificación</th><th class="c-plan">Plan</th><th class="c-notas">Notas</th><th class="c-acc"></th></tr></thead>
       <tbody id="ct-body"></tbody>
     </table></div>
     <div class="empty" id="ct-vacio" hidden>No hay llamadas en este período. Pega la primera desde Genesys.</div>
@@ -2553,19 +2547,18 @@ const DEUDA_PORTALES = [['claro', 'Claro', 'img:logos/claro.png', 'https://sucur
 const deudaBarra = r => `<div class="fi-deuda"><b>¿Tiene deuda?</b>${DEUDA_PORTALES.map(([c, n, ico]) => `<button type="button" class="btn sm" data-deuda="${c}" title="Copia el RUT y revisa la deuda en ${n}">${icoEnlace(ico)} ${n}</button>`).join('')}<span class="fi-deuda-r${/tiene deuda/i.test(r.deuda || '') ? ' mal' : r.deuda ? ' ok' : ''}">${esc(r.deuda || (r.rut ? '' : 'Primero escribe el RUT del cliente'))}</span></div>`;
 // Compañía de la fila según lo que diga la columna Compañía (viene de Genesys o se escribe a mano)
 const deudaComp = r => { const o = String(r.origen || '').toLowerCase(); return /claro|vtr/.test(o) ? 'claro' : /entel/.test(o) ? 'entel' : /movistar|telef/.test(o) ? 'movistar' : /wom|nextel/.test(o) ? 'wom' : ''; };
-const deudaBoton = r => { const c = deudaComp(r), port = DEUDA_PORTALES.find(x => x[0] === c); return `<button type="button" class="deu-b" data-deuda="${c || '?'}" title="${port ? `¿Tiene deuda? Revisar en ${port[1]}` : '¿Tiene deuda? Elegir la compañía'}">${port ? icoEnlace(port[2]) : '<span class="deu-q">$?</span>'}</button><button type="button" class="deu-m" data-deuda="?" title="Revisar la deuda en otra compañía">▾</button>`; };
-function deudaMenu(btn, id) {
-  let m = $('#deuda-menu');
-  if (!m) { m = document.createElement('div'); m.id = 'deuda-menu'; document.body.appendChild(m); m.addEventListener('click', e => { const b = e.target.closest('[data-dm]'); if (b) { m.hidden = true; deudaRevisar(m.dataset.id, b.dataset.dm); } }); document.addEventListener('click', e => { if (!e.target.closest('#deuda-menu,[data-deuda]')) m.hidden = true; }); window.addEventListener('scroll', () => { m.hidden = true; }, { passive: true }); }
-  m.dataset.id = id;
-  m.innerHTML = '<div class="dm-t">¿Tiene deuda? Revisar en:</div>' + DEUDA_PORTALES.map(([c, n, ico]) => `<button type="button" data-dm="${c}">${icoEnlace(ico)} ${n}</button>`).join('');
-  const b = btn.getBoundingClientRect(); m.hidden = false;
-  m.style.left = Math.min(b.left, innerWidth - 190) + 'px'; m.style.top = (b.bottom + 4) + 'px';
-}
-function deudaRevisar(id, comp) {
+const ORIGENES = ['Claro', 'Entel', 'Movistar', 'WOM', 'VTR', 'Virgin', 'Otra'];
+// Compañía tal como llega de Genesys ("Wom", "ENTEL PCS"...) llevada a una opción del menú, sin perder valores distintos
+const origenNorm = o => { const c = deudaComp({ origen: o }); return c ? { claro: 'Claro', entel: 'Entel', movistar: 'Movistar', wom: 'WOM' }[c] : (ORIGENES.find(x => x.toLowerCase() === String(o || '').trim().toLowerCase()) || String(o || '').trim()); };
+const origenOpciones = o => { const v = origenNorm(o), lista = v && !ORIGENES.includes(v) ? [...ORIGENES, v] : ORIGENES; return '<option value="">Compañía</option>' + lista.map(x => `<option${x === v ? ' selected' : ''}>${esc(x)}</option>`).join(''); };
+const deudaBoton = r => {
+  const c = deudaComp(r), port = DEUDA_PORTALES.find(x => x[0] === c), est = /tiene deuda/i.test(r.deuda || '') ? ' mal' : r.deuda && c && r.deuda.toLowerCase().startsWith(c) ? ' ok' : '';
+  if (!port) return `<button type="button" class="deu-b" data-deuda="?" title="Elige la compañía del cliente para revisar su deuda">$?</button>`;
+  return `<button type="button" class="deu-b${est}" data-deuda="${c}" title="${esc(r.deuda ? 'Última revisión: ' + r.deuda : `Revisar la deuda de este RUT en ${port[1]}`)}">${icoEnlace(port[2])}<span>${est === ' mal' ? '$!' : est ? '✓' : '$?'}</span></button>`;
+};function deudaRevisar(id, comp) {
   const r = CT.find(x => x.id === id), port = DEUDA_PORTALES.find(x => x[0] === comp); if (!r || !port) return;
   const rut = String(r.rut || '').replace(/[^0-9kK]/g, '').toUpperCase();
-  if (rut.length < 7) return toast('Primero escribe el RUT del cliente en la fila.');
+  if (rut.length < 7) { const inp = $(`#ct-body tr[data-id="${id}"]:not(.ficha) [data-k="rut"]`); if (inp) inp.focus(); return toast('Primero escribe el RUT del cliente: pregúntaselo y anótalo en la columna RUT.'); }
   const rutG = rut.slice(0, -1) + '-' + rut.slice(-1);
   if (document.documentElement.dataset.clarogoExt) window.postMessage({ tipo: 'clarogo-deuda', comp, rut: rutG, id }, location.origin);
   try { navigator.clipboard.writeText(rutG); } catch (e) {}
@@ -2589,7 +2582,7 @@ function ctFichaHTML(r) {
     else inp = `<input data-k="${k}" value="${esc(k === 'direccion' ? dirTexto(r) : (r[k] || ''))}" placeholder="${esc(ph)}"${k === 'region' ? ' list="sc-regiones"' : k === 'eta' ? ' list="sc-etas"' : ''}>`;
     return `<div${k === 'direccion' ? ' style="grid-column:1/-1"' : ''}><label>${l}</label>${inp}</div>`;
   };
-  return `<tr class="ficha" data-id="${r.id}"><td colspan="11">${FICHA.map(([t, cs]) => t === 'Equipo'
+  return `<tr class="ficha" data-id="${r.id}"><td colspan="12">${FICHA.map(([t, cs]) => t === 'Equipo'
       ? `<div class="fi-t fi-eq">Equipo <label class="fi-sin"><input type="checkbox" data-k="sineq"${r.sineq ? ' checked' : ''}> Sin equipo</label><button type="button" class="btn sm" data-eqpegar${r.sineq ? ' disabled' : ''}>📋 Pegar equipo del Stock</button></div><div class="fi-g${r.sineq ? ' fi-off' : ''}">${cs.map(campo).join('')}</div>`
       : `<div class="fi-t">${t}</div><div class="fi-g">${cs.map(campo).join('')}</div>${t === 'Cliente' ? deudaBarra(r) : ''}`).join('')}
     <div class="fi-t">Observaciones</div><div class="fi-obs"><div class="fi-chips">${OBS_RAPIDAS.map(o => `<button type="button" data-obs="${esc(o)}">+ ${esc(o)}</button>`).join('')}</div><textarea data-k="notas" rows="3" placeholder="Pega o escribe aquí todo lo que conversaste con el cliente">${esc(r.notas || '')}</textarea></div>
@@ -2971,6 +2964,7 @@ window.clarogoDesdeGenesys = (txt, extra = {}) => {
   if (location.hash !== '#control') location.hash = 'control';
   if (extra && extra.plan && PLANES_WA().some(p => p.title === extra.plan)) d.plan = extra.plan;
   if (extra && String(extra.notas || '').trim()) d.notas = String(extra.notas).trim().slice(0, 2000);
+  if (extra && /^[0-9.]{7,10}-?[0-9kK]$/.test(String(extra.rut || '').trim())) { const c = String(extra.rut).replace(/[^0-9kK]/g, '').toUpperCase(); d.rut = c.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '-' + c.slice(-1); }
   setTimeout(() => { ctAgregar(d); if (!d.telefono) toast('Llegaron los datos de Genesys, pero sin teléfono.'); }, 120);
   return d.telefono ? 'ok' : 'sin-telefono';
 };
@@ -3156,7 +3150,8 @@ function ctPinta() {
     <td class="c-rut"><input data-k="rut" value="${esc(r.rut)}" placeholder="RUT" title="${esc(r.rut)}"></td>
     <td class="c-nombre"><textarea data-k="nombre" class="nom" rows="1" placeholder="Pegar nombre" title="${esc(r.nombre)}">${esc(r.nombre)}</textarea></td>
     <td class="c-tel"><div class="tel-nom">${esc(r.nombre || '')}</div><input data-k="telefono" value="${esc(r.telefono)}" placeholder="9XXXXXXXX" title="${esc(r.telefono)}"></td>
-    <td class="c-orig"><div class="orig-w"><input data-k="origen" value="${esc(r.origen || '')}" placeholder="Compañía" title="Compañía de origen${r.origen ? ': ' + esc(r.origen) : ''}">${deudaBoton(r)}</div></td>
+    <td class="c-orig"><select data-k="origen" title="Compañía de origen. Cámbiala para revisar la deuda en otra compañía.">${origenOpciones(r.origen)}</select></td>
+    <td class="c-deu">${deudaBoton(r)}</td>
     <td class="c-tipo"><select data-k="tipo">${opt(TIPIFICACIONES, r.tipo, 'Sin tipificar')}</select></td>
     <td class="c-plan"><div class="plan-ver${r.plan ? '' : ' vacio'}">${esc(r.plan ? r.plan.replace(/^Plan\s+/i, '') : 'Sin plan')}</div><select data-k="plan" class="plan-sel" title="${esc(r.plan || 'Elegir plan')}">${opt(PLANES_WA().map(p => p.title), r.plan, 'Sin plan')}</select></td>
     <td class="c-notas"><input data-k="notas" value="${esc(r.notas)}" placeholder="Notas" title="${esc(r.notas)}"></td>
@@ -3220,7 +3215,7 @@ function initControl() {
   $('#ct-nueva').onclick = () => ctAgregar({});
   initColumnas();
   initNotaZoom();
-  $('#ct-body').addEventListener('click', e => { const b = e.target.closest('[data-deuda]'); if (!b) return; e.stopPropagation(); const id = b.closest('tr').dataset.id; if (b.dataset.deuda === '?') deudaMenu(b, id); else deudaRevisar(id, b.dataset.deuda); });
+  $('#ct-body').addEventListener('click', e => { const b = e.target.closest('[data-deuda]'); if (!b) return; e.stopPropagation(); const tr = b.closest('tr'); if (b.dataset.deuda === '?') { const s = tr.querySelector('[data-k="origen"]'); if (s) { s.focus(); try { s.showPicker(); } catch (x) {} } return toast('Elige la compañía del cliente en la columna Compañía.'); } deudaRevisar(tr.dataset.id, b.dataset.deuda); });
   $('#eq-procesar').onclick = () => { const t = $('#eq-texto').value; $('#dlg-equipo').close(); ctPonerEquipo(eqFila, t); };
   $('#ct-vacio').addEventListener('click', e => { const b = e.target.closest('[data-ver]'); if (!b) return; $('#ct-periodo').value = b.dataset.ver; $('#ct-rango').hidden = true; ctPinta(); });
   $('#ct-excel').onclick = ctExcel;
@@ -3244,8 +3239,9 @@ function initControl() {
     else if (el.type === 'checkbox') { r[el.dataset.k] = el.checked; if (el.dataset.k === 'sineq' && el.checked) Object.assign(r, { eq: '', eqsku: '', eqtotal: '', eqpie: '', eqforma: '' }); if (e.type === 'change') setTimeout(ctPinta, 0); }
     else { el.title = el.value; r[el.dataset.k] = el.value; if (el.dataset.k === 'nombre') { if (el.tagName === 'TEXTAREA') { el.value = el.value.replace(/\n/g, ' '); r.nombre = el.value; nomAlto(el); } const tn = el.closest('tr').querySelector('.tel-nom'); if (tn) tn.textContent = el.value; } $$(`#ct-body [data-id="${r.id}"] [data-k="${el.dataset.k}"]`).forEach(x => { if (x !== el) x.value = el.value; }); }
     r.upd = Date.now(); ctGuardar();
-    if (el.dataset.k === 'plan') { const pv = el.closest('td').querySelector('.plan-ver'); if (pv) { pv.textContent = el.value || 'Sin plan'; pv.classList.toggle('vacio', !el.value); } el.title = el.value || 'Elegir plan'; }
+    if (el.dataset.k === 'plan') { const pv = el.closest('td').querySelector('.plan-ver'); if (pv) { pv.textContent = el.value ? el.value.replace(/^Plan\s+/i, '') : 'Sin plan'; pv.classList.toggle('vacio', !el.value); } el.title = el.value || 'Elegir plan'; }
     if (el.dataset.k === 'tipo') { const tr = el.closest('tr'); tr.classList.toggle('t-venta', el.value === 'Venta'); tr.classList.remove('t-verde', 't-rojo', 't-amarillo'); if (tipoColor(el.value)) tr.classList.add(tipoColor(el.value)); }
+    if (el.dataset.k === 'origen') { const td = $(`#ct-body tr[data-id="${r.id}"]:not(.ficha) td.c-deu`); if (td) td.innerHTML = deudaBoton(r); }
     if (el.dataset.k === 'tipo' && e.type === 'change' && el.value === 'Volver a llamar' && !(r.agenda && !r.agendaHecho)) agDialogo(r);
   };
   body.addEventListener('input', actualizar);
