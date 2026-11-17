@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: equipo desde el Stock y Sin equipo
+
+- Ficha de Mi Planilla, sección Equipo: casilla "Sin equipo" (bloquea y limpia los campos del equipo) y botón "Pegar equipo del Stock", que lee el texto del botón Copiar de Stock de Equipos y llena equipo (marca y modelo), SKU, pago inicial, forma de pago (18 cuotas de ...) y monto total. Nuevo campo SKU. El copiado para WhatsApp, la exportación y el Script usan estos datos; con Sin equipo el Script no muestra el paso del equipo.
+
 ### 17-11-2026: teléfonos sin espacios (extensión 1.9.1)
 
 - Todos los teléfonos quedan juntos, sin espacios (por ejemplo 912345678): los que llegan de Genesys o la extensión, los que se escriben o pegan en la planilla, la ficha, el Script y el cuadro de WhatsApp. Los registros guardados antes se limpian solos al abrir la página.

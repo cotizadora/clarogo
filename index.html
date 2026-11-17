@@ -445,6 +445,12 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla tr.ficha:hover td{background:#f6f9ff}
 .fi-t{font-size:.68rem;font-weight:800;color:var(--red);text-transform:uppercase;letter-spacing:.08em;margin:10px 0 5px}
 .fi-t:first-child{margin-top:0}
+.fi-eq{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.fi-sin{display:inline-flex;align-items:center;gap:4px;margin:0;font-size:.74rem;font-weight:700;color:var(--text);text-transform:none;letter-spacing:0;cursor:pointer}
+.fi-sin input{width:auto;height:auto;margin:0}
+.fi-eq .btn{text-transform:none;letter-spacing:0;font-weight:700}
+.fi-off{opacity:.45;pointer-events:none}
+#eq-texto{width:100%;font:inherit}
 .fi-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px 10px}
 @media (min-width:900px){.fi-g{grid-template-columns:repeat(auto-fill,minmax(165px,1fr))}}
 .fi-g label{display:block;font-size:.68rem;font-weight:700;color:var(--muted);margin:0 0 2px}
@@ -905,6 +911,15 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <div class="d-body">
     <p style="font-size:.84rem;margin-top:0">Quedan las copias de las últimas 24 horas y una por día del último mes. <b>Recuperar</b> suma a tu planilla los clientes que falten: no borra ni cambia nada de lo que tienes ahora.</p>
     <div id="cp-lista"></div>
+  </div>
+</dialog>
+
+<dialog id="dlg-equipo" style="max-width:min(480px,96vw)">
+  <div class="d-head"><div><h2>Pegar equipo del Stock</h2><p>Este navegador no permitió leer el portapapeles</p></div><button class="d-x" data-close>✕</button></div>
+  <div class="d-body">
+    <p style="font-size:.86rem;margin-top:0">Haz clic en el cuadro, presiona <b>Ctrl+V</b> y luego "Agregar equipo".</p>
+    <textarea id="eq-texto" rows="8" placeholder="*SKU:* 70016839&#10;*MARCA:* XIAOMI&#10;*MODELO:* ..."></textarea>
+    <div class="d-foot"><button class="btn" data-close>Cancelar</button><button class="btn red" id="eq-procesar">Agregar equipo</button></div>
   </div>
 </dialog>
 
@@ -1854,6 +1869,7 @@ function scCargar(r) {
   const dir = r.direccion ? dirSeparar(r.direccion) : {};
   SC_CAMPOS.forEach(id => { const e = $('#sc-' + id); if (!e) return; const v = (['calle', 'num', 'int', 'comuna', 'region'].includes(id) && r.direccion ? dir[id] : r[scClave(id)]) || ''; if (e.tagName === 'SELECT') { if (v) e.value = v; else e.selectedIndex = 0; } else e.value = v; });
   if (!r.contacto && r.telefono) $('#sc-contacto').value = r.telefono;
+  if (r.sineq) ['eq', 'eqtotal', 'eqpie', 'eqforma'].forEach(k => { $('#sc-' + k).value = ''; });
   if (!r.fono && r.telefono) $('#sc-fono').value = r.telefono;
   const p = PLANES_VIGENTES.find(x => x.title === r.plan); if (p) $('#sc-plan').value = p.id;
   $('#sc-rut').dispatchEvent(new Event('input', { bubbles: true }));
@@ -2349,7 +2365,7 @@ const TVENTA = [['port', 'PortIn Post-Post'], ['portpre', 'PortIn Pre-Post'], ['
 const FICHA = [
   ['Cliente', [['nac', 'Fecha de nacimiento', 'DD-MM-AAAA'], ['mail', 'Correo electrónico', 'correo@ejemplo.com'], ['fono', 'Número a portar', '9XXXXXXXX'], ['contacto', 'Teléfono de contacto', '9XXXXXXXX'], ['origen', 'Compañía de origen', 'Ej: Movistar']]],
   ['Venta', [['medio', 'Validación enviada por', 'MEDIOS'], ['tventa', 'Tipo de venta', 'TVENTA'], ['adic', 'Líneas adicionales', '9 1111 1111, 9 2222 2222'], ['oferta', 'Oferta de la campaña (Genesys)', '']]],
-  ['Equipo', [['eq', 'Equipo', 'Ej: Samsung A17 5G 128GB'], ['eqtotal', 'Monto total', '$0'], ['eqpie', 'Pago inicial', '$0'], ['eqforma', 'Forma de pago', 'Ej: 18 cuotas de $22.000']]],
+  ['Equipo', [['eq', 'Equipo', 'Ej: Samsung A17 5G 128GB'], ['eqsku', 'SKU', 'Ej: 70016839'], ['eqtotal', 'Monto total', '$0'], ['eqpie', 'Pago inicial', '$0'], ['eqforma', 'Forma de pago', 'Ej: 18 cuotas de $22.000']]],
   ['Despacho', [['direccion', 'Dirección', 'Ej: Las Zinnias 5790 Huechuraba, Región Metropolitana'], ['ref', 'Referencia o entrecalles', ''], ['eta', 'Tiempo de despacho', '']]]
 ];
 const OBS_RAPIDAS = ['Interesado, llamar más tarde', 'Pide la oferta por WhatsApp', 'Evaluación pendiente', 'Tiene deuda', 'Quiere equipo', 'Comparando con otra compañía', 'No contesta, reintentar'];
@@ -2362,7 +2378,9 @@ function ctFichaHTML(r) {
     else inp = `<input data-k="${k}" value="${esc(k === 'direccion' ? dirTexto(r) : (r[k] || ''))}" placeholder="${esc(ph)}"${k === 'region' ? ' list="sc-regiones"' : k === 'eta' ? ' list="sc-etas"' : ''}>`;
     return `<div${k === 'direccion' ? ' style="grid-column:1/-1"' : ''}><label>${l}</label>${inp}</div>`;
   };
-  return `<tr class="ficha" data-id="${r.id}"><td colspan="11">${FICHA.map(([t, cs]) => `<div class="fi-t">${t}</div><div class="fi-g">${cs.map(campo).join('')}</div>`).join('')}
+  return `<tr class="ficha" data-id="${r.id}"><td colspan="11">${FICHA.map(([t, cs]) => t === 'Equipo'
+      ? `<div class="fi-t fi-eq">Equipo <label class="fi-sin"><input type="checkbox" data-k="sineq"${r.sineq ? ' checked' : ''}> Sin equipo</label><button type="button" class="btn sm" data-eqpegar${r.sineq ? ' disabled' : ''}>📋 Pegar equipo del Stock</button></div><div class="fi-g${r.sineq ? ' fi-off' : ''}">${cs.map(campo).join('')}</div>`
+      : `<div class="fi-t">${t}</div><div class="fi-g">${cs.map(campo).join('')}</div>`).join('')}
     <div class="fi-t">Observaciones</div><div class="fi-obs"><div class="fi-chips">${OBS_RAPIDAS.map(o => `<button type="button" data-obs="${esc(o)}">+ ${esc(o)}</button>`).join('')}</div><textarea data-k="notas" rows="3" placeholder="Pega o escribe aquí todo lo que conversaste con el cliente">${esc(r.notas || '')}</textarea></div>
     <div class="fi-pie"><small class="dim">Todo se guarda solo, sea venta o no.</small><span><button type="button" class="btn sm" data-ct="copiar">📋 Copiar datos para WhatsApp</button><button type="button" class="btn sm red" data-ct="script">▶ Pasar al Script de Cierre</button><button type="button" class="btn sm" data-ct="ficha">Cerrar ficha ▴</button></span></div></td></tr>`;
 }
@@ -2633,7 +2651,7 @@ function dirSeparar(txt) {
 }function ctResumen(r) {
   const tv = (TVENTA.find(([v]) => v === r.tventa) || [])[1] || '';
   const fecha = String(r.fecha || '').replace(/^(\d{4})-(\d{2})-(\d{2})$/, '$3-$2-$1');
-  const equipo = [r.eq, r.eqtotal && `total ${r.eqtotal}`, r.eqpie && `pie ${r.eqpie}`, r.eqforma].filter(Boolean).join(' · ');
+  const equipo = r.sineq ? 'Sin equipo' : [r.eq, r.eqsku && `SKU ${r.eqsku}`, r.eqpie && `pie ${r.eqpie}`, r.eqforma, r.eqtotal && `total ${r.eqtotal}`].filter(Boolean).join(' · ');
   const filas = [
     ['Cliente', r.nombre], ['RUT', r.rut], ['Teléfono', r.telefono],
     ['Teléfono de contacto', r.contacto && r.contacto.replace(/\D/g, '') !== String(r.telefono || '').replace(/\D/g, '') ? r.contacto : ''],
@@ -2644,6 +2662,30 @@ function dirSeparar(txt) {
     ['Tipificación', r.tipo], ['Observaciones', r.notas]
   ].filter(([, v]) => String(v || '').trim());
   return `📋 *Datos del cliente*${fecha ? ' · ' + fecha : ''}\n\n` + filas.map(([k, v]) => `*${k}:* ${String(v).trim()}`).join('\n');
+}
+/* ── Equipo desde Stock de Equipos ─────────────────────────────────
+   Lee el texto que copia el botón "Copiar" del Stock:
+   *SKU:* 70016839 / *MARCA:* XIAOMI / *MODELO:* Redmi A7 Pro 128GB Negro / *PIE:* $0 / *18 CUOTAS DE:* $12.500 / *PRECIO TOTAL:* $225.000 */
+function leerEquipo(txt) {
+  const t = String(txt || '').replace(/\*/g, '').replace(/\r/g, '');
+  const g = re => { const m = t.match(re); return m ? m[1].trim() : ''; };
+  const sku = g(/SKU:\s*([^\n]+?)(?=\s+MARCA:|\n|$)/i), marca = g(/MARCA:\s*([^\n]+?)(?=\s+MODELO:|\n|$)/i), modelo = g(/MODELO:\s*([^\n]+?)(?=\s+PIE:|\n|$)/i);
+  const pie = g(/PIE:\s*([^\n]+?)(?=\s+\d+\s*CUOTAS|\n|$)/i), total = g(/PRECIO TOTAL:\s*([^\n]+?)(?=\s+STOCK:|\n|$)/i);
+  const c = t.match(/(\d+)\s*CUOTAS DE:\s*([^\n]+?)(?=\s+PRECIO|\n|$)/i);
+  if (!sku && !modelo) return null;
+  return { sineq: false, eqsku: sku, eq: [marca, modelo].filter(Boolean).join(' '), eqpie: pie, eqtotal: total, eqforma: c ? `${c[1]} cuotas de ${c[2].trim()}` : '' };
+}
+function ctPonerEquipo(id, txt) {
+  const r = CT.find(x => x.id === id), d = leerEquipo(txt);
+  if (!r) return;
+  if (!d) return toast('No encontré un equipo en lo copiado. En Stock de Equipos presiona "Copiar" en el equipo y vuelve a intentarlo.');
+  Object.assign(r, d, { upd: Date.now() }); ctGuardar(); ctPinta();
+  toast(`Equipo agregado: ${d.eq}`);
+}
+let eqFila = '';
+async function ctPegarEquipo(id) {
+  try { const txt = await navigator.clipboard.readText(); if (!txt.trim()) throw new Error('vacío'); ctPonerEquipo(id, txt); }
+  catch (e) { eqFila = id; $('#eq-texto').value = ''; abrir('dlg-equipo'); setTimeout(() => $('#eq-texto').focus(), 50); }
 }
 const ctExtras = r => FICHA.reduce((n, [, cs]) => n + cs.filter(([k]) => k === 'direccion' ? dirTexto(r) : r[k]).length, 0);
 
@@ -2719,8 +2761,8 @@ function ctExcel() {
   const q = s => /[;"\n]/.test(s) ? '"' + String(s).replace(/"/g, '""') + '"' : s;
   const cols = [['fecha', 'Fecha'], ['hora', 'Hora'], ['campana', 'Campaña'], ['cola', 'Cola'], ['rut', 'RUT'], ['nombre', 'Nombre'], ['telefono', 'Teléfono'], ['tipo', 'Tipificación'], ['plan', 'Plan'], ['notas', 'Observaciones'],
     ['nac', 'Nacimiento'], ['mail', 'Correo'], ['fono', 'Número a portar'], ['contacto', 'Teléfono de contacto'], ['origen', 'Compañía de origen'], ['oferta', 'Oferta de la campaña'], ['medio', 'Validación enviada por'], ['tventa', 'Tipo de venta'], ['adic', 'Líneas adicionales'],
-    ['eq', 'Equipo'], ['eqtotal', 'Monto total'], ['eqpie', 'Pago inicial'], ['eqforma', 'Forma de pago'], ['direccion', 'Dirección'], ['ref', 'Referencia'], ['eta', 'Despacho'], ['agenda', 'Llamar el'], ['agendaObs', 'Observación de la agenda']];
-  const csv = String.fromCharCode(0xFEFF) + cols.map(c => c[1]).join(';') + '\r\n' + lista.map(r => cols.map(c => q((c[0] === 'direccion' ? dirTexto(r) : r[c[0]]) || '')).join(';')).join('\r\n') + '\r\n';
+    ['eq', 'Equipo'], ['eqsku', 'SKU'], ['eqtotal', 'Monto total'], ['eqpie', 'Pago inicial'], ['eqforma', 'Forma de pago'], ['direccion', 'Dirección'], ['ref', 'Referencia'], ['eta', 'Despacho'], ['agenda', 'Llamar el'], ['agendaObs', 'Observación de la agenda']];
+  const csv = String.fromCharCode(0xFEFF) + cols.map(c => c[1]).join(';') + '\r\n' + lista.map(r => cols.map(c => q((c[0] === 'direccion' ? dirTexto(r) : c[0] === 'eq' && r.sineq ? 'Sin equipo' : r[c[0]]) || '')).join(';')).join('\r\n') + '\r\n';
   downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8' }), `planilla-control-${hoyISO()}.csv`);
   toast(`${lista.length} registros exportados. Ábrelo con Excel.`);
 }
@@ -2751,6 +2793,7 @@ function initControl() {
   // El cuadro de pegar usa solo el texto copiado
   $('#ct-procesar').onclick = () => { const txt = $('#ct-texto').value, d = destino; $('#dlg-pegar').close(); destino = d; procesar(txt); };
   $('#ct-nueva').onclick = () => ctAgregar({});
+  $('#eq-procesar').onclick = () => { const t = $('#eq-texto').value; $('#dlg-equipo').close(); ctPonerEquipo(eqFila, t); };
   $('#ct-vacio').addEventListener('click', e => { const b = e.target.closest('[data-ver]'); if (!b) return; $('#ct-periodo').value = b.dataset.ver; $('#ct-rango').hidden = true; ctPinta(); });
   $('#ct-excel').onclick = ctExcel;
   $('#ct-q').addEventListener('input', ctPinta);
@@ -2768,6 +2811,7 @@ function initControl() {
     if (el.dataset.k === 'mail' && el.value !== correoLimpio(el.value)) el.value = correoLimpio(el.value);
     if (TEL_CAMPOS.includes(el.dataset.k) && el.value !== telLimpio(el.value)) el.value = telLimpio(el.value);
     if (el.dataset.k === 'fecha') { const m = el.value.trim().match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/); if (!m) return; r.fecha = `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`; }
+    else if (el.type === 'checkbox') { r[el.dataset.k] = el.checked; if (el.dataset.k === 'sineq' && el.checked) Object.assign(r, { eq: '', eqsku: '', eqtotal: '', eqpie: '', eqforma: '' }); if (e.type === 'change') setTimeout(ctPinta, 0); }
     else { el.title = el.value; r[el.dataset.k] = el.value; $$(`#ct-body [data-id="${r.id}"] [data-k="${el.dataset.k}"]`).forEach(x => { if (x !== el) x.value = el.value; }); }
     r.upd = Date.now(); ctGuardar();
     if (el.dataset.k === 'tipo') el.closest('tr').classList.toggle('t-venta', el.value === 'Venta');
@@ -2777,6 +2821,7 @@ function initControl() {
   body.addEventListener('change', actualizar);
   body.addEventListener('focusout', () => setTimeout(() => { if (!body.contains(document.activeElement)) { if (ctRepintarPend) ctRepintar(); respSync('edición'); } }, 50));
   body.addEventListener('click', e => {
+    const pq = e.target.closest('[data-eqpegar]'); if (pq) return ctPegarEquipo(pq.closest('tr').dataset.id);
     const o = e.target.closest('[data-obs]');
     if (o) { const r = CT.find(x => x.id === o.closest('tr').dataset.id); if (!r) return; r.notas = (r.notas ? r.notas.trim().replace(/[.\s]*$/, '. ') : '') + o.dataset.obs; r.upd = Date.now(); ctGuardar(); $$(`#ct-body [data-id="${r.id}"] [data-k="notas"]`).forEach(x => { x.value = r.notas; x.title = r.notas; }); return; }
     const b = e.target.closest('[data-ct]'); if (!b) return;
