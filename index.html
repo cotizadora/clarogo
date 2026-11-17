@@ -44,6 +44,7 @@ main{flex:1;width:100%;max-width:1200px;margin:0 auto;padding:16px 12px 40px}
 .top{position:sticky;top:0;z-index:20;background:var(--red);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .top-in{max-width:1400px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:0 14px;padding:0 12px}
 .logo{font-weight:900;font-size:1.35rem;letter-spacing:-.01em;text-decoration:none;padding:10px 0;white-space:nowrap}
+.logo-ver{display:inline-block;vertical-align:middle;margin-left:4px;padding:2px 7px;border-radius:999px;background:#fff;color:var(--red-dk);font-size:.58rem;font-weight:800;letter-spacing:0}
 /* Menú superior: grilla simétrica, nunca se desplaza de lado y todos los botones siempre visibles */
 #nav{flex:1;min-width:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;padding:4px 0 6px}
 #nav a,#nav button{display:flex;align-items:center;justify-content:center;text-align:center;min-width:0;background:rgba(0,0,0,.1);border:0;border-radius:7px;color:#fff;text-decoration:none;font-size:.74rem;line-height:1.15;padding:6px 4px;white-space:normal;overflow-wrap:anywhere;border-bottom:3px solid transparent;opacity:.92}
@@ -613,7 +614,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 
 <header class="top">
   <div class="top-in">
-    <a class="logo" href="#inicio" title="Inicio">ClaroGo!</a>
+    <a class="logo" href="#inicio" title="Inicio">ClaroGo! <span class="logo-ver" data-app-ver title="Versión de ClaroGo! que estás viendo"></span></a>
     <nav id="nav" aria-label="Secciones"></nav>
   </div>
 </header>
@@ -623,7 +624,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <section id="v-inicio" class="view">
     <div class="hero">
       <div class="tag" id="hoy">Portal de ventas</div>
-      <h1>Claro<em>Go!</em> <span class="ver">2.0</span></h1>
+      <h1>Claro<em>Go!</em> <span class="ver" data-app-ver title="Versión de ClaroGo!"></span></h1>
       <p>Portal de ventas 2026 · Elige una sección · <button class="perfil-btn" id="perfil-btn" title="Tu nombre y tu mensaje de WhatsApp"></button></p>
       <p class="truco" id="truco" title="Clic para ver otro truco"></p>
     </div>
@@ -856,7 +857,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 </main>
 
 <footer>
-  <div class="sig"><a href="https://wa.me/56927690949" target="_blank" rel="noopener">Desarrollado por Eduardo Pérez</a> · ClaroGo! 2.0 · 2026</div>
+  <div class="sig"><a href="https://wa.me/56927690949" target="_blank" rel="noopener">Desarrollado por Eduardo Pérez</a> · ClaroGo! <span data-app-ver></span> · 2026</div>
   <div class="leg">Herramienta no oficial, no es de Claro Chile · <button id="cache-btn">Limpiar caché</button> · <button id="sonido-btn" title="Sonido suave al pasar el mouse por los botones"></button></div>
 </footer>
 
@@ -1036,6 +1037,8 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    El stock de equipos NO está aquí: vive en datos/stock.csv
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
+// Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
+const APP_VERSION = '2.1.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -3569,7 +3572,7 @@ async function limpiarCache() {
 /* ════════════════════════════════════════════════════════════════
    INICIO
    ════════════════════════════════════════════════════════════════ */
-initMenu(); initExcepciones(); initSugerencias(); iniciarRespaldo(); initWhatsApp(); initAgenda(); initPerfil(); initDeshacer(); initSonido(); mostrarTruco(); $('#truco').onclick = mostrarTruco; window.addEventListener('hashchange', () => { if ((location.hash || '#inicio') === '#inicio') mostrarTruco(); });
+$$('[data-app-ver]').forEach(e => { e.textContent = 'v' + APP_VERSION; }); initMenu(); initExcepciones(); initSugerencias(); iniciarRespaldo(); initWhatsApp(); initAgenda(); initPerfil(); initDeshacer(); initSonido(); mostrarTruco(); $('#truco').onclick = mostrarTruco; window.addEventListener('hashchange', () => { if ((location.hash || '#inicio') === '#inicio') mostrarTruco(); });
 try { if (sessionStorage.getItem('clarogo_limpio')) { sessionStorage.removeItem('clarogo_limpio'); setTimeout(() => toast('Caché limpiada. Tu planilla está a salvo.'), 400); } } catch (e) {}
 $('#cache-btn').onclick = limpiarCache;
 window.addEventListener('hashchange', route);

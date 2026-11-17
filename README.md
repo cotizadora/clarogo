@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 17-11-2026: ClaroGo! v2.1.0, número de versión visible
+
+- La versión de ClaroGo! se ve arriba en todas las secciones, en la portada y en el pie (constante APP_VERSION). Se sube en cada cambio publicado.
+
 ### 17-11-2026: formulario de ventas lleno y exportar o importar clientes
 
 - "📤 Subir venta al formulario" en la ficha y "Llenar con un cliente de Mi Planilla" en Ingreso de Venta: abren el formulario de Google con las respuestas escritas (enlace prellenado). Quedan para el ejecutivo: RAC Ejecutivo, Número de TRX, Tipo de Delivery y Origen Venta. Nunca se envía solo.

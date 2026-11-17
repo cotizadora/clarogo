@@ -75,7 +75,7 @@ Publicar con GitHub Pages desde la rama principal. El enlace final debe ser el d
 
 Al terminar cualquier cambio:
 
-1. Actualiza el README con lo cambiado y la fecha.
+1. Sube el número de versión de ClaroGo! (`APP_VERSION` en index.html, se ve arriba en todas las secciones) y anótalo en el README junto con lo cambiado y la fecha. Si cambia la extensión, sube también su versión en `extension/manifest.json`.
 2. Haz commit y push a GitHub.
 3. Confirma que GitHub Pages se publicó y entrega el enlace del repositorio.
 4. Resume en pocas líneas qué se cambió y qué queda pendiente.
