@@ -50,6 +50,13 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: Plan Persona Mayor, agenda de llamadas y mensaje de WhatsApp
+
+- Oferta Personas: nueva fila con el Plan Persona Mayor (50 GB, 1.000 minutos y 500 SMS a todo destino, $4.990 por 12 meses y luego $6.990, solo Portabilidad PosPos). Fuente: gráfica enviada por Eduardo el 17-11-2026, guardada en `ofertas/plan-persona-mayor.webp`. Se puede ver en grande, copiar la gráfica y copiar el texto. Va aparte de los planes 5G: no entra a la calculadora ni al Script.
+- WhatsApp (planilla y extensión 1.6): el mensaje parte con la presentación del ejecutivo ("Hola, muy buen día, mi nombre es ... Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.") y el Plan 500 por defecto. En la planilla se puede cambiar el plan (incluye Persona Mayor) y el nombre antes de enviar.
+- Mi Planilla parte siempre sin filtros (todo el historial), aunque el navegador intente recordar los anteriores.
+- Agenda de llamadas: botón ⏰ en cada fila (y se ofrece al tipificar Volver a llamar) con día, hora, atajos y observación. A la hora suena un aviso suave (una sola pestaña lo hace sonar), aparece un reloj rojo parpadeando abajo a la izquierda en todas las secciones y el título de la pestaña avisa. Se repite cada 10 minutos hasta marcar Ya llamé. Panel de agenda en la planilla con atrasados, +15 min, Cambiar y Ya llamé. La agenda se exporta a Excel.
+
 ### 17-11-2026: ícono de Genesys
 
 - El botón 📞 de cada fila y el botón Pegar desde Genesys usan ahora un ícono naranjo simple que recuerda a Genesys (dibujado para ClaroGo!, no es el logo oficial).

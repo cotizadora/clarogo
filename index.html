@@ -255,6 +255,23 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 /* Sugerencias */
 #sugg-btn{position:fixed;right:16px;bottom:16px;z-index:15;width:50px;height:50px;border-radius:50%;border:0;background:#25D366;box-shadow:0 3px 14px rgba(37,211,102,.45);display:flex;align-items:center;justify-content:center}
 #sugg-btn svg{width:26px;height:26px;fill:#fff}
+/* Reloj de llamadas agendadas: visible en todas las secciones */
+#ag-reloj{position:fixed;left:16px;bottom:16px;z-index:16;display:flex;align-items:center;gap:6px;border:0;border-radius:999px;padding:8px 14px;font:inherit;font-size:.84rem;font-weight:700;cursor:pointer;background:#fff;color:var(--text);box-shadow:0 3px 14px rgba(0,0,0,.18)}
+#ag-reloj .ico{font-size:1.1rem}
+#ag-reloj.hoy{background:#fff4d6;color:#6b4e00}
+#ag-reloj.atrasado{background:var(--red);color:#fff;animation:agReloj 1s ease-in-out infinite}
+@keyframes agReloj{50%{box-shadow:0 0 0 8px rgba(230,0,0,.25);transform:scale(1.05)}}
+#ag-panel{margin:0 0 12px}
+#ag-panel .ag-t{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:800;margin-bottom:6px}
+.ag-item{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;align-items:center;padding:7px 0;border-top:1px solid var(--border);font-size:.84rem}
+.ag-item .ag-cuando{font-weight:800;font-size:.76rem;padding:3px 8px;border-radius:999px;background:#eef4ff;color:#1a56b8;white-space:nowrap}
+.ag-item.hoy .ag-cuando{background:#fff4d6;color:#6b4e00}
+.ag-item.atrasado .ag-cuando{background:var(--red);color:#fff}
+.ag-item small{display:block;color:var(--muted)}
+.ag-item .ag-b{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.ag-chips{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}
+.ag-chips button{border:1px solid #c9daf8;background:#fff;color:#1a56b8;border-radius:999px;font-size:.76rem;padding:4px 10px;cursor:pointer}
+@media (max-width:720px){#ct-tabla .acc .go{display:none}.ag-item{grid-template-columns:1fr}.ag-item .ag-b{justify-content:flex-start}}
 .crumbs{font-size:.74rem;color:var(--muted)}
 .crumbs button{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline}
 .opt{display:flex;align-items:center;gap:12px;text-align:left;background:#f8f9fa;border:1px solid var(--border);border-radius:10px;padding:12px 14px;width:100%}
@@ -314,6 +331,7 @@ footer .sig{font-size:.78rem;font-weight:700;color:var(--text);white-space:nowra
 footer .sig a{text-decoration:none}
 footer .leg{font-size:.64rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 #sugg-btn{bottom:calc(var(--foot) + 12px)}
+#ag-reloj{bottom:calc(var(--foot) + 16px)}
 #toast{bottom:calc(var(--foot) + 16px)}
 body[data-view="inicio"]{height:100vh;height:100dvh;min-height:0;overflow:hidden;background:linear-gradient(155deg,#12152a 0%,#3b0d14 60%,#8f0a12 120%)}
 body[data-view="inicio"] .top{display:none}
@@ -386,10 +404,10 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla .acc button:hover{background:#eef2f7}
 #ct-tabla .acc .go{color:#fff;background:var(--red);font-size:.7rem}
 #ct-tabla .acc .go:hover{background:var(--red-dk)}
-.c-n{width:34px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:94px}.c-tel{width:94px}.c-orig{width:76px}.c-tipo{width:126px}.c-plan{width:80px}.c-acc{width:150px}
+.c-n{width:34px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:94px}.c-tel{width:94px}.c-orig{width:76px}.c-tipo{width:126px}.c-plan{width:80px}.c-acc{width:172px}
 .c-nombre{width:auto}.c-notas{width:17%}
 @media (max-width:1100px){.c-hora,.c-plan,.c-notas{display:none}}
-@media (max-width:720px){.c-fecha,.c-notas,.c-rut,.c-nombre{display:none}.c-tel{width:auto}.c-orig{width:64px}.c-tipo{width:86px}.c-n{width:22px}.c-acc{width:112px} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
+@media (max-width:720px){.c-fecha,.c-notas,.c-rut,.c-nombre{display:none}.c-tel{width:auto}.c-orig{width:60px}.c-tipo{width:80px}.c-n{width:22px}.c-acc{width:120px} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
 #ct-resumen .chip b{margin-left:4px}
 .resp{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:.84rem}
 .resp .resp-b{display:flex;gap:6px;flex-wrap:wrap}
@@ -404,6 +422,11 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .gico{width:14px;height:14px;fill:none;stroke:#ff4f1f;stroke-width:1.9;vertical-align:middle}
 .gico circle{fill:none}
 .btn .gico{width:16px;height:16px;stroke:#fff;margin-right:2px}
+#ct-tabla .acc .ag{font-size:.78rem;filter:grayscale(1);opacity:.55}
+#ct-tabla .acc .ag.futuro{filter:none;opacity:1;background:#eef4ff}
+#ct-tabla .acc .ag.hoy{filter:none;opacity:1;background:#fff4d6}
+#ct-tabla .acc .ag.atrasado{filter:none;opacity:1;background:#ffd9d9;animation:agLatido 1s ease-in-out infinite}
+@keyframes agLatido{50%{background:#ff8a8a}}
 #ct-tabla .acc .wa{background:#25d366}
 #ct-tabla .acc .wa:hover{background:#1da851}
 #ct-tabla .acc .wa svg{width:14px;height:14px;fill:#fff;vertical-align:middle}
@@ -446,6 +469,17 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .multi .calc-ctrl{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;min-width:0}
 @media (min-width:760px){#ov-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.multi .calc{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}.ov-f2{grid-template-columns:repeat(3,minmax(0,1fr));align-items:start}.multi{grid-column:span 2}}
 @media (min-width:1000px){.ov-f2{grid-template-columns:repeat(3,minmax(0,1fr));align-items:start}.multi{grid-column:span 2}.ov-nf{max-width:none}}
+.ov-mayor{margin-top:24px}
+.pm-card{display:grid;grid-template-columns:1fr;overflow:hidden}
+.pm-der{padding:14px;display:flex;flex-direction:column;gap:12px;justify-content:space-between}
+.pm-der pre{margin:0;white-space:pre-wrap;font:inherit;font-size:.86rem;line-height:1.5;background:#fafbfc;border:1px solid var(--border);border-radius:10px;padding:12px}
+@media (min-width:760px){.pm-card{grid-template-columns:minmax(0,360px) minmax(0,1fr);align-items:stretch}.pm-img{border-radius:0}}
+.pm-img{display:block;position:relative;width:100%;padding:0;border:0;background:#fff;cursor:zoom-in;border-radius:12px 12px 0 0;overflow:hidden}
+.pm-img img{display:block;width:100%;height:auto}
+.pm-img span{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.65);color:#fff;font-size:.72rem;padding:3px 8px;border-radius:999px}
+
+#dlg-img{max-width:min(720px,96vw);padding:0;background:#fff}
+#dlg-img img{display:block;width:100%;height:auto}
 .calc-out .lam{border-radius:12px}
 @media (min-width:900px){.calc{grid-template-columns:minmax(0,1fr) 400px;align-items:start}}
 .cl-row{display:grid;grid-template-columns:auto 1fr auto;gap:6px 8px;align-items:center;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #eef0f3}
@@ -568,6 +602,11 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
       </div>
     </div>
     </div>
+    </div>
+    <div class="ov-mayor">
+      <div class="sec-t" style="margin:0 0 8px">Plan <em>Persona Mayor</em> <span class="tag-si">Solo Portabilidad PosPos</span></div>
+      <article class="card pm-card"><button class="pm-img" id="pm-ver" title="Ver la gráfica en grande"><img src="ofertas/plan-persona-mayor.webp" alt="Plan Persona Mayor: 50 GB, 1.000 minutos y 500 SMS a $4.990 por 12 meses, luego $6.990" loading="lazy" width="645" height="617"><span>🔍 Ver en grande</span></button>
+      <div class="pm-der"><pre id="pm-texto"></pre><div class="plan-btns" style="padding:0"><button class="btn" id="pm-cap">📸 Copiar gráfica</button><button class="btn red" id="pm-msg">📋 Copiar texto</button></div></div></article>
     </div>
   </section>
 
@@ -696,12 +735,13 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
         <button class="btn sm" id="ct-excel">⬇ Exportar a Excel</button>
       </div>
       <input class="full" type="search" id="ct-q" placeholder="Buscar RUT, nombre, teléfono o notas" autocomplete="off">
-      <select id="ct-periodo"><option value="todo" selected>Todo el historial</option><option value="hoy">Hoy</option><option value="7">Últimos 7 días</option><option value="30">Últimos 30 días</option><option value="mes">Este mes</option><option value="rango">Entre fechas</option></select>
+      <select id="ct-periodo" autocomplete="off"><option value="todo" selected>Todo el historial</option><option value="hoy">Hoy</option><option value="7">Últimos 7 días</option><option value="30">Últimos 30 días</option><option value="mes">Este mes</option><option value="rango">Entre fechas</option></select>
       <select id="ct-tipo"><option value="">Todas las tipificaciones</option></select>
       <select id="ct-seg"><option value="">Todos los segmentos</option></select>
       <div class="ct-rango full" id="ct-rango" hidden><label for="ct-desde">Desde</label><input type="date" id="ct-desde"><label for="ct-hasta">Hasta</label><input type="date" id="ct-hasta"></div>
       <label class="chk"><input type="checkbox" id="ct-verborr"> Ver borrados</label>
     </div>
+    <div class="card" id="ag-panel" hidden style="padding:12px 14px"></div>
     <div class="chips" id="ct-resumen"></div>    <div class="ct-wrap"><table id="ct-tabla">
       <colgroup><col class="c-n"><col class="c-fecha"><col class="c-hora"><col class="c-rut"><col class="c-nombre"><col class="c-tel"><col class="c-orig"><col class="c-tipo"><col class="c-plan"><col class="c-notas"><col class="c-acc"></colgroup>
       <thead><tr><th class="c-n"></th><th class="c-fecha">Fecha</th><th class="c-hora">Hora</th><th class="c-rut">RUT</th><th class="c-nombre">Nombre</th><th class="c-tel">Teléfono</th><th class="c-orig" title="Compañía de origen">Compañía</th><th class="c-tipo">Tipificación</th><th class="c-plan">Plan</th><th class="c-notas">Notas</th><th class="c-acc"></th></tr></thead>
@@ -813,10 +853,27 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   </div>
 </dialog>
 
+<button id="ag-reloj" hidden title="Llamadas agendadas"></button>
+
+<dialog id="dlg-img"><img id="img-grande" alt=""><div class="d-foot" style="padding:10px"><button class="btn dark" data-close>Cerrar</button></div></dialog>
+
+<dialog id="dlg-agenda" style="max-width:min(480px,96vw)">
+  <div class="d-head"><div><h2>⏰ Agendar llamada</h2><p id="ag-para"></p></div><button class="d-x" data-close>✕</button></div>
+  <div class="d-body">
+    <div class="ag-chips" id="ag-rapidos"></div>
+    <div class="form2"><div><label for="ag-fecha">Día</label><input type="date" id="ag-fecha"></div><div><label for="ag-hora">Hora</label><input type="time" id="ag-hora" step="300"></div></div>
+    <label for="ag-obs" style="margin-top:10px">Observación</label>
+    <textarea id="ag-obs" rows="3" placeholder="Ej: Llamar después del almuerzo, quiere el Plan 500"></textarea>
+    <div class="d-foot"><button class="btn" id="ag-quitar">Quitar agenda</button><button class="btn" id="ag-hecho">✓ Ya llamé</button><button class="btn red" id="ag-guardar">Guardar</button></div>
+    <p class="dim" style="font-size:.76rem;margin:6px 0 0">A la hora agendada suena un aviso suave y aparece un reloj rojo parpadeando en todas las secciones y pestañas de ClaroGo!.</p>
+  </div>
+</dialog>
+
 <dialog id="dlg-wa" style="max-width:min(560px,96vw)">
   <div class="d-head"><div><h2>Enviar oferta por WhatsApp</h2><p id="wa-para"></p></div><button class="d-x" data-close>✕</button></div>
   <div class="d-body">
-    <div class="form2"><div><label for="wa-plan">Plan que quieres ofrecer</label><select id="wa-plan"></select></div><div><label for="wa-tel">Teléfono</label><input id="wa-tel" placeholder="9 XXXX XXXX"></div></div>
+    <div class="form2"><div><label for="wa-plan">Plan que quieres ofrecer</label><select id="wa-plan"></select></div><div><label for="wa-tel">Teléfono</label><input id="wa-tel" placeholder="9 XXXX XXXX"></div>
+    <div style="grid-column:1/-1"><label for="wa-agente">Tu nombre (va en la presentación)</label><input id="wa-agente" placeholder="Ej: Eduardo Pérez" autocomplete="off"></div></div>
     <label for="wa-texto" style="margin-top:10px">Mensaje (puedes editarlo antes de abrir WhatsApp)</label>
     <textarea id="wa-texto" rows="12"></textarea>
     <div class="d-foot"><button class="btn" data-close>Cancelar</button><button class="btn wa-btn" id="wa-abrir">Abrir WhatsApp Web</button></div>
@@ -876,6 +933,10 @@ const PLANES_VIGENTES = [
  {id:'v1000',gb:1000,title:'Plan 1000',data:'1000 GB de alta velocidad',roaming:'100 Min + 5 GB + 100 SMS',ldi:'100 minutos',promo:16990,price:17990,puj:'Al usar la cuota baja a 256 kbps hasta el siguiente ciclo.'},
  {id:'v500n',gb:500,title:'Plan 500 + Netflix',sello:'Netflix Estándar',data:'500 GB a alta velocidad',roaming:'40 Min + 2 GB + 40 SMS',ldi:'40 minutos',price:17990,netflix:true,puj:'Al usar la cuota baja a 256 kbps. Sobre 600 GB baja a 64 kbps.'}
 ];
+// Plan Persona Mayor: fuente, gráfica "Nuevo Plan Persona Mayor" enviada por Eduardo (17-11-2026).
+// Va aparte de PLANES_VIGENTES porque no tiene roaming, LDI ni líneas adicionales (no entra a la calculadora ni al Script).
+const PLAN_MAYOR = { id: 'vmayor', title: 'Plan Persona Mayor', promo: 4990, meses: 12, price: 6990, data: '50 GB', min: '1.000 minutos a todo destino', sms: '500 SMS a todo destino', cond: 'Solo Portabilidad PosPos', img: 'ofertas/plan-persona-mayor.webp' };
+const mayorMensaje = () => `👵👴 *${PLAN_MAYOR.title}*\n💰 *${clp(PLAN_MAYOR.promo)} mensual por ${PLAN_MAYOR.meses} meses*\nDesde el mes ${PLAN_MAYOR.meses + 1} valor fijo ${clp(PLAN_MAYOR.price)}\n\n📶 *Internet:* ${PLAN_MAYOR.data}\n📞 *Llamadas:* ${PLAN_MAYOR.min}\n💬 *Mensajes:* ${PLAN_MAYOR.sms}\n\n_${PLAN_MAYOR.cond}. ${VIGENCIA_PLANES}_`;
 // Líneas adicionales según el plan base (promo por PROMO_MESES meses; meses 0 = valor fijo "por siempre")
 const ADICIONALES = {
  500: {promo:4990, meses:6, luego:8990},
@@ -1654,6 +1715,16 @@ function initOferta() {  $('#ov-fuente').textContent = FUENTE_PLANES; $('#ov-vig
     if (c) { const p = pv(c.dataset.vcap); copyCanvas(lamCanvas(c.closest('article')), p.id + '.png', `Lámina del ${p.title} copiada. Pégala en el chat.`); }
     if (m) copyText(lamTexto(m.closest('article')), 'Texto copiado. Pégalo con Ctrl+V.');
   });
+  // Plan Persona Mayor: gráfica (se puede ver en grande y copiar como imagen) y texto para WhatsApp
+  $('#pm-texto').textContent = mayorMensaje();
+  $('#pm-msg').onclick = () => copyText(mayorMensaje(), 'Texto del Plan Persona Mayor copiado. Pégalo con Ctrl+V.');
+  $('#pm-ver').onclick = () => { $('#img-grande').src = PLAN_MAYOR.img; $('#img-grande').alt = 'Plan Persona Mayor'; abrir('dlg-img'); };
+  $('#pm-cap').onclick = () => {
+    const img = new Image();
+    img.onload = () => { const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight; c.getContext('2d').drawImage(img, 0, 0); copyCanvas(c, 'plan-persona-mayor.png', 'Gráfica del Plan Persona Mayor copiada. Pégala en el chat.'); };
+    img.onerror = () => toast('No se pudo cargar la gráfica');
+    img.src = PLAN_MAYOR.img;
+  };
   $('#o-todos').onclick = () => copyCanvas(variasCanvas('Planes 5G Claro', PLANES_VIGENTES.filter(p => !p.netflix).map(p => lamCanvas($(`#ov-grid [data-id="${p.id}"]`)))), 'planes.png', 'Captura copiada. Pégala en el chat.');
   initCalculadora();
 }
@@ -2274,12 +2345,16 @@ let ctPegarEnFila = () => {};
    Con la extensión ClaroGo! Genesys se reutiliza la pestaña de WhatsApp Web que ya esté abierta.
    Sin la extensión se usa siempre la misma pestaña que abrió ClaroGo! (nombre "clarogo-whatsapp"). */
 const waNumero = tel => { let d = String(tel || '').replace(/\D/g, ''); if (d.length === 11 && d.startsWith('56')) d = d.slice(2); return d.length === 9 ? '56' + d : ''; };
-function waTexto(planId, nombre) {
-  let agente = ''; try { agente = localStorage.getItem('agentName') || ''; } catch (e) {}
-  const pn = String(nombre || '').trim().split(/\s+/)[0] || '';
-  const hola = `Hola${pn ? ' ' + pn.charAt(0).toUpperCase() + pn.slice(1).toLowerCase() : ''}, ${agente ? `soy ${agente}, ` : ''}te escribo por la oferta de Claro que conversamos.`;
+// Planes que se pueden enviar por WhatsApp: el Plan 500 (el más barato) siempre va primero y es el de por defecto
+const PLANES_WA = () => [...PLANES_VIGENTES, PLAN_MAYOR];
+const WA_DEFECTO = 'v500';
+const agenteNombre = () => { try { return (localStorage.getItem('agentName') || '').trim(); } catch (e) { return ''; } };
+function waTexto(planId) {
+  const ag = agenteNombre();
+  const hola = `Hola, muy buen día${ag ? `, mi nombre es ${ag}` : ''}. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.`;
+  if (planId === PLAN_MAYOR.id) return `${hola}\n\n${mayorMensaje()}`;
   const p = PLANES_VIGENTES.find(x => x.id === planId);
-  return p ? `${hola} Te dejo el detalle del plan:\n\n${vMensaje(p)}` : `${hola} ¿Tienes un momento para revisarla?`;
+  return p ? `${hola}\n\n${vMensaje(p)}` : hola;
 }
 function waAbrir(tel, texto) {
   const n = waNumero(tel); if (!n) { toast('El teléfono no es válido. Debe tener 9 dígitos, por ejemplo 9 1234 5678.'); return false; }
@@ -2291,22 +2366,23 @@ function waAbrir(tel, texto) {
 let waFila = '';
 function waDialogo(r) {
   waFila = r.id;
-  const plan = PLANES_VIGENTES.find(p => p.title === r.plan) || PLANES_VIGENTES.find(p => /más vendido/i.test(p.sello || '')) || PLANES_VIGENTES[0];
-  $('#wa-plan').innerHTML = PLANES_VIGENTES.map(p => `<option value="${p.id}"${p === plan ? ' selected' : ''}>${esc(p.title)}</option>`).join('') + '<option value="">Solo saludo, sin plan</option>';
+  $('#wa-plan').innerHTML = PLANES_WA().map(p => `<option value="${p.id}"${p.id === WA_DEFECTO ? ' selected' : ''}>${esc(p.title)}</option>`).join('') + '<option value="">Solo la presentación, sin plan</option>';
   $('#wa-tel').value = r.telefono || r.contacto || '';
+  $('#wa-agente').value = agenteNombre();
   $('#wa-para').textContent = r.nombre || r.telefono || 'Cliente';
-  $('#wa-texto').value = waTexto(plan.id, r.nombre);
+  $('#wa-texto').value = waTexto(WA_DEFECTO);
   $('#wa-nota').textContent = document.documentElement.dataset.clarogoExt ? 'Se usará la pestaña de WhatsApp Web que ya tengas abierta.' : 'Se abre WhatsApp Web en una pestaña aparte y las próximas veces usa esa misma. Con la extensión ClaroGo! Genesys también reutiliza la que ya tengas abierta.';
   abrir('dlg-wa');
 }
 function initWhatsApp() {
-  $('#wa-plan').addEventListener('change', () => { const r = CT.find(x => x.id === waFila); $('#wa-texto').value = waTexto($('#wa-plan').value, r && r.nombre); });
+  $('#wa-plan').addEventListener('change', () => { $('#wa-texto').value = waTexto($('#wa-plan').value); });
+  $('#wa-agente').addEventListener('input', e => { try { localStorage.setItem('agentName', e.target.value.trim()); } catch (x) {} const ag = $('#sc-agente'); if (ag) ag.value = e.target.value; $('#wa-texto').value = waTexto($('#wa-plan').value); });
   $('#wa-abrir').onclick = () => {
     if (!waAbrir($('#wa-tel').value, $('#wa-texto').value)) return;
-    const r = CT.find(x => x.id === waFila), p = PLANES_VIGENTES.find(x => x.id === $('#wa-plan').value);
+    const r = CT.find(x => x.id === waFila), p = PLANES_WA().find(x => x.id === $('#wa-plan').value);
     if (r) {
       if (!r.telefono && waNumero($('#wa-tel').value)) r.telefono = $('#wa-tel').value.trim();
-      if (p && !r.plan) r.plan = p.title;
+      if (p) r.plan = p.title;
       const hora = new Date().toTimeString().slice(0, 5);
       r.notas = (r.notas ? r.notas.trim().replace(/[.\s]*$/, '. ') : '') + `Oferta enviada por WhatsApp${p ? ' (' + p.title + ')' : ''} a las ${hora}`;
       r.upd = Date.now(); ctGuardar(); ctRepintar();
@@ -2314,8 +2390,132 @@ function initWhatsApp() {
     $('#dlg-wa').close();
   };
 }
+/* ── Agenda de llamadas ─────────────────────────────────────────────
+   Cada fila puede tener una llamada agendada (agenda = 'AAAA-MM-DDTHH:MM', agendaObs, agendaHecho).
+   Cada pestaña revisa cada 15 segundos. A la hora: sonido suave (una sola pestaña lo hace sonar),
+   reloj rojo parpadeando en todas las secciones y el título de la pestaña avisando. Se repite cada 10 minutos hasta marcar "Ya llamé". */
+const AG_REPITE_MIN = 10;
+const agFecha = s => { const d = new Date(String(s || '').replace(' ', 'T')); return isNaN(d) ? null : d; };
+const agPendientes = () => CT.filter(r => !r.borrado && r.agenda && !r.agendaHecho && agFecha(r.agenda)).sort((a, b) => agFecha(a.agenda) - agFecha(b.agenda));
+function agEstado(r) {
+  const d = agFecha(r.agenda); if (!d || r.agendaHecho) return '';
+  if (d <= new Date()) return 'atrasado';
+  return isoLocal(d) === isoLocal(new Date()) ? 'hoy' : 'futuro';
+}
+const agClase = r => { const e = agEstado(r); return e ? ' ' + e : ''; };
+function agCuando(r) {
+  const d = agFecha(r.agenda); if (!d) return '';
+  const hm = d.toTimeString().slice(0, 5), hoy = isoLocal(new Date()), dia = isoLocal(d);
+  if (d <= new Date()) { const min = Math.round((Date.now() - d) / 60000); return min < 1 ? 'Ahora' : min < 60 ? `Atrasado ${min} min` : min < 1440 ? `Atrasado ${Math.floor(min / 60)} h ${min % 60} min` : `Atrasado desde ${dia.slice(8, 10)}-${dia.slice(5, 7)} ${hm}`; }
+  if (dia === hoy) return `Hoy ${hm}`;
+  const man = new Date(); man.setDate(man.getDate() + 1);
+  if (dia === isoLocal(man)) return `Mañana ${hm}`;
+  return `${DIAS_SEMANA[d.getDay()].slice(0, 3)} ${dia.slice(8, 10)}-${dia.slice(5, 7)} ${hm}`;
+}
+const agTitulo = r => r.agenda && !r.agendaHecho ? `Llamada agendada: ${agCuando(r)}${r.agendaObs ? ' · ' + r.agendaObs : ''}. Clic para cambiarla.` : 'Agendar una llamada de vuelta';
+let agFila = '';
+function agDialogo(r) {
+  agFila = r.id;
+  const d = agFecha(r.agenda) || (() => { const x = new Date(Date.now() + 3600000); x.setMinutes(Math.ceil(x.getMinutes() / 5) * 5, 0, 0); return x; })();
+  $('#ag-fecha').value = isoLocal(d); $('#ag-hora').value = d.toTimeString().slice(0, 5);
+  $('#ag-obs').value = r.agendaObs || '';
+  $('#ag-para').textContent = [r.nombre, r.telefono].filter(Boolean).join(' · ') || 'Cliente sin datos';
+  $('#ag-quitar').hidden = !r.agenda; $('#ag-hecho').hidden = !(r.agenda && !r.agendaHecho);
+  abrir('dlg-agenda');
+}
+function agGuardar(r, cambios, msg) { Object.assign(r, cambios, { upd: Date.now() }); ctGuardar(); ctRepintar(); agPinta(); if (msg) toast(msg); }
+// Sonido: dos notas suaves generadas por el navegador (no necesita archivo de audio)
+let agAudio = null;
+const agDesbloquear = () => { try { agAudio = agAudio || new (window.AudioContext || window.webkitAudioContext)(); if (agAudio.state === 'suspended') agAudio.resume(); } catch (e) {} };
+function agSonar() {
+  try {
+    agDesbloquear(); if (!agAudio) return;
+    const t0 = agAudio.currentTime;
+    [[880, 0], [1320, .18], [880, .7], [1320, .88]].forEach(([fr, t]) => {
+      const o = agAudio.createOscillator(), g = agAudio.createGain();
+      o.type = 'sine'; o.frequency.value = fr; o.connect(g); g.connect(agAudio.destination);
+      g.gain.setValueAtTime(0, t0 + t); g.gain.linearRampToValueAtTime(.18, t0 + t + .02); g.gain.exponentialRampToValueAtTime(.001, t0 + t + .45);
+      o.start(t0 + t); o.stop(t0 + t + .5);
+    });
+  } catch (e) {}
+}
+const TITULO_BASE = document.title;
+let agParpadeo = 0, agPar = false;
+function agPinta() {
+  const pend = agPendientes(), atr = pend.filter(r => agEstado(r) === 'atrasado'), hoy = pend.filter(r => agEstado(r) === 'hoy');
+  const b = $('#ag-reloj');
+  b.hidden = !pend.length;
+  if (pend.length) {
+    b.className = atr.length ? 'atrasado' : hoy.length ? 'hoy' : '';
+    b.innerHTML = atr.length ? `<span class="ico">⏰</span> ${atr.length === 1 ? 'Llamar ahora' : `${atr.length} por llamar`}` : `<span class="ico">⏰</span> ${agCuando(pend[0])}${pend.length > 1 ? ` · ${pend.length}` : ''}`;
+    b.title = atr.length ? 'Tienes llamadas atrasadas. Clic para verlas.' : `Próxima llamada: ${agCuando(pend[0])}. Clic para ver la agenda.`;
+  }
+  // Título de la pestaña parpadeando mientras haya llamadas atrasadas
+  clearInterval(agParpadeo);
+  if (atr.length) agParpadeo = setInterval(() => { agPar = !agPar; document.title = agPar ? `⏰ (${atr.length}) Llamar a cliente` : TITULO_BASE; }, 1200);
+  else document.title = TITULO_BASE;
+  // Panel de la agenda en la planilla
+  const p = $('#ag-panel'); if (!p) return;
+  p.hidden = !pend.length;
+  if (pend.length) p.innerHTML = `<div class="ag-t"><span>⏰ Llamadas agendadas · ${pend.length}${atr.length ? ` · <span style="color:var(--red)">${atr.length} atrasada${atr.length > 1 ? 's' : ''}</span>` : ''}</span></div>`
+    + pend.map(r => `<div class="ag-item ${agEstado(r)}" data-ag="${r.id}"><span class="ag-cuando">${esc(agCuando(r))}</span><div><b>${esc(r.nombre || r.telefono || 'Cliente sin datos')}</b>${r.nombre && r.telefono ? ' · ' + esc(r.telefono) : ''}${r.agendaObs ? `<small>${esc(r.agendaObs)}</small>` : ''}</div>
+      <div class="ag-b"><button class="btn sm" data-agb="ver">Ver fila</button><button class="btn sm" data-agb="mas15">+15 min</button><button class="btn sm" data-agb="cambiar">Cambiar</button><button class="btn sm red" data-agb="hecho">✓ Ya llamé</button></div></div>`).join('');
+}
+function agVerFila(id) {
+  if (location.hash !== '#control') location.hash = 'control';
+  setTimeout(() => {
+    $('#ct-periodo').value = 'todo'; $('#ct-tipo').value = ''; $('#ct-seg').value = ''; $('#ct-q').value = ''; $('#ct-verborr').checked = false;
+    ctNuevo = id; ctPinta();
+    const tr = id ? $(`#ct-body tr[data-id="${id}"]`) : $('#ag-panel');
+    if (tr) tr.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }, 150);
+}
+// Revisión cada 15 segundos: suena una sola vez por aviso aunque haya varias pestañas abiertas
+function agRevisar() {
+  agPinta();
+  const ahora = Date.now(), toca = agPendientes().filter(r => agFecha(r.agenda) <= new Date() && (!r.agendaAviso || ahora - r.agendaAviso >= AG_REPITE_MIN * 60000));
+  if (!toca.length) return;
+  const sonar = () => {
+    let ult = 0; try { ult = +localStorage.getItem('clarogo_alarma') || 0; } catch (e) {}
+    if (ahora - ult < 30000) return;
+    try { localStorage.setItem('clarogo_alarma', String(ahora)); } catch (e) {}
+    agSonar();
+    toca.forEach(r => { r.agendaAviso = ahora; r.upd = ahora; }); ctGuardar(); ctRepintar();
+    toast(toca.length === 1 ? `⏰ Toca llamar a ${toca[0].nombre || toca[0].telefono || 'un cliente'}` : `⏰ Tienes ${toca.length} llamadas por hacer`);
+  };
+  if (navigator.locks && navigator.locks.request) navigator.locks.request('clarogo-alarma', { ifAvailable: true }, l => { if (l) sonar(); });
+  else sonar();
+}
+function initAgenda() {
+  document.addEventListener('pointerdown', agDesbloquear, { once: true });
+  document.addEventListener('keydown', agDesbloquear, { once: true });
+  const man = n => { const d = new Date(); d.setDate(d.getDate() + n); return isoLocal(d); };
+  const rapidos = [['En 30 min', () => new Date(Date.now() + 1800000)], ['En 1 hora', () => new Date(Date.now() + 3600000)], ['Hoy 18:00', () => agFecha(isoLocal(new Date()) + 'T18:00')], ['Mañana 10:00', () => agFecha(man(1) + 'T10:00')], ['Mañana 16:00', () => agFecha(man(1) + 'T16:00')], ['Pasado mañana 10:00', () => agFecha(man(2) + 'T10:00')]];
+  $('#ag-rapidos').innerHTML = rapidos.map(([t], i) => `<button type="button" data-rap="${i}">${t}</button>`).join('');
+  $('#ag-rapidos').addEventListener('click', e => { const b = e.target.closest('[data-rap]'); if (!b) return; const d = rapidos[+b.dataset.rap][1](); $('#ag-fecha').value = isoLocal(d); $('#ag-hora').value = d.toTimeString().slice(0, 5); });
+  $('#ag-guardar').onclick = () => {
+    const r = CT.find(x => x.id === agFila); if (!r) return;
+    const f = $('#ag-fecha').value, h = $('#ag-hora').value; if (!f || !h) return toast('Elige el día y la hora');
+    agGuardar(r, { agenda: `${f}T${h}`, agendaObs: $('#ag-obs').value.trim(), agendaHecho: false, agendaAviso: 0 }, `Llamada agendada: ${agCuando({ agenda: `${f}T${h}` })}`);
+    $('#dlg-agenda').close();
+  };
+  $('#ag-quitar').onclick = () => { const r = CT.find(x => x.id === agFila); if (r) agGuardar(r, { agenda: '', agendaObs: '', agendaHecho: false, agendaAviso: 0 }, 'Agenda quitada'); $('#dlg-agenda').close(); };
+  $('#ag-hecho').onclick = () => { const r = CT.find(x => x.id === agFila); if (r) agGuardar(r, { agendaHecho: true }, 'Marcada como llamada'); $('#dlg-agenda').close(); };
+  $('#ag-reloj').onclick = () => { agDesbloquear(); const a = agPendientes()[0]; agVerFila(''); if (a && agEstado(a) === 'atrasado') setTimeout(() => { ctNuevo = a.id; ctPinta(); }, 200); };
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-agb]'); if (!b) return;
+    const r = CT.find(x => x.id === b.closest('[data-ag]').dataset.ag); if (!r) return;
+    if (b.dataset.agb === 'ver') agVerFila(r.id);
+    if (b.dataset.agb === 'hecho') agGuardar(r, { agendaHecho: true }, 'Marcada como llamada');
+    if (b.dataset.agb === 'cambiar') agDialogo(r);
+    if (b.dataset.agb === 'mas15') { const d = new Date(Math.max(Date.now(), +agFecha(r.agenda)) + 900000); agGuardar(r, { agenda: `${isoLocal(d)}T${d.toTimeString().slice(0, 5)}`, agendaAviso: 0 }, `Pospuesta para las ${d.toTimeString().slice(0, 5)}`); }
+  });
+  window.addEventListener('storage', e => { if (e.key === CT_KEY) setTimeout(agPinta, 50); });
+  agRevisar(); setInterval(agRevisar, 15000);
+}
+
 // La extensión pide los mensajes de cada plan para su botón de WhatsApp
-window.clarogoMensajesWA = nombre => PLANES_VIGENTES.map(p => ({ id: p.id, titulo: p.title, texto: waTexto(p.id, nombre) })).concat([{ id: '', titulo: 'Solo saludo, sin plan', texto: waTexto('', nombre) }]);
+window.clarogoMensajesWA = () => PLANES_WA().map(p => ({ id: p.id, titulo: p.title, texto: waTexto(p.id) })).concat([{ id: '', titulo: 'Solo la presentación, sin plan', texto: waTexto('') }]);
 
 // La extensión ClaroGo! Genesys llama a esta función para crear una fila nueva con los datos de la llamada
 window.clarogoDesdeGenesys = txt => {
@@ -2382,11 +2582,11 @@ function ctPinta() {
     <td class="c-tel"><input data-k="telefono" value="${esc(r.telefono)}" placeholder="9 XXXX XXXX" title="${esc(r.telefono)}"></td>
     <td class="c-orig"><input data-k="origen" value="${esc(r.origen || '')}" placeholder="Compañía" title="Compañía de origen${r.origen ? ': ' + esc(r.origen) : ''}"></td>
     <td class="c-tipo"><select data-k="tipo">${opt(TIPIFICACIONES, r.tipo, 'Sin tipificar')}</select></td>
-    <td class="c-plan"><select data-k="plan">${opt(PLANES_VIGENTES.map(p => p.title), r.plan, 'Sin plan')}</select></td>
+    <td class="c-plan"><select data-k="plan">${opt(PLANES_WA().map(p => p.title), r.plan, 'Sin plan')}</select></td>
     <td class="c-notas"><input data-k="notas" value="${esc(r.notas)}" placeholder="Notas" title="${esc(r.notas)}"></td>
     <td class="c-acc"><div class="acc">${r.borrado
       ? `<button data-ct="restaurar" class="go" title="Recuperar registro">↺</button>`
-      : `<button data-ct="wa" class="wa" title="Abrir WhatsApp Web con este cliente y enviarle la oferta"><svg viewBox="0 0 16 16"><path d="${ICONOS.wa}"/></svg></button><button data-ct="genesys" class="gen" title="Traer el teléfono desde Genesys (reemplaza el de esta fila)"><svg class="gico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="11.2" cy="2.6" r="1.8"/><rect x="4.2" y="5.4" width="6" height="9.4" rx="3"/></svg></button><button data-ct="ficha" class="fic" title="${r.id === ctAbierto ? 'Cerrar la ficha' : 'Abrir la ficha con todos los datos'}">${r.id === ctAbierto ? '▴' : '▾'}</button><button data-ct="rutificador" class="rutif" title="Copiar RUT y abrir Rutificador">🪪</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
+      : `<button data-ct="agenda" class="ag${agClase(r)}" title="${esc(agTitulo(r))}">⏰</button><button data-ct="wa" class="wa" title="Abrir WhatsApp Web con este cliente y enviarle la oferta"><svg viewBox="0 0 16 16"><path d="${ICONOS.wa}"/></svg></button><button data-ct="genesys" class="gen" title="Traer el teléfono desde Genesys (reemplaza el de esta fila)"><svg class="gico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="11.2" cy="2.6" r="1.8"/><rect x="4.2" y="5.4" width="6" height="9.4" rx="3"/></svg></button><button data-ct="ficha" class="fic" title="${r.id === ctAbierto ? 'Cerrar la ficha' : 'Abrir la ficha con todos los datos'}">${r.id === ctAbierto ? '▴' : '▾'}</button><button data-ct="rutificador" class="rutif" title="Copiar RUT y abrir Rutificador">🪪</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
   </tr>${r.id === ctAbierto && !r.borrado ? ctFichaHTML(r) : ''}`).join('');
   $('#ct-vacio').hidden = lista.length > 0;
   // Si el período oculta registros, se dice cuántos hay y se ofrece verlos (los registros nunca se borran solos)
@@ -2409,7 +2609,7 @@ function ctExcel() {
   const q = s => /[;"\n]/.test(s) ? '"' + String(s).replace(/"/g, '""') + '"' : s;
   const cols = [['fecha', 'Fecha'], ['hora', 'Hora'], ['campana', 'Campaña'], ['cola', 'Cola'], ['rut', 'RUT'], ['nombre', 'Nombre'], ['telefono', 'Teléfono'], ['tipo', 'Tipificación'], ['plan', 'Plan'], ['notas', 'Observaciones'],
     ['nac', 'Nacimiento'], ['mail', 'Correo'], ['fono', 'Número a portar'], ['contacto', 'Teléfono de contacto'], ['origen', 'Compañía de origen'], ['oferta', 'Oferta de la campaña'], ['medio', 'Validación enviada por'], ['tventa', 'Tipo de venta'], ['adic', 'Líneas adicionales'],
-    ['eq', 'Equipo'], ['eqtotal', 'Monto total'], ['eqpie', 'Pago inicial'], ['eqforma', 'Forma de pago'], ['calle', 'Calle'], ['num', 'Número'], ['int', 'Interior'], ['comuna', 'Comuna'], ['region', 'Región'], ['ref', 'Referencia'], ['eta', 'Despacho']];
+    ['eq', 'Equipo'], ['eqtotal', 'Monto total'], ['eqpie', 'Pago inicial'], ['eqforma', 'Forma de pago'], ['calle', 'Calle'], ['num', 'Número'], ['int', 'Interior'], ['comuna', 'Comuna'], ['region', 'Región'], ['ref', 'Referencia'], ['eta', 'Despacho'], ['agenda', 'Llamar el'], ['agendaObs', 'Observación de la agenda']];
   const csv = String.fromCharCode(0xFEFF) + cols.map(c => c[1]).join(';') + '\r\n' + lista.map(r => cols.map(c => q(r[c[0]] || '')).join(';')).join('\r\n') + '\r\n';
   downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8' }), `planilla-control-${hoyISO()}.csv`);
   toast(`${lista.length} registros exportados. Ábrelo con Excel.`);
@@ -2418,6 +2618,9 @@ function initControl() {
   ctListo = true;
   $('#ct-tipo').innerHTML = '<option value="">Todas las tipificaciones</option><option>Sin tipificar</option>' + TIPIFICACIONES.map(x => `<option>${x}</option>`).join('');
   $('#ct-desde').value = isoMenos(6); $('#ct-hasta').value = hoyISO();
+  // Siempre parte sin filtros, aunque el navegador intente recordar los de la visita anterior
+  const sinFiltros = () => { $('#ct-periodo').value = 'todo'; $('#ct-tipo').value = ''; $('#ct-seg').value = ''; $('#ct-q').value = ''; $('#ct-verborr').checked = false; $('#ct-rango').hidden = true; };
+  sinFiltros(); window.addEventListener('pageshow', () => { sinFiltros(); ctPinta(); });
   let destino = '';
   // Arriba (sin destino) crea siempre una fila nueva. El botón de Genesys de una fila reemplaza su teléfono.
   const procesar = txt => {
@@ -2456,6 +2659,7 @@ function initControl() {
     else { el.title = el.value; r[el.dataset.k] = el.value; $$(`#ct-body [data-id="${r.id}"] [data-k="${el.dataset.k}"]`).forEach(x => { if (x !== el) x.value = el.value; }); }
     r.upd = Date.now(); ctGuardar();
     if (el.dataset.k === 'tipo') el.closest('tr').classList.toggle('t-venta', el.value === 'Venta');
+    if (el.dataset.k === 'tipo' && e.type === 'change' && el.value === 'Volver a llamar' && !(r.agenda && !r.agendaHecho)) agDialogo(r);
   };
   body.addEventListener('input', actualizar);
   body.addEventListener('change', actualizar);
@@ -2467,6 +2671,7 @@ function initControl() {
     const r = CT.find(x => x.id === b.closest('tr').dataset.id); if (!r) return;
     if (b.dataset.ct === 'genesys') return ctPegarEnFila(r.id);
     if (b.dataset.ct === 'wa') return waDialogo(r);
+    if (b.dataset.ct === 'agenda') return agDialogo(r);
     if (b.dataset.ct === 'ficha') { ctAbierto = ctAbierto === r.id ? '' : r.id; ctPinta(); if (ctAbierto) { const t = $(`#ct-body tr.ficha[data-id="${r.id}"] input`); if (t) t.focus(); } return; }
     if (b.dataset.ct === 'borrar') { r.borrado = true; r.upd = Date.now(); ctGuardar(); ctPinta(); toast('Registro borrado. Puedes recuperarlo con "Ver borrados".'); }
     if (b.dataset.ct === 'restaurar') { r.borrado = false; r.upd = Date.now(); ctGuardar(); ctPinta(); toast('Registro recuperado'); }
@@ -2681,7 +2886,7 @@ async function limpiarCache() {
 /* ════════════════════════════════════════════════════════════════
    INICIO
    ════════════════════════════════════════════════════════════════ */
-initMenu(); initExcepciones(); initSugerencias(); iniciarRespaldo(); initWhatsApp();
+initMenu(); initExcepciones(); initSugerencias(); iniciarRespaldo(); initWhatsApp(); initAgenda();
 try { if (sessionStorage.getItem('clarogo_limpio')) { sessionStorage.removeItem('clarogo_limpio'); setTimeout(() => toast('Caché limpiada. Tu planilla está a salvo.'), 400); } } catch (e) {}
 $('#cache-btn').onclick = limpiarCache;
 window.addEventListener('hashchange', route);

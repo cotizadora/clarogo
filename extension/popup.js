@@ -129,8 +129,8 @@ async function prepararWhatsApp(tel, nombre) {
       if (r && Array.isArray(r.result) && r.result.length) { MENSAJES = r.result; break; }
     }
   } catch (e) {}
-  if (!MENSAJES.length) MENSAJES = [{ id: '', titulo: 'Solo saludo (abre ClaroGo! para ver los planes)', texto: 'Hola, te escribo por la oferta de Claro que conversamos. ¿Tienes un momento para revisarla?' }];
-  const pref = MENSAJES.findIndex(m => m.id === 'v800');
+  if (!MENSAJES.length) MENSAJES = [{ id: '', titulo: 'Solo la presentación (abre ClaroGo! para ver los planes)', texto: 'Hola, muy buen día. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.' }];
+  const pref = MENSAJES.findIndex(m => m.id === 'v500');   // por defecto el Plan 500, el más barato
   $('#wa-plan').innerHTML = MENSAJES.map((m, i) => `<option value="${i}"${i === (pref < 0 ? 0 : pref) ? ' selected' : ''}></option>`).join('');
   [...$('#wa-plan').options].forEach((o, i) => { o.textContent = MENSAJES[i].titulo; });
   $('#wa').hidden = false;
