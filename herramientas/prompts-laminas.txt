@@ -1,0 +1,90 @@
+PROMPTS PARA CHATGPT: LÁMINAS DE LOS PLANES
+Pega un prompt por conversación. Cuando salga la imagen, descárgala y mándamela por acá.
+Si un número o una palabra sale mal escrito, pídele a ChatGPT: "Corrige solo el texto, no cambies nada más".
+
+=====================================================================
+PLAN 500
+=====================================================================
+Crea una lámina publicitaria cuadrada (1:1, 1024x1024) para WhatsApp, estilo fotografía publicitaria de telefonía en Chile.
+
+DISEÑO (respétalo exactamente):
+- Mitad izquierda: foto realista de una persona chilena de unos 30 años, sonriendo, mirando su celular, en un living luminoso. Encima, arriba a la izquierda, una cinta roja con el texto blanco "Nuevo Plan" y debajo, en letras grandes, "Plan 500" (negro y rojo).
+- Mitad derecha: una tarjeta roja (#E60000) con esquinas redondeadas y letras blancas. Dentro, de arriba hacia abajo:
+  1. Título: "Plan 500"
+  2. Fila con ícono de wifi en un cuadrado amarillo: "500 GB" y abajo "de internet"
+  3. Fila con ícono de teléfono: "Minutos ilimitados" y abajo "libres a 300 números"
+  4. Fila con ícono de mensaje: "500 SMS" y abajo "a todo destino"
+  5. Precio grande: "$5.994" y abajo "x 6 meses"
+  6. Franja inferior: "Luego $9.990 mensuales"
+- Fondo blanco, colores rojo, blanco, negro y amarillo.
+
+REGLAS ESTRICTAS:
+- Escribe los textos y números EXACTAMENTE como están aquí, en español, con punto de miles ($5.994, $9.990).
+- No agregues ningún otro texto, precio, letra chica, código QR ni página web.
+- No pongas logos de ninguna marca (ni de compañías telefónicas, ni de redes sociales).
+- Letras grandes y fáciles de leer en un celular.
+
+=====================================================================
+PLAN 800
+=====================================================================
+Crea una lámina publicitaria cuadrada (1:1, 1024x1024) para WhatsApp, estilo fotografía publicitaria de telefonía en Chile.
+
+DISEÑO (respétalo exactamente):
+- Mitad izquierda: foto realista de una pareja joven chilena, sonriendo, viendo juntos un celular en un living luminoso. Encima, arriba a la izquierda, una cinta roja con el texto blanco "El más vendido" y debajo, en letras grandes, "Plan 800" (negro y rojo).
+- Mitad derecha: una tarjeta roja (#E60000) con esquinas redondeadas y letras blancas. Dentro, de arriba hacia abajo:
+  1. Título: "Plan 800"
+  2. Fila con ícono de wifi en un cuadrado amarillo: "800 GB" y abajo "de internet"
+  3. Fila con ícono de teléfono: "Minutos ilimitados" y abajo "libres a 300 números"
+  4. Fila con ícono de mensaje: "500 SMS" y abajo "a todo destino"
+  5. Precio grande: "$7.923" y abajo "x 6 meses"
+  6. Franja inferior: "Luego $12.990 mensuales"
+- Fondo blanco, colores rojo, blanco, negro y amarillo.
+
+REGLAS ESTRICTAS:
+- Escribe los textos y números EXACTAMENTE como están aquí, en español, con punto de miles ($7.923, $12.990).
+- No agregues ningún otro texto, precio, letra chica, código QR ni página web.
+- No pongas logos de ninguna marca (ni de compañías telefónicas, ni de redes sociales).
+- Letras grandes y fáciles de leer en un celular.
+
+=====================================================================
+PLAN 1000
+=====================================================================
+Crea una lámina publicitaria cuadrada (1:1, 1024x1024) para WhatsApp, estilo fotografía publicitaria de telefonía en Chile.
+
+DISEÑO (respétalo exactamente):
+- Mitad izquierda: foto realista de una familia chilena (padre, madre y un hijo adolescente) sonriendo con sus celulares en un living luminoso. Encima, arriba a la izquierda, una cinta roja con el texto blanco "Nuevo Plan" y debajo, en letras grandes, "Plan 1000" (negro y rojo).
+- Mitad derecha: una tarjeta roja (#E60000) con esquinas redondeadas y letras blancas. Dentro, de arriba hacia abajo:
+  1. Título: "Plan 1000"
+  2. Fila con ícono de wifi en un cuadrado amarillo: "1000 GB" y abajo "de internet"
+  3. Fila con ícono de teléfono: "Minutos ilimitados" y abajo "libres a 300 números"
+  4. Fila con ícono de mensaje: "500 SMS" y abajo "a todo destino"
+  5. Precio grande: "$16.990" y abajo "x 6 meses"
+  6. Franja inferior: "Luego $17.990 mensuales"
+- Fondo blanco, colores rojo, blanco, negro y amarillo.
+
+REGLAS ESTRICTAS:
+- Escribe los textos y números EXACTAMENTE como están aquí, en español, con punto de miles ($16.990, $17.990).
+- No agregues ningún otro texto, precio, letra chica, código QR ni página web.
+- No pongas logos de ninguna marca (ni de compañías telefónicas, ni de redes sociales).
+- Letras grandes y fáciles de leer en un celular.
+
+=====================================================================
+PLAN 500 + NETFLIX
+=====================================================================
+Crea una lámina publicitaria cuadrada (1:1, 1024x1024) para WhatsApp, estilo fotografía publicitaria de telefonía en Chile.
+
+DISEÑO (respétalo exactamente):
+- Mitad izquierda: foto realista de una persona chilena de unos 30 años en el sillón, con palomitas, viendo una serie en su celular, luz cálida de noche. Encima, arriba a la izquierda, una cinta roja con el texto blanco "Incluye Netflix Estándar" y debajo, en letras grandes, "Plan 500 + Netflix" (negro y rojo).
+- Mitad derecha: una tarjeta roja (#E60000) con esquinas redondeadas y letras blancas. Dentro, de arriba hacia abajo:
+  1. Título: "Plan 500 + Netflix"
+  2. Fila con ícono de wifi en un cuadrado amarillo: "500 GB" y abajo "de internet"
+  3. Fila con ícono de teléfono: "Minutos ilimitados" y abajo "libres a 300 números"
+  4. Fila con ícono de pantalla de TV: "Netflix Estándar" y abajo "incluido"
+  5. Precio grande: "$17.990" y abajo "mensuales"
+- Fondo blanco, colores rojo, blanco, negro y amarillo.
+
+REGLAS ESTRICTAS:
+- Escribe los textos y números EXACTAMENTE como están aquí, en español, con punto de miles ($17.990).
+- No agregues ningún otro texto, precio, letra chica, código QR ni página web.
+- No pongas logos de ninguna marca (ni de compañías telefónicas, ni de Netflix, ni de redes sociales). "Netflix" va solo como texto.
+- Letras grandes y fáciles de leer en un celular.

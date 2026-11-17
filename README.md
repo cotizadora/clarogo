@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 17-11-2026: extensión 1.13.1, ventana más corta
+
+- Se quitan de la ventana de la extensión los dos textos de ayuda del final (lámina copiada y "Los datos ya quedan copiados...").
+
 ### 17-11-2026: extensión ClaroGo! Genesys para descargar
 
 - Extensión 1.13.0 enviada a la tienda de Edge (Edge Add-ons), visibilidad oculta, en revisión. Política de privacidad en ext/privacidad.html.
