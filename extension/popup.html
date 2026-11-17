@@ -25,6 +25,8 @@
   .gris { background: #f1f3f5; color: var(--text); }
   button:disabled { opacity: .5; cursor: default; }
   .verde { background: #25d366; color: #fff; }
+  #comentario { width: 100%; border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; font: inherit; font-size: .84rem; resize: vertical; margin: 0 0 2px; }
+  #comentario:focus { outline: 2px solid var(--red); outline-offset: -1px; }
   .wa { margin: 12px 0 4px; padding: 10px; border: 1px solid #c8eed6; background: #f1fbf4; border-radius: 10px; }
   .wa label { display: block; font-size: .74rem; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
   .lam-chk { display: flex !important; align-items: center; gap: 6px; margin: 8px 0 0 !important; font-size: .8rem !important; color: var(--text) !important; font-weight: 700; cursor: pointer; }
@@ -38,6 +40,7 @@
 <main>
   <p id="estado">Buscando la llamada en Genesys…</p>
   <table id="datos" hidden></table>
+  <textarea id="comentario" rows="2" placeholder="Comentario para la planilla (opcional)"></textarea>
   <button class="rojo" id="enviar" disabled>➕ Enviar a Mi Planilla (fila nueva)</button>
   <div class="wa" id="wa" hidden>
     <label for="wa-plan">WhatsApp con la oferta</label>

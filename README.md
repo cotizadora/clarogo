@@ -50,6 +50,12 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: notas en grande, plan y comentario desde la extensión (1.13)
+
+- Mi Planilla: al hacer clic en la celda de Notas se abre encima un cuadro grande para leer y escribir el comentario; se guarda mientras se escribe, Enter o Esc lo cierran y Shift+Enter hace otra línea.
+- Extensión 1.13: cuadro "Comentario para la planilla". Al enviar a Mi Planilla, la fila nueva llega con el plan elegido en el selector de WhatsApp y con ese comentario en Notas.
+- La lámina del Plan Persona Mayor ahora se entrega en PNG, igual que las demás, porque WhatsApp no tomaba la JPG al pegarla.
+
 ### 17-11-2026: botón Ficha, sonidos y trucos
 
 - Mi Planilla: el botón de la ficha ahora dice "▾ Ficha", es más ancho y azul, con una ola de luz que recorre las filas una tras otra para que se note que hace algo. En celular muestra solo la flecha.

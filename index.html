@@ -408,6 +408,11 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla td select{padding:0 2px;cursor:pointer}
 #ct-tabla td input:focus,#ct-tabla td select:focus{outline:2px solid #217346;outline-offset:-2px;background:#fff}
 #ct-tabla td input::placeholder{color:#b3b7be}
+#ct-tabla td.c-notas input{cursor:pointer}
+#nota-zoom{position:fixed;display:none;z-index:40;min-height:130px;max-height:60vh;padding:10px 12px;border:2px solid #217346;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.25);font:inherit;font-size:.9rem;line-height:1.45;color:var(--text);background:#fff;resize:vertical}
+#nota-zoom.on{display:block}
+#nota-zoom-ayuda{position:fixed;display:none;z-index:41;font-size:.7rem;color:#fff;background:#217346;padding:2px 8px;border-radius:6px 6px 0 0}
+#nota-zoom-ayuda.on{display:block}
 #ct-tabla tbody tr:hover td{background:#f5f9ff}
 /* Barra fija de Deshacer y Guardar */
 .gbarra{position:sticky;top:var(--top-h,0px);z-index:6;display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--bg);padding:8px 0;margin:-4px 0 8px;border-bottom:1px solid var(--border)}
@@ -2595,7 +2600,7 @@ function laminaDataURL(id) {
     try {
       if (id === PLAN_MAYOR.id) {
         const img = new Image();
-        img.onload = () => { try { const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight; const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0); res(c.toDataURL('image/jpeg', .9)); } catch (e) { res(''); } };
+        img.onload = () => { try { const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight; const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0); res(c.toDataURL('image/png')); /* PNG, igual que las demás láminas: WhatsApp no tomaba la JPG al pegarla */ } catch (e) { res(''); } };
         img.onerror = () => res(''); img.src = PLAN_MAYOR.img; return;
       }
       const p = PLANES_VIGENTES.find(x => x.id === id);
@@ -2872,9 +2877,11 @@ window.clarogoMensajesWA = (nombre, tel) => {
 };
 
 // La extensión ClaroGo! Genesys llama a esta función para crear una fila nueva con los datos de la llamada
-window.clarogoDesdeGenesys = txt => {
+window.clarogoDesdeGenesys = (txt, extra = {}) => {
   const d = leerGenesys(txt || '');
   if (location.hash !== '#control') location.hash = 'control';
+  if (extra && extra.plan && PLANES_WA().some(p => p.title === extra.plan)) d.plan = extra.plan;
+  if (extra && String(extra.notas || '').trim()) d.notas = String(extra.notas).trim().slice(0, 2000);
   setTimeout(() => { ctAgregar(d); if (!d.telefono) toast('Llegaron los datos de Genesys, pero sin teléfono.'); }, 120);
   return d.telefono ? 'ok' : 'sin-telefono';
 };
@@ -3019,6 +3026,33 @@ function initColumnas() {
   });
   $('#ct-tabla thead').addEventListener('dblclick', e => { if (!e.target.closest('.col-res')) return; try { localStorage.removeItem(COL_KEY); } catch (x) {} colAplicar(); toast('Columnas en su ancho original'); });
 }
+/* ── Notas en grande ────────────────────────────────────────────────
+   Al hacer clic en la celda de Notas se abre encima un cuadro grande para leer y escribir cómodo.
+   Enter o Esc lo cierran; Shift+Enter hace una línea nueva. Todo se guarda mientras se escribe. */
+function initNotaZoom() {
+  const z = document.createElement('textarea'), ayuda = document.createElement('div');
+  z.id = 'nota-zoom'; z.placeholder = 'Escribe el comentario del cliente';
+  ayuda.id = 'nota-zoom-ayuda'; ayuda.textContent = 'Notas · Enter o Esc para cerrar · Shift+Enter: otra línea';
+  document.body.append(z, ayuda);
+  let fila = '';
+  const cerrar = () => { if (!fila) return; z.classList.remove('on'); ayuda.classList.remove('on'); const id = fila; fila = ''; const inp = $(`#ct-body tr[data-id="${id}"]:not(.ficha) [data-k="notas"]`); if (inp) { const r = CT.find(x => x.id === id); inp.value = r ? r.notas || '' : inp.value; inp.title = inp.value; } };
+  $('#ct-body').addEventListener('focusin', e => {
+    const el = e.target; if (!el.matches('tr:not(.ficha) [data-k="notas"]')) return;
+    const r = CT.find(x => x.id === el.closest('tr').dataset.id); if (!r) return;
+    fila = r.id;
+    const c = el.closest('td').getBoundingClientRect(), w = Math.min(Math.max(380, c.width), innerWidth - 24);
+    const izq = Math.max(12, Math.min(c.left, innerWidth - w - 12)), arriba = Math.min(c.top, innerHeight - 200);
+    Object.assign(z.style, { left: izq + 'px', top: arriba + 'px', width: w + 'px' });
+    Object.assign(ayuda.style, { left: izq + 'px', top: (arriba - 18) + 'px' });
+    z.value = r.notas || ''; z.classList.add('on'); ayuda.classList.add('on');
+    z.focus(); z.setSelectionRange(z.value.length, z.value.length);
+  });
+  z.addEventListener('input', () => { const r = CT.find(x => x.id === fila); if (!r) return; r.notas = z.value; r.upd = Date.now(); ctGuardar(); });
+  z.addEventListener('blur', cerrar);
+  z.addEventListener('keydown', e => { if (e.key === 'Escape' || (e.key === 'Enter' && !e.shiftKey)) { e.preventDefault(); z.blur(); } });
+  window.addEventListener('scroll', () => { if (fila) z.blur(); }, { passive: true });
+  window.addEventListener('hashchange', () => { if (fila) z.blur(); });
+}
 function ctPinta() {
   if (!ctListo) return;
   const segs = [...new Set(CT.filter(r => !r.borrado).map(ctSeg))].sort(), selSeg = $('#ct-seg').value;
@@ -3096,6 +3130,7 @@ function initControl() {
   $('#ct-procesar').onclick = () => { const txt = $('#ct-texto').value, d = destino; $('#dlg-pegar').close(); destino = d; procesar(txt); };
   $('#ct-nueva').onclick = () => ctAgregar({});
   initColumnas();
+  initNotaZoom();
   $('#eq-procesar').onclick = () => { const t = $('#eq-texto').value; $('#dlg-equipo').close(); ctPonerEquipo(eqFila, t); };
   $('#ct-vacio').addEventListener('click', e => { const b = e.target.closest('[data-ver]'); if (!b) return; $('#ct-periodo').value = b.dataset.ver; $('#ct-rango').hidden = true; ctPinta(); });
   $('#ct-excel').onclick = ctExcel;

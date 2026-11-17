@@ -48,12 +48,18 @@ const esperar = ms => new Promise(r => setTimeout(r, ms));
 // (Edge pone a dormir las pestañas que no se usan y a veces no contestan)
 const conLimite = (p, ms) => Promise.race([p, esperar(ms).then(() => { throw new Error('sin respuesta'); })]);
 
+// Plan elegido en el selector de WhatsApp y comentario escrito: llegan a la fila nueva de la planilla
+function extraEnvio() {
+  let plan = '';
+  try { const m = (typeof MENSAJES !== 'undefined' && MENSAJES[+document.querySelector('#wa-plan').value]) || null; if (m && m.id) plan = m.titulo; } catch (e) {}
+  return { plan, notas: (document.querySelector('#comentario').value || '').trim() };
+}
 // Llama a Mi Planilla dentro de la pestaña. Devuelve false si la página no la reconoce.
 async function entregar(tabId) {
   try {
     const [res] = await conLimite(chrome.scripting.executeScript({
-      target: { tabId }, world: 'MAIN', args: [TEXTO],
-      func: txt => (typeof window.clarogoDesdeGenesys === 'function') ? window.clarogoDesdeGenesys(txt) : 'sin-planilla'
+      target: { tabId }, world: 'MAIN', args: [TEXTO, extraEnvio()],
+      func: (txt, extra) => (typeof window.clarogoDesdeGenesys === 'function') ? window.clarogoDesdeGenesys(txt, extra) : 'sin-planilla'
     }), 2500);
     return !!res && res.result !== 'sin-planilla';
   } catch (e) { return false; }
