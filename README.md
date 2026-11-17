@@ -50,6 +50,13 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: copiado rápido, Genesys y RUTIFICADOR, correo limpio
+
+- Mi Planilla: botón 📋 en cada fila (y en la ficha) que copia los datos del cliente para WhatsApp, una línea por dato: cliente, RUT, teléfono, contacto, número a portar, nacimiento, correo, compañía, dirección, referencia, plan, líneas adicionales, tipo de venta, equipo, tipificación y observaciones (solo los que tienen información).
+- Los botones de la fila muestran el nombre completo: "Genesys" junto a su ícono y "RUTIFICADOR" en negrita.
+- Correo electrónico (ficha y Script): al escribir o pegar queda en minúsculas, sin espacios, con ñ cambiada por n y sin tildes.
+- En pantallas de hasta 1500 px la columna Notas se oculta para dar espacio al nombre (las notas siguen en la ficha y en el copiado).
+
 ### 17-11-2026: dirección en una sola línea
 
 - En la ficha de Mi Planilla la dirección es un solo campo, para pegarla tal como se copia ("Las Zinnias 5790 Huechuraba, Región Metropolitana"). Al pasar al Script de Cierre se separa sola en calle, número, interior, comuna y región; si se corrige en el Script, la línea de la planilla se actualiza. Las filas antiguas muestran su dirección armada en una línea. La exportación a Excel trae una sola columna Dirección.

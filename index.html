@@ -407,10 +407,11 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla .acc button:hover{background:#eef2f7}
 #ct-tabla .acc .go{color:#fff;background:var(--red);font-size:.7rem}
 #ct-tabla .acc .go:hover{background:var(--red-dk)}
-.c-n{width:34px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:94px}.c-tel{width:94px}.c-orig{width:76px}.c-tipo{width:126px}.c-plan{width:80px}.c-acc{width:172px}
+.c-n{width:34px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:94px}.c-tel{width:94px}.c-orig{width:76px}.c-tipo{width:126px}.c-plan{width:80px}.c-acc{width:282px}
 .c-nombre{width:auto}.c-notas{width:17%}
-@media (max-width:1100px){.c-hora,.c-plan,.c-notas{display:none}}
-@media (max-width:720px){.c-fecha,.c-notas,.c-rut,.c-nombre{display:none}.c-tel{width:auto}.c-orig{width:60px}.c-tipo{width:80px}.c-n{width:22px}.c-acc{width:120px} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
+@media (max-width:1500px){.c-notas{display:none}}
+@media (max-width:1100px){.c-hora,.c-plan{display:none}}
+@media (max-width:720px){.c-fecha,.c-notas,.c-rut,.c-nombre{display:none}.c-tel{width:auto}.c-orig{width:60px}.c-tipo{width:80px}.c-n{width:22px}.c-acc{width:128px} #ct-tabla .acc .gen-t{display:none} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
 #ct-resumen .chip b{margin-left:4px}
 .resp{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:.84rem}
 .resp .resp-b{display:flex;gap:6px;flex-wrap:wrap}
@@ -420,7 +421,10 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla tr.borrado td input,#ct-tabla tr.borrado td select{text-decoration:line-through;color:#9aa0a6}
 /* Ficha ampliable del cliente: se abre bajo la fila para tomar todos los datos */
 #ct-tabla .acc .fic{font-size:.8rem;color:#1a56b8;font-weight:700}
-#ct-tabla .acc .gen{background:#fff4ef}
+#ct-tabla .acc .gen{background:#fff4ef;flex:0 0 auto;padding:0 7px;display:flex;align-items:center;gap:4px;color:#c2410c;font-weight:700;font-size:.72rem}
+#ct-tabla .acc .rutif{flex:0 0 auto;padding:0 7px;font-weight:800;font-size:.64rem;letter-spacing:.03em;color:#1f2430;background:#f1f3f5}
+#ct-tabla .acc .rutif:hover{background:#e3e6eb}
+#ct-tabla .acc .cop{background:#eef4ff}
 #ct-tabla .acc .gen:hover{background:#ffe2d6}
 .gico{width:14px;height:14px;fill:none;stroke:#ff4f1f;stroke-width:1.9;vertical-align:middle}
 .gico circle{fill:none}
@@ -1913,7 +1917,7 @@ function initScript() {
     h += paso(++n, 'Despedida', `<p>¿Tiene alguna duda o consulta respecto a la información brindada? A continuación, y para cumplir con lo solicitado por la Subsecretaría de Telecomunicaciones, lo dejaré con una grabación que contiene información relevante sobre los servicios contratados, por lo que es importante que pueda escuchar la grabación completa. Si sobre esta información presenta alguna duda o consulta nos puede contactar a nuestros canales de atención al 800 171 171 o al 103 desde su teléfono móvil de Claro. Recuerde que mi nombre es ${F($v('agente'), 'tu nombre')}, muchas gracias por su preferencia.</p>` + ojo('Pide referidos y presiona el botón de <b>SUBTEL</b> antes de cortar la llamada.'));
     $('#sc-out').innerHTML = h;
   };
-  $('#sc-form').addEventListener('input', e => { if (e.target === rut) validarRut(); if (e.target.id === 'sc-agente') { try { localStorage.setItem('agentName', e.target.value); } catch (x) {} } pinta(); });
+  $('#sc-form').addEventListener('input', e => { if (e.target === rut) validarRut(); if (e.target.id === 'sc-mail' && e.target.value !== correoLimpio(e.target.value)) e.target.value = correoLimpio(e.target.value); if (e.target.id === 'sc-agente') { try { localStorage.setItem('agentName', e.target.value); } catch (x) {} } pinta(); });
   $('#sc-form').addEventListener('change', pinta);
   $('#sc-reset').onclick = () => { const ag = $('#sc-agente').value; $('#sc-form').reset(); $('#sc-agente').value = ag; scVincular(''); validarRut(); pinta(); toast('Script limpio. Los datos siguen guardados en Mi Planilla.'); };
   $('#sc-form').addEventListener('input', scGuardarEnFila);
@@ -2102,6 +2106,7 @@ const ARCH_NOMBRE = 'ClaroGo-planilla-control.json';
 const AUTO_MIN = 30;           // guardado programado
 const AUTO_EDIT_SEG = 4;       // guardado después de cada cambio
 let CT = [], ctNuevo = '', ctAviso = false, ctListo = false, ctTimer = 0;
+const correoLimpio = v => String(v || '').toLowerCase().replace(/ñ/g, 'n').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, '');
 const hoyISO = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
 const isoMenos = dias => { const d = new Date(Date.now() - dias * 864e5), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
@@ -2354,7 +2359,7 @@ function ctFichaHTML(r) {
   };
   return `<tr class="ficha" data-id="${r.id}"><td colspan="11">${FICHA.map(([t, cs]) => `<div class="fi-t">${t}</div><div class="fi-g">${cs.map(campo).join('')}</div>`).join('')}
     <div class="fi-t">Observaciones</div><div class="fi-obs"><div class="fi-chips">${OBS_RAPIDAS.map(o => `<button type="button" data-obs="${esc(o)}">+ ${esc(o)}</button>`).join('')}</div><textarea data-k="notas" rows="3" placeholder="Pega o escribe aquí todo lo que conversaste con el cliente">${esc(r.notas || '')}</textarea></div>
-    <div class="fi-pie"><small class="dim">Todo se guarda solo, sea venta o no.</small><span><button type="button" class="btn sm red" data-ct="script">▶ Pasar al Script de Cierre</button><button type="button" class="btn sm" data-ct="ficha">Cerrar ficha ▴</button></span></div></td></tr>`;
+    <div class="fi-pie"><small class="dim">Todo se guarda solo, sea venta o no.</small><span><button type="button" class="btn sm" data-ct="copiar">📋 Copiar datos para WhatsApp</button><button type="button" class="btn sm red" data-ct="script">▶ Pasar al Script de Cierre</button><button type="button" class="btn sm" data-ct="ficha">Cerrar ficha ▴</button></span></div></td></tr>`;
 }
 // Completa una fila con lo leído de Genesys: solo llena lo vacío, nunca borra lo que ya escribiste
 let ctPegarEnFila = () => {};
@@ -2619,7 +2624,22 @@ function dirSeparar(txt) {
   const m = base.match(/^(.*)\s+(\d+[a-z]?)\b\s*(.*)$/i);
   if (!m) return { calle: base, int, region };
   return { calle: m[1].trim(), num: m[2], int, comuna: m[3].trim(), region };
-}const ctExtras = r => FICHA.reduce((n, [, cs]) => n + cs.filter(([k]) => k === 'direccion' ? dirTexto(r) : r[k]).length, 0);
+}function ctResumen(r) {
+  const tv = (TVENTA.find(([v]) => v === r.tventa) || [])[1] || '';
+  const fecha = String(r.fecha || '').replace(/^(\d{4})-(\d{2})-(\d{2})$/, '$3-$2-$1');
+  const equipo = [r.eq, r.eqtotal && `total ${r.eqtotal}`, r.eqpie && `pie ${r.eqpie}`, r.eqforma].filter(Boolean).join(' · ');
+  const filas = [
+    ['Cliente', r.nombre], ['RUT', r.rut], ['Teléfono', r.telefono],
+    ['Teléfono de contacto', r.contacto && r.contacto.replace(/\D/g, '') !== String(r.telefono || '').replace(/\D/g, '') ? r.contacto : ''],
+    ['Número a portar', r.fono && r.fono.replace(/\D/g, '') !== String(r.telefono || '').replace(/\D/g, '') ? r.fono : ''],
+    ['Fecha de nacimiento', r.nac], ['Correo', r.mail], ['Compañía de origen', r.origen],
+    ['Dirección', dirTexto(r)], ['Referencia', r.ref],
+    ['Plan', r.plan], ['Líneas adicionales', r.adic], ['Tipo de venta', tv], ['Equipo', equipo],
+    ['Tipificación', r.tipo], ['Observaciones', r.notas]
+  ].filter(([, v]) => String(v || '').trim());
+  return `📋 *Datos del cliente*${fecha ? ' · ' + fecha : ''}\n\n` + filas.map(([k, v]) => `*${k}:* ${String(v).trim()}`).join('\n');
+}
+const ctExtras = r => FICHA.reduce((n, [, cs]) => n + cs.filter(([k]) => k === 'direccion' ? dirTexto(r) : r[k]).length, 0);
 
 /* ── Planilla ───────────────────────────────────────────────────── */
 // Devuelve la fila creada (o la que ya existía hoy con el mismo cliente)
@@ -2670,7 +2690,7 @@ function ctPinta() {
     <td class="c-notas"><input data-k="notas" value="${esc(r.notas)}" placeholder="Notas" title="${esc(r.notas)}"></td>
     <td class="c-acc"><div class="acc">${r.borrado
       ? `<button data-ct="restaurar" class="go" title="Recuperar registro">↺</button>`
-      : `<button data-ct="agenda" class="ag${agClase(r)}" title="${esc(agTitulo(r))}">⏰</button><button data-ct="wa" class="wa" title="Abrir WhatsApp Web con este cliente y enviarle la oferta"><svg viewBox="0 0 16 16"><path d="${ICONOS.wa}"/></svg></button><button data-ct="genesys" class="gen" title="Traer el teléfono desde Genesys (reemplaza el de esta fila)"><svg class="gico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="11.2" cy="2.6" r="1.8"/><rect x="4.2" y="5.4" width="6" height="9.4" rx="3"/></svg></button><button data-ct="ficha" class="fic" title="${r.id === ctAbierto ? 'Cerrar la ficha' : 'Abrir la ficha con todos los datos'}">${r.id === ctAbierto ? '▴' : '▾'}</button><button data-ct="rutificador" class="rutif" title="Copiar RUT y abrir Rutificador">🪪</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
+      : `<button data-ct="agenda" class="ag${agClase(r)}" title="${esc(agTitulo(r))}">⏰</button><button data-ct="wa" class="wa" title="Abrir WhatsApp Web con este cliente y enviarle la oferta"><svg viewBox="0 0 16 16"><path d="${ICONOS.wa}"/></svg></button><button data-ct="genesys" class="gen" title="Traer el teléfono desde Genesys (reemplaza el de esta fila)"><svg class="gico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="11.2" cy="2.6" r="1.8"/><rect x="4.2" y="5.4" width="6" height="9.4" rx="3"/></svg><span class="gen-t">Genesys</span></button><button data-ct="copiar" class="cop" title="Copiar los datos del cliente para WhatsApp (por ejemplo, para enviarlos a la supervisora)">📋</button><button data-ct="ficha" class="fic" title="${r.id === ctAbierto ? 'Cerrar la ficha' : 'Abrir la ficha con todos los datos'}">${r.id === ctAbierto ? '▴' : '▾'}</button><button data-ct="rutificador" class="rutif" title="Copiar el RUT y abrir el Rutificador">RUTIFICADOR</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
   </tr>${r.id === ctAbierto && !r.borrado ? ctFichaHTML(r) : ''}`).join('');
   $('#ct-vacio').hidden = lista.length > 0;
   // Si el período oculta registros, se dice cuántos hay y se ofrece verlos (los registros nunca se borran solos)
@@ -2739,6 +2759,7 @@ function initControl() {
     const el = e.target.closest('[data-k]'); if (!el) return;
     const r = CT.find(x => x.id === el.closest('tr').dataset.id); if (!r) return;
     if (el.dataset.k === 'rut' && e.type === 'change') el.value = rutFormato(el.value);
+    if (el.dataset.k === 'mail' && el.value !== correoLimpio(el.value)) el.value = correoLimpio(el.value);
     if (el.dataset.k === 'fecha') { const m = el.value.trim().match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/); if (!m) return; r.fecha = `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`; }
     else { el.title = el.value; r[el.dataset.k] = el.value; $$(`#ct-body [data-id="${r.id}"] [data-k="${el.dataset.k}"]`).forEach(x => { if (x !== el) x.value = el.value; }); }
     r.upd = Date.now(); ctGuardar();
@@ -2755,6 +2776,7 @@ function initControl() {
     const r = CT.find(x => x.id === b.closest('tr').dataset.id); if (!r) return;
     if (b.dataset.ct === 'genesys') return ctPegarEnFila(r.id);
     if (b.dataset.ct === 'wa') return waDialogo(r);
+    if (b.dataset.ct === 'copiar') return copyText(ctResumen(r), 'Datos del cliente copiados. Pégalos en WhatsApp con Ctrl+V.');
     if (b.dataset.ct === 'agenda') return agDialogo(r);
     if (b.dataset.ct === 'ficha') { ctAbierto = ctAbierto === r.id ? '' : r.id; ctPinta(); if (ctAbierto) { const t = $(`#ct-body tr.ficha[data-id="${r.id}"] input`); if (t) t.focus(); } return; }
     if (b.dataset.ct === 'borrar') { r.borrado = true; r.upd = Date.now(); ctGuardar(); ctPinta(); toast('Registro borrado. Puedes recuperarlo con "Ver borrados".'); }
