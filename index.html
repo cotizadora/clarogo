@@ -639,8 +639,8 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
         <div><label for="sc-rut">RUT <span id="sc-rut-ok"></span></label><input type="text" id="sc-rut" placeholder="12.345.678-9"></div>
         <div><label for="sc-nac">Fecha de nacimiento</label><input type="text" id="sc-nac" placeholder="DD-MM-AAAA"></div>
         <div><label for="sc-mail">Correo electrónico</label><input type="email" id="sc-mail" placeholder="correo@ejemplo.com"></div>
-        <div><label for="sc-fono">Número a portar</label><input type="text" id="sc-fono" placeholder="9 XXXX XXXX (solo si aplica)"></div>
-        <div><label for="sc-contacto">Teléfono de contacto</label><input type="text" id="sc-contacto" placeholder="9 XXXX XXXX"></div>
+        <div><label for="sc-fono">Número a portar</label><input type="text" id="sc-fono" placeholder="9XXXXXXXX (solo si aplica)"></div>
+        <div><label for="sc-contacto">Teléfono de contacto</label><input type="text" id="sc-contacto" placeholder="9XXXXXXXX"></div>
       </div>
       <div class="lbl" style="margin-top:14px">Venta</div>
       <div class="form2">
@@ -891,7 +891,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 <dialog id="dlg-wa" style="max-width:min(560px,96vw)">
   <div class="d-head"><div><h2>Enviar oferta por WhatsApp</h2><p id="wa-para"></p></div><button class="d-x" data-close>✕</button></div>
   <div class="d-body">
-    <div class="form2"><div><label for="wa-plan">Plan que quieres ofrecer</label><select id="wa-plan"></select></div><div><label for="wa-tel">Teléfono</label><input id="wa-tel" placeholder="9 XXXX XXXX"></div>
+    <div class="form2"><div><label for="wa-plan">Plan que quieres ofrecer</label><select id="wa-plan"></select></div><div><label for="wa-tel">Teléfono</label><input id="wa-tel" placeholder="9XXXXXXXX"></div>
     <div style="grid-column:1/-1"><label for="wa-agente">Tu nombre (va en la presentación)</label><input id="wa-agente" placeholder="Ej: Eduardo Pérez" autocomplete="off"></div></div>
     <label for="wa-texto" style="margin-top:10px">Mensaje (puedes editarlo antes de abrir WhatsApp)</label>
     <textarea id="wa-texto" rows="12"></textarea>
@@ -1917,7 +1917,7 @@ function initScript() {
     h += paso(++n, 'Despedida', `<p>¿Tiene alguna duda o consulta respecto a la información brindada? A continuación, y para cumplir con lo solicitado por la Subsecretaría de Telecomunicaciones, lo dejaré con una grabación que contiene información relevante sobre los servicios contratados, por lo que es importante que pueda escuchar la grabación completa. Si sobre esta información presenta alguna duda o consulta nos puede contactar a nuestros canales de atención al 800 171 171 o al 103 desde su teléfono móvil de Claro. Recuerde que mi nombre es ${F($v('agente'), 'tu nombre')}, muchas gracias por su preferencia.</p>` + ojo('Pide referidos y presiona el botón de <b>SUBTEL</b> antes de cortar la llamada.'));
     $('#sc-out').innerHTML = h;
   };
-  $('#sc-form').addEventListener('input', e => { if (e.target === rut) validarRut(); if (e.target.id === 'sc-mail' && e.target.value !== correoLimpio(e.target.value)) e.target.value = correoLimpio(e.target.value); if (e.target.id === 'sc-agente') { try { localStorage.setItem('agentName', e.target.value); } catch (x) {} } pinta(); });
+  $('#sc-form').addEventListener('input', e => { if (e.target === rut) validarRut(); if (e.target.id === 'sc-mail' && e.target.value !== correoLimpio(e.target.value)) e.target.value = correoLimpio(e.target.value); if (['sc-fono', 'sc-contacto'].includes(e.target.id) && e.target.value !== telLimpio(e.target.value)) e.target.value = telLimpio(e.target.value); if (e.target.id === 'sc-agente') { try { localStorage.setItem('agentName', e.target.value); } catch (x) {} } pinta(); });
   $('#sc-form').addEventListener('change', pinta);
   $('#sc-reset').onclick = () => { const ag = $('#sc-agente').value; $('#sc-form').reset(); $('#sc-agente').value = ag; scVincular(''); validarRut(); pinta(); toast('Script limpio. Los datos siguen guardados en Mi Planilla.'); };
   $('#sc-form').addEventListener('input', scGuardarEnFila);
@@ -2106,6 +2106,9 @@ const ARCH_NOMBRE = 'ClaroGo-planilla-control.json';
 const AUTO_MIN = 30;           // guardado programado
 const AUTO_EDIT_SEG = 4;       // guardado después de cada cambio
 let CT = [], ctNuevo = '', ctAviso = false, ctListo = false, ctTimer = 0;
+// Teléfonos siempre juntos, sin espacios (Genesys y el copiado los traen con espacios)
+const telLimpio = v => String(v || '').replace(/[\s  ]+/g, '');
+const TEL_CAMPOS = ['telefono', 'contacto', 'fono'];
 const correoLimpio = v => String(v || '').toLowerCase().replace(/ñ/g, 'n').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, '');
 const hoyISO = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
 const isoMenos = dias => { const d = new Date(Date.now() - dias * 864e5), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
@@ -2274,6 +2277,8 @@ function iniciarPestanas() {
 }
 async function iniciarRespaldo() {
   CT = ctLeerLocal();
+  // Limpia los teléfonos con espacios de registros antiguos (una sola vez por registro)
+  { let cambio = false; CT.forEach(r => { TEL_CAMPOS.forEach(k => { if (r[k] && r[k] !== telLimpio(r[k])) { r[k] = telLimpio(r[k]); r.upd = Date.now(); cambio = true; } }); }); if (cambio) ctGuardarLocal(); }
   iniciarPestanas();
   if (soportaArchivo) {
     RESP.handle = await idb('get');
@@ -2313,7 +2318,7 @@ function camposGenesys(txt) {
 const telFormato = s => {
   let d = String(s || '').replace(/\D/g, '');
   if (d.length === 11 && d.startsWith('56')) d = d.slice(2);
-  return d.length === 9 ? `${d[0]} ${d.slice(1, 5)} ${d.slice(5)}` : '';
+  return d.length === 9 ? d : '';
 };
 const fechaGenesys = s => { const m = String(s || '').match(/^(\d{4})(\d{2})(\d{2})$/); return m ? `${m[1]}-${m[2]}-${m[3]}` : ''; };
 function leerGenesys(txt) {
@@ -2342,7 +2347,7 @@ function leerGenesys(txt) {
 const MEDIOS = ['correo electrónico', 'WhatsApp', 'SMS'];
 const TVENTA = [['port', 'PortIn Post-Post'], ['portpre', 'PortIn Pre-Post'], ['migra', 'Migración'], ['ln', 'Línea nueva']];
 const FICHA = [
-  ['Cliente', [['nac', 'Fecha de nacimiento', 'DD-MM-AAAA'], ['mail', 'Correo electrónico', 'correo@ejemplo.com'], ['fono', 'Número a portar', '9 XXXX XXXX'], ['contacto', 'Teléfono de contacto', '9 XXXX XXXX'], ['origen', 'Compañía de origen', 'Ej: Movistar']]],
+  ['Cliente', [['nac', 'Fecha de nacimiento', 'DD-MM-AAAA'], ['mail', 'Correo electrónico', 'correo@ejemplo.com'], ['fono', 'Número a portar', '9XXXXXXXX'], ['contacto', 'Teléfono de contacto', '9XXXXXXXX'], ['origen', 'Compañía de origen', 'Ej: Movistar']]],
   ['Venta', [['medio', 'Validación enviada por', 'MEDIOS'], ['tventa', 'Tipo de venta', 'TVENTA'], ['adic', 'Líneas adicionales', '9 1111 1111, 9 2222 2222'], ['oferta', 'Oferta de la campaña (Genesys)', '']]],
   ['Equipo', [['eq', 'Equipo', 'Ej: Samsung A17 5G 128GB'], ['eqtotal', 'Monto total', '$0'], ['eqpie', 'Pago inicial', '$0'], ['eqforma', 'Forma de pago', 'Ej: 18 cuotas de $22.000']]],
   ['Despacho', [['direccion', 'Dirección', 'Ej: Las Zinnias 5790 Huechuraba, Región Metropolitana'], ['ref', 'Referencia o entrecalles', ''], ['eta', 'Tiempo de despacho', '']]]
@@ -2429,7 +2434,7 @@ let waFila = '';
 function waDialogo(r) {
   waFila = r.id;
   $('#wa-plan').innerHTML = PLANES_WA().map(p => `<option value="${p.id}"${p.id === WA_DEFECTO ? ' selected' : ''}>${esc(p.title)}</option>`).join('') + '<option value="">Solo la presentación, sin plan</option>';
-  $('#wa-tel').value = r.telefono || r.contacto || '';
+  $('#wa-tel').value = telLimpio(r.telefono || r.contacto || '');
   $('#wa-agente').value = agenteNombre();
   $('#wa-para').textContent = r.nombre || r.telefono || 'Cliente';
   $('#wa-texto').value = waTexto(WA_DEFECTO, r);
@@ -2438,6 +2443,7 @@ function waDialogo(r) {
 }
 function initWhatsApp() {
   const filaWa = () => CT.find(x => x.id === waFila) || {};
+  $('#wa-tel').addEventListener('input', e => { if (e.target.value !== telLimpio(e.target.value)) e.target.value = telLimpio(e.target.value); });
   $('#wa-plan').addEventListener('change', () => { $('#wa-texto').value = waTexto($('#wa-plan').value, filaWa()); });
   $('#wa-agente').addEventListener('input', e => { perfilGuardar(e.target.value || NOMBRE_DEFECTO, plantillaMsg()); $('#wa-texto').value = waTexto($('#wa-plan').value, filaWa()); });
   $('#wa-abrir').onclick = () => {
@@ -2683,7 +2689,7 @@ function ctPinta() {
     <td class="c-hora"><input data-k="hora" value="${esc(r.hora)}" placeholder="HH:MM"></td>
     <td class="c-rut"><input data-k="rut" value="${esc(r.rut)}" placeholder="RUT" title="${esc(r.rut)}"></td>
     <td class="c-nombre"><input data-k="nombre" value="${esc(r.nombre)}" placeholder="Pegar nombre" title="${esc(r.nombre)}"></td>
-    <td class="c-tel"><input data-k="telefono" value="${esc(r.telefono)}" placeholder="9 XXXX XXXX" title="${esc(r.telefono)}"></td>
+    <td class="c-tel"><input data-k="telefono" value="${esc(r.telefono)}" placeholder="9XXXXXXXX" title="${esc(r.telefono)}"></td>
     <td class="c-orig"><input data-k="origen" value="${esc(r.origen || '')}" placeholder="Compañía" title="Compañía de origen${r.origen ? ': ' + esc(r.origen) : ''}"></td>
     <td class="c-tipo"><select data-k="tipo">${opt(TIPIFICACIONES, r.tipo, 'Sin tipificar')}</select></td>
     <td class="c-plan"><select data-k="plan">${opt(PLANES_WA().map(p => p.title), r.plan, 'Sin plan')}</select></td>
@@ -2760,6 +2766,7 @@ function initControl() {
     const r = CT.find(x => x.id === el.closest('tr').dataset.id); if (!r) return;
     if (el.dataset.k === 'rut' && e.type === 'change') el.value = rutFormato(el.value);
     if (el.dataset.k === 'mail' && el.value !== correoLimpio(el.value)) el.value = correoLimpio(el.value);
+    if (TEL_CAMPOS.includes(el.dataset.k) && el.value !== telLimpio(el.value)) el.value = telLimpio(el.value);
     if (el.dataset.k === 'fecha') { const m = el.value.trim().match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/); if (!m) return; r.fecha = `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`; }
     else { el.title = el.value; r[el.dataset.k] = el.value; $$(`#ct-body [data-id="${r.id}"] [data-k="${el.dataset.k}"]`).forEach(x => { if (x !== el) x.value = el.value; }); }
     r.upd = Date.now(); ctGuardar();

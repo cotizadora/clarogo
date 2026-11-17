@@ -31,7 +31,7 @@ function leerMarco() {
   return datos;
 }
 
-const telFormato = s => { let d = String(s || '').replace(/\D/g, ''); if (d.length === 11 && d.startsWith('56')) d = d.slice(2); return d.length === 9 ? `${d[0]} ${d.slice(1, 5)} ${d.slice(5)}` : ''; };
+const telFormato = s => { let d = String(s || '').replace(/\D/g, ''); if (d.length === 11 && d.startsWith('56')) d = d.slice(2); return d.length === 9 ? d : ''; };
 
 function mostrar(estado, clase) { $('#estado').textContent = estado; $('#estado').className = clase || ''; }
 

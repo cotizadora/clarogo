@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: teléfonos sin espacios (extensión 1.9.1)
+
+- Todos los teléfonos quedan juntos, sin espacios (por ejemplo 912345678): los que llegan de Genesys o la extensión, los que se escriben o pegan en la planilla, la ficha, el Script y el cuadro de WhatsApp. Los registros guardados antes se limpian solos al abrir la página.
+
 ### 17-11-2026: copiado rápido, Genesys y RUTIFICADOR, correo limpio
 
 - Mi Planilla: botón 📋 en cada fila (y en la ficha) que copia los datos del cliente para WhatsApp, una línea por dato: cliente, RUT, teléfono, contacto, número a portar, nacimiento, correo, compañía, dirección, referencia, plan, líneas adicionales, tipo de venta, equipo, tipificación y observaciones (solo los que tienen información).
