@@ -2386,7 +2386,11 @@ function ctPinta() {
       : `<button data-ct="wa" class="wa" title="Abrir WhatsApp Web con este cliente y enviarle la oferta"><svg viewBox="0 0 16 16"><path d="${ICONOS.wa}"/></svg></button><button data-ct="genesys" class="gen" title="Pegar datos de Genesys en esta fila (copia antes con Ctrl+A y Ctrl+C en Genesys)">📞</button><button data-ct="ficha" class="fic" title="${r.id === ctAbierto ? 'Cerrar la ficha' : 'Abrir la ficha con todos los datos'}">${r.id === ctAbierto ? '▴' : '▾'}</button><button data-ct="rutificador" class="rutif" title="Copiar RUT y abrir Rutificador">🪪</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
   </tr>${r.id === ctAbierto && !r.borrado ? ctFichaHTML(r) : ''}`).join('');
   $('#ct-vacio').hidden = lista.length > 0;
-  $('#ct-vacio').textContent = verBorr ? 'No hay registros borrados en este período.' : 'No hay llamadas en este período. Pega la primera desde Genesys.';
+  // Si el período oculta registros, se dice cuántos hay y se ofrece verlos (los registros nunca se borran solos)
+  const ocultos = verBorr ? 0 : CT.filter(r => !r.borrado).length - lista.length;
+  $('#ct-vacio').innerHTML = verBorr ? 'No hay registros borrados en este período.'
+    : ocultos > 0 ? `No hay llamadas en este período. Tus <b>${ocultos} registros</b> de otros días están guardados. <button class="btn sm red" data-ver="todo">Ver todo el historial</button> <button class="btn sm" data-ver="7">Últimos 7 días</button>`
+    : 'No hay llamadas en este período. Pega la primera desde Genesys.';
   const cuenta = {}; lista.forEach(r => { const k = r.tipo || 'Sin tipificar'; cuenta[k] = (cuenta[k] || 0) + 1; });
   $('#ct-resumen').innerHTML = `<span class="chip on">${verBorr ? 'Borrados' : 'Llamadas'}<b>${lista.length}</b></span>` + Object.keys(cuenta).sort((a, b) => cuenta[b] - cuenta[a]).map(k => `<span class="chip">${esc(k)}<b>${cuenta[k]}</b></span>`).join('')
     + `<span class="chip">Total histórico<b>${CT.filter(r => !r.borrado).length}</b></span>`;
@@ -2431,6 +2435,7 @@ function initControl() {
   // El cuadro de pegar usa solo el texto copiado
   $('#ct-procesar').onclick = () => { const txt = $('#ct-texto').value, d = destino; $('#dlg-pegar').close(); destino = d; procesar(txt); };
   $('#ct-nueva').onclick = () => ctAgregar({});
+  $('#ct-vacio').addEventListener('click', e => { const b = e.target.closest('[data-ver]'); if (!b) return; $('#ct-periodo').value = b.dataset.ver; $('#ct-rango').hidden = true; ctPinta(); });
   $('#ct-excel').onclick = ctExcel;
   $('#ct-q').addEventListener('input', ctPinta);
   ['#ct-tipo', '#ct-seg', '#ct-desde', '#ct-hasta', '#ct-verborr'].forEach(s => $(s).addEventListener('change', ctPinta));

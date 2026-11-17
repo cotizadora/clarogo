@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: aviso de registros de otros días
+
+- Si el período elegido (por ejemplo Hoy) no tiene llamadas pero hay registros de otros días, Mi Planilla lo dice con la cantidad y ofrece botones para ver todo el historial o los últimos 7 días. Los registros no se habían borrado: el filtro Hoy los ocultaba.
+
 ### 17-11-2026: extensión 1.4, funciona desde cualquier pestaña
 
 - La extensión busca la pestaña de Genesys aunque estés mirando otra (en cualquier ventana). Prefiere la que estás mirando si es Genesys; si no, la usada más recientemente que traiga teléfono.
