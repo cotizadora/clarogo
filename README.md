@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: extensión 1.12.1, lámina sin texto repetido
+
+- Al adjuntar la lámina, WhatsApp copiaba el mensaje como pie de la imagen y llegaba repetido. La extensión ahora vacía ese pie: la lámina va sola y el mensaje va aparte.
+
 ### 17-11-2026: trato según el género (extensión 1.12)
 
 - Sin nombre del cliente (y siempre en la extensión) el saludo es cordial y sin "estimado(a)": "Hola, muy buenas tardes. Mi nombre es..."

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ClaroGo! Genesys",
   "short_name": "ClaroGo!",
-  "version": "1.12.0",
+  "version": "1.12.1",
   "description": "Lee los datos del cliente en la llamada de Genesys y los copia o los envía a Mi Planilla de ClaroGo!. Herramienta no oficial.",
   "action": {
     "default_title": "ClaroGo!: tomar datos de Genesys (Alt+Shift+G)",

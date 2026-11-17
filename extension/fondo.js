@@ -49,13 +49,27 @@ async function chatRapido(numero, texto, img) {
         const bin = atob(b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
         const archivo = new File([u], 'lamina-plan.' + (tipo.includes('jpeg') ? 'jpg' : 'png'), { type: tipo });
         const caja = cajaActual(); if (!caja) return 'ok-sin-lamina';
-        const antes = new Set([...document.querySelectorAll('img')]);
+        const antes = new Set([...document.querySelectorAll('img')]), editAntes = new Set([...document.querySelectorAll('[contenteditable="true"]')]);
         caja.focus();
         const dt = new DataTransfer(); dt.items.add(archivo);
         caja.dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true }));
         // Se da por adjuntada si aparece la vista previa (una imagen nueva en la página)
         const vista = await hasta(() => [...document.querySelectorAll('img')].find(i => !antes.has(i) && visible(i) && /^blob:|^data:/.test(i.src)) || null, 3500);
-        return vista ? 'ok' : 'ok-sin-lamina';
+        if (!vista) return 'ok-sin-lamina';
+        // WhatsApp copia el mensaje escrito como pie de la imagen: se vacía, para que la lámina vaya sola
+        // (el mensaje ya va aparte). Se revisa un momento, porque WhatsApp puede llenarlo un instante después.
+        const pie = () => [...document.querySelectorAll('[contenteditable="true"]')].find(e => e !== cajaActual() && !e.closest('footer') && visible(e) && estaPegado(e));
+        for (let i = 0; i < 8; i++) {
+          const p = pie();
+          if (p) {
+            p.focus();
+            document.execCommand('selectAll', false, null);
+            document.execCommand('delete', false, null);
+            if (p.textContent.trim()) { p.textContent = ''; p.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'deleteContentBackward' })); }
+          }
+          await esperar(250);
+        }
+        return 'ok';
       } catch (e) { return 'ok-sin-lamina'; }
     };
     let c0 = cajaActual();
