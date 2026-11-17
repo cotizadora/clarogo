@@ -50,6 +50,12 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: nombre completo, columnas ajustables y ficha con clic
+
+- Mi Planilla: el nombre del cliente se ve siempre completo (si es largo, la celda crece hacia abajo). En celular, el nombre aparece debajo del teléfono.
+- Ancho de columnas ajustable arrastrando el borde derecho del título; se recuerda en el navegador y doble clic en el borde vuelve al ancho original. Las columnas crecen hasta donde cabe la tabla, sin desplazamiento lateral.
+- La ficha se abre o se cierra con un clic en el espacio vacío de cualquier celda, o con doble clic en un cuadro vacío o en el número de la fila (en un cuadro con texto, el doble clic sigue seleccionando la palabra).
+
 ### 17-11-2026: extensión 1.12.1, lámina sin texto repetido
 
 - Al adjuntar la lámina, WhatsApp copiaba el mensaje como pie de la imagen y llegaba repetido. La extensión ahora vacía ese pie: la lámina va sola y el mensaje va aparte.

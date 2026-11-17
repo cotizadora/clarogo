@@ -392,6 +392,14 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla th,#ct-tabla td{border:1px solid #d4d7dc;padding:0;height:28px;font-size:.8rem;white-space:nowrap;overflow:hidden}
 #ct-tabla th{background:#f3f3f3;color:#333;font-weight:600;text-align:center;font-size:.74rem;border-bottom:2px solid #b9bcc2}
 #ct-tabla td.c-n,#ct-tabla th.c-n{background:#f3f3f3;color:#6b6f76;text-align:center;font-size:.72rem;cursor:default}
+#ct-tabla td.c-nombre{white-space:normal;height:auto}
+#ct-tabla td textarea.nom{display:block;width:100%;min-height:27px;border:0;border-radius:0;background:transparent;padding:5px 6px 4px;font:inherit;font-size:.8rem;line-height:1.3;color:var(--text);resize:none;overflow:hidden;white-space:pre-wrap;word-break:break-word;field-sizing:content}
+#ct-tabla td textarea.nom:focus{outline:2px solid #217346;outline-offset:-2px;background:#fff}
+#ct-tabla .tel-nom{display:none}
+/* Ancho de columnas ajustable: se arrastra el borde derecho del título (doble clic vuelve al ancho original) */
+#ct-tabla th{position:relative}
+#ct-tabla th .col-res{position:absolute;top:0;right:-3px;width:7px;height:100%;cursor:col-resize;z-index:2}
+#ct-tabla th .col-res:hover,#ct-tabla th .col-res.on{background:rgba(33,115,70,.35)}
 #ct-tabla td input,#ct-tabla td select{width:100%;height:27px;border:0;border-radius:0;background:transparent;padding:0 6px;font:inherit;font-size:.8rem;color:var(--text);text-overflow:ellipsis;min-width:0}
 #ct-tabla td select{padding:0 2px;cursor:pointer}
 #ct-tabla td input:focus,#ct-tabla td select:focus{outline:2px solid #217346;outline-offset:-2px;background:#fff}
@@ -431,7 +439,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .c-nombre{width:auto}.c-notas{width:17%}
 @media (max-width:1500px){.c-notas{display:none}}
 @media (max-width:1100px){.c-hora,.c-plan{display:none}}
-@media (max-width:720px){.c-fecha,.c-notas,.c-rut,.c-nombre{display:none}.c-tel{width:auto}.c-orig{width:60px}.c-tipo{width:80px}.c-n{width:36px}.c-acc{width:128px} #ct-tabla .acc .gen-t{display:none} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
+@media (max-width:720px){#ct-tabla .tel-nom{display:block;font-size:.66rem;font-weight:700;line-height:1.2;padding:3px 4px 0;white-space:normal;word-break:break-word;color:var(--text)} #ct-tabla td.c-tel{white-space:normal;height:auto}.c-fecha,.c-notas,.c-rut,.c-nombre{display:none}.c-tel{width:auto}.c-orig{width:60px}.c-tipo{width:80px}.c-n{width:36px}.c-acc{width:128px} #ct-tabla .acc .gen-t{display:none} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
 #ct-resumen .chip b{margin-left:4px}
 .resp{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:.84rem}
 .resp .resp-b{display:flex;gap:6px;flex-wrap:wrap}
@@ -2910,6 +2918,35 @@ function ctFiltradas() {
     && (!tipo || (tipo === '__fav' ? r.fav : tipo === 'Sin tipificar' ? !r.tipo : r.tipo === tipo)) && (!seg || ctSeg(r) === seg)
     && (!q || [r.rut, r.nombre, r.telefono, r.notas, r.mail, r.contacto, r.fono, dirTexto(r), r.eq].join(' ').toLowerCase().includes(q)));
 }
+const nomAlto = t => { if (CSS.supports && CSS.supports('field-sizing', 'content')) return; t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; };
+/* ── Ancho de columnas ajustable ────────────────────────────────── */
+const COL_KEY = 'clarogo_columnas';
+function colAplicar() {
+  let w = {}; try { w = JSON.parse(localStorage.getItem(COL_KEY) || '{}'); } catch (e) {}
+  $$('#ct-tabla colgroup col').forEach(c => { const k = c.className; c.style.width = w[k] ? w[k] + 'px' : ''; });
+  $$('#ct-tabla thead th').forEach(th => { const k = th.className.split(' ')[0]; th.style.width = w[k] ? w[k] + 'px' : ''; });
+}
+function initColumnas() {
+  $$('#ct-tabla thead th').forEach((th, i, todos) => { if (i < todos.length - 1) th.insertAdjacentHTML('beforeend', '<span class="col-res" title="Arrastra para cambiar el ancho. Doble clic: ancho original"></span>'); });
+  colAplicar();
+  $('#ct-tabla thead').addEventListener('pointerdown', e => {
+    const h = e.target.closest('.col-res'); if (!h) return;
+    e.preventDefault();
+    const th = h.parentElement, k = th.className.split(' ')[0], x0 = e.clientX, w0 = th.getBoundingClientRect().width;
+    h.classList.add('on'); h.setPointerCapture(e.pointerId);
+    // Crece hasta donde cabe la tabla: si aparecería desplazamiento lateral, se queda en el último ancho válido
+    let valido = w0;
+    const mover = ev => { const w = Math.round(Math.max(36, w0 + ev.clientX - x0)); const col = $(`#ct-tabla colgroup col.${k}`); th.style.width = w + 'px'; if (col) col.style.width = w + 'px'; const caja = $('#ct-tabla').parentElement; if (caja.scrollWidth > caja.clientWidth + 1) { th.style.width = valido + 'px'; if (col) col.style.width = valido + 'px'; } else valido = w; };
+    const soltar = () => {
+      h.classList.remove('on'); h.removeEventListener('pointermove', mover); h.removeEventListener('pointerup', soltar);
+      let w = {}; try { w = JSON.parse(localStorage.getItem(COL_KEY) || '{}'); } catch (x) {}
+      w[k] = Math.round(th.getBoundingClientRect().width); try { localStorage.setItem(COL_KEY, JSON.stringify(w)); } catch (x) {}
+      $$('#ct-body textarea.nom').forEach(nomAlto);
+    };
+    h.addEventListener('pointermove', mover); h.addEventListener('pointerup', soltar);
+  });
+  $('#ct-tabla thead').addEventListener('dblclick', e => { if (!e.target.closest('.col-res')) return; try { localStorage.removeItem(COL_KEY); } catch (x) {} colAplicar(); toast('Columnas en su ancho original'); });
+}
 function ctPinta() {
   if (!ctListo) return;
   const segs = [...new Set(CT.filter(r => !r.borrado).map(ctSeg))].sort(), selSeg = $('#ct-seg').value;
@@ -2922,8 +2959,8 @@ function ctPinta() {
     <td class="c-fecha"><input data-k="fecha" value="${esc(fmtF(r.fecha))}" placeholder="DD-MM-AAAA" title="${esc(fmtF(r.fecha))}"></td>
     <td class="c-hora"><input data-k="hora" value="${esc(r.hora)}" placeholder="HH:MM"></td>
     <td class="c-rut"><input data-k="rut" value="${esc(r.rut)}" placeholder="RUT" title="${esc(r.rut)}"></td>
-    <td class="c-nombre"><input data-k="nombre" value="${esc(r.nombre)}" placeholder="Pegar nombre" title="${esc(r.nombre)}"></td>
-    <td class="c-tel"><input data-k="telefono" value="${esc(r.telefono)}" placeholder="9XXXXXXXX" title="${esc(r.telefono)}"></td>
+    <td class="c-nombre"><textarea data-k="nombre" class="nom" rows="1" placeholder="Pegar nombre" title="${esc(r.nombre)}">${esc(r.nombre)}</textarea></td>
+    <td class="c-tel"><div class="tel-nom">${esc(r.nombre || '')}</div><input data-k="telefono" value="${esc(r.telefono)}" placeholder="9XXXXXXXX" title="${esc(r.telefono)}"></td>
     <td class="c-orig"><input data-k="origen" value="${esc(r.origen || '')}" placeholder="Compañía" title="Compañía de origen${r.origen ? ': ' + esc(r.origen) : ''}"></td>
     <td class="c-tipo"><select data-k="tipo">${opt(TIPIFICACIONES, r.tipo, 'Sin tipificar')}</select></td>
     <td class="c-plan"><select data-k="plan">${opt(PLANES_WA().map(p => p.title), r.plan, 'Sin plan')}</select></td>
@@ -2932,6 +2969,7 @@ function ctPinta() {
       ? `<button data-ct="restaurar" class="go" title="Recuperar registro">↺</button>`
       : `<button data-ct="agenda" class="ag${agClase(r)}" title="${esc(agTitulo(r))}">⏰</button><button data-ct="wa" class="wa" title="Abrir WhatsApp Web con este cliente y enviarle la oferta"><svg viewBox="0 0 16 16"><path d="${ICONOS.wa}"/></svg></button><button data-ct="genesys" class="gen" title="Traer el teléfono desde Genesys (reemplaza el de esta fila)"><svg class="gico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="11.2" cy="2.6" r="1.8"/><rect x="4.2" y="5.4" width="6" height="9.4" rx="3"/></svg><span class="gen-t">Genesys</span></button><button data-ct="copiar" class="cop" title="Copiar los datos del cliente para WhatsApp (por ejemplo, para enviarlos a la supervisora)">📋</button><button data-ct="ficha" class="fic" title="${r.id === ctAbierto ? 'Cerrar la ficha' : 'Abrir la ficha con todos los datos'}">${r.id === ctAbierto ? '▴' : '▾'}</button><button data-ct="rutificador" class="rutif" title="Copiar el RUT y abrir el Rutificador">RUTIFICADOR</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
   </tr>${r.id === ctAbierto && !r.borrado ? ctFichaHTML(r) : ''}`).join('');
+  $$('#ct-body textarea.nom').forEach(nomAlto);
   $('#ct-vacio').hidden = lista.length > 0;
   // Si el período oculta registros, se dice cuántos hay y se ofrece verlos (los registros nunca se borran solos)
   const ocultos = verBorr ? 0 : CT.filter(r => !r.borrado).length - lista.length;
@@ -2985,6 +3023,7 @@ function initControl() {
   // El cuadro de pegar usa solo el texto copiado
   $('#ct-procesar').onclick = () => { const txt = $('#ct-texto').value, d = destino; $('#dlg-pegar').close(); destino = d; procesar(txt); };
   $('#ct-nueva').onclick = () => ctAgregar({});
+  initColumnas();
   $('#eq-procesar').onclick = () => { const t = $('#eq-texto').value; $('#dlg-equipo').close(); ctPonerEquipo(eqFila, t); };
   $('#ct-vacio').addEventListener('click', e => { const b = e.target.closest('[data-ver]'); if (!b) return; $('#ct-periodo').value = b.dataset.ver; $('#ct-rango').hidden = true; ctPinta(); });
   $('#ct-excel').onclick = ctExcel;
@@ -3006,7 +3045,7 @@ function initControl() {
     if (e.type === 'change' && el.dataset.k === 'direccion') el.value = dirFormato(el.value);
     if (el.dataset.k === 'fecha') { const m = el.value.trim().match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/); if (!m) return; r.fecha = `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`; }
     else if (el.type === 'checkbox') { r[el.dataset.k] = el.checked; if (el.dataset.k === 'sineq' && el.checked) Object.assign(r, { eq: '', eqsku: '', eqtotal: '', eqpie: '', eqforma: '' }); if (e.type === 'change') setTimeout(ctPinta, 0); }
-    else { el.title = el.value; r[el.dataset.k] = el.value; $$(`#ct-body [data-id="${r.id}"] [data-k="${el.dataset.k}"]`).forEach(x => { if (x !== el) x.value = el.value; }); }
+    else { el.title = el.value; r[el.dataset.k] = el.value; if (el.dataset.k === 'nombre') { if (el.tagName === 'TEXTAREA') { el.value = el.value.replace(/\n/g, ' '); r.nombre = el.value; nomAlto(el); } const tn = el.closest('tr').querySelector('.tel-nom'); if (tn) tn.textContent = el.value; } $$(`#ct-body [data-id="${r.id}"] [data-k="${el.dataset.k}"]`).forEach(x => { if (x !== el) x.value = el.value; }); }
     r.upd = Date.now(); ctGuardar();
     if (el.dataset.k === 'tipo') { const tr = el.closest('tr'); tr.classList.toggle('t-venta', el.value === 'Venta'); tr.classList.remove('t-verde', 't-rojo', 't-amarillo'); if (tipoColor(el.value)) tr.classList.add(tipoColor(el.value)); }
     if (el.dataset.k === 'tipo' && e.type === 'change' && el.value === 'Volver a llamar' && !(r.agenda && !r.agendaHecho)) agDialogo(r);
@@ -3014,6 +3053,11 @@ function initControl() {
   body.addEventListener('input', actualizar);
   body.addEventListener('change', actualizar);
   body.addEventListener('focusout', () => setTimeout(() => { if (!body.contains(document.activeElement)) { if (ctRepintarPend) ctRepintar(); respSync('edición'); } }, 50));
+  const tocaFicha = tr => { if (!tr || tr.classList.contains('ficha') || !tr.dataset.id) return; ctAbierto = ctAbierto === tr.dataset.id ? '' : tr.dataset.id; ctPinta(); };
+  body.addEventListener('click', e => { if (e.target.tagName === 'TD' && e.target.closest('tr:not(.ficha)')) tocaFicha(e.target.closest('tr')); });
+  // Doble clic en un cuadro vacío o en el número de la fila; en un cuadro con texto, el doble clic sigue seleccionando la palabra
+  body.addEventListener('dblclick', e => { if (e.target.closest('button, select, .ficha')) return; if (/^(INPUT|TEXTAREA)$/.test(e.target.tagName) && e.target.value.trim()) return; tocaFicha(e.target.closest('tr')); });
+  body.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches('textarea.nom')) e.preventDefault(); });
   body.addEventListener('click', e => {
     const pq = e.target.closest('[data-eqpegar]'); if (pq) return ctPegarEquipo(pq.closest('tr').dataset.id);
     const o = e.target.closest('[data-obs]');
