@@ -79,19 +79,31 @@ async function enviar() {
   } catch (e) { mostrar('No se pudo enviar: ' + e.message + '. Los datos siguen copiados.', 'mal'); $('#enviar').disabled = false; }
 }
 
+// Pestañas de Genesys abiertas en cualquier ventana, aunque estés mirando otra
+const GENESYS = ['https://*.pure.cloud/*', 'https://*.mypurecloud.com/*', 'https://*.genesys.cloud/*'];
+const llenos = d => Object.values(d).filter(Boolean).length;
+async function leerPestana(tabId) {
+  try {
+    const marcos = await chrome.scripting.executeScript({ target: { tabId, allFrames: true }, func: leerMarco });
+    // Se queda con el marco que trae más datos (el guion de la llamada)
+    return marcos.map(m => m.result || {}).sort((a, b) => llenos(b) - llenos(a));
+  } catch (e) { return []; }
+}
 async function iniciar() {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!tab || !/^https:\/\/[^/]*(pure\.cloud|mypurecloud\.com|genesys\.cloud)\//.test(tab.url || '')) {
-    mostrar('Abre esta ventana con la llamada de Genesys en pantalla.', 'mal'); return;
+  const tabs = await chrome.tabs.query({ url: GENESYS });
+  if (!tabs.length) { mostrar('No encontré Genesys abierto. Abre Genesys con la llamada y vuelve a intentarlo.', 'mal'); return; }
+  // Primero la pestaña que estás mirando (si es Genesys), luego la usada más recientemente
+  tabs.sort((a, b) => (b.active - a.active) || ((b.lastAccessed || 0) - (a.lastAccessed || 0)));
+  let todos = [];
+  for (const t of tabs) {
+    const m = await leerPestana(t.id);
+    const tel = m.some(d => d.FONO_CONTACTO || d.Fono1 || d.Fono2 || d.LEGACY_ID);
+    if (tel) { todos = m; break; }                       // la primera con teléfono gana
+    if (!todos.length && m.some(d => llenos(d))) todos = m;  // si ninguna trae teléfono, la que tenga algún dato
   }
-  let marcos = [];
-  try { marcos = await chrome.scripting.executeScript({ target: { tabId: tab.id, allFrames: true }, func: leerMarco }); }
-  catch (e) { mostrar('No se pudo leer Genesys: ' + e.message, 'mal'); return; }
-  // Se queda con el marco que trae más datos (el guion de la llamada)
-  const todos = marcos.map(m => m.result || {}).sort((a, b) => Object.values(b).filter(Boolean).length - Object.values(a).filter(Boolean).length);
   const d = Object.assign({}, ...todos.slice().reverse());
-  const llenos = Object.entries(d).filter(([, v]) => v);
-  if (!llenos.length) { mostrar('No encontré datos del cliente. Abre la llamada con el panel "Interacción de llamada" visible y vuelve a intentarlo.', 'mal'); return; }
+  const conDatos = Object.entries(d).filter(([, v]) => v);
+  if (!conDatos.length) { mostrar('No encontré datos del cliente. Abre la llamada con el panel "Interacción de llamada" visible y vuelve a intentarlo.', 'mal'); return; }
   // Mismo formato que Ctrl+A en Genesys: CLAVE: y el valor en la línea siguiente
   TEXTO = Object.entries(d).map(([k, v]) => `${k}:\n${v || k}`).join('\n');
   const tel = telFormato(d.FONO_CONTACTO) || telFormato(d.Fono1) || telFormato(d.Fono2) || telFormato(d.LEGACY_ID);

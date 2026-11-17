@@ -50,6 +50,11 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: extensión 1.4, funciona desde cualquier pestaña
+
+- La extensión busca la pestaña de Genesys aunque estés mirando otra (en cualquier ventana). Prefiere la que estás mirando si es Genesys; si no, la usada más recientemente que traiga teléfono.
+- La ventanita muestra arriba la versión instalada.
+
 ### 17-11-2026: extensión 1.3, versión visible
 
 - La ventanita de la extensión muestra arriba la versión instalada (por ejemplo v1.3.0), para ver de inmediato si se actualizó.
