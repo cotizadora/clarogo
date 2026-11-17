@@ -4,7 +4,7 @@
 // El mensaje nunca se envía solo: el ejecutivo lo revisa y presiona Enter.
 
 // Se ejecuta dentro de la pestaña de WhatsApp Web. Devuelve 'ok' o el motivo por el que no pudo.
-async function chatRapido(numero, texto) {
+async function chatRapido(numero, texto, img) {
   const esperar = ms => new Promise(r => setTimeout(r, ms));
   const hasta = async (fn, ms = 3000) => { const fin = Date.now() + ms; while (Date.now() < fin) { const v = fn(); if (v) return v; await esperar(100); } return null; };
   const visible = el => !!el && el.getClientRects().length > 0;
@@ -41,26 +41,43 @@ async function chatRapido(numero, texto) {
     await esperar(700);
     const inicio = texto.replace(/\s+/g, ' ').trim().slice(0, 25);
     const estaPegado = c => c && c.textContent.replace(/\s+/g, ' ').includes(inicio);
+    // 5. La lámina: se pega como imagen en el chat; WhatsApp abre su vista previa lista para enviar
+    const adjuntar = async () => {
+      if (!img) return 'ok';
+      try {
+        const [cab, b64] = String(img).split(','), tipo = (cab.match(/data:([^;]+)/) || [])[1] || 'image/png';
+        const bin = atob(b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+        const archivo = new File([u], 'lamina-plan.' + (tipo.includes('jpeg') ? 'jpg' : 'png'), { type: tipo });
+        const caja = cajaActual(); if (!caja) return 'ok-sin-lamina';
+        const antes = new Set([...document.querySelectorAll('img')]);
+        caja.focus();
+        const dt = new DataTransfer(); dt.items.add(archivo);
+        caja.dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true }));
+        // Se da por adjuntada si aparece la vista previa (una imagen nueva en la página)
+        const vista = await hasta(() => [...document.querySelectorAll('img')].find(i => !antes.has(i) && visible(i) && /^blob:|^data:/.test(i.src)) || null, 3500);
+        return vista ? 'ok' : 'ok-sin-lamina';
+      } catch (e) { return 'ok-sin-lamina'; }
+    };
     let c0 = cajaActual();
-    if (c0 && c0.textContent.trim() && !estaPegado(c0)) return 'ok';   // ya había un borrador del ejecutivo: no se pisa
+    if (c0 && c0.textContent.trim() && !estaPegado(c0)) return adjuntar();   // ya había un borrador del ejecutivo: no se pisa
     for (let i = 0; i < 5; i++) {
       const caja = cajaActual();
       if (!caja) { await esperar(300); continue; }
       if (!estaPegado(caja)) {
-        if (caja.textContent.trim()) return 'ok';
+        if (caja.textContent.trim()) return adjuntar();
         pegar(caja, texto);
         await esperar(250);
         if (!caja.textContent.trim()) document.execCommand('insertText', false, texto);
       }
       await esperar(800);
       const ahora = cajaActual();
-      if (estaPegado(ahora)) { await esperar(600); if (estaPegado(cajaActual())) return 'ok'; }
+      if (estaPegado(ahora)) { await esperar(600); if (estaPegado(cajaActual())) return adjuntar(); }
     }
-    return estaPegado(cajaActual()) ? 'ok' : 'ok-sin-texto';
+    return estaPegado(cajaActual()) ? adjuntar() : 'ok-sin-texto';
   } catch (e) { return 'error: ' + e.message; }
 }
 
-async function abrirWhatsApp(url) {
+async function abrirWhatsApp(url, img) {
   if (!/^https:\/\/web\.whatsapp\.com\/send\?/.test(url)) return false;
   const u = new URL(url), numero = u.searchParams.get('phone') || '', texto = u.searchParams.get('text') || '';
   const tabs = (await chrome.tabs.query({ url: 'https://web.whatsapp.com/*' })).sort((a, b) => a.id - b.id);
@@ -70,13 +87,14 @@ async function abrirWhatsApp(url) {
   await chrome.windows.update(t.windowId, { focused: true });
   let modo = 'recarga';
   try {
-    const [r] = await chrome.scripting.executeScript({ target: { tabId: t.id }, func: chatRapido, args: [numero, texto] });
-    if (r && r.result === 'ok') modo = 'rapido';
+    const [r] = await chrome.scripting.executeScript({ target: { tabId: t.id }, func: chatRapido, args: [numero, texto, /^data:image\/(png|jpeg);base64,/.test(String(img || '')) ? img : ''] });
+    // 'ok-sin-lamina': el chat y el mensaje quedaron; la lámina queda en el portapapeles para Ctrl+V
+    if (r && (r.result === 'ok' || r.result === 'ok-sin-lamina')) modo = 'rapido';
   } catch (e) {}
   if (modo !== 'rapido') await chrome.tabs.update(t.id, { url, active: true });
   return modo;
 }
 
 chrome.runtime.onMessage.addListener((msg, _de, responder) => {
-  if (msg && msg.tipo === 'wa') { abrirWhatsApp(msg.url).then(responder, () => responder(false)); return true; }
+  if (msg && msg.tipo === 'wa') { abrirWhatsApp(msg.url, msg.img).then(responder, () => responder(false)); return true; }
 });

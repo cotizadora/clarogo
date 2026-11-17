@@ -6,7 +6,8 @@
 <style>
   :root { --red: #e60000; --text: #1f2430; --muted: #5f6673; --border: #e3e6eb; }
   * { box-sizing: border-box; }
-  body { margin: 0; width: 320px; font: 14px/1.4 "Segoe UI", system-ui, sans-serif; color: var(--text); background: #fff; }
+  html { border: 2px solid #b9bec7; box-shadow: inset 0 0 14px rgba(0,0,0,.18); }
+  body { margin: 0; width: 316px; font: 14px/1.4 "Segoe UI", system-ui, sans-serif; color: var(--text); background: #fff; }
   header { background: var(--red); color: #fff; padding: 10px 14px; display: flex; align-items: center; gap: 8px; }
   header b { font-size: 1.1rem; font-weight: 900; }
   header small { opacity: .85; font-size: .72rem; margin-left: auto; white-space: nowrap; }
@@ -26,6 +27,8 @@
   .verde { background: #25d366; color: #fff; }
   .wa { margin: 12px 0 4px; padding: 10px; border: 1px solid #c8eed6; background: #f1fbf4; border-radius: 10px; }
   .wa label { display: block; font-size: .74rem; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
+  .lam-chk { display: flex !important; align-items: center; gap: 6px; margin: 8px 0 0 !important; font-size: .8rem !important; color: var(--text) !important; font-weight: 700; cursor: pointer; }
+  .lam-chk input { margin: 0; width: 16px; height: 16px; }
   .wa select { width: 100%; padding: 7px; border: 1px solid var(--border); border-radius: 8px; font: inherit; }
   p.nota { font-size: .72rem; color: var(--muted); margin: 10px 0 0; }
 </style>
@@ -39,10 +42,10 @@
   <div class="wa" id="wa" hidden>
     <label for="wa-plan">WhatsApp con la oferta</label>
     <select id="wa-plan"></select>
+    <label class="lam-chk"><input type="checkbox" id="wa-lamina" checked> <span id="wa-lamina-txt">🖼️ Adjuntar la lámina del plan</span></label>
     <button class="verde" id="wa-abrir">WhatsApp Web</button>
-    <small style="display:block;margin-top:6px;color:var(--muted);font-size:.72rem">El mensaje queda copiado: si no aparece escrito, pégalo con Ctrl+V. Tu nombre y mensaje se cambian en el Inicio de ClaroGo!.</small>
+    <small style="display:block;margin-top:6px;color:var(--muted);font-size:.72rem">Si la lámina no aparece en el chat, quedó copiada: pégala con Ctrl+V. Sin lámina, el mensaje queda copiado. Tu nombre y mensaje se cambian en el Inicio de ClaroGo!.</small>
   </div>
-  <button class="gris" id="copiar" disabled>📋 Copiar de nuevo</button>
   <p class="nota">Los datos ya quedan copiados al abrir esta ventana. En Mi Planilla puedes usar "Pegar desde Genesys" (fila nueva) o el botón naranjo de Genesys en una fila (reemplaza su teléfono). Atajo: Alt+Shift+G.</p>
 </main>
 <script src="popup.js"></script>

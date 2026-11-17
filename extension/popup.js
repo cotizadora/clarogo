@@ -116,24 +116,28 @@ async function iniciar() {
   [...$('#datos').querySelectorAll('tr')].forEach((tr, i) => { tr.lastChild.textContent = filas[i][1]; });
   $('#datos').hidden = false;
   if (await copiar(true)) mostrar(tel ? '✓ Datos copiados.' : 'Datos copiados, pero esta llamada no trae teléfono.', tel ? 'ok' : 'mal');
-  $('#enviar').disabled = $('#copiar').disabled = false;
+  $('#enviar').disabled = false;
   if (tel) prepararWhatsApp(tel, nombre);
 }
 
 /* ── WhatsApp Web con la oferta ───────────────────────────────────── */
-// Los mensajes de cada plan vienen de ClaroGo! (así siempre están al día). Si no hay ClaroGo! abierto, queda el saludo.
-let MENSAJES = [], TEL = '';
-// Presentación de respaldo: usa el nombre y el mensaje guardados desde ClaroGo! y el saludo según la hora
+// Los mensajes de cada plan vienen de ClaroGo! (así siempre están al día). Si no hay ClaroGo! abierto, se usan los guardados.
+let MENSAJES = [], TEL = '', IMGS = {};
+// Respaldo del mensaje corporativo: usa el nombre, el teléfono, el mensaje y la firma guardados desde ClaroGo!
 const NOMBRE_DEFECTO = 'Eduardo Pérez';
-const PLANTILLA_DEFECTO = 'Hola {cliente}, {saludo}, mi nombre es {nombre}. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.';
+const TELEFONO_DEFECTO = '+56 9 9796 6724';
+const PLANTILLA_DEFECTO = '{saludo}, estimado(a) {cliente}. Mi nombre es *{nombre}*, desde *Claro Chile*. Hablamos hace poco telefónicamente y, tal como acordamos, le envío la información sobre la propuesta.';
+const FIRMA_DEFECTO = 'Quedo a su disposición para cualquier consulta.\n\nSaludos cordiales,\n*{nombre}*\nEjecutivo(a) de ventas · *Claro Chile*\n📱 {telefono}';
 const saludoHora = () => { const h = new Date().getHours(); return h >= 5 && h < 12 ? 'muy buenos días' : h >= 12 && h < 20 ? 'muy buenas tardes' : 'muy buenas noches'; };
-async function presentacionGuardada(cliente) {
-  let p = {}; try { p = await chrome.storage.local.get(['nombre', 'plantilla']); } catch (e) {}
+async function piezasGuardadas(cliente) {
+  let p = {}; try { p = await chrome.storage.local.get(['nombre', 'plantilla', 'firma', 'telefono']); } catch (e) {}
+  const nom = p.nombre || NOMBRE_DEFECTO, tel = p.telefono || TELEFONO_DEFECTO;
   const pn = (() => { const x = String(cliente || '').trim().split(/\s+/)[0] || ''; return x.length > 1 ? x.charAt(0).toUpperCase() + x.slice(1).toLowerCase() : ''; })();
-  let txt = (p.plantilla || PLANTILLA_DEFECTO).replace(/\{saludo\}/gi, saludoHora()).replace(/\{nombre\}/gi, p.nombre || NOMBRE_DEFECTO);
+  let txt = (p.plantilla || PLANTILLA_DEFECTO).replace(/\{saludo\}/gi, saludoHora()).replace(/\{nombre\}/gi, nom).replace(/\{telefono\}/gi, tel);
   txt = pn ? txt.replace(/\{cliente\}/gi, pn) : txt.replace(/\s*\{cliente\}\s*(?=[,.!?])/gi, '').replace(/\s*\{cliente\}/gi, '');
   txt = txt.replace(/\s*\{compania\}/gi, '').replace(/ {2,}/g, ' ');
-  return txt.charAt(0).toUpperCase() + txt.slice(1);
+  const firma = (p.firma || FIRMA_DEFECTO).replace(/\{nombre\}/gi, nom).replace(/\{telefono\}/gi, tel);
+  return { pres: txt.charAt(0).toUpperCase() + txt.slice(1), firma };
 }
 // Selector de planes: por defecto el Plan 500 (el más barato); si el ejecutivo ya eligió otro, se respeta
 let PLAN_ELEGIDO = 'v500';
@@ -143,14 +147,24 @@ function pintarPlanes() {
   if (pref < 0) pref = 0;
   $('#wa-plan').innerHTML = MENSAJES.map((m, i) => `<option value="${i}"${i === pref ? ' selected' : ''}></option>`).join('');
   [...$('#wa-plan').options].forEach((o, i) => { o.textContent = MENSAJES[i].titulo; });
+  pintarLamina();
+}
+// La casilla "Adjuntar lámina" solo se puede usar si el plan elegido tiene lámina
+function pintarLamina() {
+  const m = MENSAJES[+$('#wa-plan').value] || {}, hay = !!IMGS[m.id];
+  $('#wa-lamina').disabled = !hay;
+  $('#wa-lamina-txt').textContent = hay ? '🖼️ Adjuntar la lámina del plan' : (m.id ? '🖼️ Lámina no disponible (abre ClaroGo! una vez)' : '🖼️ Sin lámina (solo la presentación)');
 }
 async function prepararWhatsApp(tel, nombre) {
   TEL = tel.replace(/\D/g, '');
-  // 1. Al instante: saludo + oferta, con los planes que ClaroGo! dejó guardados en la extensión
-  const pres = await presentacionGuardada(nombre);
-  let guardados = []; try { guardados = (await chrome.storage.local.get('planes')).planes || []; } catch (e) {}
-  MENSAJES = guardados.map(p => ({ id: p.id, titulo: p.titulo, texto: `${pres}\n\n${p.detalle}` }))
-    .concat([{ id: '', titulo: guardados.length ? 'Solo la presentación, sin plan' : 'Solo la presentación (abre ClaroGo! una vez para cargar los planes)', texto: pres }]);
+  // 1. Al instante: presentación + oferta + firma, con lo que ClaroGo! dejó guardado en la extensión
+  const { pres, firma } = await piezasGuardadas(nombre);
+  let g = {}; try { g = await chrome.storage.local.get(['planes', 'adjuntar']); } catch (e) {}
+  const guardados = g.planes || [];
+  guardados.forEach(p => { if (p.img) IMGS[p.id] = p.img; });
+  $('#wa-lamina').checked = g.adjuntar !== false;
+  MENSAJES = guardados.map(p => ({ id: p.id, titulo: p.titulo, texto: [pres, p.detalle, firma].join('\n\n') }))
+    .concat([{ id: '', titulo: guardados.length ? 'Solo la presentación, sin plan' : 'Solo la presentación (abre ClaroGo! una vez para cargar los planes)', texto: [pres, firma].join('\n\n') }]);
   pintarPlanes(); $('#wa').hidden = false;
   // 2. Si alguna pestaña de ClaroGo! responde, se usan sus mensajes (saludan con el nombre del cliente si está en la planilla)
   try {
@@ -163,16 +177,20 @@ async function prepararWhatsApp(tel, nombre) {
     }
   } catch (e) {}
 }
-$('#wa-plan').addEventListener('change', () => { const m = MENSAJES[+$('#wa-plan').value]; PLAN_ELEGIDO = m ? m.id : ''; });
+$('#wa-plan').addEventListener('change', () => { const m = MENSAJES[+$('#wa-plan').value]; PLAN_ELEGIDO = m ? m.id : ''; pintarLamina(); });
+$('#wa-lamina').addEventListener('change', e => { try { chrome.storage.local.set({ adjuntar: e.target.checked }); } catch (x) {} });
+// Imagen para el portapapeles (solo acepta PNG): la lámina de Persona Mayor viene en JPG y se convierte
+const pngDe = d => new Promise(res => { const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = i.naturalWidth; c.height = i.naturalHeight; c.getContext('2d').drawImage(i, 0, 0); c.toBlob(res, 'image/png'); }; i.onerror = () => res(null); i.src = d; });
 $('#wa-abrir').onclick = async () => {
   const m = MENSAJES[+$('#wa-plan').value] || MENSAJES[0];
   const url = `https://web.whatsapp.com/send?phone=56${TEL}&text=${encodeURIComponent(m.texto)}`;
+  const img = $('#wa-lamina').checked && !$('#wa-lamina').disabled ? (IMGS[m.id] || '') : '';
   $('#wa-abrir').disabled = true;
-  // El mensaje también queda copiado: si no aparece escrito en WhatsApp, se pega con Ctrl+V
-  try { await navigator.clipboard.writeText(m.texto); } catch (e) {}
-  // Primero el modo rápido del proceso de fondo (abre el chat sin recargar WhatsApp Web).
+  // Portapapeles de respaldo: con lámina queda la imagen (Ctrl+V la adjunta); sin lámina queda el mensaje
+  try { if (img) await navigator.clipboard.write([new ClipboardItem({ 'image/png': pngDe(img) })]); else await navigator.clipboard.writeText(m.texto); } catch (e) {}
+  // Primero el modo rápido del proceso de fondo (abre el chat sin recargar, escribe el mensaje y adjunta la lámina).
   // Si el proceso de fondo no responde, se abre desde aquí mismo como antes.
-  try { const r = await chrome.runtime.sendMessage({ tipo: 'wa', url }); if (r) { window.close(); return; } } catch (e) {}
+  try { const r = await chrome.runtime.sendMessage({ tipo: 'wa', url, img }); if (r) { window.close(); return; } } catch (e) {}
   try {
     let tabs = [];
     try { tabs = (await chrome.tabs.query({ url: 'https://web.whatsapp.com/*' })).sort((a, b) => a.id - b.id); } catch (e) {}
@@ -184,7 +202,6 @@ $('#wa-abrir').onclick = async () => {
   } catch (e) { mostrar('No se pudo abrir WhatsApp Web: ' + e.message, 'mal'); $('#wa-abrir').disabled = false; }
 };
 
-$('#copiar').onclick = () => copiar(false);
 $('#enviar').onclick = enviar;
 // Versión instalada, tomada del manifest: así se ve de inmediato si la extensión se actualizó
 $('#version').textContent = 'v' + chrome.runtime.getManifest().version;

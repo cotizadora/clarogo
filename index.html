@@ -908,11 +908,15 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <div class="d-head"><div><h2>👤 Mi nombre y mi mensaje</h2><p>Se usa en WhatsApp, en la planilla, en la extensión y en el Script</p></div><button class="d-x" data-close>✕</button></div>
   <div class="d-body">
     <label for="pf-nombre">Tu nombre</label><input id="pf-nombre" placeholder="Ej: Eduardo Pérez" autocomplete="off">
+    <label for="pf-telefono" style="margin-top:10px">Tu teléfono (va en la firma)</label><input id="pf-telefono" placeholder="+56 9 1234 5678" autocomplete="off">
     <label for="pf-plantilla" style="margin-top:10px">Tu mensaje de presentación</label>
     <textarea id="pf-plantilla" rows="4"></textarea>
     <p class="dim" style="font-size:.76rem;margin:4px 0 0">Escribe <b>{saludo}</b> donde va "muy buenos días", "muy buenas tardes" o "muy buenas noches" (cambia solo según la hora) , <b>{nombre}</b> donde va tu nombre, <b>{cliente}</b> donde va el primer nombre del cliente (si la planilla no lo tiene, se omite solo) y <b>{compania}</b> para su compañía de origen. Después del mensaje se agrega el plan que elijas.</p>
+    <label for="pf-firma" style="margin-top:10px">Tu firma (va al final, después de la oferta)</label>
+    <textarea id="pf-firma" rows="5"></textarea>
+    <p class="dim" style="font-size:.76rem;margin:4px 0 0">En la firma, <b>{nombre}</b> es tu nombre y <b>{telefono}</b> tu teléfono. Lo que va entre asteriscos (*Claro Chile*) sale en negrita en WhatsApp.</p>
     <label style="margin-top:10px">Así se ve ahora</label><pre id="pf-vista"></pre>
-    <div class="d-foot"><button class="btn" id="pf-defecto">Volver al mensaje original</button><button class="btn red" id="pf-guardar">Guardar</button></div>
+    <div class="d-foot"><button class="btn" id="pf-defecto">Volver al mensaje corporativo</button><button class="btn red" id="pf-guardar">Guardar</button></div>
   </div>
 </dialog>
 
@@ -923,6 +927,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     <div style="grid-column:1/-1"><label for="wa-agente">Tu nombre (va en la presentación)</label><input id="wa-agente" placeholder="Ej: Eduardo Pérez" autocomplete="off"></div></div>
     <label for="wa-texto" style="margin-top:10px">Mensaje (puedes editarlo antes de abrir WhatsApp)</label>
     <textarea id="wa-texto" rows="12"></textarea>
+    <label class="chk" style="margin-top:8px"><input type="checkbox" id="wa-lamina"> 🖼️ Adjuntar la lámina del plan</label>
     <div class="d-foot"><button class="btn" data-close>Cancelar</button><button class="btn wa-btn" id="wa-abrir">Abrir WhatsApp Web</button></div>
     <p class="dim" style="font-size:.76rem;margin:6px 0 0" id="wa-nota"></p>
   </div>
@@ -2491,28 +2496,36 @@ const WA_DEFECTO = 'v500';
    Cada ejecutivo personaliza su nombre y su presentación (se guardan en su navegador).
    {saludo} cambia según la hora y {nombre} es su nombre. Por defecto: Eduardo Pérez y el mensaje original. */
 const NOMBRE_DEFECTO = 'Eduardo Pérez';
-const PLANTILLA_DEFECTO = 'Hola {cliente}, {saludo}, mi nombre es {nombre}. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.';
-// Mensaje original anterior (sin {cliente}): si alguien lo tenía guardado, se actualiza solo al nuevo
-const PLANTILLA_ANTERIOR = 'Hola, {saludo}, mi nombre es {nombre}. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.';
+const TELEFONO_DEFECTO = '+56 9 9796 6724';
+// Mensaje corporativo: siempre "desde Claro Chile", con el nombre del ejecutivo y la compañía en negrita (*...* en WhatsApp)
+const PLANTILLA_DEFECTO = '{saludo}, estimado(a) {cliente}. Mi nombre es *{nombre}*, desde *Claro Chile*. Hablamos hace poco telefónicamente y, tal como acordamos, le envío la información sobre la propuesta.';
+const FIRMA_DEFECTO = 'Quedo a su disposición para cualquier consulta.\n\nSaludos cordiales,\n*{nombre}*\nEjecutivo(a) de ventas · *Claro Chile*\n📱 {telefono}';
+// Mensajes por defecto anteriores: si alguien los tenía guardados, pasan solos al mensaje corporativo
+const PLANTILLAS_ANTERIORES = ['Hola, {saludo}, mi nombre es {nombre}. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.', 'Hola {cliente}, {saludo}, mi nombre es {nombre}. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.'];
+const agenteTelefono = () => { try { return (localStorage.getItem('clarogo_telefono') || '').trim() || TELEFONO_DEFECTO; } catch (e) { return TELEFONO_DEFECTO; } };
+const firmaMsg = () => { try { return (localStorage.getItem('clarogo_firma') || '').trim() || FIRMA_DEFECTO; } catch (e) { return FIRMA_DEFECTO; } };
+const firmaTexto = (firma, nombre, tel) => (firma || firmaMsg()).replace(/\{nombre\}/gi, nombre || agenteNombre()).replace(/\{telefono\}/gi, tel || agenteTelefono());
 // Primer nombre del cliente con mayúscula inicial: "JUAN ANDRÉS PÉREZ" → "Juan"
 const primerNombre = n => { const p = String(n || '').trim().split(/\s+/)[0] || ''; return p.length > 1 ? p.charAt(0).toUpperCase() + p.slice(1).toLowerCase() : ''; };
 const agenteNombre = () => { try { return (localStorage.getItem('agentName') || '').trim() || NOMBRE_DEFECTO; } catch (e) { return NOMBRE_DEFECTO; } };
-const plantillaMsg = () => { try { const p = (localStorage.getItem('clarogo_plantilla') || '').trim(); return p && p !== PLANTILLA_ANTERIOR ? p : PLANTILLA_DEFECTO; } catch (e) { return PLANTILLA_DEFECTO; } };
+const plantillaMsg = () => { try { const p = (localStorage.getItem('clarogo_plantilla') || '').trim(); return p && !PLANTILLAS_ANTERIORES.includes(p) ? p : PLANTILLA_DEFECTO; } catch (e) { return PLANTILLA_DEFECTO; } };
 const saludoHora = (d = new Date()) => { const h = d.getHours(); return h >= 5 && h < 12 ? 'muy buenos días' : h >= 12 && h < 20 ? 'muy buenas tardes' : 'muy buenas noches'; };
 const mayusInicial = t => t.charAt(0).toUpperCase() + t.slice(1);
 // cli: datos del cliente de la planilla. {cliente} = su primer nombre (si no se sabe, desaparece sin dejar espacios ni comas sueltas)
 // y {compania} = su compañía de origen.
 const presentacion = (plantilla, nombre, cli = {}) => {
   const pn = primerNombre(cli.nombre);
-  let t = (plantilla || plantillaMsg()).replace(/\{saludo\}/gi, saludoHora()).replace(/\{nombre\}/gi, nombre || agenteNombre());
+  let t = (plantilla || plantillaMsg()).replace(/\{saludo\}/gi, saludoHora()).replace(/\{nombre\}/gi, nombre || agenteNombre()).replace(/\{telefono\}/gi, agenteTelefono());
   t = pn ? t.replace(/\{cliente\}/gi, pn) : t.replace(/\s*\{cliente\}\s*(?=[,.!?])/gi, '').replace(/\s*\{cliente\}/gi, '');
   t = cli.origen ? t.replace(/\{compania\}/gi, cli.origen) : t.replace(/\s*\{compania\}/gi, '');
   return mayusInicial(t.replace(/ {2,}/g, ' '));
 };
-function perfilGuardar(nombre, plantilla) {
+function perfilGuardar(nombre, plantilla, telefono, firma) {
   try {
     localStorage.setItem('agentName', nombre.trim());
     if (plantilla.trim() && plantilla.trim() !== PLANTILLA_DEFECTO) localStorage.setItem('clarogo_plantilla', plantilla.trim()); else localStorage.removeItem('clarogo_plantilla');
+    if (telefono !== undefined) { if (telefono.trim() && telefono.trim() !== TELEFONO_DEFECTO) localStorage.setItem('clarogo_telefono', telefono.trim()); else localStorage.removeItem('clarogo_telefono'); }
+    if (firma !== undefined) { if (firma.trim() && firma.trim() !== FIRMA_DEFECTO) localStorage.setItem('clarogo_firma', firma.trim()); else localStorage.removeItem('clarogo_firma'); }
   } catch (e) {}
   const ag = $('#sc-agente'); if (ag) ag.value = nombre.trim();
   perfilPintaBoton();
@@ -2520,31 +2533,56 @@ function perfilGuardar(nombre, plantilla) {
   perfilAvisar();
 }
 /* La extension recibe el nombre, el mensaje y el detalle de cada plan, para armar saludo + oferta aunque ClaroGo! no responda */
-const perfilAvisar = () => window.postMessage({ tipo: 'clarogo-perfil', nombre: agenteNombre(), plantilla: plantillaMsg(),
-  planes: PLANES_WA().map(p => ({ id: p.id, titulo: p.title, detalle: p.id === PLAN_MAYOR.id ? mayorMensaje() : vMensaje(p) })) }, location.origin);
+const perfilAvisar = async () => {
+  const planes = [];
+  for (const p of PLANES_WA()) planes.push({ id: p.id, titulo: p.title, detalle: p.id === PLAN_MAYOR.id ? mayorMensaje() : vMensaje(p), img: await laminaDataURL(p.id) });
+  window.postMessage({ tipo: 'clarogo-perfil', nombre: agenteNombre(), plantilla: plantillaMsg(), firma: firmaMsg(), telefono: agenteTelefono(), planes }, location.origin);
+};
+/* ── Láminas como imagen para adjuntar en WhatsApp ───────────────────
+   Planes 5G: la misma lámina de Oferta Personas. Persona Mayor: su gráfica. Se guardan en memoria una vez hechas. */
+const LAMINAS = new Map();
+function laminaDataURL(id) {
+  if (LAMINAS.has(id)) return LAMINAS.get(id);
+  const prom = new Promise(res => {
+    try {
+      if (id === PLAN_MAYOR.id) {
+        const img = new Image();
+        img.onload = () => { try { const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight; const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0); res(c.toDataURL('image/jpeg', .9)); } catch (e) { res(''); } };
+        img.onerror = () => res(''); img.src = PLAN_MAYOR.img; return;
+      }
+      const p = PLANES_VIGENTES.find(x => x.id === id);
+      res(p ? tarjetaCanvas(vBloques(p)).toDataURL('image/png') : '');
+    } catch (e) { res(''); }
+  });
+  LAMINAS.set(id, prom);
+  return prom;
+}
+const dataABlob = d => { const [cab, b64] = String(d).split(','), tipo = (cab.match(/data:([^;]+)/) || [])[1] || 'image/png', bin = atob(b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new Blob([u], { type: tipo }); };
+// El portapapeles solo acepta PNG: si la lámina es JPG (Persona Mayor) se convierte
+const pngDeData = d => new Promise(res => { if (/^data:image\/png/.test(d)) return res(dataABlob(d)); const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = i.naturalWidth; c.height = i.naturalHeight; c.getContext('2d').drawImage(i, 0, 0); c.toBlob(res, 'image/png'); }; i.onerror = () => res(null); i.src = d; });
 const perfilPintaBoton = () => { const b = $('#perfil-btn'); if (b) b.textContent = '👤 ' + agenteNombre() + ' · Mi mensaje'; };
 function initPerfil() {
   perfilPintaBoton();
-  const vista = () => { const p = $('#pf-plantilla').value.trim() || PLANTILLA_DEFECTO, n = $('#pf-nombre').value.trim() || NOMBRE_DEFECTO; $('#pf-vista').textContent = 'Con un cliente que tiene nombre:\n' + presentacion(p, n, { nombre: 'JUAN PÉREZ', origen: 'Entel' }) + '\n\nSin nombre del cliente:\n' + presentacion(p, n); };
-  $('#perfil-btn').onclick = () => { $('#pf-nombre').value = agenteNombre(); $('#pf-plantilla').value = plantillaMsg(); vista(); abrir('dlg-perfil'); };
-  $('#pf-nombre').addEventListener('input', vista); $('#pf-plantilla').addEventListener('input', vista);
-  $('#pf-defecto').onclick = () => { $('#pf-plantilla').value = PLANTILLA_DEFECTO; vista(); };
-  $('#pf-guardar').onclick = () => { perfilGuardar($('#pf-nombre').value || NOMBRE_DEFECTO, $('#pf-plantilla').value); $('#dlg-perfil').close(); toast('Listo. Tu mensaje quedó guardado.'); };
+  const vista = () => { const p = $('#pf-plantilla').value.trim() || PLANTILLA_DEFECTO, n = $('#pf-nombre').value.trim() || NOMBRE_DEFECTO, t = $('#pf-telefono').value.trim() || TELEFONO_DEFECTO, fi = $('#pf-firma').value.trim() || FIRMA_DEFECTO; $('#pf-vista').textContent = presentacion(p, n, { nombre: 'JUAN PÉREZ', origen: 'Entel' }) + '\n\n[detalle del plan elegido]\n\n' + firmaTexto(fi, n, t); };
+  $('#perfil-btn').onclick = () => { $('#pf-nombre').value = agenteNombre(); $('#pf-telefono').value = agenteTelefono(); $('#pf-plantilla').value = plantillaMsg(); $('#pf-firma').value = firmaMsg(); vista(); abrir('dlg-perfil'); };
+  ['#pf-nombre', '#pf-telefono', '#pf-plantilla', '#pf-firma'].forEach(id => $(id).addEventListener('input', vista));
+  $('#pf-defecto').onclick = () => { $('#pf-plantilla').value = PLANTILLA_DEFECTO; $('#pf-firma').value = FIRMA_DEFECTO; vista(); };
+  $('#pf-guardar').onclick = () => { perfilGuardar($('#pf-nombre').value || NOMBRE_DEFECTO, $('#pf-plantilla').value, $('#pf-telefono').value, $('#pf-firma').value); $('#dlg-perfil').close(); toast('Listo. Tu mensaje quedó guardado.'); };
   setTimeout(perfilAvisar, 500);
 }
 function waTexto(planId, cli) {
-  const hola = presentacion('', '', cli || {});
-  if (planId === PLAN_MAYOR.id) return `${hola}\n\n${mayorMensaje()}`;
-  const p = PLANES_VIGENTES.find(x => x.id === planId);
-  return p ? `${hola}\n\n${vMensaje(p)}` : hola;
+  const hola = presentacion('', '', cli || {}), p = PLANES_VIGENTES.find(x => x.id === planId);
+  const detalle = planId === PLAN_MAYOR.id ? mayorMensaje() : p ? vMensaje(p) : '';
+  return [hola, detalle, firmaTexto()].filter(Boolean).join('\n\n');
 }
-function waAbrir(tel, texto) {
+function waAbrir(tel, texto, img) {
   const n = waNumero(tel); if (!n) { toast('El teléfono no es válido. Debe tener 9 dígitos, por ejemplo 9 1234 5678.'); return false; }
   const url = `https://web.whatsapp.com/send?phone=${n}&text=${encodeURIComponent(texto || '')}`;
-  if (document.documentElement.dataset.clarogoExt) window.postMessage({ tipo: 'clarogo-wa', url }, location.origin);
+  if (document.documentElement.dataset.clarogoExt) window.postMessage({ tipo: 'clarogo-wa', url, img: img || '' }, location.origin);
   else window.open(url, 'clarogo-whatsapp');
   return true;
 }
+const waAdjuntar = () => { try { return localStorage.getItem('clarogo_adjuntar') !== '0'; } catch (e) { return true; } };
 let waFila = '';
 function waDialogo(r) {
   waFila = r.id;
@@ -2553,6 +2591,7 @@ function waDialogo(r) {
   $('#wa-agente').value = agenteNombre();
   $('#wa-para').textContent = r.nombre || r.telefono || 'Cliente';
   $('#wa-texto').value = waTexto(WA_DEFECTO, r);
+  $('#wa-lamina').checked = waAdjuntar();
   $('#wa-nota').textContent = document.documentElement.dataset.clarogoExt ? 'Se usará la pestaña de WhatsApp Web que ya tengas abierta.' : 'Se abre WhatsApp Web en una pestaña aparte y las próximas veces usa esa misma. Con la extensión ClaroGo! Genesys también reutiliza la que ya tengas abierta.';
   abrir('dlg-wa');
 }
@@ -2561,11 +2600,19 @@ function initWhatsApp() {
   $('#wa-tel').addEventListener('input', e => { if (e.target.value !== telLimpio(e.target.value)) e.target.value = telLimpio(e.target.value); });
   $('#wa-plan').addEventListener('change', () => { $('#wa-texto').value = waTexto($('#wa-plan').value, filaWa()); });
   $('#wa-agente').addEventListener('input', e => { perfilGuardar(e.target.value || NOMBRE_DEFECTO, plantillaMsg()); $('#wa-texto').value = waTexto($('#wa-plan').value, filaWa()); });
-  $('#wa-abrir').onclick = () => {
-    const txt = $('#wa-texto').value;
-    try { navigator.clipboard.writeText(txt); } catch (e) {}
-    if (!waAbrir($('#wa-tel').value, txt)) return;
-    toast('Mensaje copiado. Si no aparece escrito en WhatsApp, pégalo con Ctrl+V.');
+  $('#wa-lamina').addEventListener('change', e => { try { localStorage.setItem('clarogo_adjuntar', e.target.checked ? '1' : '0'); } catch (x) {} });
+  $('#wa-abrir').onclick = async () => {
+    const txt = $('#wa-texto').value, planId = $('#wa-plan').value, conLamina = $('#wa-lamina').checked && !!planId;
+    if (!waNumero($('#wa-tel').value)) return toast('El teléfono no es válido. Debe tener 9 dígitos, por ejemplo 912345678.');
+    // Portapapeles: con lámina queda la imagen (respaldo para Ctrl+V); sin lámina queda el texto
+    let img = '';
+    if (conLamina) {
+      const pImg = laminaDataURL(planId);
+      try { await navigator.clipboard.write([new ClipboardItem({ 'image/png': pImg.then(d => pngDeData(d)) })]); } catch (e) {}
+      img = await pImg;
+    } else { try { await navigator.clipboard.writeText(txt); } catch (e) {} }
+    if (!waAbrir($('#wa-tel').value, txt, img)) return;
+    toast(conLamina ? (document.documentElement.dataset.clarogoExt ? 'Abriendo WhatsApp con el mensaje y la lámina. Si la lámina no aparece, pégala con Ctrl+V.' : 'Abriendo WhatsApp. La lámina quedó copiada: en el chat presiona Ctrl+V para adjuntarla.') : 'Mensaje copiado. Si no aparece escrito en WhatsApp, pégalo con Ctrl+V.');
     const r = CT.find(x => x.id === waFila), p = PLANES_WA().find(x => x.id === $('#wa-plan').value);
     if (r) {
       if (!r.telefono && waNumero($('#wa-tel').value)) r.telefono = $('#wa-tel').value.trim();

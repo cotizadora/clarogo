@@ -50,6 +50,12 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: mensaje corporativo y lámina adjunta (extensión 1.11)
+
+- Mensaje corporativo para clientes: saludo según la hora, "estimado(a)" con el nombre del cliente si se sabe, nombre del ejecutivo y *Claro Chile* en negrita, oferta del plan y firma con nombre, cargo, *Claro Chile* y teléfono (+56 9 9796 6724 por defecto). En Inicio > Mi mensaje se cambian nombre, teléfono, presentación y firma.
+- Casilla "Adjuntar la lámina del plan" en la planilla y en la extensión (se recuerda la elección). La extensión pega la lámina en el chat de WhatsApp después del mensaje (experimental); además la lámina queda copiada para pegarla con Ctrl+V si no aparece. Sin la extensión, la planilla copia la lámina para Ctrl+V.
+- Extensión: se quitó el botón Copiar de nuevo y la ventanita tiene un marco con sombra para distinguirla de páginas blancas.
+
 ### 17-11-2026: copiado más ordenado
 
 - Copiado para la supervisora: el equipo va en varias líneas (Equipo, SKU, Pie, Cuotas y Precio total).
