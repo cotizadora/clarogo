@@ -133,4 +133,6 @@ $('#wa-abrir').onclick = async () => {
 
 $('#copiar').onclick = () => copiar(false);
 $('#enviar').onclick = enviar;
+// Versión instalada, tomada del manifest: así se ve de inmediato si la extensión se actualizó
+$('#version').textContent = 'v' + chrome.runtime.getManifest().version;
 iniciar();

@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: extensión 1.3, versión visible
+
+- La ventanita de la extensión muestra arriba la versión instalada (por ejemplo v1.3.0), para ver de inmediato si se actualizó.
+
 ### 17-11-2026: WhatsApp Web con la oferta
 
 - Mi Planilla: botón de WhatsApp en cada fila. Abre un cuadro para elegir el plan (por defecto el de la fila o el Plan 800), revisar el mensaje (saludo con el nombre del cliente y del ejecutivo, más el detalle del plan) y abrir WhatsApp Web con ese cliente. Anota en Observaciones la hora y el plan enviado.

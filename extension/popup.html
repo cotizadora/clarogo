@@ -10,6 +10,7 @@
   header { background: var(--red); color: #fff; padding: 10px 14px; display: flex; align-items: center; gap: 8px; }
   header b { font-size: 1.1rem; font-weight: 900; }
   header small { opacity: .85; font-size: .72rem; margin-left: auto; }
+  header .ver { background: #fff; color: var(--red); font-weight: 800; font-size: .74rem; padding: 2px 8px; border-radius: 999px; }
   main { padding: 12px 14px 14px; }
   #estado { font-size: .84rem; color: var(--muted); margin: 0 0 10px; }
   #estado.ok { color: #14532d; }
@@ -30,7 +31,7 @@
 </style>
 </head>
 <body>
-<header><b>ClaroGo!</b><span>Genesys</span><small>Herramienta no oficial</small></header>
+<header><b>ClaroGo!</b><span>Genesys</span><span class="ver" id="version" title="Versión instalada"></span><small>Herramienta no oficial</small></header>
 <main>
   <p id="estado">Leyendo la llamada de Genesys…</p>
   <table id="datos" hidden></table>
