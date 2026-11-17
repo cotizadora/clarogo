@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: extensión 1.7.1, sin esperas trabadas
+
+- Ninguna pestaña puede dejar la ventanita esperando: cada consulta tiene un límite de tiempo y se ignoran las pestañas dormidas de Edge. El botón de WhatsApp aparece de inmediato (con la presentación) y se completan los planes si ClaroGo! responde. Si la planilla no responde, Enviar a Mi Planilla abre una pestaña nueva.
+
 ### 17-11-2026: extensión 1.7, modo rápido de WhatsApp (experimental)
 
 - Si WhatsApp Web ya está abierto, la extensión presiona Nuevo chat, busca el número, abre el chat solo si hay exactamente un resultado y deja el mensaje escrito, sin recargar. Si algo no calza (número que no está en tus chats o contactos, cambio en WhatsApp), recarga la pestaña como antes. El mensaje nunca se envía solo.

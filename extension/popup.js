@@ -44,14 +44,17 @@ async function copiar(silencioso) {
 const PROTEGIDAS = ['oferta', 'png', 'stock', 'script'];
 const seccionDe = url => { try { return new URL(url).hash.slice(1) || 'inicio'; } catch (e) { return ''; } };
 const esperar = ms => new Promise(r => setTimeout(r, ms));
+// Ninguna pestaña puede dejar la ventanita esperando: si no responde a tiempo, se sigue sin ella
+// (Edge pone a dormir las pestañas que no se usan y a veces no contestan)
+const conLimite = (p, ms) => Promise.race([p, esperar(ms).then(() => { throw new Error('sin respuesta'); })]);
 
 // Llama a Mi Planilla dentro de la pestaña. Devuelve false si la página no la reconoce.
 async function entregar(tabId) {
   try {
-    const [res] = await chrome.scripting.executeScript({
+    const [res] = await conLimite(chrome.scripting.executeScript({
       target: { tabId }, world: 'MAIN', args: [TEXTO],
       func: txt => (typeof window.clarogoDesdeGenesys === 'function') ? window.clarogoDesdeGenesys(txt) : 'sin-planilla'
-    });
+    }), 2500);
     return !!res && res.result !== 'sin-planilla';
   } catch (e) { return false; }
 }
@@ -66,7 +69,7 @@ async function enviar() {
   mostrar('Enviando a Mi Planilla…', 'ok');
   try {
     // De la más antigua a la más nueva
-    const tabs = (await chrome.tabs.query({ url: PLANILLA + '*' })).sort((a, b) => a.id - b.id);
+    const tabs = (await chrome.tabs.query({ url: PLANILLA + '*' })).filter(t => !t.discarded).sort((a, b) => a.id - b.id);
     // 1. Una pestaña que ya está en la planilla. 2. Una pestaña de ClaroGo! en el inicio u otra sección libre.
     // Las pestañas en Oferta, PNG, Stock o Script no se tocan: en ese caso se abre una pestaña nueva.
     const candidata = tabs.find(t => seccionDe(t.url) === 'control') || tabs.find(t => !PROTEGIDAS.includes(seccionDe(t.url)));
@@ -84,7 +87,7 @@ const GENESYS = ['https://*.pure.cloud/*', 'https://*.mypurecloud.com/*', 'https
 const llenos = d => Object.values(d).filter(Boolean).length;
 async function leerPestana(tabId) {
   try {
-    const marcos = await chrome.scripting.executeScript({ target: { tabId, allFrames: true }, func: leerMarco });
+    const marcos = await conLimite(chrome.scripting.executeScript({ target: { tabId, allFrames: true }, func: leerMarco }), 4000);
     // Se queda con el marco que trae más datos (el guion de la llamada)
     return marcos.map(m => m.result || {}).sort((a, b) => llenos(b) - llenos(a));
   } catch (e) { return []; }
@@ -120,20 +123,25 @@ async function iniciar() {
 /* ── WhatsApp Web con la oferta ───────────────────────────────────── */
 // Los mensajes de cada plan vienen de ClaroGo! (así siempre están al día). Si no hay ClaroGo! abierto, queda el saludo.
 let MENSAJES = [], TEL = '';
-async function prepararWhatsApp(tel, nombre) {
-  TEL = tel.replace(/\D/g, '');
-  try {
-    const tabs = (await chrome.tabs.query({ url: PLANILLA + '*' })).sort((a, b) => a.id - b.id);
-    for (const t of tabs) {
-      const [r] = await chrome.scripting.executeScript({ target: { tabId: t.id }, world: 'MAIN', args: [nombre || ''], func: n => typeof window.clarogoMensajesWA === 'function' ? window.clarogoMensajesWA(n) : null });
-      if (r && Array.isArray(r.result) && r.result.length) { MENSAJES = r.result; break; }
-    }
-  } catch (e) {}
-  if (!MENSAJES.length) MENSAJES = [{ id: '', titulo: 'Solo la presentación (abre ClaroGo! para ver los planes)', texto: 'Hola, muy buen día. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.' }];
+const PRESENTACION = { id: '', titulo: 'Solo la presentación (abre ClaroGo! para ver los planes)', texto: 'Hola, muy buen día. Tal como conversamos telefónicamente, le envío la propuesta por este medio. Estoy a su disposición para aclarar cualquiera de las dudas.' };
+function pintarPlanes() {
   const pref = MENSAJES.findIndex(m => m.id === 'v500');   // por defecto el Plan 500, el más barato
   $('#wa-plan').innerHTML = MENSAJES.map((m, i) => `<option value="${i}"${i === (pref < 0 ? 0 : pref) ? ' selected' : ''}></option>`).join('');
   [...$('#wa-plan').options].forEach((o, i) => { o.textContent = MENSAJES[i].titulo; });
-  $('#wa').hidden = false;
+}
+async function prepararWhatsApp(tel, nombre) {
+  TEL = tel.replace(/\D/g, '');
+  // El botón aparece de inmediato; los planes se completan si alguna pestaña de ClaroGo! responde
+  MENSAJES = [PRESENTACION]; pintarPlanes(); $('#wa').hidden = false;
+  try {
+    const tabs = (await chrome.tabs.query({ url: PLANILLA + '*' })).filter(t => !t.discarded).sort((a, b) => a.id - b.id);
+    for (const t of tabs) {
+      try {
+        const [r] = await conLimite(chrome.scripting.executeScript({ target: { tabId: t.id }, world: 'MAIN', args: [nombre || ''], func: n => typeof window.clarogoMensajesWA === 'function' ? window.clarogoMensajesWA(n) : null }), 1500);
+        if (r && Array.isArray(r.result) && r.result.length) { MENSAJES = r.result; pintarPlanes(); break; }
+      } catch (e) {}
+    }
+  } catch (e) {}
 }
 $('#wa-abrir').onclick = async () => {
   const m = MENSAJES[+$('#wa-plan').value] || MENSAJES[0];
