@@ -399,13 +399,16 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla tr.borrado td input,#ct-tabla tr.borrado td select{text-decoration:line-through;color:#9aa0a6}
 /* Ficha ampliable del cliente: se abre bajo la fila para tomar todos los datos */
 #ct-tabla .acc .fic{font-size:.8rem;color:#1a56b8;font-weight:700}
-#ct-tabla .acc .gen{background:#e8f5e9}
+#ct-tabla .acc .gen{background:#fff4ef}
+#ct-tabla .acc .gen:hover{background:#ffe2d6}
+.gico{width:14px;height:14px;fill:none;stroke:#ff4f1f;stroke-width:1.9;vertical-align:middle}
+.gico circle{fill:none}
+.btn .gico{width:16px;height:16px;stroke:#fff;margin-right:2px}
 #ct-tabla .acc .wa{background:#25d366}
 #ct-tabla .acc .wa:hover{background:#1da851}
 #ct-tabla .acc .wa svg{width:14px;height:14px;fill:#fff;vertical-align:middle}
 .wa-btn{background:#25d366;color:#fff}
 .wa-btn:hover{background:#1da851}
-#ct-tabla .acc .gen:hover{background:#c8e6c9}
 #ct-tabla tr.abierta td{background:#eaf1ff}
 #ct-tabla tr.abierta td.c-n{background:#d6e4ff;color:#1a56b8}
 #ct-tabla tr.ficha td{height:auto;white-space:normal;overflow:visible;background:#f6f9ff;padding:10px 12px 12px;border-top:0;border-left:3px solid #1a56b8}
@@ -688,7 +691,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     <div id="ct-resp" class="note resp"></div>
     <div class="card filters">
       <div class="f-actions">
-        <button class="btn red" id="ct-pegar">📋 Pegar desde Genesys</button>
+        <button class="btn red" id="ct-pegar"><svg class="gico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="11.2" cy="2.6" r="1.8"/><rect x="4.2" y="5.4" width="6" height="9.4" rx="3"/></svg> Pegar desde Genesys</button>
         <button class="btn sm" id="ct-nueva">+ Fila vacía</button>
         <button class="btn sm" id="ct-excel">⬇ Exportar a Excel</button>
       </div>
@@ -2324,7 +2327,7 @@ window.clarogoDesdeGenesys = txt => {
 const GEN_CAMPOS = [['telefono', 'teléfono'], ['rut', 'RUT'], ['nombre', 'nombre'], ['campana', 'campaña'], ['cola', 'cola'], ['origen', 'compañía de origen'], ['oferta', 'oferta']];
 function ctCompletarFila(id, d) {
   const r = CT.find(x => x.id === id); if (!r) return;
-  if (!d.telefono && !d.rut && !d.nombre) return toast('No encontré datos de Genesys. En la llamada presiona Ctrl+A y Ctrl+C y vuelve a presionar 📞.');
+  if (!d.telefono && !d.rut && !d.nombre) return toast('No encontré datos de Genesys. En la llamada presiona Ctrl+A y Ctrl+C y vuelve a presionar el botón de Genesys de la fila.');
   const cambios = [];
   if (d.telefono && d.telefono !== r.telefono) { r.telefono = d.telefono; cambios.push('teléfono'); }
   GEN_CAMPOS.filter(([k]) => k !== 'telefono' && d[k] && !String(r[k] || '').trim()).forEach(([k, n]) => { r[k] = d[k]; cambios.push(n); });
@@ -2383,7 +2386,7 @@ function ctPinta() {
     <td class="c-notas"><input data-k="notas" value="${esc(r.notas)}" placeholder="Notas" title="${esc(r.notas)}"></td>
     <td class="c-acc"><div class="acc">${r.borrado
       ? `<button data-ct="restaurar" class="go" title="Recuperar registro">↺</button>`
-      : `<button data-ct="wa" class="wa" title="Abrir WhatsApp Web con este cliente y enviarle la oferta"><svg viewBox="0 0 16 16"><path d="${ICONOS.wa}"/></svg></button><button data-ct="genesys" class="gen" title="Pegar datos de Genesys en esta fila (copia antes con Ctrl+A y Ctrl+C en Genesys)">📞</button><button data-ct="ficha" class="fic" title="${r.id === ctAbierto ? 'Cerrar la ficha' : 'Abrir la ficha con todos los datos'}">${r.id === ctAbierto ? '▴' : '▾'}</button><button data-ct="rutificador" class="rutif" title="Copiar RUT y abrir Rutificador">🪪</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
+      : `<button data-ct="wa" class="wa" title="Abrir WhatsApp Web con este cliente y enviarle la oferta"><svg viewBox="0 0 16 16"><path d="${ICONOS.wa}"/></svg></button><button data-ct="genesys" class="gen" title="Traer el teléfono desde Genesys (reemplaza el de esta fila)"><svg class="gico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="11.2" cy="2.6" r="1.8"/><rect x="4.2" y="5.4" width="6" height="9.4" rx="3"/></svg></button><button data-ct="ficha" class="fic" title="${r.id === ctAbierto ? 'Cerrar la ficha' : 'Abrir la ficha con todos los datos'}">${r.id === ctAbierto ? '▴' : '▾'}</button><button data-ct="rutificador" class="rutif" title="Copiar RUT y abrir Rutificador">🪪</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
   </tr>${r.id === ctAbierto && !r.borrado ? ctFichaHTML(r) : ''}`).join('');
   $('#ct-vacio').hidden = lista.length > 0;
   // Si el período oculta registros, se dice cuántos hay y se ofrece verlos (los registros nunca se borran solos)
@@ -2416,12 +2419,12 @@ function initControl() {
   $('#ct-tipo').innerHTML = '<option value="">Todas las tipificaciones</option><option>Sin tipificar</option>' + TIPIFICACIONES.map(x => `<option>${x}</option>`).join('');
   $('#ct-desde').value = isoMenos(6); $('#ct-hasta').value = hoyISO();
   let destino = '';
-  // Arriba (sin destino) crea siempre una fila nueva. El botón 📞 de una fila reemplaza su teléfono.
+  // Arriba (sin destino) crea siempre una fila nueva. El botón de Genesys de una fila reemplaza su teléfono.
   const procesar = txt => {
     const d = leerGenesys(txt || ''), id = destino; destino = '';
     if (id) return ctCompletarFila(id, d);
     ctAgregar(d);
-    if (!d.telefono) toast(d.rut || d.nombre ? 'Agregué el cliente, pero no venía el teléfono. Escríbelo a mano.' : 'No encontré datos de Genesys. Agregué una fila vacía: en la llamada presiona Ctrl+A y Ctrl+C y usa 📞 en la fila.');
+    if (!d.telefono) toast(d.rut || d.nombre ? 'Agregué el cliente, pero no venía el teléfono. Escríbelo a mano.' : 'No encontré datos de Genesys. Agregué una fila vacía: en la llamada presiona Ctrl+A y Ctrl+C y usa el botón de Genesys de la fila.');
   };
   const leerPortapapeles = async () => { const txt = await navigator.clipboard.readText(); if (!txt.trim()) throw new Error('vacío'); return txt; };
   const pegarGenesys = async id => {

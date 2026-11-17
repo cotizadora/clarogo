@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: ícono de Genesys
+
+- El botón 📞 de cada fila y el botón Pegar desde Genesys usan ahora un ícono naranjo simple que recuerda a Genesys (dibujado para ClaroGo!, no es el logo oficial).
+
 ### 17-11-2026: todo el historial por defecto y extensión 1.5
 
 - Mi Planilla abre siempre con Todo el historial a la vista.
