@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: columna Nombre con ancho fijo y hasta dos líneas
+
+- La columna Nombre parte con 150 px (antes quedaba casi sin ancho en algunas pantallas) y Notas toma el espacio que sobra. El nombre se ve en hasta dos líneas; el completo aparece al pasar el mouse o al hacer clic en él.
+
 ### 17-11-2026: nombre completo, columnas ajustables y ficha con clic
 
 - Mi Planilla: el nombre del cliente se ve siempre completo (si es largo, la celda crece hacia abajo). En celular, el nombre aparece debajo del teléfono.

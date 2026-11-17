@@ -394,7 +394,8 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla td.c-n,#ct-tabla th.c-n{background:#f3f3f3;color:#6b6f76;text-align:center;font-size:.72rem;cursor:default}
 #ct-tabla td.c-nombre{white-space:normal;height:auto}
 #ct-tabla td textarea.nom{display:block;width:100%;min-height:27px;border:0;border-radius:0;background:transparent;padding:5px 6px 4px;font:inherit;font-size:.8rem;line-height:1.3;color:var(--text);resize:none;overflow:hidden;white-space:pre-wrap;word-break:break-word;field-sizing:content}
-#ct-tabla td textarea.nom:focus{outline:2px solid #217346;outline-offset:-2px;background:#fff}
+#ct-tabla td textarea.nom{max-height:calc(2.6em + 9px)}
+#ct-tabla td textarea.nom:focus{outline:2px solid #217346;outline-offset:-2px;background:#fff;max-height:none}
 #ct-tabla .tel-nom{display:none}
 /* Ancho de columnas ajustable: se arrastra el borde derecho del título (doble clic vuelve al ancho original) */
 #ct-tabla th{position:relative}
@@ -436,7 +437,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla .acc .go{color:#fff;background:var(--red);font-size:.7rem}
 #ct-tabla .acc .go:hover{background:var(--red-dk)}
 .c-n{width:46px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:94px}.c-tel{width:94px}.c-orig{width:76px}.c-tipo{width:126px}.c-plan{width:80px}.c-acc{width:282px}
-.c-nombre{width:auto}.c-notas{width:17%}
+.c-nombre{width:150px}.c-notas{width:auto}
 @media (max-width:1500px){.c-notas{display:none}}
 @media (max-width:1100px){.c-hora,.c-plan{display:none}}
 @media (max-width:720px){#ct-tabla .tel-nom{display:block;font-size:.66rem;font-weight:700;line-height:1.2;padding:3px 4px 0;white-space:normal;word-break:break-word;color:var(--text)} #ct-tabla td.c-tel{white-space:normal;height:auto}.c-fecha,.c-notas,.c-rut,.c-nombre{display:none}.c-tel{width:auto}.c-orig{width:60px}.c-tipo{width:80px}.c-n{width:36px}.c-acc{width:128px} #ct-tabla .acc .gen-t{display:none} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
@@ -2918,7 +2919,7 @@ function ctFiltradas() {
     && (!tipo || (tipo === '__fav' ? r.fav : tipo === 'Sin tipificar' ? !r.tipo : r.tipo === tipo)) && (!seg || ctSeg(r) === seg)
     && (!q || [r.rut, r.nombre, r.telefono, r.notas, r.mail, r.contacto, r.fono, dirTexto(r), r.eq].join(' ').toLowerCase().includes(q)));
 }
-const nomAlto = t => { if (CSS.supports && CSS.supports('field-sizing', 'content')) return; t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; };
+const nomAlto = t => { if (CSS.supports && CSS.supports('field-sizing', 'content')) return; t.style.height = 'auto'; t.style.height = (document.activeElement === t ? t.scrollHeight : Math.min(t.scrollHeight, 43)) + 'px'; };
 /* ── Ancho de columnas ajustable ────────────────────────────────── */
 const COL_KEY = 'clarogo_columnas';
 function colAplicar() {
