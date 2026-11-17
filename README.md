@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: Excepciones de Boletas nítida
+
+- El cuadro de Excepciones de Boletas muestra la tabla como texto (nítida y de buen tamaño) en vez de una imagen reducida. La imagen para copiar o descargar sale más grande (1560 px de ancho), con letras más grandes y sin margen sobrante. Los montos no cambiaron.
+
 ### 17-11-2026: plan completo en la fila
 
 - Mi Planilla: la columna Plan muestra el nombre completo del plan (hasta dos líneas, como el nombre del cliente), por ejemplo "Plan Persona Mayor" o "Plan 500 + Netflix". Se sigue eligiendo con un clic en la celda.

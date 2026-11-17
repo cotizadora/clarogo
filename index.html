@@ -518,6 +518,12 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .lam{padding:12px 12px 6px;background:#eef0f4}
 .lam-img{display:block;width:100%;max-width:380px;height:auto;margin:0 auto;border-radius:10px;box-shadow:0 2px 10px rgba(20,25,50,.12);background:#fff}
 .lam-ancha .lam-img{max-width:100%}
+#exc-lam{background:#fff;padding:0}
+.exc-tabla{width:100%;border-collapse:collapse;font-size:1rem;border:1px solid #d8d8d8;border-radius:10px;overflow:hidden}
+.exc-tabla th{background:#1a1a1a;color:#fff;padding:12px 10px;font-size:.9rem;text-align:center}
+.exc-tabla td{padding:11px 10px;text-align:center;border-top:1px solid #e8e8e8}
+.exc-tabla td+td,.exc-tabla th+th{border-left:1px solid #e8e8e8}
+.exc-tabla tbody tr:nth-child(even) td{background:#f7f7f7}
 .lam-txt{margin:10px auto 4px;max-width:380px}
 .lam-ancha .lam-txt{max-width:none}
 .lam-txt summary{cursor:pointer;font-size:.78rem;font-weight:600;color:var(--muted)}
@@ -1868,30 +1874,31 @@ function initPng() {
    EXCEPCIONES DE BOLETAS
    ════════════════════════════════════════════════════════════════ */
 function excCanvas() {
-  const S = 2.5, M = 32, W = 500, rows = EXCEPCIONES, titleH = 72, headH = 48, rowH = 46, TW = W - M * 2, TH = titleH + headH + rowH * rows.length, CH = TH + M * 2;
+  const S = 3, M = 14, W = 520, rows = EXCEPCIONES, titleH = 78, headH = 52, rowH = 50, TW = W - M * 2, TH = titleH + headH + rowH * rows.length, CH = TH + M * 2;
   const c = document.createElement('canvas'); c.width = W * S; c.height = CH * S;
   const ctx = c.getContext('2d'); ctx.scale(S, S);
   ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, CH);
   ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.13)'; ctx.shadowBlur = 18; ctx.shadowOffsetY = 4; ctx.fillStyle = '#fff'; rrect(ctx, M, M, TW, TH, 10); ctx.fill(); ctx.restore();
-  ctx.fillStyle = '#111'; ctx.font = 'bold 17px Arial,Helvetica,sans-serif'; ctx.textAlign = 'left'; ctx.fillText('Excepciones de Boletas', M + 20, M + 32);
-  ctx.fillStyle = '#888'; ctx.font = '12px Arial,Helvetica,sans-serif'; ctx.fillText('Monto máximo de deuda según líneas portadas', M + 20, M + 52);
+  ctx.fillStyle = '#111'; ctx.font = 'bold 21px Arial,Helvetica,sans-serif'; ctx.textAlign = 'left'; ctx.fillText('Excepciones de Boletas', M + 20, M + 34);
+  ctx.fillStyle = '#666'; ctx.font = '14px Arial,Helvetica,sans-serif'; ctx.fillText('Monto máximo de deuda según líneas portadas', M + 20, M + 57);
   const tY = M + titleH;
   ctx.fillStyle = '#1a1a1a'; ctx.fillRect(M, tY, TW, headH);
-  ctx.fillStyle = '#fff'; ctx.font = 'bold 13px Arial,Helvetica,sans-serif'; ctx.textAlign = 'center';
-  ctx.fillText('N° de Líneas Portadas', M + TW / 4, tY + 30); ctx.fillText('Monto de Deuda', M + TW * 3 / 4, tY + 30);
+  ctx.fillStyle = '#fff'; ctx.font = 'bold 15px Arial,Helvetica,sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('N° de líneas portadas', M + TW / 4, tY + 32); ctx.fillText('Monto de deuda', M + TW * 3 / 4, tY + 32);
   rows.forEach((r, i) => {
     const y = tY + headH + i * rowH;
     ctx.fillStyle = i % 2 ? '#f7f7f7' : '#fff'; ctx.fillRect(M, y, TW, rowH);
     ctx.fillStyle = '#e8e8e8'; ctx.fillRect(M, y + rowH - 1, TW, 1); ctx.fillRect(M + TW / 2 - .5, y, 1, rowH);
-    ctx.fillStyle = '#222'; ctx.font = '15px Arial,Helvetica,sans-serif'; ctx.fillText(r[0], M + TW / 4, y + rowH / 2 + 6); ctx.fillText(r[1], M + TW * 3 / 4, y + rowH / 2 + 6);
+    ctx.fillStyle = '#222'; ctx.font = '18px Arial,Helvetica,sans-serif'; ctx.fillText(r[0], M + TW / 4, y + rowH / 2 + 6); ctx.font = 'bold 18px Arial,Helvetica,sans-serif'; ctx.fillText(r[1], M + TW * 3 / 4, y + rowH / 2 + 6);
   });
   ctx.strokeStyle = '#d8d8d8'; ctx.lineWidth = 1; rrect(ctx, M + .5, M + .5, TW - 1, TH - 1, 10); ctx.stroke();
   return c;
 }
 function initExcepciones() {
-  lamina($('#exc-lam'), excCanvas());
-  $('#exc-copy').onclick = () => copyCanvas(lamCanvas($('#exc-lam')), 'excepciones-boletas.png', 'Tabla copiada. Pégala en el chat.');
-  $('#exc-dl').onclick = async () => { downloadBlob(await canvasBlob(lamCanvas($('#exc-lam'))), 'excepciones-boletas.png'); toast('Imagen descargada'); };
+  $('#exc-lam').innerHTML = `<table class="exc-tabla"><thead><tr><th>N° de líneas portadas</th><th>Monto de deuda</th></tr></thead><tbody>${EXCEPCIONES.map(r => `<tr><td>${esc(r[0])}</td><td><b>${esc(r[1])}</b></td></tr>`).join('')}</tbody></table>`;
+  const imagen = () => excCanvas();
+  $('#exc-copy').onclick = () => copyCanvas(imagen(), 'excepciones-boletas.png', 'Tabla copiada. Pégala en el chat.');
+  $('#exc-dl').onclick = async () => { downloadBlob(await canvasBlob(imagen()), 'excepciones-boletas.png'); toast('Imagen descargada'); };
 }
 
 /* ════════════════════════════════════════════════════════════════
