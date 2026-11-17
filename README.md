@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 17-11-2026: botón de deuda en cada fila
+
+- En la columna Compañía de Mi Planilla hay un botón con el logo de la compañía del cliente para revisar su deuda, y una flecha ▾ para elegir otra compañía.
+- La columna Plan muestra el plan sin la palabra "Plan" (el dato guardado no cambia).
+
 ### 17-11-2026: revisar deuda desde Mi Planilla (extensión 1.14.0)
 
 - En la ficha del cliente, bajo "Cliente", hay botones "¿Tiene deuda?" de Claro, Entel, Movistar y WOM: copian el RUT y abren el portal de pago de esa compañía.

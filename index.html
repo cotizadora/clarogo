@@ -198,6 +198,20 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 .link:hover{border-left-color:var(--red);background:#fff5f5}
 .link.dest{border-left-color:#0f9d58}
 .link span{font-size:1.15rem;flex:none}
+#ct-tabla .orig-w{display:flex;align-items:center;gap:2px}
+#ct-tabla .orig-w input{flex:1;min-width:0}
+#ct-tabla .deu-b{flex:none;display:grid;place-items:center;width:24px;height:24px;padding:0;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer}
+#ct-tabla .deu-b:hover{border-color:var(--red)}
+#ct-tabla .deu-b .lk-logo{width:18px;height:18px;border-radius:4px}
+#ct-tabla .deu-b .lk-wom{display:grid;place-items:center;width:18px;height:18px;border-radius:4px;background:#3d0f6b;color:#fff;font-size:.4rem;font-weight:900}
+#ct-tabla .deu-q{font-size:.62rem;font-weight:900;color:#c00000}
+#ct-tabla .deu-m{flex:none;width:14px;height:24px;padding:0;border:0;background:none;color:var(--dim);font-size:.7rem;cursor:pointer}
+#deuda-menu{position:fixed;z-index:60;min-width:180px;padding:6px;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.2)}
+#deuda-menu .dm-t{font-size:.72rem;font-weight:700;color:var(--dim);padding:2px 6px 6px}
+#deuda-menu button{display:flex;align-items:center;gap:8px;width:100%;padding:7px 8px;border:0;border-radius:7px;background:none;font:inherit;font-size:.85rem;cursor:pointer;text-align:left}
+#deuda-menu button:hover{background:#fff5f5}
+#deuda-menu .lk-logo{width:20px;height:20px;border-radius:4px}
+#deuda-menu .lk-wom{display:grid;place-items:center;width:20px;height:20px;border-radius:4px;background:#3d0f6b;color:#fff;font-size:.42rem;font-weight:900}
 .fi-deuda{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0 4px;padding:7px 9px;border:1px dashed var(--border);border-radius:9px}
 .fi-deuda b{font-size:.8rem;margin-right:2px}
 .fi-deuda .btn{display:inline-flex;align-items:center;gap:5px}
@@ -461,7 +475,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla .acc button:hover{background:#eef2f7}
 #ct-tabla .acc .go{color:#fff;background:var(--red);font-size:.7rem}
 #ct-tabla .acc .go:hover{background:var(--red-dk)}
-.c-n{width:46px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:94px}.c-tel{width:94px}.c-orig{width:76px}.c-tipo{width:126px}.c-plan{width:96px}.c-acc{width:320px}
+.c-n{width:46px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:94px}.c-tel{width:94px}.c-orig{width:100px}.c-tipo{width:126px}.c-plan{width:86px}.c-acc{width:320px}
 .c-nombre{width:150px}.c-notas{width:auto}
 @media (max-width:1500px){.c-notas{display:none}}
 @media (max-width:1100px){.c-hora,.c-plan{display:none} #ct-tabla .acc .gen-t{display:none} .c-acc{width:270px}}
@@ -2537,6 +2551,17 @@ let ctAbierto = '';
    Con la extensión ClaroGo! Genesys (1.14.0 o más nueva) el RUT se escribe solo y el resultado vuelve a la fila. */
 const DEUDA_PORTALES = [['claro', 'Claro', 'img:logos/claro.png', 'https://sucursalvirtual.clarochile.cl/PagoExpress'], ['entel', 'Entel', 'img:logos/entel.png', 'https://miperfil.entel.cl/PagoUnificado/Home'], ['movistar', 'Movistar', 'img:logos/movistar.png', 'https://pagos.movistar.cl/publico/'], ['wom', 'WOM', 'wom', 'https://www.wom.cl/paga-aqui/']];
 const deudaBarra = r => `<div class="fi-deuda"><b>¿Tiene deuda?</b>${DEUDA_PORTALES.map(([c, n, ico]) => `<button type="button" class="btn sm" data-deuda="${c}" title="Copia el RUT y revisa la deuda en ${n}">${icoEnlace(ico)} ${n}</button>`).join('')}<span class="fi-deuda-r${/tiene deuda/i.test(r.deuda || '') ? ' mal' : r.deuda ? ' ok' : ''}">${esc(r.deuda || (r.rut ? '' : 'Primero escribe el RUT del cliente'))}</span></div>`;
+// Compañía de la fila según lo que diga la columna Compañía (viene de Genesys o se escribe a mano)
+const deudaComp = r => { const o = String(r.origen || '').toLowerCase(); return /claro|vtr/.test(o) ? 'claro' : /entel/.test(o) ? 'entel' : /movistar|telef/.test(o) ? 'movistar' : /wom|nextel/.test(o) ? 'wom' : ''; };
+const deudaBoton = r => { const c = deudaComp(r), port = DEUDA_PORTALES.find(x => x[0] === c); return `<button type="button" class="deu-b" data-deuda="${c || '?'}" title="${port ? `¿Tiene deuda? Revisar en ${port[1]}` : '¿Tiene deuda? Elegir la compañía'}">${port ? icoEnlace(port[2]) : '<span class="deu-q">$?</span>'}</button><button type="button" class="deu-m" data-deuda="?" title="Revisar la deuda en otra compañía">▾</button>`; };
+function deudaMenu(btn, id) {
+  let m = $('#deuda-menu');
+  if (!m) { m = document.createElement('div'); m.id = 'deuda-menu'; document.body.appendChild(m); m.addEventListener('click', e => { const b = e.target.closest('[data-dm]'); if (b) { m.hidden = true; deudaRevisar(m.dataset.id, b.dataset.dm); } }); document.addEventListener('click', e => { if (!e.target.closest('#deuda-menu,[data-deuda]')) m.hidden = true; }); window.addEventListener('scroll', () => { m.hidden = true; }, { passive: true }); }
+  m.dataset.id = id;
+  m.innerHTML = '<div class="dm-t">¿Tiene deuda? Revisar en:</div>' + DEUDA_PORTALES.map(([c, n, ico]) => `<button type="button" data-dm="${c}">${icoEnlace(ico)} ${n}</button>`).join('');
+  const b = btn.getBoundingClientRect(); m.hidden = false;
+  m.style.left = Math.min(b.left, innerWidth - 190) + 'px'; m.style.top = (b.bottom + 4) + 'px';
+}
 function deudaRevisar(id, comp) {
   const r = CT.find(x => x.id === id), port = DEUDA_PORTALES.find(x => x[0] === comp); if (!r || !port) return;
   const rut = String(r.rut || '').replace(/[^0-9kK]/g, '').toUpperCase();
@@ -3131,9 +3156,9 @@ function ctPinta() {
     <td class="c-rut"><input data-k="rut" value="${esc(r.rut)}" placeholder="RUT" title="${esc(r.rut)}"></td>
     <td class="c-nombre"><textarea data-k="nombre" class="nom" rows="1" placeholder="Pegar nombre" title="${esc(r.nombre)}">${esc(r.nombre)}</textarea></td>
     <td class="c-tel"><div class="tel-nom">${esc(r.nombre || '')}</div><input data-k="telefono" value="${esc(r.telefono)}" placeholder="9XXXXXXXX" title="${esc(r.telefono)}"></td>
-    <td class="c-orig"><input data-k="origen" value="${esc(r.origen || '')}" placeholder="Compañía" title="Compañía de origen${r.origen ? ': ' + esc(r.origen) : ''}"></td>
+    <td class="c-orig"><div class="orig-w"><input data-k="origen" value="${esc(r.origen || '')}" placeholder="Compañía" title="Compañía de origen${r.origen ? ': ' + esc(r.origen) : ''}">${deudaBoton(r)}</div></td>
     <td class="c-tipo"><select data-k="tipo">${opt(TIPIFICACIONES, r.tipo, 'Sin tipificar')}</select></td>
-    <td class="c-plan"><div class="plan-ver${r.plan ? '' : ' vacio'}">${esc(r.plan || 'Sin plan')}</div><select data-k="plan" class="plan-sel" title="${esc(r.plan || 'Elegir plan')}">${opt(PLANES_WA().map(p => p.title), r.plan, 'Sin plan')}</select></td>
+    <td class="c-plan"><div class="plan-ver${r.plan ? '' : ' vacio'}">${esc(r.plan ? r.plan.replace(/^Plan\s+/i, '') : 'Sin plan')}</div><select data-k="plan" class="plan-sel" title="${esc(r.plan || 'Elegir plan')}">${opt(PLANES_WA().map(p => p.title), r.plan, 'Sin plan')}</select></td>
     <td class="c-notas"><input data-k="notas" value="${esc(r.notas)}" placeholder="Notas" title="${esc(r.notas)}"></td>
     <td class="c-acc"><div class="acc">${r.borrado
       ? `<button data-ct="restaurar" class="go" title="Recuperar registro">↺</button>`
@@ -3195,7 +3220,7 @@ function initControl() {
   $('#ct-nueva').onclick = () => ctAgregar({});
   initColumnas();
   initNotaZoom();
-  $('#ct-body').addEventListener('click', e => { const b = e.target.closest('[data-deuda]'); if (b) deudaRevisar(b.closest('tr').dataset.id, b.dataset.deuda); });
+  $('#ct-body').addEventListener('click', e => { const b = e.target.closest('[data-deuda]'); if (!b) return; e.stopPropagation(); const id = b.closest('tr').dataset.id; if (b.dataset.deuda === '?') deudaMenu(b, id); else deudaRevisar(id, b.dataset.deuda); });
   $('#eq-procesar').onclick = () => { const t = $('#eq-texto').value; $('#dlg-equipo').close(); ctPonerEquipo(eqFila, t); };
   $('#ct-vacio').addEventListener('click', e => { const b = e.target.closest('[data-ver]'); if (!b) return; $('#ct-periodo').value = b.dataset.ver; $('#ct-rango').hidden = true; ctPinta(); });
   $('#ct-excel').onclick = ctExcel;
