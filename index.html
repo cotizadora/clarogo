@@ -409,6 +409,13 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla td input:focus,#ct-tabla td select:focus{outline:2px solid #217346;outline-offset:-2px;background:#fff}
 #ct-tabla td input::placeholder{color:#b3b7be}
 #ct-tabla td.c-notas input{cursor:pointer}
+/* Plan: el nombre se ve completo (hasta dos líneas) y el selector queda invisible encima para elegir */
+#ct-tabla td.c-plan{position:relative;white-space:normal;height:auto}
+#ct-tabla td.c-plan .plan-ver{padding:5px 18px 4px 6px;font-size:.8rem;line-height:1.25;word-break:break-word;pointer-events:none}
+#ct-tabla td.c-plan .plan-ver::after{content:"▾";position:absolute;right:5px;top:50%;transform:translateY(-50%);font-size:.7rem;color:var(--muted)}
+#ct-tabla td.c-plan .plan-ver.vacio{color:#9aa0a6}
+#ct-tabla td.c-plan select.plan-sel{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+#ct-tabla td.c-plan:focus-within{outline:2px solid #217346;outline-offset:-2px}
 #nota-zoom{position:fixed;display:none;z-index:40;min-height:130px;max-height:60vh;padding:10px 12px;border:2px solid #217346;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.25);font:inherit;font-size:.9rem;line-height:1.45;color:var(--text);background:#fff;resize:vertical}
 #nota-zoom.on{display:block}
 #nota-zoom-ayuda{position:fixed;display:none;z-index:41;font-size:.7rem;color:#fff;background:#217346;padding:2px 8px;border-radius:6px 6px 0 0}
@@ -444,7 +451,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla .acc button:hover{background:#eef2f7}
 #ct-tabla .acc .go{color:#fff;background:var(--red);font-size:.7rem}
 #ct-tabla .acc .go:hover{background:var(--red-dk)}
-.c-n{width:46px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:94px}.c-tel{width:94px}.c-orig{width:76px}.c-tipo{width:126px}.c-plan{width:80px}.c-acc{width:320px}
+.c-n{width:46px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:94px}.c-tel{width:94px}.c-orig{width:76px}.c-tipo{width:126px}.c-plan{width:96px}.c-acc{width:320px}
 .c-nombre{width:150px}.c-notas{width:auto}
 @media (max-width:1500px){.c-notas{display:none}}
 @media (max-width:1100px){.c-hora,.c-plan{display:none} #ct-tabla .acc .gen-t{display:none} .c-acc{width:270px}}
@@ -3069,7 +3076,7 @@ function ctPinta() {
     <td class="c-tel"><div class="tel-nom">${esc(r.nombre || '')}</div><input data-k="telefono" value="${esc(r.telefono)}" placeholder="9XXXXXXXX" title="${esc(r.telefono)}"></td>
     <td class="c-orig"><input data-k="origen" value="${esc(r.origen || '')}" placeholder="Compañía" title="Compañía de origen${r.origen ? ': ' + esc(r.origen) : ''}"></td>
     <td class="c-tipo"><select data-k="tipo">${opt(TIPIFICACIONES, r.tipo, 'Sin tipificar')}</select></td>
-    <td class="c-plan"><select data-k="plan">${opt(PLANES_WA().map(p => p.title), r.plan, 'Sin plan')}</select></td>
+    <td class="c-plan"><div class="plan-ver${r.plan ? '' : ' vacio'}">${esc(r.plan || 'Sin plan')}</div><select data-k="plan" class="plan-sel" title="${esc(r.plan || 'Elegir plan')}">${opt(PLANES_WA().map(p => p.title), r.plan, 'Sin plan')}</select></td>
     <td class="c-notas"><input data-k="notas" value="${esc(r.notas)}" placeholder="Notas" title="${esc(r.notas)}"></td>
     <td class="c-acc"><div class="acc">${r.borrado
       ? `<button data-ct="restaurar" class="go" title="Recuperar registro">↺</button>`
@@ -3154,6 +3161,7 @@ function initControl() {
     else if (el.type === 'checkbox') { r[el.dataset.k] = el.checked; if (el.dataset.k === 'sineq' && el.checked) Object.assign(r, { eq: '', eqsku: '', eqtotal: '', eqpie: '', eqforma: '' }); if (e.type === 'change') setTimeout(ctPinta, 0); }
     else { el.title = el.value; r[el.dataset.k] = el.value; if (el.dataset.k === 'nombre') { if (el.tagName === 'TEXTAREA') { el.value = el.value.replace(/\n/g, ' '); r.nombre = el.value; nomAlto(el); } const tn = el.closest('tr').querySelector('.tel-nom'); if (tn) tn.textContent = el.value; } $$(`#ct-body [data-id="${r.id}"] [data-k="${el.dataset.k}"]`).forEach(x => { if (x !== el) x.value = el.value; }); }
     r.upd = Date.now(); ctGuardar();
+    if (el.dataset.k === 'plan') { const pv = el.closest('td').querySelector('.plan-ver'); if (pv) { pv.textContent = el.value || 'Sin plan'; pv.classList.toggle('vacio', !el.value); } el.title = el.value || 'Elegir plan'; }
     if (el.dataset.k === 'tipo') { const tr = el.closest('tr'); tr.classList.toggle('t-venta', el.value === 'Venta'); tr.classList.remove('t-verde', 't-rojo', 't-amarillo'); if (tipoColor(el.value)) tr.classList.add(tipoColor(el.value)); }
     if (el.dataset.k === 'tipo' && e.type === 'change' && el.value === 'Volver a llamar' && !(r.agenda && !r.agendaHecho)) agDialogo(r);
   };

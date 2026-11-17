@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: plan completo en la fila
+
+- Mi Planilla: la columna Plan muestra el nombre completo del plan (hasta dos líneas, como el nombre del cliente), por ejemplo "Plan Persona Mayor" o "Plan 500 + Netflix". Se sigue eligiendo con un clic en la celda.
+
 ### 17-11-2026: notas en grande, plan y comentario desde la extensión (1.13)
 
 - Mi Planilla: al hacer clic en la celda de Notas se abre encima un cuadro grande para leer y escribir el comentario; se guarda mientras se escribe, Enter o Esc lo cierran y Shift+Enter hace otra línea.
