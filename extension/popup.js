@@ -139,7 +139,9 @@ $('#wa-abrir').onclick = async () => {
   const m = MENSAJES[+$('#wa-plan').value] || MENSAJES[0];
   const url = `https://web.whatsapp.com/send?phone=56${TEL}&text=${encodeURIComponent(m.texto)}`;
   $('#wa-abrir').disabled = true;
-  // Se abre desde aquí mismo (no depende del proceso de fondo): reutiliza la pestaña de WhatsApp Web más antigua o abre una nueva
+  // Primero el modo rápido del proceso de fondo (abre el chat sin recargar WhatsApp Web).
+  // Si el proceso de fondo no responde, se abre desde aquí mismo como antes.
+  try { const r = await chrome.runtime.sendMessage({ tipo: 'wa', url }); if (r) { window.close(); return; } } catch (e) {}
   try {
     let tabs = [];
     try { tabs = (await chrome.tabs.query({ url: 'https://web.whatsapp.com/*' })).sort((a, b) => a.id - b.id); } catch (e) {}

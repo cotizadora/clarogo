@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: extensión 1.7, modo rápido de WhatsApp (experimental)
+
+- Si WhatsApp Web ya está abierto, la extensión presiona Nuevo chat, busca el número, abre el chat solo si hay exactamente un resultado y deja el mensaje escrito, sin recargar. Si algo no calza (número que no está en tus chats o contactos, cambio en WhatsApp), recarga la pestaña como antes. El mensaje nunca se envía solo.
+
 ### 17-11-2026: Plan Persona Mayor, agenda de llamadas y mensaje de WhatsApp
 
 - Oferta Personas: nueva fila con el Plan Persona Mayor (50 GB, 1.000 minutos y 500 SMS a todo destino, $4.990 por 12 meses y luego $6.990, solo Portabilidad PosPos). Fuente: gráfica enviada por Eduardo el 17-11-2026, guardada en `ofertas/plan-persona-mayor.webp`. Se puede ver en grande, copiar la gráfica y copiar el texto. Va aparte de los planes 5G: no entra a la calculadora ni al Script.
