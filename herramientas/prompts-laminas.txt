@@ -1,90 +1,159 @@
-PROMPTS PARA CHATGPT: LÁMINAS DE LOS PLANES
-Pega un prompt por conversación. Cuando salga la imagen, descárgala y mándamela por acá.
-Si un número o una palabra sale mal escrito, pídele a ChatGPT: "Corrige solo el texto, no cambies nada más".
+﻿PROMPTS PARA CHATGPT: LÁMINAS DE LOS PLANES (versión 2, estilo corporativo)
+
+Cómo usarlos: abre una conversación nueva en ChatGPT por plan, adjunta la lámina del Plan Persona Mayor como referencia y pega el prompt completo de ese plan. Si un número sale mal: "Corrige solo ese texto, no cambies nada más". Si el logo sale deformado, mándamela igual y yo lo corrijo.
 
 =====================================================================
-PLAN 500
+PLAN 500  (copia desde aquí)
 =====================================================================
-Crea una lámina publicitaria cuadrada (1:1, 1024x1024) para WhatsApp, estilo fotografía publicitaria de telefonía en Chile.
+Crea una lámina publicitaria para WhatsApp de una compañía de telefonía móvil en Chile, con el mismo estilo de la imagen adjunta (misma composición, mismos colores, misma tipografía).
 
-DISEÑO (respétalo exactamente):
-- Mitad izquierda: foto realista de una persona chilena de unos 30 años, sonriendo, mirando su celular, en un living luminoso. Encima, arriba a la izquierda, una cinta roja con el texto blanco "Nuevo Plan" y debajo, en letras grandes, "Plan 500" (negro y rojo).
-- Mitad derecha: una tarjeta roja (#E60000) con esquinas redondeadas y letras blancas. Dentro, de arriba hacia abajo:
-  1. Título: "Plan 500"
-  2. Fila con ícono de wifi en un cuadrado amarillo: "500 GB" y abajo "de internet"
-  3. Fila con ícono de teléfono: "Minutos ilimitados" y abajo "libres a 300 números"
-  4. Fila con ícono de mensaje: "500 SMS" y abajo "a todo destino"
-  5. Precio grande: "$5.994" y abajo "x 6 meses"
-  6. Franja inferior: "Luego $9.990 mensuales"
-- Fondo blanco, colores rojo, blanco, negro y amarillo.
+Formato: cuadrado 1:1, 1024x1024.
 
-REGLAS ESTRICTAS:
-- Escribe los textos y números EXACTAMENTE como están aquí, en español, con punto de miles ($5.994, $9.990).
-- No agregues ningún otro texto, precio, letra chica, código QR ni página web.
-- No pongas logos de ninguna marca (ni de compañías telefónicas, ni de redes sociales).
-- Letras grandes y fáciles de leer en un celular.
+Paleta corporativa estricta:
+- Rojo corporativo #DA291C como color principal (fondos de tarjeta y títulos).
+- Blanco #FFFFFF para textos sobre rojo.
+- Gris muy oscuro #222222 para títulos sobre fondo claro.
+- Solo como acento pequeño en los íconos: un cuadrado redondeado blanco con el ícono en rojo.
+- PROHIBIDO usar amarillo, verde, azul, morado, degradados de colores o neones.
 
-=====================================================================
-PLAN 800
-=====================================================================
-Crea una lámina publicitaria cuadrada (1:1, 1024x1024) para WhatsApp, estilo fotografía publicitaria de telefonía en Chile.
+Tipografía: sans serif moderna y redondeada, muy gruesa en títulos y precios (tipo Roboto Black o Montserrat ExtraBold), limpia y legible en celular. Nada de letras condensadas ni tipo cómic.
 
-DISEÑO (respétalo exactamente):
-- Mitad izquierda: foto realista de una pareja joven chilena, sonriendo, viendo juntos un celular en un living luminoso. Encima, arriba a la izquierda, una cinta roja con el texto blanco "El más vendido" y debajo, en letras grandes, "Plan 800" (negro y rojo).
-- Mitad derecha: una tarjeta roja (#E60000) con esquinas redondeadas y letras blancas. Dentro, de arriba hacia abajo:
-  1. Título: "Plan 800"
-  2. Fila con ícono de wifi en un cuadrado amarillo: "800 GB" y abajo "de internet"
-  3. Fila con ícono de teléfono: "Minutos ilimitados" y abajo "libres a 300 números"
-  4. Fila con ícono de mensaje: "500 SMS" y abajo "a todo destino"
-  5. Precio grande: "$7.923" y abajo "x 6 meses"
-  6. Franja inferior: "Luego $12.990 mensuales"
-- Fondo blanco, colores rojo, blanco, negro y amarillo.
+Composición (igual a la referencia):
+- Izquierda (55 %): fotografía publicitaria real, luz natural, colores cálidos y suaves, desenfoque de fondo profesional, personas chilenas naturales y sonrientes. Arriba, una cinta roja inclinada con texto blanco y debajo el nombre del plan en letras grandes (gris oscuro y rojo). Una frase corta en cursiva bajo el título.
+- Derecha (45 %): tarjeta roja #DA291C con esquinas redondeadas y sombra suave, que tapa un poco la foto. Dentro, filas separadas por líneas blancas finas, cada una con su ícono a la izquierda.
+- Abajo a la izquierda, sobre una curva roja (igual que en la referencia), pon el logo de Claro en blanco, copiado exactamente del logo de la imagen adjunta: misma forma, mismas letras y mismo acento. Que se vea grande y nítido.
 
-REGLAS ESTRICTAS:
-- Escribe los textos y números EXACTAMENTE como están aquí, en español, con punto de miles ($7.923, $12.990).
-- No agregues ningún otro texto, precio, letra chica, código QR ni página web.
-- No pongas logos de ninguna marca (ni de compañías telefónicas, ni de redes sociales).
-- Letras grandes y fáciles de leer en un celular.
+Reglas:
+- Usa EXACTAMENTE los textos y números que te doy, en español, con punto de miles.
+- No agregues otros textos, precios, letra chica, páginas web, códigos QR ni otros logos (solo el de Claro).
+- Aspecto premium, ordenado y corporativo, no recargado.
+
+DATOS DE ESTA LÁMINA:
+Cinta roja: "Nuevo Plan"
+Título grande: "Plan 500"
+Frase en cursiva: "Conéctate todo el mes sin preocuparte."
+Foto: mujer chilena de unos 30 años en un living luminoso, sonriendo mientras usa su celular.
+Tarjeta roja, de arriba hacia abajo:
+- Título: "Plan 500"
+- Ícono wifi: "500 GB" / "de internet"
+- Ícono teléfono: "Minutos ilimitados" / "libres a 300 números"
+- Ícono mensaje: "500 SMS" / "a todo destino"
+- Precio grande: "$5.994" / "x 6 meses"
+- Franja inferior más oscura: "Luego $9.990 mensuales"
 
 =====================================================================
-PLAN 1000
+PLAN 800  (copia desde aquí)
 =====================================================================
-Crea una lámina publicitaria cuadrada (1:1, 1024x1024) para WhatsApp, estilo fotografía publicitaria de telefonía en Chile.
+Crea una lámina publicitaria para WhatsApp de una compañía de telefonía móvil en Chile, con el mismo estilo de la imagen adjunta (misma composición, mismos colores, misma tipografía).
 
-DISEÑO (respétalo exactamente):
-- Mitad izquierda: foto realista de una familia chilena (padre, madre y un hijo adolescente) sonriendo con sus celulares en un living luminoso. Encima, arriba a la izquierda, una cinta roja con el texto blanco "Nuevo Plan" y debajo, en letras grandes, "Plan 1000" (negro y rojo).
-- Mitad derecha: una tarjeta roja (#E60000) con esquinas redondeadas y letras blancas. Dentro, de arriba hacia abajo:
-  1. Título: "Plan 1000"
-  2. Fila con ícono de wifi en un cuadrado amarillo: "1000 GB" y abajo "de internet"
-  3. Fila con ícono de teléfono: "Minutos ilimitados" y abajo "libres a 300 números"
-  4. Fila con ícono de mensaje: "500 SMS" y abajo "a todo destino"
-  5. Precio grande: "$16.990" y abajo "x 6 meses"
-  6. Franja inferior: "Luego $17.990 mensuales"
-- Fondo blanco, colores rojo, blanco, negro y amarillo.
+Formato: cuadrado 1:1, 1024x1024.
 
-REGLAS ESTRICTAS:
-- Escribe los textos y números EXACTAMENTE como están aquí, en español, con punto de miles ($16.990, $17.990).
-- No agregues ningún otro texto, precio, letra chica, código QR ni página web.
-- No pongas logos de ninguna marca (ni de compañías telefónicas, ni de redes sociales).
-- Letras grandes y fáciles de leer en un celular.
+Paleta corporativa estricta:
+- Rojo corporativo #DA291C como color principal (fondos de tarjeta y títulos).
+- Blanco #FFFFFF para textos sobre rojo.
+- Gris muy oscuro #222222 para títulos sobre fondo claro.
+- Solo como acento pequeño en los íconos: un cuadrado redondeado blanco con el ícono en rojo.
+- PROHIBIDO usar amarillo, verde, azul, morado, degradados de colores o neones.
+
+Tipografía: sans serif moderna y redondeada, muy gruesa en títulos y precios (tipo Roboto Black o Montserrat ExtraBold), limpia y legible en celular. Nada de letras condensadas ni tipo cómic.
+
+Composición (igual a la referencia):
+- Izquierda (55 %): fotografía publicitaria real, luz natural, colores cálidos y suaves, desenfoque de fondo profesional, personas chilenas naturales y sonrientes. Arriba, una cinta roja inclinada con texto blanco y debajo el nombre del plan en letras grandes (gris oscuro y rojo). Una frase corta en cursiva bajo el título.
+- Derecha (45 %): tarjeta roja #DA291C con esquinas redondeadas y sombra suave, que tapa un poco la foto. Dentro, filas separadas por líneas blancas finas, cada una con su ícono a la izquierda.
+- Abajo a la izquierda, sobre una curva roja (igual que en la referencia), pon el logo de Claro en blanco, copiado exactamente del logo de la imagen adjunta: misma forma, mismas letras y mismo acento. Que se vea grande y nítido.
+
+Reglas:
+- Usa EXACTAMENTE los textos y números que te doy, en español, con punto de miles.
+- No agregues otros textos, precios, letra chica, páginas web, códigos QR ni otros logos (solo el de Claro).
+- Aspecto premium, ordenado y corporativo, no recargado.
+
+DATOS DE ESTA LÁMINA:
+Cinta roja: "El más vendido"
+Título grande: "Plan 800"
+Frase en cursiva: "Más gigas para todo lo que te gusta."
+Foto: pareja joven chilena en un sillón, riendo mientras ven juntos un celular.
+Tarjeta roja, de arriba hacia abajo:
+- Título: "Plan 800"
+- Ícono wifi: "800 GB" / "de internet"
+- Ícono teléfono: "Minutos ilimitados" / "libres a 300 números"
+- Ícono mensaje: "500 SMS" / "a todo destino"
+- Precio grande: "$7.923" / "x 6 meses"
+- Franja inferior más oscura: "Luego $12.990 mensuales"
 
 =====================================================================
-PLAN 500 + NETFLIX
+PLAN 1000  (copia desde aquí)
 =====================================================================
-Crea una lámina publicitaria cuadrada (1:1, 1024x1024) para WhatsApp, estilo fotografía publicitaria de telefonía en Chile.
+Crea una lámina publicitaria para WhatsApp de una compañía de telefonía móvil en Chile, con el mismo estilo de la imagen adjunta (misma composición, mismos colores, misma tipografía).
 
-DISEÑO (respétalo exactamente):
-- Mitad izquierda: foto realista de una persona chilena de unos 30 años en el sillón, con palomitas, viendo una serie en su celular, luz cálida de noche. Encima, arriba a la izquierda, una cinta roja con el texto blanco "Incluye Netflix Estándar" y debajo, en letras grandes, "Plan 500 + Netflix" (negro y rojo).
-- Mitad derecha: una tarjeta roja (#E60000) con esquinas redondeadas y letras blancas. Dentro, de arriba hacia abajo:
-  1. Título: "Plan 500 + Netflix"
-  2. Fila con ícono de wifi en un cuadrado amarillo: "500 GB" y abajo "de internet"
-  3. Fila con ícono de teléfono: "Minutos ilimitados" y abajo "libres a 300 números"
-  4. Fila con ícono de pantalla de TV: "Netflix Estándar" y abajo "incluido"
-  5. Precio grande: "$17.990" y abajo "mensuales"
-- Fondo blanco, colores rojo, blanco, negro y amarillo.
+Formato: cuadrado 1:1, 1024x1024.
 
-REGLAS ESTRICTAS:
-- Escribe los textos y números EXACTAMENTE como están aquí, en español, con punto de miles ($17.990).
-- No agregues ningún otro texto, precio, letra chica, código QR ni página web.
-- No pongas logos de ninguna marca (ni de compañías telefónicas, ni de Netflix, ni de redes sociales). "Netflix" va solo como texto.
-- Letras grandes y fáciles de leer en un celular.
+Paleta corporativa estricta:
+- Rojo corporativo #DA291C como color principal (fondos de tarjeta y títulos).
+- Blanco #FFFFFF para textos sobre rojo.
+- Gris muy oscuro #222222 para títulos sobre fondo claro.
+- Solo como acento pequeño en los íconos: un cuadrado redondeado blanco con el ícono en rojo.
+- PROHIBIDO usar amarillo, verde, azul, morado, degradados de colores o neones.
+
+Tipografía: sans serif moderna y redondeada, muy gruesa en títulos y precios (tipo Roboto Black o Montserrat ExtraBold), limpia y legible en celular. Nada de letras condensadas ni tipo cómic.
+
+Composición (igual a la referencia):
+- Izquierda (55 %): fotografía publicitaria real, luz natural, colores cálidos y suaves, desenfoque de fondo profesional, personas chilenas naturales y sonrientes. Arriba, una cinta roja inclinada con texto blanco y debajo el nombre del plan en letras grandes (gris oscuro y rojo). Una frase corta en cursiva bajo el título.
+- Derecha (45 %): tarjeta roja #DA291C con esquinas redondeadas y sombra suave, que tapa un poco la foto. Dentro, filas separadas por líneas blancas finas, cada una con su ícono a la izquierda.
+- Abajo a la izquierda, sobre una curva roja (igual que en la referencia), pon el logo de Claro en blanco, copiado exactamente del logo de la imagen adjunta: misma forma, mismas letras y mismo acento. Que se vea grande y nítido.
+
+Reglas:
+- Usa EXACTAMENTE los textos y números que te doy, en español, con punto de miles.
+- No agregues otros textos, precios, letra chica, páginas web, códigos QR ni otros logos (solo el de Claro).
+- Aspecto premium, ordenado y corporativo, no recargado.
+
+DATOS DE ESTA LÁMINA:
+Cinta roja: "Nuevo Plan"
+Título grande: "Plan 1000"
+Frase en cursiva: "El plan con más gigas para toda la familia."
+Foto: familia chilena (madre, padre e hija adolescente) sonriendo con sus celulares en un living luminoso.
+Tarjeta roja, de arriba hacia abajo:
+- Título: "Plan 1000"
+- Ícono wifi: "1000 GB" / "de internet"
+- Ícono teléfono: "Minutos ilimitados" / "libres a 300 números"
+- Ícono mensaje: "500 SMS" / "a todo destino"
+- Precio grande: "$16.990" / "x 6 meses"
+- Franja inferior más oscura: "Luego $17.990 mensuales"
+
+=====================================================================
+PLAN 500 + NETFLIX  (copia desde aquí)
+=====================================================================
+Crea una lámina publicitaria para WhatsApp de una compañía de telefonía móvil en Chile, con el mismo estilo de la imagen adjunta (misma composición, mismos colores, misma tipografía).
+
+Formato: cuadrado 1:1, 1024x1024.
+
+Paleta corporativa estricta:
+- Rojo corporativo #DA291C como color principal (fondos de tarjeta y títulos).
+- Blanco #FFFFFF para textos sobre rojo.
+- Gris muy oscuro #222222 para títulos sobre fondo claro.
+- Solo como acento pequeño en los íconos: un cuadrado redondeado blanco con el ícono en rojo.
+- PROHIBIDO usar amarillo, verde, azul, morado, degradados de colores o neones.
+
+Tipografía: sans serif moderna y redondeada, muy gruesa en títulos y precios (tipo Roboto Black o Montserrat ExtraBold), limpia y legible en celular. Nada de letras condensadas ni tipo cómic.
+
+Composición (igual a la referencia):
+- Izquierda (55 %): fotografía publicitaria real, luz natural, colores cálidos y suaves, desenfoque de fondo profesional, personas chilenas naturales y sonrientes. Arriba, una cinta roja inclinada con texto blanco y debajo el nombre del plan en letras grandes (gris oscuro y rojo). Una frase corta en cursiva bajo el título.
+- Derecha (45 %): tarjeta roja #DA291C con esquinas redondeadas y sombra suave, que tapa un poco la foto. Dentro, filas separadas por líneas blancas finas, cada una con su ícono a la izquierda.
+- Abajo a la izquierda, sobre una curva roja (igual que en la referencia), pon el logo de Claro en blanco, copiado exactamente del logo de la imagen adjunta: misma forma, mismas letras y mismo acento. Que se vea grande y nítido.
+
+Reglas:
+- Usa EXACTAMENTE los textos y números que te doy, en español, con punto de miles.
+- No agregues otros textos, precios, letra chica, páginas web, códigos QR ni otros logos (solo el de Claro).
+- Aspecto premium, ordenado y corporativo, no recargado.
+
+DATOS DE ESTA LÁMINA:
+Cinta roja: "Incluye Netflix Estándar"
+Título grande: "Plan 500 + Netflix"
+Frase en cursiva: "Tus series favoritas donde quieras."
+Foto: persona chilena de unos 30 años en el sillón de noche, con una manta y palomitas, viendo una serie en su celular, luz cálida.
+Tarjeta roja, de arriba hacia abajo:
+- Título: "Plan 500 + Netflix"
+- Ícono wifi: "500 GB" / "de internet"
+- Ícono teléfono: "Minutos ilimitados" / "libres a 300 números"
+- Ícono pantalla de TV: "Netflix Estándar" / "incluido"
+- Precio grande: "$17.990" / "mensuales"
+(Netflix solo como texto, sin su logo.)

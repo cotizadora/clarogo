@@ -1026,10 +1026,10 @@ const VIGENCIA_PLANES = 'Sujeto a evaluación comercial.';
 const PROMO_MESES = 6;
 const PV_MIN = 'Ilimitadas, libres a 300 números', PV_SMS = '500 SMS a todo destino';
 const PLANES_VIGENTES = [
- {id:'v500',gb:500,title:'Plan 500',data:'500 GB a alta velocidad',roaming:'40 Min + 2 GB + 40 SMS',ldi:'40 minutos',promo:5994,price:9990,puj:'Al usar la cuota baja a 256 kbps. Sobre 600 GB baja a 64 kbps.'},
- {id:'v800',gb:800,title:'Plan 800',sello:'Más vendido',data:'800 GB a alta velocidad',roaming:'60 Min + 3 GB + 60 SMS',ldi:'60 minutos',promo:7923,price:12990,puj:'Al usar la cuota baja a 256 kbps. Sobre 900 GB baja a 64 kbps.'},
- {id:'v1000',gb:1000,title:'Plan 1000',data:'1000 GB de alta velocidad',roaming:'100 Min + 5 GB + 100 SMS',ldi:'100 minutos',promo:16990,price:17990,puj:'Al usar la cuota baja a 256 kbps hasta el siguiente ciclo.'},
- {id:'v500n',gb:500,title:'Plan 500 + Netflix',sello:'Netflix Estándar',data:'500 GB a alta velocidad',roaming:'40 Min + 2 GB + 40 SMS',ldi:'40 minutos',price:17990,netflix:true,puj:'Al usar la cuota baja a 256 kbps. Sobre 600 GB baja a 64 kbps.'}
+ {id:'v500',gb:500,title:'Plan 500',img:'ofertas/plan-500.webp',data:'500 GB a alta velocidad',roaming:'40 Min + 2 GB + 40 SMS',ldi:'40 minutos',promo:5994,price:9990,puj:'Al usar la cuota baja a 256 kbps. Sobre 600 GB baja a 64 kbps.'},
+ {id:'v800',gb:800,title:'Plan 800',img:'ofertas/plan-800.webp',sello:'Más vendido',data:'800 GB a alta velocidad',roaming:'60 Min + 3 GB + 60 SMS',ldi:'60 minutos',promo:7923,price:12990,puj:'Al usar la cuota baja a 256 kbps. Sobre 900 GB baja a 64 kbps.'},
+ {id:'v1000',gb:1000,title:'Plan 1000',img:'ofertas/plan-1000.webp',data:'1000 GB de alta velocidad',roaming:'100 Min + 5 GB + 100 SMS',ldi:'100 minutos',promo:16990,price:17990,puj:'Al usar la cuota baja a 256 kbps hasta el siguiente ciclo.'},
+ {id:'v500n',gb:500,title:'Plan 500 + Netflix',img:'ofertas/plan-500-netflix.webp',sello:'Netflix Estándar',data:'500 GB a alta velocidad',roaming:'40 Min + 2 GB + 40 SMS',ldi:'40 minutos',price:17990,netflix:true,puj:'Al usar la cuota baja a 256 kbps. Sobre 600 GB baja a 64 kbps.'}
 ];
 // Plan Persona Mayor: fuente, gráfica "Nuevo Plan Persona Mayor" enviada por Eduardo (17-11-2026).
 // Va aparte de PLANES_VIGENTES porque no tiene roaming, LDI ni líneas adicionales (no entra a la calculadora ni al Script).
@@ -1789,6 +1789,14 @@ function clBloques() {
   clPinta();
 }
 // Vista previa idéntica a lo que se copia: la página muestra el mismo canvas que se copia y el mismo texto.
+// Lámina hecha como imagen (gráficas de ofertas/): se dibuja en un canvas para copiarla igual que las demás
+function imgCanvas(src, max) {
+  const c = document.createElement('canvas'); c.width = 1000; c.height = 1000;
+  const i = new Image();
+  i.onload = () => { const k = max ? Math.min(1, max / Math.max(i.naturalWidth, i.naturalHeight)) : 1; c.width = Math.round(i.naturalWidth * k); c.height = Math.round(i.naturalHeight * k); const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(i, 0, 0, c.width, c.height); c.dispatchEvent(new Event('lista')); };
+  i.src = src;
+  return c;
+}
 function lamina(box, canvas, texto) {
   const abierto = !!(box.querySelector('details') || {}).open;
   canvas.className = 'lam-img'; box.innerHTML = ''; box.appendChild(canvas);
@@ -1807,7 +1815,7 @@ function initOferta() {  $('#ov-fuente').textContent = FUENTE_PLANES; $('#ov-vig
   $('#ov-grid').innerHTML = PLANES_VIGENTES.filter(p => !p.netflix).map(tarjeta).join('');
   $('#ov-nf').innerHTML = PLANES_VIGENTES.filter(p => p.netflix).map(tarjeta).join('');
   $('.ov-nf').hidden = !PLANES_VIGENTES.some(p => p.netflix);
-  PLANES_VIGENTES.forEach(p => lamina($(`#v-oferta [data-id="${p.id}"] .lam`), tarjetaCanvas(vBloques(p)), vMensaje(p)));
+  PLANES_VIGENTES.forEach(p => lamina($(`#v-oferta [data-id="${p.id}"] .lam`), p.img ? imgCanvas(p.img) : tarjetaCanvas(vBloques(p)), vMensaje(p)));
   $('#v-oferta').addEventListener('click', e => {
     const c = e.target.closest('[data-vcap]'), m = e.target.closest('[data-vmsg]'), pv = id => PLANES_VIGENTES.find(p => p.id === id);
     if (c) { const p = pv(c.dataset.vcap); copyCanvas(lamCanvas(c.closest('article')), p.id + '.png', `Lámina del ${p.title} copiada. Pégala en el chat.`); }
@@ -2618,6 +2626,8 @@ function laminaDataURL(id) {
         img.onerror = () => res(''); img.src = PLAN_MAYOR.img; return;
       }
       const p = PLANES_VIGENTES.find(x => x.id === id);
+      // Gráficas con foto: se achican a 800 px para que la extensión pueda guardar todas las láminas
+      if (p && p.img) { const c = imgCanvas(p.img, 800); c.addEventListener('lista', () => { try { res(c.toDataURL('image/png')); } catch (e) { res(''); } }); setTimeout(() => res(''), 15000); return; }
       res(p ? tarjetaCanvas(vBloques(p)).toDataURL('image/png') : '');
     } catch (e) { res(''); }
   });

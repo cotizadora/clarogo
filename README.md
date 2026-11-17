@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 17-11-2026: láminas con foto para los planes 500, 800, 1000 y 500 + Netflix
+
+- Gráficas hechas por Eduardo con ChatGPT (prompts en herramientas/prompts-laminas.txt), guardadas en ofertas/plan-500.webp, plan-800.webp, plan-1000.webp y plan-500-netflix.webp. Precios revisados contra PLANES_VIGENTES, sin cambios de precios.
+- Oferta Personas, el WhatsApp de Mi Planilla y la extensión usan estas gráficas en vez de la lámina dibujada. Para la extensión se achican a 800 px.
+
 ### 17-11-2026: extensión 1.13.1, ventana más corta
 
 - Se quitan de la ventana de la extensión los dos textos de ayuda del final (lámina copiada y "Los datos ya quedan copiados...").
