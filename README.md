@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 17-11-2026: accesos para revisar deuda en otras compañías
+
+- Nuevo grupo de enlaces "¿Tiene deuda? Pago de cuentas con RUT" en el Inicio y en Enlaces: Claro (Pago Express), Entel, Movistar y WOM, con sus íconos en logos/. Los enlaces salen de los sitios oficiales de cada compañía (17-11-2026).
+- El Inicio muestra los enlaces en 4 columnas.
+
 ### 17-11-2026: láminas con foto para los planes 500, 800, 1000 y 500 + Netflix
 
 - Gráficas hechas por Eduardo con ChatGPT (prompts en herramientas/prompts-laminas.txt), guardadas en ofertas/plan-500.webp, plan-800.webp, plan-1000.webp y plan-500-netflix.webp. Precios revisados contra PLANES_VIGENTES, sin cambios de precios.

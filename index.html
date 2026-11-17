@@ -198,6 +198,8 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 .link:hover{border-left-color:var(--red);background:#fff5f5}
 .link.dest{border-left-color:#0f9d58}
 .link span{font-size:1.15rem;flex:none}
+.link .lk-logo{display:block;width:22px;height:22px;border-radius:5px}
+.link .lk-wom{display:grid;place-items:center;width:22px;height:22px;border-radius:5px;background:#3d0f6b;color:#fff;font-size:.5rem;font-weight:900;letter-spacing:.02em}
 .link div{min-width:0;line-height:1.2}
 .link b{display:block;font-size:.84rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .link small{display:block;font-size:.68rem;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -561,7 +563,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #home-links{display:none}
 /* Inicio en PC: enlaces a la mano debajo del menú; el botón Enlaces se oculta */
 @media (min-width:900px){
-  #home-links{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:100%;max-width:980px;margin:clamp(8px,1.6vh,16px) auto 0;flex-shrink:0;text-align:left}
+  #home-links{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;width:100%;max-width:1180px;margin:clamp(8px,1.6vh,16px) auto 0;flex-shrink:0;text-align:left}
   #home-links .links{grid-template-columns:1fr 1fr;gap:6px}
   #home-links .lbl{margin-bottom:5px}
   #home-links .link{padding:7px 9px;gap:8px}
@@ -1074,7 +1076,13 @@ const ENLACES = [
   ['📶','NPC','Compañía Portados','https://www.numerosportados.cl/'],
   ['🪪','Rutificador','Confirmación Identidad','https://www.nombrerutyfirma.com/'],
   ['🖥️','Claro Oficial','Portal Comercial','https://www.clarochile.cl/personas/'],
-  ['📍','Google Maps','Buscador Direcciones','https://www.google.com/maps']]}
+  ['📍','Google Maps','Buscador Direcciones','https://www.google.com/maps']]},
+ // Portales de pago de cada compañía: con el RUT del cliente se ve si tiene deuda antes de evaluarlo
+ {t:'¿Tiene deuda? Pago de cuentas con RUT',items:[
+  ['img:logos/claro.png','Claro','Pago Express','https://sucursalvirtual.clarochile.cl/PagoExpress'],
+  ['img:logos/entel.png','Entel','Pago de cuentas','https://miperfil.entel.cl/PagoUnificado/Home'],
+  ['img:logos/movistar.png','Movistar','Pago de cuentas','https://pagos.movistar.cl/publico/'],
+  ['wom','WOM','Paga aquí','https://www.wom.cl/paga-aqui/']]}
 ];
 const GALERIA = [['01','HONOR 400 SMART 5G 256GB'],['02','HONOR MAGIC 8 LITE 5G 256GB'],['03','HONOR X6B 5G 256GB'],['04','SAMSUNG GALAXY A06 5G 128GB'],['05','XIAOMI REDMI 15C 128GB'],['06','XIAOMI REDMI 15C 256GB'],['07','MOTOROLA G56 5G 256GB'],['08','ZTE BLADE V70 MAX 256GB'],['09','ZTE NUBIA NEO 3 GT 5G 256GB'],['10','Redmi Note 15 Pro 5G 512GB Titanio Buds 6 Play'],['11','S25 FE 5G 128GB Black']];
 const TUTORIALES = [
@@ -2029,8 +2037,9 @@ function initScript() {
    ════════════════════════════════════════════════════════════════ */
 function initVenta() { $('#venta-link').href = FORM_VENTA; $('#venta-frame').src = FORM_VENTA + '?embedded=true'; }
 // Mismo bloque de enlaces para la sección Enlaces y para el inicio en PC
+const icoEnlace = x => x.startsWith('img:') ? `<span><img class="lk-logo" src="${esc(x.slice(4))}" alt="" width="22" height="22"></span>` : x === 'wom' ? '<span class="lk-wom">WOM</span>' : `<span>${x}</span>`;
 function enlacesHTML() {
-  const a = (i, cls = '') => `<a class="card link${cls}" href="${esc(i[3])}" target="_blank" rel="noopener noreferrer" title="${esc(i[1] + ': ' + i[2])}"><span>${i[0]}</span><div><b>${i[1]}</b><small>${i[2]}</small></div></a>`;
+  const a = (i, cls = '') => `<a class="card link${cls}" href="${esc(i[3])}" target="_blank" rel="noopener noreferrer" title="${esc(i[1] + ': ' + i[2])}">${icoEnlace(i[0])}<div><b>${i[1]}</b><small>${i[2]}</small></div></a>`;
   return ENLACES.map(g => `<div><div class="lbl">${g.t}</div><div class="links">${g.items.map(i => a(i)).join('')}</div></div>`).join('');
 }
 function initEnlaces() { $('#e-grid').innerHTML = enlacesHTML(); }
