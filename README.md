@@ -50,6 +50,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: dirección en una sola línea
+
+- En la ficha de Mi Planilla la dirección es un solo campo, para pegarla tal como se copia ("Las Zinnias 5790 Huechuraba, Región Metropolitana"). Al pasar al Script de Cierre se separa sola en calle, número, interior, comuna y región; si se corrige en el Script, la línea de la planilla se actualiza. Las filas antiguas muestran su dirección armada en una línea. La exportación a Excel trae una sola columna Dirección.
+
 ### 17-11-2026: saludo con el nombre del cliente (extensión 1.9)
 
 - El mensaje saluda al cliente por su primer nombre cuando la planilla lo tiene ("Hola María, muy buenos días..."); si no lo tiene, queda "Hola, muy buenos días...". Nuevas marcas para el mensaje personal: {cliente} (primer nombre) y {compania} (compañía de origen).

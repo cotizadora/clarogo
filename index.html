@@ -1847,7 +1847,8 @@ function scPintaVinculo() {
 let scCargando = false;
 function scCargar(r) {
   scCargando = true;
-  SC_CAMPOS.forEach(id => { const e = $('#sc-' + id); if (!e) return; const v = r[scClave(id)] || ''; if (e.tagName === 'SELECT') { if (v) e.value = v; else e.selectedIndex = 0; } else e.value = v; });
+  const dir = r.direccion ? dirSeparar(r.direccion) : {};
+  SC_CAMPOS.forEach(id => { const e = $('#sc-' + id); if (!e) return; const v = (['calle', 'num', 'int', 'comuna', 'region'].includes(id) && r.direccion ? dir[id] : r[scClave(id)]) || ''; if (e.tagName === 'SELECT') { if (v) e.value = v; else e.selectedIndex = 0; } else e.value = v; });
   if (!r.contacto && r.telefono) $('#sc-contacto').value = r.telefono;
   if (!r.fono && r.telefono) $('#sc-fono').value = r.telefono;
   const p = PLANES_VIGENTES.find(x => x.title === r.plan); if (p) $('#sc-plan').value = p.id;
@@ -1868,6 +1869,7 @@ function scGuardarEnFila(e) {
   }
   if (id === 'plan') { const p = PLANES_VIGENTES.find(x => x.id === e.target.value); if (p) r.plan = p.title; }
   else r[scClave(id)] = e.target.value.trim();
+  if (['calle', 'num', 'int', 'comuna', 'region'].includes(id)) { ['calle', 'num', 'int', 'comuna', 'region'].forEach(k => { const el = $('#sc-' + k); if (el) r[k] = el.value.trim(); }); r.direccion = dirArmar(r); }
   if (!r.telefono && (r.contacto || r.fono)) r.telefono = r.contacto || r.fono;
   r.upd = Date.now(); ctGuardar(); ctRepintar();
 }
@@ -2338,7 +2340,7 @@ const FICHA = [
   ['Cliente', [['nac', 'Fecha de nacimiento', 'DD-MM-AAAA'], ['mail', 'Correo electrónico', 'correo@ejemplo.com'], ['fono', 'Número a portar', '9 XXXX XXXX'], ['contacto', 'Teléfono de contacto', '9 XXXX XXXX'], ['origen', 'Compañía de origen', 'Ej: Movistar']]],
   ['Venta', [['medio', 'Validación enviada por', 'MEDIOS'], ['tventa', 'Tipo de venta', 'TVENTA'], ['adic', 'Líneas adicionales', '9 1111 1111, 9 2222 2222'], ['oferta', 'Oferta de la campaña (Genesys)', '']]],
   ['Equipo', [['eq', 'Equipo', 'Ej: Samsung A17 5G 128GB'], ['eqtotal', 'Monto total', '$0'], ['eqpie', 'Pago inicial', '$0'], ['eqforma', 'Forma de pago', 'Ej: 18 cuotas de $22.000']]],
-  ['Despacho', [['calle', 'Calle o pasaje', ''], ['num', 'Número', ''], ['int', 'N° interior', 'Depto, block, casa'], ['comuna', 'Comuna', ''], ['region', 'Región', ''], ['ref', 'Referencia o entrecalles', ''], ['eta', 'Tiempo de despacho', '']]]
+  ['Despacho', [['direccion', 'Dirección', 'Ej: Las Zinnias 5790 Huechuraba, Región Metropolitana'], ['ref', 'Referencia o entrecalles', ''], ['eta', 'Tiempo de despacho', '']]]
 ];
 const OBS_RAPIDAS = ['Interesado, llamar más tarde', 'Pide la oferta por WhatsApp', 'Evaluación pendiente', 'Tiene deuda', 'Quiere equipo', 'Comparando con otra compañía', 'No contesta, reintentar'];
 let ctAbierto = '';
@@ -2347,8 +2349,8 @@ function ctFichaHTML(r) {
     let inp;
     if (ph === 'MEDIOS') inp = `<select data-k="${k}"><option value="">Elegir</option>${MEDIOS.map(x => `<option${r[k] === x ? ' selected' : ''}>${x}</option>`).join('')}</select>`;
     else if (ph === 'TVENTA') inp = `<select data-k="${k}"><option value="">Elegir</option>${TVENTA.map(([v, t]) => `<option value="${v}"${r[k] === v ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
-    else inp = `<input data-k="${k}" value="${esc(r[k] || '')}" placeholder="${esc(ph)}"${k === 'region' ? ' list="sc-regiones"' : k === 'eta' ? ' list="sc-etas"' : ''}>`;
-    return `<div><label>${l}</label>${inp}</div>`;
+    else inp = `<input data-k="${k}" value="${esc(k === 'direccion' ? dirTexto(r) : (r[k] || ''))}" placeholder="${esc(ph)}"${k === 'region' ? ' list="sc-regiones"' : k === 'eta' ? ' list="sc-etas"' : ''}>`;
+    return `<div${k === 'direccion' ? ' style="grid-column:1/-1"' : ''}><label>${l}</label>${inp}</div>`;
   };
   return `<tr class="ficha" data-id="${r.id}"><td colspan="11">${FICHA.map(([t, cs]) => `<div class="fi-t">${t}</div><div class="fi-g">${cs.map(campo).join('')}</div>`).join('')}
     <div class="fi-t">Observaciones</div><div class="fi-obs"><div class="fi-chips">${OBS_RAPIDAS.map(o => `<button type="button" data-obs="${esc(o)}">+ ${esc(o)}</button>`).join('')}</div><textarea data-k="notas" rows="3" placeholder="Pega o escribe aquí todo lo que conversaste con el cliente">${esc(r.notas || '')}</textarea></div>
@@ -2601,7 +2603,23 @@ function ctCompletarFila(id, d) {
   r.upd = Date.now(); ctNuevo = r.id; ctGuardar(); ctPinta();
   toast('Actualizado desde Genesys: ' + cambios.join(', ') + (d.telefono ? ` (${d.telefono})` : '') + '.');
 }
-const ctExtras = r => FICHA.reduce((n, [, cs]) => n + cs.filter(([k]) => r[k]).length, 0);
+/* ── Dirección en una sola línea ─────────────────────────────────────
+   En la planilla se escribe como se copia: "Las Zinnias 5790 Huechuraba, Región Metropolitana".
+   Para el Script de Cierre se separa sola en calle, número, comuna y región. */
+const dirArmar = r => { const reg = String(r.region || '').trim().replace(/^regi[oó]n\s+/i, ''); return [[r.calle, r.num].filter(Boolean).join(' ') + (r.int ? ', ' + r.int : ''), r.comuna].filter(Boolean).join(' ').trim() + (reg ? `, Región ${reg}` : ''); };
+const dirTexto = r => r.direccion || (r.calle || r.num || r.comuna ? dirArmar(r) : '');
+function dirSeparar(txt) {
+  const t = String(txt || '').trim(); if (!t) return {};
+  const [antes, ...resto] = t.split(','), region = resto.join(',').trim().replace(/^regi[oó]n\s+/i, '');
+  let base = antes.trim(), int = '';
+  // Primero el interior (depto, block, casa...), para que su número no se confunda con el de la calle
+  const i = base.match(/\s((?:depto|dpto|dep|departamento|block|casa|of|oficina|torre|piso)\.?\s*[\w-]+)/i);
+  if (i) { int = i[1].trim(); base = (base.slice(0, i.index) + base.slice(i.index + i[0].length)).replace(/\s{2,}/g, ' ').trim(); }
+  // El número de la casa es el último número antes de la comuna ("Calle 5 Norte 890 Viña del Mar" → 890)
+  const m = base.match(/^(.*)\s+(\d+[a-z]?)\b\s*(.*)$/i);
+  if (!m) return { calle: base, int, region };
+  return { calle: m[1].trim(), num: m[2], int, comuna: m[3].trim(), region };
+}const ctExtras = r => FICHA.reduce((n, [, cs]) => n + cs.filter(([k]) => k === 'direccion' ? dirTexto(r) : r[k]).length, 0);
 
 /* ── Planilla ───────────────────────────────────────────────────── */
 // Devuelve la fila creada (o la que ya existía hoy con el mismo cliente)
@@ -2630,7 +2648,7 @@ function ctFiltradas() {
   const [desde, hasta] = ctRango(), tipo = $('#ct-tipo').value, seg = $('#ct-seg').value, q = $('#ct-q').value.trim().toLowerCase(), verBorr = $('#ct-verborr').checked;
   return CT.filter(r => (verBorr ? r.borrado : !r.borrado) && (!desde || r.fecha >= desde) && (!hasta || r.fecha <= hasta)
     && (!tipo || (tipo === 'Sin tipificar' ? !r.tipo : r.tipo === tipo)) && (!seg || ctSeg(r) === seg)
-    && (!q || [r.rut, r.nombre, r.telefono, r.notas, r.mail, r.contacto, r.fono, r.comuna, r.calle, r.eq].join(' ').toLowerCase().includes(q)));
+    && (!q || [r.rut, r.nombre, r.telefono, r.notas, r.mail, r.contacto, r.fono, dirTexto(r), r.eq].join(' ').toLowerCase().includes(q)));
 }
 function ctPinta() {
   if (!ctListo) return;
@@ -2675,8 +2693,8 @@ function ctExcel() {
   const q = s => /[;"\n]/.test(s) ? '"' + String(s).replace(/"/g, '""') + '"' : s;
   const cols = [['fecha', 'Fecha'], ['hora', 'Hora'], ['campana', 'Campaña'], ['cola', 'Cola'], ['rut', 'RUT'], ['nombre', 'Nombre'], ['telefono', 'Teléfono'], ['tipo', 'Tipificación'], ['plan', 'Plan'], ['notas', 'Observaciones'],
     ['nac', 'Nacimiento'], ['mail', 'Correo'], ['fono', 'Número a portar'], ['contacto', 'Teléfono de contacto'], ['origen', 'Compañía de origen'], ['oferta', 'Oferta de la campaña'], ['medio', 'Validación enviada por'], ['tventa', 'Tipo de venta'], ['adic', 'Líneas adicionales'],
-    ['eq', 'Equipo'], ['eqtotal', 'Monto total'], ['eqpie', 'Pago inicial'], ['eqforma', 'Forma de pago'], ['calle', 'Calle'], ['num', 'Número'], ['int', 'Interior'], ['comuna', 'Comuna'], ['region', 'Región'], ['ref', 'Referencia'], ['eta', 'Despacho'], ['agenda', 'Llamar el'], ['agendaObs', 'Observación de la agenda']];
-  const csv = String.fromCharCode(0xFEFF) + cols.map(c => c[1]).join(';') + '\r\n' + lista.map(r => cols.map(c => q(r[c[0]] || '')).join(';')).join('\r\n') + '\r\n';
+    ['eq', 'Equipo'], ['eqtotal', 'Monto total'], ['eqpie', 'Pago inicial'], ['eqforma', 'Forma de pago'], ['direccion', 'Dirección'], ['ref', 'Referencia'], ['eta', 'Despacho'], ['agenda', 'Llamar el'], ['agendaObs', 'Observación de la agenda']];
+  const csv = String.fromCharCode(0xFEFF) + cols.map(c => c[1]).join(';') + '\r\n' + lista.map(r => cols.map(c => q((c[0] === 'direccion' ? dirTexto(r) : r[c[0]]) || '')).join(';')).join('\r\n') + '\r\n';
   downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8' }), `planilla-control-${hoyISO()}.csv`);
   toast(`${lista.length} registros exportados. Ábrelo con Excel.`);
 }
