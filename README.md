@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 17-11-2026: formulario de ventas lleno y exportar o importar clientes
+
+- "📤 Subir venta al formulario" en la ficha y "Llenar con un cliente de Mi Planilla" en Ingreso de Venta: abren el formulario de Google con las respuestas escritas (enlace prellenado). Quedan para el ejecutivo: RAC Ejecutivo, Número de TRX, Tipo de Delivery y Origen Venta. Nunca se envía solo.
+- "💾 Exportar cliente" (ficha) y "💾 Exportar clientes" (lista filtrada): archivo de texto legible en el celular, con los datos completos al final para importarlos. "📂 Importar clientes" los carga en otro computador (gana el registro más nuevo).
+
 ### 17-11-2026: Stock, solo pasan por el Front los equipos con más de 60 unidades
 
 - Stock en verde si tiene más de 60 unidades y en rojo si tiene 60 o menos. Los verdes se ordenan primero.

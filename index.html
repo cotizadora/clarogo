@@ -206,6 +206,9 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 #ct-tabla .deu-b span{display:inline}
 #ct-tabla .deu-b .lk-logo{width:16px;height:16px;border-radius:4px}
 #ct-tabla .deu-b .lk-wom{display:grid;place-items:center;width:16px;height:16px;border-radius:4px;background:#3d0f6b;color:#fff;font-size:.38rem;font-weight:900}
+.fv-card{padding:10px 12px;margin-bottom:10px;display:grid;gap:6px}
+.fv-fila{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.fv-fila select{flex:1;min-width:220px;padding:7px;border:1px solid var(--border);border-radius:8px;font:inherit}
 .fi-deuda{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0 4px;padding:7px 9px;border:1px dashed var(--border);border-radius:9px}
 .fi-deuda b{font-size:.8rem;margin-right:2px}
 .fi-deuda .btn{display:inline-flex;align-items:center;gap:5px}
@@ -759,6 +762,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <section id="v-venta" class="view" hidden>
     <h1 class="h">Ingreso de Venta</h1>
     <p class="sub">Formulario de Google. <a id="venta-link" target="_blank" rel="noopener">Abrir en una pestaña nueva</a> si no carga aquí.</p>
+    <div class="card fv-card"><b>Llenar con un cliente de Mi Planilla</b><div class="fv-fila"><select id="fv-cliente"></select><button class="btn red sm" id="fv-tab">📤 Abrir lleno en pestaña nueva</button><button class="btn sm" id="fv-aqui">Llenar aquí abajo</button></div><small class="dim">Revisa todo antes de enviar. Quedan para ti: RAC Ejecutivo, Número de TRX, Tipo de Delivery y Origen Venta.</small></div>
     <iframe id="venta-frame" title="Formulario de ingreso de venta" loading="lazy"></iframe>
   </section>
 
@@ -823,6 +827,8 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
         <button class="btn red" id="ct-pegar"><svg class="gico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="11.2" cy="2.6" r="1.8"/><rect x="4.2" y="5.4" width="6" height="9.4" rx="3"/></svg> Pegar desde Genesys</button>
         <button class="btn sm" id="ct-nueva">+ Fila vacía</button>
         <button class="btn sm" id="ct-excel">⬇ Exportar a Excel</button>
+        <button class="btn sm" id="ct-exportar" title="Archivo con todos los datos de los clientes de la lista, para enviarlo por WhatsApp o abrirlo en otro computador">💾 Exportar clientes</button>
+        <button class="btn sm" id="ct-importar" title="Cargar clientes desde un archivo exportado por ClaroGo!">📂 Importar clientes</button><input type="file" id="ct-imp-file" accept=".txt,.json,text/plain,application/json" hidden>
       </div>
       <input class="full" type="search" id="ct-q" placeholder="Buscar RUT, nombre, teléfono o notas" autocomplete="off">
       <select id="ct-periodo" autocomplete="off"><option value="todo" selected>Todo el historial</option><option value="hoy">Hoy</option><option value="7">Últimos 7 días</option><option value="30">Últimos 30 días</option><option value="mes">Este mes</option><option value="rango">Entre fechas</option></select>
@@ -2054,7 +2060,46 @@ function initScript() {
 /* ════════════════════════════════════════════════════════════════
    INGRESO DE VENTA, ENLACES, GALERÍA, TUTORIALES
    ════════════════════════════════════════════════════════════════ */
-function initVenta() { $('#venta-link').href = FORM_VENTA; $('#venta-frame').src = FORM_VENTA + '?embedded=true'; }
+/* ── Formulario de ventas lleno con los datos de la planilla ─────────
+   Google Forms permite abrir el formulario con respuestas ya escritas (enlace "prellenado").
+   Solo se llenan las respuestas; el ejecutivo revisa, completa lo que falta y presiona Enviar. */const FV_COMUNAS = ['Aisén','Algarrobo','Alhué','Alto Biobío','Alto del Carmen','Alto Hospicio','Ancud','Andacollo','Angol','Antártica','Antofagasta','Antuco','Arauco','Arica','Buin','Bulnes','Cabildo','Cabo de Hornos','Cabrero','Calama','Calbuco','Caldera','Calera','Calera de Tango','Calle Larga','Camarones','Camiña','Canela','Cañete','Carahue','Cartagena','Casablanca','Castro','Catemu','Cauquenes','Cerrillos','Cerro Navia','Chaitén','Chanco','Chañaral','Chépica','Chiguayante','Chile Chico','Chillán','Chillán Viejo','Chimbarongo','Cholchol','Chonchi','Cisnes','Cobquecura','Cochamó','Cochrane','Codegua','Coelemu','Coihaique','Coihueco','Coinco','Colbún','Colchane','Colina','Collipulli','Coltauco','Combarbalá','Concepción','Conchalí','Concón','Constitución','Contulmo','Copiapó','Coquimbo','Coronel','Corral','Cunco','Curacautín','Curacaví','Curaco de Vélez','Curanilahue','Curarrehue','Curepto','Curicó','Dalcahue','Diego de Almagro','Doñihue','El Bosque','El Carmen','El Monte','El Quisco','El Tabo','Empedrado','Ercilla','Estación Central','Florida','Freire','Freirina','Fresia','Frutillar','Futaleufú','Futrono','Galvarino','General Lagos','Gorbea','Graneros','Guaitecas','Hijuelas','Hualaihué','Hualañé','Hualpén','Hualqui','Huara','Huasco','Huechuraba','Illapel','Independencia','Iquique','Isla de Maipo','Isla de Pascua','Juan Fernández','La Cisterna','La Cruz','La Estrella','La Florida','La Granja','La Higuera','La Ligua','La Pintana','La Reina','La Serena','La Unión','Lago Ranco','Lago Verde','Laguna Blanca','Laja','Lampa','Lanco','Las Cabras','Las Condes','Lautaro','Lebu','Licantén','Limache','Linares','Litueche','Llaillay','Llanquihue','Lo Barnechea','Lo Espejo','Lo Prado','Lolol','Loncoche','Longaví','Lonquimay','Los Álamos','Los Andes','Los Ángeles','Los Lagos','Los Muermos','Los Sauces','Los Vilos','Lota','Lumaco','Machalí','Macul','Máfil','Maipú','Malloa','Marchihue','María Elena','María Pinto','Mariquina','Maule','Maullín','Mejillones','Melipeuco','Melipilla','Molina','Monte Patria','Mostazal','Mulchén','Nacimiento','Nancagua','Natales','Navidad','Negrete','Ninhue','Nogales','Nueva Imperial','Ñiquén','Ñuñoa','O\'Higgins','Olivar','Ollagüe','Olmué','Osorno','Ovalle','Padre Hurtado','Padre Las Casas','Paiguano','Paillaco','Paine','Palena','Palmilla','Panguipulli','Panquehue','Papudo','Paredones','Parral','Pedro Aguirre Cerda','Pelarco','Pelluhue','Pemuco','Pencahue','Penco','Peñaflor','Peñalolén','Peralillo','Perquenco','Petorca','Peumo','Pica','Pichidegua','Pichilemu','Pinto','Pirque','Pitrufquén','Placilla','Portezuelo','Porvenir','Pozo Almonte','Primavera','Providencia','Puchuncaví','Pucón','Pudahuel','Puente Alto','Puerto Montt','Puerto Octay','Puerto Saavedra','Puerto Varas','Pumanque','Punitaqui','Punta Arenas','Puqueldón','Purén','Purranque','Putaendo','Putre','Puyehue','Queilén','Quellón','Quemchi','Quilaco','Quilicura','Quilleco','Quillón','Quillota','Quilpué','Quinchao','Quinta de Tilcoco','Quinta Normal','Quintero','Quirihue','Rancagua','Ránquil','Rauco','Recoleta','Renaico','Renca','Rengo','Requínoa','Retiro','Rinconada','Río Bueno','Río Claro','Río Hurtado','Río Ibáñez','Río Negro','Río Verde','Romeral','Saavedra','Sagrada Familia','Salamanca','San Antonio','San Bernardo','San Carlos','San Clemente','San Esteban','San Fabián','San Felipe','San Fernando','San Gregorio','San Ignacio','San Javier','San Joaquín','San José de Maipo','San Juan de la Costa','San Miguel','San Nicolás','San Pablo','San Pedro','San Pedro de Atacama','San Pedro de la Paz','San Rafael','San Ramón','San Rosendo','San Vicente','Santa Bárbara','Santa Cruz','Santa Juana','Santa María','Santiago','Santo Domingo','Sierra Gorda','Talagante','Talca','Talcahuano','Taltal','Temuco','Teno','Teodoro Schmidt','Tierra Amarilla','Tiltil','Timaukel','Tirúa','Tocopilla','Toltén','Tomé','Torres del Paine','Tortel','Traiguén','Treguaco','Tucapel','Valdivia','Vallenar','Valparaíso','Vichuquén','Victoria','Vicuña','Vilcún','Villa Alegre','Villa Alemana','Villarrica','Viña del Mar','Vitacura','Yerbas Buenas','Yumbel','Yungay','Zapallar'];
+const FV_REGIONES = ['DE ARICA Y PARINACOTA','DE TARAPACÁ','DE ANTOFAGASTA','DE COQUIMBO','DE VALPARAÍSO','METROPOLITANA DE SANTIAGO','DEL LIBERTADOR B. O\'HIGGINS','DEL MAULE','DEL BÍOBÍO','NUBLE','DE LA ARAUCANÍA','DE LOS RÍOS','DE AISÉN DEL GRAL. C. IBÁÑEZ DEL CAMPO','DE MAGALLANES Y DE LA ANTÁRTICA CHILENA','DE LOS LAGOS','DE ATACAMA'];
+const FV = { fecha: 'entry.1681596587', rut: 'entry.202702879', nombre: 'entry.1000154781', mail: 'entry.727011340', contrato: 'entry.901628406', portar: 'entry.34004225', plan: 'entry.1509286259', dir: 'entry.1928379545', region: 'entry.5531571', comuna: 'entry.510377171', tipo: 'entry.1374338688', coneq: 'entry.1539772502', equipo: 'entry.1904621374' };
+const fvNorm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9ñ ]/g, ' ').replace(/\s+/g, ' ').trim();
+const fvOpcion = (lista, v) => { const n = fvNorm(v); if (!n) return ''; return lista.find(x => fvNorm(x) === n) || lista.find(x => fvNorm(x).replace(/^(de|del|de la|de los) /, '') === n.replace(/^(region )?(de|del|de la|de los) /, '').replace(/^region /, '')) || lista.find(x => n.length > 4 && fvNorm(x).includes(n)) || ''; };
+function ventaURL(r) {
+  const sep = r.calle || r.comuna ? r : dirSeparar(dirTexto(r));
+  const planes = { 'Plan 500': 'Plan 500 GB', 'Plan 800': 'Plan 800 GB', 'Plan 1000': 'Plan 1000 GB', 'Plan Persona Mayor': 'Plan Adulto Mayor' };
+  const coneq = r.sineq ? 'No' : r.eq ? 'Si' : '';
+  const tipo = { port: coneq === 'Si' ? 'Porta con equipo' : 'Porta Post a Post', portpre: 'Porta Pre a Post', ln: 'Venta Linea Nueva', migra: 'Migracion' }[r.tventa] || '';
+  const v = {
+    fecha: r.fecha || hoyISO(), rut: r.rut, nombre: r.nombre, mail: r.mail, contrato: r.telefono, portar: r.fono,
+    plan: planes[r.plan] || '', dir: dirTexto(r),
+    region: fvOpcion(FV_REGIONES, sep.region), comuna: fvOpcion(FV_COMUNAS, sep.comuna), tipo, coneq,
+    equipo: coneq === 'Si' ? (r.eqsku || r.eq || '') : ''
+  };
+  const q = Object.entries(v).filter(([, x]) => String(x || '').trim()).map(([k, x]) => FV[k] + '=' + encodeURIComponent(String(x).trim()));
+  return FORM_VENTA + '?usp=pp_url&' + q.join('&');
+}
+function ventaAbrir(id, aqui) {
+  const r = CT.find(x => x.id === id); if (!r) return toast('Elige un cliente de Mi Planilla.');
+  const url = ventaURL(r);
+  if (aqui) { if (location.hash !== '#venta') location.hash = 'venta'; $('#venta-frame').src = url + '&embedded=true'; }
+  else window.open(url, '_blank', 'noopener');
+  toast('Formulario abierto con los datos de ' + (r.nombre || 'el cliente') + '. Revisa, completa lo que falta y presiona Enviar.');
+}
+function initVenta() {
+  $('#venta-link').href = FORM_VENTA; $('#venta-frame').src = FORM_VENTA + '?embedded=true';
+  const llenar = () => {
+    const lista = CT.filter(r => !r.borrado && (r.nombre || r.rut)).sort((a, b) => (b.tipo === 'Venta') - (a.tipo === 'Venta') || String(b.fecha + b.hora).localeCompare(String(a.fecha + a.hora))).slice(0, 80);
+    const sel = $('#fv-cliente'), antes = sel.value;
+    sel.innerHTML = lista.length ? lista.map(r => `<option value="${r.id}">${r.tipo === 'Venta' ? '✅ ' : ''}${esc((r.nombre || 'Sin nombre') + ' · ' + (r.rut || 'sin RUT') + ' · ' + (r.fecha || ''))}</option>`).join('') : '<option value="">No hay clientes en Mi Planilla</option>';
+    if (antes && lista.some(r => r.id === antes)) sel.value = antes;
+  };
+  llenar(); window.addEventListener('hashchange', () => { if (location.hash === '#venta') llenar(); });
+  $('#fv-tab').onclick = () => ventaAbrir($('#fv-cliente').value, false);
+  $('#fv-aqui').onclick = () => ventaAbrir($('#fv-cliente').value, true);
+}
 // Mismo bloque de enlaces para la sección Enlaces y para el inicio en PC
 const icoEnlace = x => x.startsWith('img:') ? `<span><img class="lk-logo" src="${esc(x.slice(4))}" alt="" width="22" height="22"></span>` : x === 'wom' ? '<span class="lk-wom">WOM</span>' : `<span>${x}</span>`;
 function enlacesHTML() {
@@ -2589,7 +2634,7 @@ function ctFichaHTML(r) {
       ? `<div class="fi-t fi-eq">Equipo <label class="fi-sin"><input type="checkbox" data-k="sineq"${r.sineq ? ' checked' : ''}> Sin equipo</label><button type="button" class="btn sm" data-eqpegar${r.sineq ? ' disabled' : ''}>📋 Pegar equipo del Stock</button></div><div class="fi-g${r.sineq ? ' fi-off' : ''}">${cs.map(campo).join('')}</div>`
       : `<div class="fi-t">${t}</div><div class="fi-g">${cs.map(campo).join('')}</div>${t === 'Cliente' ? deudaBarra(r) : ''}`).join('')}
     <div class="fi-t">Observaciones</div><div class="fi-obs"><div class="fi-chips">${OBS_RAPIDAS.map(o => `<button type="button" data-obs="${esc(o)}">+ ${esc(o)}</button>`).join('')}</div><textarea data-k="notas" rows="3" placeholder="Pega o escribe aquí todo lo que conversaste con el cliente">${esc(r.notas || '')}</textarea></div>
-    <div class="fi-pie"><small class="dim">Todo se guarda solo, sea venta o no.</small><span><button type="button" class="btn sm" data-ct="copiar">📋 Copiar datos para WhatsApp</button><button type="button" class="btn sm red" data-ct="script">▶ Pasar al Script de Cierre</button><button type="button" class="btn sm" data-ct="ficha">Cerrar ficha ▴</button></span></div></td></tr>`;
+    <div class="fi-pie"><small class="dim">Todo se guarda solo, sea venta o no.</small><span><button type="button" class="btn sm" data-subir title="Abre el formulario de ventas con los datos de este cliente ya escritos">📤 Subir venta al formulario</button><button type="button" class="btn sm" data-exportar title="Archivo con todos los datos de este cliente, para WhatsApp o para otro computador">💾 Exportar cliente</button><button type="button" class="btn sm" data-ct="copiar">📋 Copiar datos para WhatsApp</button><button type="button" class="btn sm red" data-ct="script">▶ Pasar al Script de Cierre</button><button type="button" class="btn sm" data-ct="ficha">Cerrar ficha ▴</button></span></div></td></tr>`;
 }
 // Completa una fila con lo leído de Genesys: solo llena lo vacío, nunca borra lo que ya escribiste
 let ctPegarEnFila = () => {};
@@ -3179,6 +3224,45 @@ function ctAScript(r) {
   location.hash = 'script';
   setTimeout(() => { scCargar(r); scPintaVinculo(); toast('Datos cargados en el Script. Lo que completes ahí también queda en la planilla.'); }, 150);
 }
+/* ── Exportar e importar clientes ───────────────────────────────────
+   Archivo de texto que se lee fácil en el celular (WhatsApp) y que trae al final los datos completos
+   para importarlos en ClaroGo! en otro computador. No se pierde nada: se usa el registro más nuevo. */
+const CT_TXT_COLS = [['fecha', 'Fecha'], ['hora', 'Hora'], ['campana', 'Campaña'], ['cola', 'Cola'], ['rut', 'RUT'], ['nombre', 'Nombre'], ['telefono', 'Teléfono'], ['origen', 'Compañía de origen'], ['deuda', 'Revisión de deuda'], ['tipo', 'Tipificación'], ['plan', 'Plan'], ['notas', 'Observaciones'],
+  ['nac', 'Nacimiento'], ['mail', 'Correo'], ['fono', 'Número a portar'], ['contacto', 'Teléfono de contacto'], ['oferta', 'Oferta de la campaña'], ['medio', 'Validación enviada por'], ['tventa', 'Tipo de venta'], ['adic', 'Líneas adicionales'],
+  ['eq', 'Equipo'], ['eqsku', 'SKU'], ['eqtotal', 'Monto total'], ['eqpie', 'Pago inicial'], ['eqforma', 'Forma de pago'], ['direccion', 'Dirección'], ['ref', 'Referencia'], ['eta', 'Despacho'], ['agenda', 'Llamar el'], ['agendaObs', 'Observación de la agenda']];
+const CT_MARCA = '--- DATOS PARA IMPORTAR EN CLAROGO! (no modificar) ---';
+function ctArchivoTexto(lista) {
+  const ahora = new Date(), tv = Object.fromEntries(TVENTA);
+  const out = ['CLAROGO! · DATOS DE CLIENTES', `Exportado: ${ahora.toLocaleString('es-CL')} por ${agenteNombre()}`, `Clientes: ${lista.length}`, ''];
+  lista.forEach((r, i) => {
+    out.push(`=== Cliente ${i + 1}: ${r.nombre || 'Sin nombre'} ===`);
+    CT_TXT_COLS.forEach(([k, l]) => { const v = k === 'direccion' ? dirTexto(r) : k === 'eq' && r.sineq ? 'Sin equipo' : k === 'tventa' ? (tv[r[k]] || r[k]) : r[k]; if (v != null && String(v).trim()) out.push(`${l}: ${String(v).replace(/\s*\n\s*/g, ' / ')}`); });
+    out.push('');
+  });
+  out.push(CT_MARCA, JSON.stringify({ app: 'clarogo', version: 1, exportado: ahora.toISOString(), clientes: lista }), '--- FIN ---', '');
+  return out.join('\r\n');
+}
+function ctExportar(lista, nombre) {
+  if (!lista.length) return toast('No hay clientes para exportar.');
+  downloadBlob(new Blob([ctArchivoTexto(lista)], { type: 'text/plain;charset=utf-8' }), nombre);
+  toast(lista.length === 1 ? 'Cliente exportado. Puedes enviar el archivo por WhatsApp.' : `${lista.length} clientes exportados. Puedes enviar el archivo por WhatsApp.`);
+}
+function ctImportarTexto(txt) {
+  const t = String(txt || ''), i = t.indexOf(CT_MARCA);
+  let datos = null;
+  try { datos = JSON.parse(i >= 0 ? t.slice(i + CT_MARCA.length).split('--- FIN ---')[0].trim() : t.trim()); } catch (e) {}
+  if (!datos || datos.app !== 'clarogo' || !Array.isArray(datos.clientes)) return toast('Este archivo no es una exportación de clientes de ClaroGo!.');
+  let nuevos = 0, actualizados = 0;
+  datos.clientes.slice(0, 5000).forEach(c => {
+    if (!c || typeof c !== 'object' || typeof c.id !== 'string' || !c.id) return;
+    const limpio = {}; Object.entries(c).forEach(([k, v]) => { if (/^[a-zA-Z]{1,20}$/.test(k) && ['string', 'number', 'boolean'].includes(typeof v)) limpio[k] = typeof v === 'string' ? v.slice(0, 5000) : v; });
+    const r = CT.find(x => x.id === limpio.id);
+    if (!r) { CT.push(limpio); nuevos++; }
+    else if ((limpio.upd || 0) > (r.upd || 0)) { Object.assign(r, limpio); actualizados++; }
+  });
+  ctGuardar(); ctPinta();
+  toast(`Importación lista: ${nuevos} clientes nuevos y ${actualizados} actualizados.`);
+}
 function ctExcel() {
   const lista = ctFiltradas(); if (!lista.length) return toast('No hay filas para exportar');
   const q = s => /[;"\n]/.test(s) ? '"' + String(s).replace(/"/g, '""') + '"' : s;
@@ -3216,8 +3300,13 @@ function initControl() {
   // El cuadro de pegar usa solo el texto copiado
   $('#ct-procesar').onclick = () => { const txt = $('#ct-texto').value, d = destino; $('#dlg-pegar').close(); destino = d; procesar(txt); };
   $('#ct-nueva').onclick = () => ctAgregar({});
+  $('#ct-exportar').onclick = () => ctExportar(ctFiltradas().filter(r => !r.borrado), `clarogo-clientes-${hoyISO()}.txt`);
+  $('#ct-importar').onclick = () => $('#ct-imp-file').click();
+  $('#ct-imp-file').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (!f) return; if (f.size > 20e6) return toast('El archivo es demasiado grande.'); f.text().then(ctImportarTexto).catch(() => toast('No pude leer el archivo.')); });
+  $('#ct-body').addEventListener('click', e => { const x = e.target.closest('[data-exportar]'); if (!x) return; const r = CT.find(y => y.id === x.closest('tr').dataset.id); if (r) ctExportar([r], `clarogo-cliente-${(r.nombre || r.rut || 'sin-nombre').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase().slice(0, 40)}-${hoyISO()}.txt`); });
   initColumnas();
   initNotaZoom();
+  $('#ct-body').addEventListener('click', e => { const s = e.target.closest('[data-subir]'); if (s) ventaAbrir(s.closest('tr').dataset.id, false); });
   $('#ct-body').addEventListener('click', e => { const b = e.target.closest('[data-deuda]'); if (!b) return; e.stopPropagation(); const tr = b.closest('tr'); if (b.dataset.deuda === '?') { const s = tr.querySelector('[data-k="origen"]'); if (s) { s.focus(); try { s.showPicker(); } catch (x) {} } return toast('Elige la compañía del cliente en la columna Compañía.'); } deudaRevisar(tr.dataset.id, b.dataset.deuda); });
   $('#eq-procesar').onclick = () => { const t = $('#eq-texto').value; $('#dlg-equipo').close(); ctPonerEquipo(eqFila, t); };
   $('#ct-vacio').addEventListener('click', e => { const b = e.target.closest('[data-ver]'); if (!b) return; $('#ct-periodo').value = b.dataset.ver; $('#ct-rango').hidden = true; ctPinta(); });
