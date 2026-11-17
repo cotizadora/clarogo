@@ -50,6 +50,16 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Instalar ClaroGo! Genesys (para ejecutivos)
 
+Extensión (la misma que usa Eduardo):
+
+1. Descargar https://cotizadora.github.io/clarogo/ext/clarogo-genesys-extension.zip
+2. Clic derecho en el archivo descargado, "Extraer todo".
+3. Abrir edge://extensions (o chrome://extensions) y activar "Modo para desarrolladores".
+4. Presionar "Cargar desempaquetada" y elegir la carpeta extraída.
+5. Para actualizar: descargar el zip nuevo, reemplazar la carpeta y presionar "Volver a cargar" en la extensión.
+
+Opción con Tampermonkey:
+
 1. Instalar Tampermonkey (gratis): https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd
 2. En edge://extensions, Detalles de Tampermonkey: activar "Permitir scripts de usuario".
 3. Abrir https://cotizadora.github.io/clarogo/ext/clarogo-genesys.user.js y presionar Instalar.
@@ -57,6 +67,10 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 5. No tener activa a la vez la extensión antigua ClaroGo! Genesys.
 
 ## Historial de cambios
+
+### 17-11-2026: extensión ClaroGo! Genesys para descargar
+
+- Se publica la extensión 1.13.0 como zip en ext/clarogo-genesys-extension.zip para que los compañeros la instalen con "Cargar desempaquetada".
 
 ### 17-11-2026: script ClaroGo! Genesys 2.0 (Tampermonkey)
 
