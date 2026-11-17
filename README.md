@@ -50,6 +50,12 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Historial de cambios
 
+### 17-11-2026: script ClaroGo! Genesys para Tampermonkey
+
+- Nuevo `ext/clarogo-genesys.user.js` (versión 1.1.0): la misma lectura de Genesys de la extensión, instalable desde un enlace con Tampermonkey y con actualización automática. Publicado en https://cotizadora.github.io/clarogo/ext/clarogo-genesys.user.js
+- Ajustes respecto del borrador: acepta pestañas de la planilla en segundo plano (antes abría una nueva cada vez), teléfono sin espacios, limpia avisos de pestañas cerradas y, si la pestaña elegida no responde en 6 segundos, abre una nueva.
+- Para publicar una versión nueva: subir el número de `@version` en la cabecera y subir el archivo a `ext/` con el mismo nombre.
+
 ### 17-11-2026: Excepciones de Boletas nítida
 
 - El cuadro de Excepciones de Boletas muestra la tabla como texto (nítida y de buen tamaño) en vez de una imagen reducida. La imagen para copiar o descargar sale más grande (1560 px de ancho), con letras más grandes y sin margen sobrante. Los montos no cambiaron.
