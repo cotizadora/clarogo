@@ -177,8 +177,8 @@
   <p>La extensión que toma los datos de la llamada, los manda a tu planilla, abre WhatsApp con la oferta y tipifica la no venta en el formulario y en Genesys. Todo en un par de clics.</p>
   <span class="ver" id="version">Versión al día</span>
   <div class="cta">
-    <a class="btn btn-blanco" href="instalar-clarogo.bat" download>⬇ Descargar instalador</a>
-    <a class="btn btn-borde" href="#instalar">Ver cómo se instala</a>
+    <a class="btn btn-blanco" href="#instalar">⬇ Instalar en 3 pasos</a>
+    <button class="btn btn-borde" type="button" data-copiar="cmd-inst">📋 Copiar comando de instalación</button>
   </div>
   <p class="nota-hero">Gratis · sin tiendas · se actualiza con el mismo archivo · Herramienta no oficial, hecha por Eduardo Pérez</p>
 </header>
@@ -191,29 +191,21 @@
 
   <section id="instalar">
     <h2><span class="ico">⬇️</span>1. Instalar en 3 pasos</h2>
-    <p class="sub">Solo la primera vez. No necesitas descomprimir nada ni instalar otros programas.</p>
+    <p class="sub">Solo la primera vez. No necesitas descargar archivos, descomprimir nada ni instalar otros programas.</p>
+    <div class="copiar"><code id="cmd-inst">$d=&quot;$env:USERPROFILE\Documents\ClaroGo\extension&quot;; $b=&quot;https://cotizadora.github.io/clarogo&quot;; New-Item -ItemType Directory -Force $d | Out-Null; $l = (Invoke-RestMethod &quot;$b/ext/extension-archivos.txt?v=$(Get-Random)&quot;) -split &#39;\r?\n&#39; | Where-Object { $_ }; foreach ($f in $l) { Invoke-WebRequest &quot;$b/extension/$($f)?v=$(Get-Random)&quot; -OutFile &quot;$d\$f&quot; -UseBasicParsing }; Set-Clipboard $d; Write-Host &quot;ClaroGo!: $($l.Count) archivos listos en $d (ruta copiada)&quot; -ForegroundColor Green; Start-Process msedge edge://extensions</code><button type="button" data-copiar="cmd-inst">Copiar</button></div>
     <div class="pasos3">
-      <div class="paso"><span class="n">1</span><b>Descarga y abre el instalador</b><p>Presiona <b>Descargar instalador</b> y abre el archivo <code>instalar-clarogo.bat</code>. Crea la carpeta <code>Documentos\ClaroGo\extension</code> y baja todos los archivos.</p></div>
+      <div class="paso"><span class="n">1</span><b>Pega el comando en la Terminal</b><p>Copia el comando de arriba. Haz <b>clic derecho en el botón Inicio</b> de Windows, elige <b>Terminal</b> (o Windows PowerShell), pégalo con <kbd>Ctrl</kbd>+<kbd>V</kbd> y presiona <kbd>Enter</kbd>. Crea <code>Documentos\ClaroGo\extension</code> y baja todos los archivos.</p></div>
       <div class="paso"><span class="n">2</span><b>Activa el modo para desarrolladores</b><p>Se abre <b>edge://extensions</b>. Activa <b>"Modo para desarrolladores"</b>, abajo a la izquierda.</p></div>
       <div class="paso"><span class="n">3</span><b>Carga la carpeta</b><p>Presiona <b>"Cargar desempaquetada"</b>, pega la ruta con <kbd>Ctrl</kbd>+<kbd>V</kbd> (el instalador ya la copió) y elige <b>Seleccionar carpeta</b>.</p></div>
     </div>
 
     <div class="demo" data-demo>
       <div class="demo-pantalla">
-        <div class="escena" data-txt="Paso 1: abre el instalador y espera a que diga Listo">
-          <div class="cmd"><div class="tit">ClaroGo! Genesys - instalar o actualizar</div><pre class="escribe"><span>  Carpeta de la extension:
-     C:\Users\tu-usuario\Documents\ClaroGo\extension
-</span><span style="animation-delay:.6s">  [+] Carpeta creada.
-  [ ] Buscando la lista de archivos...
-</span><span class="ok" style="animation-delay:1.2s">  [OK] deuda.js
-  [OK] fondo.js
-  [OK] formas.js
-</span><span class="ok" style="animation-delay:1.8s">  [OK] manifest.json
-  [OK] popup.html
-  [OK] popup.js
-  [OK] puente.js
-</span><span class="t" style="animation-delay:2.6s">  Listo: 11 archivos al dia.
-  La ruta de la carpeta quedo copiada (Ctrl+V para pegarla).</span></pre></div>
+        <div class="escena" data-txt="Paso 1: pega el comando en la Terminal y presiona Enter">
+          <div class="cmd"><div class="tit">Terminal · Windows PowerShell</div><pre class="escribe"><span>PS C:\Users\tu-usuario&gt; $d="$env:USERPROFILE\Documents\ClaroGo\extension"; $b=...
+</span><span style="animation-delay:.8s">  (descargando los archivos de la extensión...)
+</span><span class="ok" style="animation-delay:2s">ClaroGo!: 11 archivos listos en C:\Users\tu-usuario\Documents\ClaroGo\extension (ruta copiada)
+</span><span class="t" style="animation-delay:2.6s">  Se abre edge://extensions</span></pre></div>
         </div>
         <div class="escena" data-txt="Paso 2: en edge://extensions activa Modo para desarrolladores">
           <div class="edge"><div class="url"><span>edge://extensions</span></div><div class="cuerpo">
@@ -236,21 +228,18 @@
       </div>
       <div class="demo-barra"><button type="button" aria-label="Pausar o reproducir">❚❚</button><span class="txt"></span><span class="prog"><i></i></span></div>
     </div>
-    <p class="ojo">🛡️ Si Windows muestra <b>"Windows protegió su PC"</b>, presiona <b>Más información</b> y luego <b>Ejecutar de todas formas</b>. Pasa con cualquier archivo descargado de internet. El instalador solo baja los archivos de la extensión desde <code>cotizadora.github.io/clarogo</code>.</p>
+    <p class="ojo">🛡️ El comando solo descarga los archivos de la extensión desde <code>cotizadora.github.io/clarogo</code> a tu carpeta Documentos. Como no se descarga ningún programa, el "Control Inteligente de Aplicaciones" de Windows no lo bloquea. <br>Si tu Windows no tiene ese control, también puedes usar el <a href="instalar-clarogo.bat" download>instalador .bat</a> con doble clic.</p>
     <p class="tip">💡 Abre <a href="https://cotizadora.github.io/clarogo/">ClaroGo!</a> una vez y completa <b>"Mi mensaje"</b> con tu nombre y teléfono: la extensión los usa en los mensajes de WhatsApp.</p>
   </section>
 
   <section id="actualizar">
     <h2><span class="ico">🔄</span>2. Actualizar</h2>
-    <p class="sub">Cuando avisen que hay versión nueva: vuelve a abrir el mismo instalador y recarga la extensión. Nada más.</p>
+    <p class="sub">Cuando avisen que hay versión nueva: pega otra vez el mismo comando en la Terminal y recarga la extensión. Nada más.</p>
     <div class="demo" data-demo>
       <div class="demo-pantalla">
-        <div class="escena" data-txt="Abre otra vez instalar-clarogo.bat: reemplaza los archivos en la misma carpeta">
-          <div class="cmd"><div class="tit">ClaroGo! Genesys - instalar o actualizar</div><pre class="escribe"><span>  [ ] Buscando la lista de archivos...
-</span><span class="ok" style="animation-delay:.8s">  [OK] formas.js
-  [OK] popup.html
-  [OK] popup.js
-</span><span class="t" style="animation-delay:1.6s">  Listo: 11 archivos al dia.  Version de la extension: nueva</span></pre></div>
+        <div class="escena" data-txt="Pega otra vez el comando: reemplaza los archivos en la misma carpeta">
+          <div class="cmd"><div class="tit">Terminal · Windows PowerShell</div><pre class="escribe"><span>PS C:\Users\tu-usuario&gt; (el mismo comando de instalación)
+</span><span class="ok" style="animation-delay:1.2s">ClaroGo!: 11 archivos listos en C:\Users\tu-usuario\Documents\ClaroGo\extension (ruta copiada)</span></pre></div>
         </div>
         <div class="escena" data-txt="En edge://extensions presiona Volver a cargar (flecha circular)">
           <div class="edge"><div class="url"><span>edge://extensions</span></div><div class="cuerpo"><div class="lado">Extensiones</div>
@@ -259,7 +248,7 @@
       </div>
       <div class="demo-barra"><button type="button" aria-label="Pausar o reproducir">❚❚</button><span class="txt"></span><span class="prog"><i></i></span></div>
     </div>
-    <p class="tip">💡 Guarda el instalador en el escritorio: así actualizas con doble clic. La carpeta siempre es la misma, por eso no hay que volver a cargarla.</p>
+    <p class="tip">💡 La carpeta siempre es la misma, por eso no hay que volver a cargarla: basta con "Volver a cargar". Si usas Claude Code, pídele "Actualiza la extensión ClaroGo!" y lo hace por ti.</p>
   </section>
 
   <section id="usar">
@@ -323,6 +312,7 @@
 
   <section id="problemas">
     <h2><span class="ico">🧰</span>5. Si algo no funciona</h2>
+    <details><summary>Windows dice "Control Inteligente de Aplicaciones ha bloqueado un archivo"</summary><p>Es una protección de Windows 11 contra archivos descargados, como el instalador .bat. No la desactives: usa el comando de instalación de la sección 1, que no descarga programas y no se bloquea.</p></details>
     <details><summary>No aparece el ícono de ClaroGo! en la barra</summary><p>Haz clic en el ícono de piezas de rompecabezas de Edge y presiona el alfiler junto a ClaroGo! Genesys.</p></details>
     <details><summary>Dice "No encontré datos del cliente"</summary><p>Abre la llamada en Genesys con el panel "Interacción de llamada" visible y vuelve a presionar <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd>.</p></details>
     <details><summary>El formulario no avanza o no se llena</summary><p>Mira el sello negro abajo a la izquierda del formulario: dice la versión y qué está haciendo. Si no aparece, abre edge://extensions y presiona "Volver a cargar". Siempre abre el registro desde la extensión, no desde un marcador.</p></details>
@@ -354,7 +344,7 @@
         <div class="escena" data-txt="Pídele en español lo que necesitas">
           <div class="chat"><div class="tit">Claude · Code</div><div class="msgs">
             <div class="yo">Actualiza la extensión ClaroGo! con el instalador</div>
-            <div class="cl">Voy a descargar <code>instalar-clarogo.bat</code> desde cotizadora.github.io y ejecutarlo. ¿Te parece?</div>
+            <div class="cl">Voy a descargar los archivos de la extensión desde cotizadora.github.io a Documentos\ClaroGo\extension. ¿Te parece?</div>
             <div class="yo">Sí, dale</div>
             <div class="cl">✅ Listo: 11 archivos al día. Ahora presiona <b>Volver a cargar</b> en edge://extensions.</div>
           </div></div>
@@ -364,8 +354,8 @@
     </div>
 
     <h3>Actualizar sin descargar nada a mano</h3>
-    <p>Pega esta línea en Claude Code (o en una ventana de comandos: tecla <kbd>Windows</kbd>+<kbd>R</kbd>, escribe <code>cmd</code> y Enter). Descarga el instalador más nuevo y lo ejecuta:</p>
-    <div class="copiar"><code id="cmd-act">curl -fsSL -o "%TEMP%\instalar-clarogo.bat" https://cotizadora.github.io/clarogo/ext/instalar-clarogo.bat &amp;&amp; "%TEMP%\instalar-clarogo.bat"</code><button type="button" data-copiar="cmd-act">Copiar</button></div>
+    <p>Pídele a Claude Code que ejecute este comando en PowerShell (o pégalo tú en la Terminal). Descarga los archivos más nuevos a la misma carpeta:</p>
+    <div class="copiar"><code id="cmd-act">$d=&quot;$env:USERPROFILE\Documents\ClaroGo\extension&quot;; $b=&quot;https://cotizadora.github.io/clarogo&quot;; New-Item -ItemType Directory -Force $d | Out-Null; $l = (Invoke-RestMethod &quot;$b/ext/extension-archivos.txt?v=$(Get-Random)&quot;) -split &#39;\r?\n&#39; | Where-Object { $_ }; foreach ($f in $l) { Invoke-WebRequest &quot;$b/extension/$($f)?v=$(Get-Random)&quot; -OutFile &quot;$d\$f&quot; -UseBasicParsing }; Set-Clipboard $d; Write-Host &quot;ClaroGo!: $($l.Count) archivos listos en $d (ruta copiada)&quot; -ForegroundColor Green; Start-Process msedge edge://extensions</code><button type="button" data-copiar="cmd-act">Copiar</button></div>
 
     <h3>Buenas prácticas</h3>
     <ul>
@@ -389,8 +379,8 @@ fetch('../extension/manifest.json', { cache: 'no-store' }).then(r => r.json()).t
 
 // Botón copiar
 document.querySelectorAll('[data-copiar]').forEach(b => b.addEventListener('click', () => {
-  const t = document.getElementById(b.dataset.copiar).textContent;
-  (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { b.textContent = 'Copiado'; setTimeout(() => { b.textContent = 'Copiar'; }, 1600); }).catch(() => { b.textContent = 'Selecciona y copia'; });
+  const t = document.getElementById(b.dataset.copiar).textContent, orig = b.dataset.orig || (b.dataset.orig = b.textContent);
+  (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { b.textContent = '✓ Copiado. Pégalo en la Terminal'; setTimeout(() => { b.textContent = orig; }, 2200); }).catch(() => { b.textContent = 'Selecciona el texto y cópialo'; });
 }));
 
 // Demostraciones: cada una pasa sola por sus escenas, con pausa y barra de progreso

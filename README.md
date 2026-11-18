@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: instalación por comando (sin .bat)
+
+- El Control Inteligente de Aplicaciones de Windows 11 bloquea el .bat descargado. La guía ahora usa un comando de PowerShell que se copia y se pega en la Terminal: descarga los archivos de la lista a Documentos\ClaroGo\extension, copia la ruta y abre edge://extensions. El .bat queda como alternativa para equipos sin ese control.
+
 ### 18-11-2026: instalador .bat y guía completa
 
 - ext/instalar-clarogo.bat: crea Documentos\ClaroGo\extension, descarga cada archivo de la extensión desde GitHub Pages (lista en ext/extension-archivos.txt), copia la ruta al portapapeles y abre edge://extensions. Para actualizar se vuelve a ejecutar y se presiona "Volver a cargar". Al publicar una versión nueva hay que regenerar ext/extension-archivos.txt si cambian los archivos.
