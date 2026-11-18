@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.23.1, aviso final al centro
+
+- Al enviar la tipificación aparece al centro del formulario una tarjeta con los colores del formulario de Google (morado #5746E3): carita sonriente, "¡Tipificado por ClaroGo! correctamente!" y el motivo con el teléfono. Se desvanece sola en unos 4 segundos. Si no se puede mostrar en la página, queda la notificación de Windows como respaldo.
+
 ### 18-11-2026: ClaroGo! v2.5.0 y extensión 1.23.0, historial de contactos
 
 - La extensión guarda cada tipificación enviada (teléfono, motivo y fecha, hasta 5.000). Al leer una llamada avisa "Ya contactado N veces. Última: fecha · motivo" y manda ese historial a Mi Planilla.

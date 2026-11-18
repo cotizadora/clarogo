@@ -115,7 +115,7 @@ chrome.runtime.onMessage.addListener((msg, _de, responder) => {
 
 // Aviso de "Tipificación enviada": además del aviso dentro del formulario, una notificación de Windows que se va sola.
 // Así aparece siempre, aunque Google cambie de página al enviar.
-let ultimoAviso = 0;
+let ultimoAviso = 0, ultimaPestanaForm = 0;
 chrome.storage.onChanged.addListener((c, area) => {
   const env = area === 'local' && c.nv_enviado && c.nv_enviado.newValue;
   if (!env) return;
@@ -129,12 +129,43 @@ chrome.storage.onChanged.addListener((c, area) => {
   }
   if (!env.aviso || Date.now() - ultimoAviso < 10000) return;   // un solo aviso por envío
   ultimoAviso = Date.now();
-  try {
+  // Aviso al centro del formulario, con los colores del formulario. Se intenta dos veces (mientras Google cambia de página)
+  // La pestaña del formulario se busca cada vez (el fondo de la extensión puede haberse dormido y olvidado cuál era)
+  const intentar = async (n) => {
+    let id = ultimaPestanaForm;
+    try { const t = (await chrome.tabs.query({ url: 'https://docs.google.com/forms/d/e/1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ/*' })).sort((a, b) => (b.active - a.active) || ((b.lastAccessed || 0) - (a.lastAccessed || 0))); if (t.length) id = t[0].id; } catch (e) {}
+    if (!id) return notificar();
+    chrome.scripting.executeScript({ target: { tabId: id }, func: avisoCentro, args: [env.texto || ''] })
+      .catch(() => { if (n < 3) setTimeout(() => intentar(n + 1), 1500); else notificar(); });
+  };
+  setTimeout(() => intentar(1), 1500);
+  function notificar() { try {
     const id = 'cg-enviado-' + env.ts;
     chrome.notifications.create(id, { type: 'basic', iconUrl: 'icono-128.png', title: '✅ Tipificación enviada', message: env.texto || 'El registro de no venta se envió correctamente.', priority: 1 });
     setTimeout(() => chrome.notifications.clear(id), 6000);
-  } catch (e) {}
+  } catch (e) {} }
 });
+
+// Tarjeta al centro de la pantalla con los colores del formulario de Google (morado #5746E3). Se desvanece sola.
+// Corre dentro de la página del formulario: todo se crea elemento por elemento (Google no permite armar HTML con texto).
+function avisoCentro(texto) {
+  if (document.getElementById('cg-exito')) return;
+  const el = (tag, css, txt) => { const n = document.createElement(tag); n.style.cssText = css; if (txt) n.textContent = txt; return n; };
+  const fondo = el('div', 'position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:rgba(87,70,227,.18);transition:opacity .9s;font-family:"Google Sans",Roboto,"Segoe UI",Arial,sans-serif');
+  fondo.id = 'cg-exito';
+  const tarjeta = el('div', 'width:min(440px,90vw);background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 18px 50px rgba(32,33,36,.35);text-align:center;transform:scale(.9);transition:transform .35s');
+  const franja = el('div', 'height:10px;background:#5746E3');
+  const cuerpo = el('div', 'padding:22px 26px 24px');
+  const cara = el('div', 'font-size:58px;line-height:1;margin-bottom:10px', '😊');
+  const titulo = el('div', 'font-size:22px;font-weight:600;color:#202124;margin-bottom:6px', '¡Tipificado por ClaroGo! correctamente!');
+  const detalle = el('div', 'display:inline-block;margin-top:6px;padding:6px 14px;border-radius:999px;background:#EEEDFC;color:#5746E3;font-size:14px;font-weight:600', texto || 'Registro de atención enviado');
+  cuerpo.append(cara, titulo, detalle); tarjeta.append(franja, cuerpo); fondo.append(tarjeta);
+  document.documentElement.appendChild(fondo);
+  requestAnimationFrame(() => { tarjeta.style.transform = 'scale(1)'; });
+  fondo.onclick = () => fondo.remove();
+  setTimeout(() => { fondo.style.opacity = '0'; }, 3200);
+  setTimeout(() => fondo.remove(), 4200);
+}
 
 // Formularios de ventas y no venta: en la segunda hoja Google carga la página de una forma en que Edge
 // no vuelve a activar formas.js. Aquí se vigila la pestaña y se inyecta el script cada vez que la hoja cambia.
@@ -142,5 +173,6 @@ const FORMAS = /^https:\/\/docs\.google\.com\/forms\/d\/e\/(1FAIpQLSeWwyqN1vbUn3
 chrome.tabs.onUpdated.addListener((tabId, cambio, tab) => {
   const url = cambio.url || (tab && tab.url) || '';
   if (!FORMAS.test(url) || (cambio.status !== 'complete' && !cambio.url)) return;
+  ultimaPestanaForm = tabId;
   setTimeout(() => { chrome.scripting.executeScript({ target: { tabId }, files: ['formas.js'] }).catch(() => {}); }, cambio.url && cambio.status !== 'complete' ? 1500 : 300);
 });

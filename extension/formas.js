@@ -19,7 +19,9 @@
   marcar('revisando…');
 
   // Aviso que se desvanece solo: la tipificación se envió
-  const avisoEnviado = txt => {
+  // El aviso final lo muestra fondo.js al centro de la pantalla (así sale aunque Google cambie de página)
+  const avisoEnviado = () => {};
+  const avisoAntiguo = txt => {
     const a = document.createElement('div');
     a.style.cssText = 'position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:2147483647;max-width:min(520px,92vw);padding:16px 22px;border-radius:16px;background:#13804a;color:#fff;font:700 16px/1.4 "Segoe UI",system-ui,sans-serif;box-shadow:0 14px 36px rgba(0,0,0,.35);text-align:center;transition:opacity .8s';
     a.textContent = '✅ Tipificación enviada' + (txt ? ': ' + txt : '');
