@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: ClaroGo! v2.8.2, Script y planilla siempre al día
+
+- Planilla → Script: si la fila vinculada cambia (editada en la planilla, con el Rutificador, desde la extensión o en otra pestaña), el Script de Cierre toma los datos nuevos al entrar o apenas llegan. No se toca mientras se escribe en el Script.
+- Script → planilla ya funcionaba: todo lo escrito en el Script queda en la fila y la extensión recibe la planilla al día en cada guardado.
+- Dirección corregida a mano en la columna Dirección: reemplaza la que estaba separada en calle, número, comuna y región, así el Script y el formulario de venta usan la nueva.
+
 ### 18-11-2026: ClaroGo! v2.8.1 y extensión 1.31.0
 
 - Mi Planilla: la dirección pasa a su propia columna **Dirección**, después de Nombre, editable (por si el Rutificador no la trae al día). Es el mismo dato que el campo Dirección de la ficha. Reemplaza la línea bajo el nombre de la v2.8.0.

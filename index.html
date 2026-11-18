@@ -1074,7 +1074,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.8.1';
+const APP_VERSION = '2.8.2';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2020,6 +2020,15 @@ function scCargar(r) {
   $('#sc-rut').dispatchEvent(new Event('input', { bubbles: true }));
   scCargando = false;
 }
+// Planilla → Script: si la fila vinculada cambió (en la planilla, el Rutificador, la extensión u otra pestaña),
+// el Script se pone al día. No se toca mientras el ejecutivo está escribiendo en el Script.
+let scFirma = '';
+function scRefrescar() {
+  const f = $('#sc-form'); if (!f || f.contains(document.activeElement)) return;
+  const r = CT.find(x => x.id === SC_FILA && !x.borrado); if (!r) return;
+  const firma = r.id + ':' + (r.upd || 0); if (firma === scFirma) return;
+  scFirma = firma; scCargar(r);
+}
 function scGuardarEnFila(e) {
   if (scCargando) return;
   if (e.type === 'change' && e.target.id === 'sc-ref') e.target.value = tituloCalle(e.target.value);
@@ -2038,7 +2047,7 @@ function scGuardarEnFila(e) {
   else r[scClave(id)] = e.target.value.trim();
   if (['calle', 'num', 'int', 'comuna', 'region'].includes(id)) { ['calle', 'num', 'int', 'comuna', 'region'].forEach(k => { const el = $('#sc-' + k); if (el) r[k] = el.value.trim(); }); r.direccion = dirArmar(r); }
   if (!r.telefono && (r.contacto || r.fono)) r.telefono = r.contacto || r.fono;
-  r.upd = Date.now(); ctGuardar(); ctRepintar();
+  r.upd = Date.now(); scFirma = r.id + ':' + r.upd; ctGuardar(); ctRepintar();
 }
 function initScript() {
   const $v = id => $('#sc-' + id).value.trim(), rut = $('#sc-rut');
@@ -2090,8 +2099,11 @@ function initScript() {
     if (b.dataset.sc === 'desv') { scVincular(''); toast('Script desvinculado. La fila sigue en Mi Planilla.'); }
     if (b.dataset.sc === 'planilla') { ctAbierto = SC_FILA; location.hash = 'control'; setTimeout(() => { ctPinta(); const t = $(`#ct-body tr.ficha[data-id="${SC_FILA}"]`); if (t) t.scrollIntoView({ block: 'center' }); }, 150); }
   });
-  { const r = CT.find(x => x.id === SC_FILA && !x.borrado); if (r) scCargar(r); }
+  { const r = CT.find(x => x.id === SC_FILA && !x.borrado); if (r) { scFirma = r.id + ':' + (r.upd || 0); scCargar(r); } }
   scPintaVinculo();
+  // Al entrar al Script se toman los últimos datos de la planilla
+  window.addEventListener('hashchange', () => { if (location.hash === '#script') { scFirma = ''; scRefrescar(); scPintaVinculo(); } });
+  window.addEventListener('storage', e => { if (e.key === CT_KEY) setTimeout(scRefrescar, 0); });
   $('#sc-agente').value = agenteNombre();
   setInterval(pinta, 60000);
   pinta();
@@ -3303,6 +3315,7 @@ function initNotaZoom() {
   window.addEventListener('hashchange', () => { if (fila) z.blur(); });
 }
 function ctPinta() {
+  scRefrescar();
   if (!ctListo) return;
   const segs = [...new Set(CT.filter(r => !r.borrado).map(ctSeg))].sort(), selSeg = $('#ct-seg').value;
   $('#ct-seg').innerHTML = '<option value="">Todos los segmentos</option>' + segs.map(s => `<option${s === selSeg ? ' selected' : ''}>${esc(s)}</option>`).join('');
@@ -3455,6 +3468,8 @@ function initControl() {
     else if (el.type === 'checkbox') { r[el.dataset.k] = el.checked; if (el.dataset.k === 'sineq' && el.checked) Object.assign(r, { eq: '', eqsku: '', eqtotal: '', eqpie: '', eqforma: '' }); if (e.type === 'change') setTimeout(ctPinta, 0); }
     else { el.title = el.value; r[el.dataset.k] = el.value; if (el.dataset.k === 'nombre') { if (el.tagName === 'TEXTAREA') { el.value = el.value.replace(/\n/g, ' '); r.nombre = el.value; nomAlto(el); } const tn = el.closest('tr').querySelector('.tel-nom'); if (tn) tn.textContent = el.value; } $$(`#ct-body [data-id="${r.id}"] [data-k="${el.dataset.k}"]`).forEach(x => { if (x !== el) x.value = el.value; }); }
     r.upd = Date.now(); ctGuardar();
+    // Dirección corregida a mano: manda sobre la que estaba separada en calle, número, comuna y región
+    if (el.dataset.k === 'direccion') ['calle', 'num', 'int', 'comuna', 'region'].forEach(k => { delete r[k]; });
     if (el.dataset.k === 'plan') { const pv = el.closest('td').querySelector('.plan-ver'); if (pv) { pv.textContent = el.value ? el.value.replace(/^Plan\s+/i, '') : 'Sin plan'; pv.classList.toggle('vacio', !el.value); } el.title = el.value || 'Elegir plan'; }
     if (el.dataset.k === 'tipo') { const tr = el.closest('tr'); tr.classList.toggle('t-venta', el.value === 'Venta'); tr.classList.remove('t-verde', 't-rojo', 't-amarillo'); if (tipoColor(el.value)) tr.classList.add(tipoColor(el.value)); }
     if (el.dataset.k === 'origen') { const td = $(`#ct-body tr[data-id="${r.id}"]:not(.ficha) td.c-deu`); if (td) td.innerHTML = deudaBoton(r); }
