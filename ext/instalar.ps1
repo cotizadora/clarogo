@@ -33,6 +33,10 @@ try {
   Write-Host ''
   Write-Host "  LISTO: version $v descargada." -ForegroundColor Green
   Write-Host ''
+  Write-Host '  La extension quedo en esta carpeta:' -ForegroundColor Cyan
+  Write-Host "     $dest" -ForegroundColor White -BackgroundColor DarkBlue
+  Write-Host '  (la ruta ya esta copiada: en Edge pegala con Ctrl+V)' -ForegroundColor Cyan
+  Write-Host ''
   Write-Host '  Ahora, en la pagina de extensiones que se abre:' -ForegroundColor Yellow
   Write-Host '   - Si es la PRIMERA VEZ: activa "Modo para desarrolladores",'
   Write-Host '     presiona "Cargar desempaquetada", pega con Ctrl+V y elige "Seleccionar carpeta".'
