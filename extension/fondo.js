@@ -151,7 +151,54 @@ chrome.runtime.onMessage.addListener((msg, _de, responder) => {
 
 // Aviso de "Tipificación enviada": además del aviso dentro del formulario, una notificación de Windows que se va sola.
 // Así aparece siempre, aunque Google cambie de página al enviar.
-let ultimoAviso = 0, ultimaPestanaForm = 0;
+let ultimoAviso = 0, ultimaPestanaForm = 0, ultimoGenesys = 0;
+
+// Vuelve a la pestaña de Genesys (la usada más recientemente) y enciende el neón en su botón Enviar.
+// Solo resalta: nunca presiona Enviar. Si no encuentra el botón, igual deja Genesys a la vista.
+async function volverAGenesys() {
+  try {
+    const tabs = (await chrome.tabs.query({ url: ['https://*.pure.cloud/*', 'https://*.mypurecloud.com/*', 'https://*.genesys.cloud/*'] }))
+      .sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0));
+    if (!tabs.length) return;
+    const t = tabs[0];
+    await chrome.tabs.update(t.id, { active: true });
+    await chrome.windows.update(t.windowId, { focused: true });
+    chrome.scripting.executeScript({ target: { tabId: t.id, allFrames: true }, func: neonEnviarGenesys }).catch(() => {});
+  } catch (e) {}
+}
+
+// Corre dentro de cada marco de Genesys. Actúa solo en el recuadro de conclusión (acw-gadgets-wrap-up):
+// busca el botón "Enviar" (también dentro de componentes con shadow DOM) y lo hace brillar hasta que se presiona.
+async function neonEnviarGenesys() {
+  if (!/acw-gadgets-wrap-up/.test(location.pathname)) return null;
+  const norm = s => String(s || '').replace(/\s+/g, ' ').trim().toLowerCase();
+  const visible = e => !!(e.getClientRects && e.getClientRects().length);
+  const todos = () => { const out = []; const walk = r => r.querySelectorAll('*').forEach(e => { out.push(e); if (e.shadowRoot) walk(e.shadowRoot); }); walk(document); return out; };
+  const buscar = () => todos().filter(e => visible(e) && /^(button|gux-button)$/i.test(e.tagName) || (visible(e) && e.getAttribute && e.getAttribute('role') === 'button'))
+    .filter(e => ['enviar', 'submit'].includes(norm(e.textContent)))
+    .sort((a, b) => (/gux-button/i.test(b.tagName) ? 1 : 0) - (/gux-button/i.test(a.tagName) ? 1 : 0))[0];
+  let b = null;
+  for (let i = 0; i < 40 && !b; i++) { b = buscar(); if (!b) await new Promise(r => setTimeout(r, 500)); }   // hasta 20 segundos
+  if (!b) return 'no';
+  if (!document.getElementById('cg-neon-estilo')) {
+    const st = document.createElement('style'); st.id = 'cg-neon-estilo';
+    st.textContent = '@keyframes cgNeonGen{0%,100%{box-shadow:0 0 6px 2px #39ff14,0 0 18px 6px rgba(57,255,20,.75);transform:scale(1)}50%{box-shadow:0 0 14px 5px #39ff14,0 0 34px 14px rgba(57,255,20,.55);transform:scale(1.07)}}';
+    (document.head || document.documentElement).appendChild(st);
+  }
+  const antes = b.getAttribute('style') || '';
+  b.style.setProperty('animation', 'cgNeonGen 0.9s ease-in-out infinite', 'important');
+  b.style.setProperty('outline', '3px solid #39ff14', 'important');
+  b.style.setProperty('outline-offset', '3px');
+  b.style.setProperty('border-radius', '8px');
+  b.style.setProperty('position', 'relative');
+  b.style.setProperty('z-index', '10');
+  try { b.scrollIntoView({ block: 'center' }); } catch (e) {}
+  // Se apaga al presionarlo o a los 2 minutos
+  const apagar = () => { if (antes) b.setAttribute('style', antes); else b.removeAttribute('style'); };
+  b.addEventListener('click', apagar, { once: true, capture: true });
+  setTimeout(apagar, 120000);
+  return 'ok';
+}
 chrome.storage.onChanged.addListener((c, area) => {
   const env = area === 'local' && c.nv_enviado && c.nv_enviado.newValue;
   if (!env) return;
@@ -163,6 +210,8 @@ chrome.storage.onChanged.addListener((c, area) => {
       chrome.storage.local.set({ historial_tip: h.slice(-5000) });
     });
   }
+  // Después de la animación se vuelve a Genesys y el botón Enviar queda en neón (el ejecutivo lo presiona)
+  if (Date.now() - ultimoGenesys > 10000) { ultimoGenesys = Date.now(); setTimeout(volverAGenesys, env.aviso ? 4400 : 1500); }
   if (!env.aviso || Date.now() - ultimoAviso < 10000) return;   // un solo aviso por envío
   ultimoAviso = Date.now();
   // Aviso al centro del formulario, con los colores del formulario. Se intenta dos veces (mientras Google cambia de página)

@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: ClaroGo! v2.7.3 y extensión 1.29.0
+
+- Extensión: después de la animación "¡Tipificado por ClaroGo! correctamente!" vuelve sola a la pestaña de Genesys y el botón Enviar del recuadro de conclusión brilla en neón verde hasta que el ejecutivo lo presiona (o 2 minutos). Nunca lo presiona por su cuenta. Si no encuentra el botón en 20 segundos, igual deja Genesys a la vista.
+- Mi Planilla: los botones de cada fila (WhatsApp, Genesys, copiar, Ficha, Rutificador, Script y borrar) quedan separados, con bordes redondeados y un poco más altos. En pantallas de hasta 1500 px el botón Genesys muestra solo el ícono para que todo quepa sin barra lateral.
+
 ### 18-11-2026: ClaroGo! v2.7.2, importar la planilla completa
 
 - Mi Planilla: "Importar clientes" ahora también acepta el archivo de la planilla (`ClaroGo-planilla-control.json`) y las copias automáticas descargadas, no solo la exportación de clientes en .txt. Sirve para pasar los clientes a un computador nuevo. Se suman a los que ya hay y no se borra nada.
