@@ -34,6 +34,10 @@
   .lam-chk { display: flex !important; align-items: center; gap: 6px; margin: 8px 0 0 !important; font-size: .8rem !important; color: var(--text) !important; font-weight: 700; cursor: pointer; }
   .lam-chk input { margin: 0; width: 16px; height: 16px; }
   .wa select { width: 100%; padding: 7px; border: 1px solid var(--border); border-radius: 8px; font: inherit; }
+  .nv { margin: 10px 0 4px; padding: 10px; border: 1px solid #e3e5ea; background: #f7f8fa; border-radius: 10px; }
+  .nv label { display: block; font-size: .74rem; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
+  .nv select, .nv input { width: 100%; padding: 7px; border: 1px solid var(--border); border-radius: 8px; font: inherit; font-size: .84rem; margin-bottom: 6px; background: #fff; }
+  .nv small { display: block; font-size: .7rem; color: var(--muted); margin-top: 6px; }
   p.nota { font-size: .72rem; color: var(--muted); margin: 10px 0 0; }
 </style>
 </head>
@@ -50,6 +54,14 @@
     <select id="wa-plan"></select>
     <label class="lam-chk"><input type="checkbox" id="wa-lamina" checked> <span id="wa-lamina-txt">🖼️ Adjuntar la lámina del plan</span></label>
     <button class="verde" id="wa-abrir">WhatsApp Web</button>
+  </div>
+  <div class="nv" id="nv">
+    <label for="nv-motivo">No venta: registro de atención</label>
+    <select id="nv-motivo"></select>
+    <input id="nv-otro" placeholder="Escribe el motivo" hidden>
+    <select id="nv-comp" hidden></select>
+    <button class="gris" id="nv-abrir">📝 Abrir el registro de no venta</button>
+    <small>Se abre el formulario con el motivo listo. Revísalo, presiona Siguiente y Enviar.</small>
   </div>
 </main>
 <script src="popup.js"></script>

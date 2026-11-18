@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.16.0, registro de no venta
+
+- En la ventana de la extensión: "No venta: registro de atención" con los 16 motivos del formulario "Registro de atención (NO VENTA)" y "Otro (escribir)". Abre el formulario con Cliente evaluado: No, NO, el teléfono de la llamada, el motivo (o el texto de Otro), la compañía si el motivo es "conforme" o "paga menos", y el comentario como observación. El ejecutivo revisa, presiona Siguiente y Enviar.
+
 ### 18-11-2026: ClaroGo! v2.3.0, columna Agendar y ficha por módulos
 
 - Nueva columna "Agendar" con ícono de calendario: azul si hay llamada agendada, amarillo si es hoy y rojo si está atrasada.

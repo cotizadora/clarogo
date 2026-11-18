@@ -126,7 +126,48 @@ async function iniciar() {
   if (await copiar(true)) mostrar(tel ? '✓ Datos copiados.' : 'Datos copiados, pero esta llamada no trae teléfono.', tel ? 'ok' : 'mal');
   $('#enviar').disabled = false;
   if (tel) prepararWhatsApp(tel, nombre);
+  TEL_NV = (tel || '').replace(/\D/g, '');
 }
+
+/* ── No venta: formulario "Registro de atención (NO VENTA)" de la empresa ──
+   Se abre con las respuestas ya marcadas (Cliente evaluado: No, motivo, teléfono y comentario).
+   El ejecutivo revisa, presiona Siguiente y Enviar: la extensión nunca lo envía sola. */
+const NV_FORM = 'https://docs.google.com/forms/d/e/1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ/viewform';
+const NV_MOTIVOS = ['CLIENTE EMPRESA', 'CLIENTE OFENSIVO', 'CLIENTE PIDE NO SER CONTACTADO', 'CLIENTE CONFORME CON COMPAÑIA ACTUAL', 'CORTE DE LLAMADO', 'LLAMADA MUDA', 'MALA EXPERIENCIA CON CLARO', 'PORTABILIDAD MENOS DE 120 DIAS', 'NO ES TITULAR', 'NO HAY STOCK DE EQUIPO SOLICITADO', 'PAGA MENOS EN LA COMPAÑIA ACTUAL', 'SE ENVIA INFO POR WSP', 'SIN COBERTURA CLARO', 'EXTRANJERO SIN DOCUMENTACION', 'C.I VENCIDO', 'NUMERO NO ACTIVO'];
+const NV_COMPANIAS = ['WOM', 'ENTEL', 'MOVISTAR', 'MUNDO PACIFICO', 'Otros'];
+let TEL_NV = '';
+function nvPintar() {
+  const m = $('#nv-motivo').value;
+  $('#nv-otro').hidden = m !== '__otro';
+  $('#nv-comp').hidden = !/CONFORME CON COMPA|PAGA MENOS/.test(m);
+  try { chrome.storage.local.set({ nvMotivo: m }); } catch (e) {}
+}
+function nvURL() {
+  const m = $('#nv-motivo').value, otro = ($('#nv-otro').value || '').trim(), comp = $('#nv-comp').value, obs = ($('#comentario').value || '').trim();
+  const p = [['entry.1000912384', 'No'], ['entry.1655228490', 'NO']];
+  if (TEL_NV) p.push(['entry.1534465510', TEL_NV.slice(-9)]);
+  if (m === '__otro') { p.push(['entry.335135472', '__other_option__']); if (otro) p.push(['entry.335135472.other_option_response', otro]); }
+  else if (m) p.push(['entry.335135472', m]);
+  if (comp && /CONFORME CON COMPA/.test(m)) p.push(['entry.46466138', comp]);
+  if (comp && /PAGA MENOS/.test(m)) p.push(['entry.1557285403', comp]);
+  if (obs) p.push(['entry.613959426', obs]);
+  return NV_FORM + '?usp=pp_url&' + p.map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&');
+}
+function initNoVenta() {
+  $('#nv-motivo').innerHTML = '<option value="">Elige el motivo de no venta</option>' + NV_MOTIVOS.map(x => `<option></option>`).join('') + '<option value="__otro">Otro (escribir)</option>';
+  [...$('#nv-motivo').options].forEach((o, i) => { if (i > 0 && i <= NV_MOTIVOS.length) { o.value = NV_MOTIVOS[i - 1]; o.textContent = NV_MOTIVOS[i - 1]; } });
+  $('#nv-comp').innerHTML = '<option value="">Compañía actual del cliente</option>' + NV_COMPANIAS.map(x => `<option>${x}</option>`).join('');
+  $('#nv-motivo').addEventListener('change', nvPintar);
+  $('#nv-abrir').addEventListener('click', async () => {
+    const m = $('#nv-motivo').value;
+    if (!m) { mostrar('Elige el motivo de no venta.', 'mal'); $('#nv-motivo').focus(); return; }
+    if (m === '__otro' && !($('#nv-otro').value || '').trim()) { mostrar('Escribe el motivo en el cuadro "Otro".', 'mal'); $('#nv-otro').focus(); return; }
+    await chrome.tabs.create({ url: nvURL(), active: true });
+    window.close();
+  });
+  nvPintar();
+}
+initNoVenta();
 
 /* ── WhatsApp Web con la oferta ───────────────────────────────────── */
 // Los mensajes de cada plan vienen de ClaroGo! (así siempre están al día). Si no hay ClaroGo! abierto, se usan los guardados.
