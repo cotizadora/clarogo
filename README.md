@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: ClaroGo! v2.9.0, sección MuteReal
+
+- Sección nueva **MuteReal** (#mute): programa de Eduardo para Windows que muestra si el micrófono está realmente silenciado. Botón grande de descarga (`descargas/MuteReal.exe`), qué hace y cómo usarlo.
+- Destacada en el inicio de PC con una franja roja sobre los botones; en celular aparece como botón con la etiqueta "Importante". También está en el menú superior.
+
 ### 18-11-2026: ClaroGo! v2.8.2, Script y planilla siempre al día
 
 - Planilla → Script: si la fila vinculada cambia (editada en la planilla, con el Rutificador, desde la extensión o en otra pestaña), el Script de Cierre toma los datos nuevos al entrar o apenas llegan. No se toca mientras se escribe en el Script.
