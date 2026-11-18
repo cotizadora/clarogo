@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Guía ClaroGo! Genesys</title>
-<meta name="description" content="Instala ClaroGo! Genesys con un solo archivo y aprende a usarla paso a paso: llamada, WhatsApp, tipificación y Genesys. Herramienta no oficial.">
+<meta name="description" content="Instala y actualiza la extensión ClaroGo! Genesys paso a paso. Herramienta no oficial.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="ClaroGo! Genesys · Guía completa e instalador">
-<meta property="og:description" content="Descarga el instalador, sigue 3 pasos y aprende a usar la extensión con demostraciones. Herramienta no oficial.">
+<meta property="og:title" content="ClaroGo! Genesys · Instalar y actualizar">
+<meta property="og:description" content="3 pasos para instalar y un doble clic para actualizar. Herramienta no oficial.">
 <meta property="og:image" content="https://cotizadora.github.io/clarogo/ext/guia-preview.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -174,43 +174,55 @@
 
 <header class="hero">
   <h1>ClaroGo! Genesys</h1>
-  <p>La extensión que toma los datos de la llamada, los manda a tu planilla, abre WhatsApp con la oferta y tipifica la no venta en el formulario y en Genesys. Todo en un par de clics.</p>
+  <p>Instala la extensión en 5 minutos. Sigue los pasos con calma: no necesitas saber de computación.</p>
   <span class="ver" id="version">Versión al día</span>
   <div class="cta">
-    <a class="btn btn-blanco" href="#instalar">⬇ Instalar en 3 pasos</a>
-    <button class="btn btn-borde" type="button" data-copiar="cmd-inst">📋 Copiar comando de instalación</button>
+    <a class="btn btn-blanco" href="#instalar">⬇ Instalar</a>
+    <a class="btn btn-borde" href="#actualizar">🔄 Actualizar</a>
   </div>
-  <p class="nota-hero">Gratis · sin tiendas · se actualiza con el mismo archivo · Herramienta no oficial, hecha por Eduardo Pérez</p>
+  <p class="nota-hero">Gratis · no instala programas · Herramienta no oficial, hecha por Eduardo Pérez</p>
 </header>
-
-<nav class="indice"><div>
-  <a href="#instalar">1. Instalar</a><a href="#actualizar">2. Actualizar</a><a href="#usar">3. Usarla</a><a href="#funciones">4. Funciones</a><a href="#problemas">5. Problemas</a><a href="#claude">6. Claude Code</a>
-</div></nav>
 
 <main>
 
   <section id="instalar">
-    <h2><span class="ico">⬇️</span>1. Instalar en 3 pasos</h2>
-    <p class="sub">Solo la primera vez. No necesitas descargar archivos, descomprimir nada ni instalar otros programas.</p>
-    <div class="copiar"><code id="cmd-inst">$d=&quot;$env:USERPROFILE\Documents\ClaroGo\extension&quot;; $b=&quot;https://cotizadora.github.io/clarogo&quot;; New-Item -ItemType Directory -Force $d | Out-Null; $l = (Invoke-RestMethod &quot;$b/ext/extension-archivos.txt?v=$(Get-Random)&quot;) -split &#39;\r?\n&#39; | Where-Object { $_ }; foreach ($f in $l) { Invoke-WebRequest &quot;$b/extension/$($f)?v=$(Get-Random)&quot; -OutFile &quot;$d\$f&quot; -UseBasicParsing }; Set-Clipboard $d; Write-Host &quot;ClaroGo!: $($l.Count) archivos listos en $d (ruta copiada)&quot; -ForegroundColor Green; Start-Process msedge edge://extensions</code><button type="button" data-copiar="cmd-inst">Copiar</button></div>
-    <div class="pasos3">
-      <div class="paso"><span class="n">1</span><b>Pega el comando en la Terminal</b><p>Copia el comando de arriba. Haz <b>clic derecho en el botón Inicio</b> de Windows, elige <b>Terminal</b> (o Windows PowerShell), pégalo con <kbd>Ctrl</kbd>+<kbd>V</kbd> y presiona <kbd>Enter</kbd>. Crea <code>Documentos\ClaroGo\extension</code> y baja todos los archivos.</p></div>
-      <div class="paso"><span class="n">2</span><b>Activa el modo para desarrolladores</b><p>Se abre <b>edge://extensions</b>. Activa <b>"Modo para desarrolladores"</b>, abajo a la izquierda.</p></div>
-      <div class="paso"><span class="n">3</span><b>Carga la carpeta</b><p>Presiona <b>"Cargar desempaquetada"</b>, pega la ruta con <kbd>Ctrl</kbd>+<kbd>V</kbd> (el instalador ya la copió) y elige <b>Seleccionar carpeta</b>.</p></div>
-    </div>
+    <h2><span class="ico">⬇️</span>Instalar (solo la primera vez)</h2>
+    <p class="sub">Son 3 pasos. Hazlos en el computador donde usas Genesys.</p>
+
+    <h3>Paso 1 · Copia esta línea</h3>
+    <div class="copiar"><code id="cmd-inst">irm https://cotizadora.github.io/clarogo/ext/instalar.ps1 | iex</code><button type="button" data-copiar="cmd-inst">📋 Copiar</button></div>
+
+    <h3>Paso 2 · Pégala en la Terminal</h3>
+    <ol>
+      <li>Haz <b>clic derecho</b> en el botón <b>Inicio</b> de Windows (el logo de abajo a la izquierda).</li>
+      <li>Elige <b>Terminal</b> (en algunos equipos dice <b>Windows PowerShell</b>).</li>
+      <li>En la ventana negra, pega con <kbd>Ctrl</kbd> + <kbd>V</kbd> y presiona <kbd>Enter</kbd>.</li>
+      <li>Espera a que diga <b>LISTO</b>. Se abre sola la página de extensiones de Edge.</li>
+    </ol>
+
+    <h3>Paso 3 · Activa la extensión en Edge</h3>
+    <ol>
+      <li>Abajo a la izquierda, activa <b>"Modo para desarrolladores"</b>.</li>
+      <li>Arriba, presiona <b>"Cargar desempaquetada"</b>.</li>
+      <li>En la ventana que se abre, presiona <kbd>Ctrl</kbd> + <kbd>V</kbd> (la ruta ya está copiada), luego <kbd>Enter</kbd> y <b>"Seleccionar carpeta"</b>.</li>
+      <li>Haz clic en la pieza de rompecabezas de Edge y presiona el alfiler junto a <b>ClaroGo! Genesys</b> para dejar el ícono rojo a la vista.</li>
+    </ol>
 
     <div class="demo" data-demo>
       <div class="demo-pantalla">
-        <div class="escena" data-txt="Paso 1: pega el comando en la Terminal y presiona Enter">
-          <div class="cmd"><div class="tit">Terminal · Windows PowerShell</div><pre class="escribe"><span>PS C:\Users\tu-usuario&gt; $d="$env:USERPROFILE\Documents\ClaroGo\extension"; $b=...
-</span><span style="animation-delay:.8s">  (descargando los archivos de la extensión...)
-</span><span class="ok" style="animation-delay:2s">ClaroGo!: 11 archivos listos en C:\Users\tu-usuario\Documents\ClaroGo\extension (ruta copiada)
-</span><span class="t" style="animation-delay:2.6s">  Se abre edge://extensions</span></pre></div>
+        <div class="escena" data-txt="Paso 2: pega la línea en la Terminal y presiona Enter">
+          <div class="cmd"><div class="tit">Terminal · Windows PowerShell</div><pre class="escribe"><span>PS C:\Users\tu-usuario&gt; irm https://cotizadora.github.io/clarogo/ext/instalar.ps1 | iex
+</span><span style="animation-delay:.7s">  Se creo el acceso directo "Actualizar ClaroGo!" en tu escritorio.
+  Descargando la version mas nueva...
+</span><span class="ok" style="animation-delay:1.4s">   OK  manifest.json
+   OK  popup.html
+   OK  popup.js
+</span><span class="t" style="animation-delay:2.2s">  LISTO: version descargada.</span></pre></div>
         </div>
-        <div class="escena" data-txt="Paso 2: en edge://extensions activa Modo para desarrolladores">
+        <div class="escena" data-txt="Paso 3: activa Modo para desarrolladores">
           <div class="edge"><div class="url"><span>edge://extensions</span></div><div class="cuerpo">
             <div class="lado">Extensiones<br><br>Extensiones instaladas<br>Mantener a salvo<div class="dev"><span class="sw prende brilla"></span> Modo para desarrolladores</div></div>
-            <div class="der"><div class="barra-dev" style="opacity:.35"><span>Cargar desempaquetada</span><span>Empaquetar</span><span>Actualizar</span></div><p style="color:#666">Aparecen los botones de desarrollador arriba.</p></div>
+            <div class="der"><div class="barra-dev" style="opacity:.35"><span>Cargar desempaquetada</span><span>Empaquetar</span><span>Actualizar</span></div><p style="color:#666">Aparecen botones nuevos arriba.</p></div>
           </div></div>
         </div>
         <div class="escena" data-txt="Paso 3: Cargar desempaquetada, Ctrl+V y Seleccionar carpeta">
@@ -220,156 +232,55 @@
           </div>
           <div class="dialogo"><b>Seleccionar carpeta</b><div class="ruta">C:\Users\tu-usuario\Documents\ClaroGo\extension</div><div class="acc"><span>Seleccionar carpeta</span></div></div></div>
         </div>
-        <div class="escena" data-txt="¡Listo! Fija el ícono rojo en la barra para tenerlo a mano">
+        <div class="escena" data-txt="¡Listo! La extensión aparece en la lista">
           <div class="edge"><div class="url"><span>edge://extensions</span></div><div class="cuerpo"><div class="lado">Extensiones<div class="dev"><span class="sw" style="background:#0f6cbd"></span> Modo para desarrolladores</div></div>
-            <div class="der"><div class="tarjeta-ext"><div class="logo">G!</div><div><b>ClaroGo! Genesys</b> <small class="vtxt">1.24.0</small><br><small>Lee los datos del cliente en la llamada de Genesys…</small></div><div class="pie"><span>Detalles · Quitar</span><span class="sw" style="background:#0f6cbd"></span></div></div>
-            <p style="margin-top:12px">📌 Haz clic en el ícono de piezas de rompecabezas de Edge y fija <b>ClaroGo! Genesys</b>.</p></div></div></div>
+            <div class="der"><div class="tarjeta-ext"><div class="logo">G!</div><div><b>ClaroGo! Genesys</b> <small class="vtxt"></small><br><small>Lee los datos del cliente en la llamada de Genesys…</small></div><div class="pie"><span>Detalles · Quitar</span><span class="sw" style="background:#0f6cbd"></span></div></div>
+            <p style="margin-top:12px">📌 Fija el ícono rojo con la pieza de rompecabezas de Edge.</p></div></div></div>
         </div>
       </div>
       <div class="demo-barra"><button type="button" aria-label="Pausar o reproducir">❚❚</button><span class="txt"></span><span class="prog"><i></i></span></div>
     </div>
-    <p class="ojo">🛡️ El comando solo descarga los archivos de la extensión desde <code>cotizadora.github.io/clarogo</code> a tu carpeta Documentos. Como no se descarga ningún programa, el "Control Inteligente de Aplicaciones" de Windows no lo bloquea. <br>Si tu Windows no tiene ese control, también puedes usar el <a href="instalar-clarogo.bat" download>instalador .bat</a> con doble clic.</p>
-    <p class="tip">💡 Abre <a href="https://cotizadora.github.io/clarogo/">ClaroGo!</a> una vez y completa <b>"Mi mensaje"</b> con tu nombre y teléfono: la extensión los usa en los mensajes de WhatsApp.</p>
+    <p class="tip">💡 Al terminar queda en tu escritorio un ícono llamado <b>"Actualizar ClaroGo!"</b>. Lo usarás para las actualizaciones.</p>
   </section>
 
   <section id="actualizar">
-    <h2><span class="ico">🔄</span>2. Actualizar</h2>
-    <p class="sub">Cuando avisen que hay versión nueva: pega otra vez el mismo comando en la Terminal y recarga la extensión. Nada más.</p>
+    <h2><span class="ico">🔄</span>Actualizar (cuando avisen que hay versión nueva)</h2>
+    <p class="sub">Dos clics y listo. Tus datos y configuraciones no se pierden.</p>
+    <div class="pasos3">
+      <div class="paso"><span class="n">1</span><b>Doble clic en "Actualizar ClaroGo!"</b><p>Está en tu escritorio. Se abre una ventana que descarga lo nuevo y dice <b>LISTO</b>.</p></div>
+      <div class="paso"><span class="n">2</span><b>Presiona "Volver a cargar"</b><p>En la página de extensiones que se abre, busca ClaroGo! Genesys y presiona la <b>flecha circular</b>.</p></div>
+    </div>
     <div class="demo" data-demo>
       <div class="demo-pantalla">
-        <div class="escena" data-txt="Pega otra vez el comando: reemplaza los archivos en la misma carpeta">
-          <div class="cmd"><div class="tit">Terminal · Windows PowerShell</div><pre class="escribe"><span>PS C:\Users\tu-usuario&gt; (el mismo comando de instalación)
-</span><span class="ok" style="animation-delay:1.2s">ClaroGo!: 11 archivos listos en C:\Users\tu-usuario\Documents\ClaroGo\extension (ruta copiada)</span></pre></div>
+        <div class="escena" data-txt="Doble clic en el ícono Actualizar ClaroGo! del escritorio">
+          <div class="cmd"><div class="tit">ClaroGo! Genesys - actualizar</div><pre class="escribe"><span>  ClaroGo! Genesys
+
+  Descargando la version mas nueva...
+</span><span class="ok" style="animation-delay:.8s">   OK  formas.js
+   OK  popup.js
+</span><span class="t" style="animation-delay:1.6s">  LISTO: version nueva descargada.</span></pre></div>
         </div>
-        <div class="escena" data-txt="En edge://extensions presiona Volver a cargar (flecha circular)">
+        <div class="escena" data-txt="Presiona Volver a cargar (flecha circular)">
           <div class="edge"><div class="url"><span>edge://extensions</span></div><div class="cuerpo"><div class="lado">Extensiones</div>
             <div class="der"><div class="tarjeta-ext"><div class="logo">G!</div><div><b>ClaroGo! Genesys</b> <small>versión nueva</small><br><small>Lee los datos del cliente en la llamada…</small></div><div class="pie"><span>Detalles · Quitar · <span class="recarga brilla gira">⟳</span></span><span class="sw" style="background:#0f6cbd"></span></div></div></div></div></div>
         </div>
       </div>
       <div class="demo-barra"><button type="button" aria-label="Pausar o reproducir">❚❚</button><span class="txt"></span><span class="prog"><i></i></span></div>
     </div>
-    <p class="tip">💡 La carpeta siempre es la misma, por eso no hay que volver a cargarla: basta con "Volver a cargar". Si usas Claude Code, pídele "Actualiza la extensión ClaroGo!" y lo hace por ti.</p>
-  </section>
-
-  <section id="usar">
-    <h2><span class="ico">📞</span>3. Usarla en una llamada</h2>
-    <p class="sub">Mira la demostración: la ventana tiene dos lados. A la izquierda la llamada y la oferta; a la derecha la tipificación.</p>
-    <div class="demo" data-demo>
-      <div class="demo-pantalla" style="min-height:500px">
-        <div class="escena" data-txt="Con la llamada en Genesys presiona Alt + Shift + G (o el ícono rojo)" data-z="z-datos" data-g="Los datos de la llamada aparecen solos y quedan copiados" data-gx="6%" data-gy="88%"></div>
-        <div class="escena" data-txt="Pregunta el RUT al cliente y escríbelo. Si quieres, deja un comentario" data-z="z-rut" data-g="El RUT llega a tu planilla con puntos y guion" data-gx="6%" data-gy="88%"></div>
-        <div class="escena" data-txt="Enviar a Mi Planilla: el cliente queda como fila nueva" data-z="z-env" data-g="Si ya lo llamaste antes, aparece 🔁 con la tipificación anterior" data-gx="6%" data-gy="88%"></div>
-        <div class="escena" data-txt="WhatsApp con la oferta: elige el plan y abre el chat con la lámina" data-z="z-wa" data-g="El mensaje queda escrito. Tú presionas enviar en WhatsApp" data-gx="6%" data-gy="88%"></div>
-        <div class="escena" data-txt="Si no compra: toca el motivo de no venta (por colores)" data-z="z-mot" data-g="Rojo rechazo, naranjo requisitos, gris llamada, verde seguimiento" data-gx="52%" data-gy="88%"></div>
-        <div class="escena" data-txt="Revisa el código de Genesys sugerido (lo puedes cambiar)" data-z="z-gc" data-g="Se marca en Genesys sin enviarse: lo envías tú" data-gx="52%" data-gy="88%"></div>
-        <div class="escena" data-txt="Presiona Tipificar en formulario: se llena, se envía y listo" data-z="z-tip" data-g="Con Enviar automáticamente marcado, no tienes que hacer nada más" data-gx="52%" data-gy="88%"></div>
-        <div class="escena" data-txt="Aparece la confirmación al centro y se va sola" data-fin="1"></div>
-        <!-- Ventana de la extensión (se comparte entre escenas) -->
-        <div class="pop" id="pop-demo" style="position:absolute;left:50%;top:14px;transform:translateX(-50%)">
-          <header><b>ClaroGo!</b><span>Genesys</span><span class="v vtxt">1.24.0</span><span style="margin-left:auto;font-size:10px;opacity:.85">No oficial</span></header>
-          <div class="cols">
-            <div>
-              <div class="z" id="z-datos"><div class="est">✓ Datos copiados.</div><div class="hist">🔁 Ya tipificado: Conforme con su compañía · 17-11</div>
-              <table><tr><td>Teléfono</td><td class="tel">9 1234 5678</td></tr><tr><td>Nombre</td><td>María González</td></tr><tr><td>Campaña</td><td>Portabilidad</td></tr><tr><td>Viene de</td><td>Wom</td></tr></table></div>
-              <div class="z" id="z-rut"><div class="inp lleno">12.345.678-5</div><div class="inp">Comentario para la planilla (opcional)</div></div>
-              <div class="z" id="z-env"><span class="b rojo">➕ Enviar a Mi Planilla (fila nueva)</span></div>
-              <div class="z wa" id="z-wa"><small>WhatsApp con la oferta</small><div class="sel">Plan 500</div><small>☑ Adjuntar la lámina del plan</small><span class="b verde">WhatsApp Web</span></div>
-            </div>
-            <div class="nv">
-              <div class="cab">No venta: motivo <span><i>Más usados</i><i>A-Z</i><i class="on">Por grupo</i></span></div>
-              <div class="z chips" id="z-mot"><span class="gt">Seguimiento</span><span class="c-seg">Se envía info por WhatsApp</span><span class="gt">Rechazo del cliente</span><span class="c-rech">Conforme con su compañía</span><span class="c-rech elegido">Paga menos en su compañía</span><span class="c-rech">Mala experiencia con Claro</span><span class="gt">Requisitos</span><span class="c-req">Portabilidad menos de 120 días</span><span class="c-req">No es titular</span><span class="c-req">Sin cobertura Claro</span><span class="gt">Llamada</span><span class="c-llam">Corte de llamado</span><span class="c-llam">Llamada muda</span><span class="c-otro">Otro (escribir)</span></div>
-              <div class="z gc" id="z-gc">Genesys: <span>Rechazo/Mejor oferta competencia $ precio</span></div>
-              <div class="ops"><span>Enviar automáticamente</span><span>Avisar cuando se envíe</span></div>
-              <div class="z" id="z-tip"><span class="b rojo">📝 Tipificar en formulario: Paga menos en su compañía</span></div>
-            </div>
-          </div>
-        </div>
-        <div class="globo" id="globo-demo"></div>
-        <div class="fondo-form" id="exito-demo" style="display:none"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><div class="exito"><div class="fr"></div><div class="cu"><div class="cara">😊</div><div class="t">¡Tipificado por ClaroGo! correctamente!</div><div class="d">Paga menos en su compañía · 912345678</div></div></div></div></div>
-      </div>
-      <div class="demo-barra"><button type="button" aria-label="Pausar o reproducir">❚❚</button><span class="txt"></span><span class="prog"><i></i></span></div>
-    </div>
-  </section>
-
-  <section id="funciones">
-    <h2><span class="ico">⭐</span>4. Todas las funciones</h2>
-    <p class="sub">Lo que hace la extensión por ti, en resumen.</p>
-    <div class="grid">
-      <div class="card"><div class="e">⌨️</div><b>Atajo Alt + Shift + G</b><p>Abre la extensión y lee la llamada de Genesys, aunque estés en otra pestaña.</p></div>
-      <div class="card"><div class="e">📋</div><b>Datos a Mi Planilla</b><p>Teléfono, RUT, nombre, campaña, plan y comentario llegan como fila nueva en ClaroGo!.</p></div>
-      <div class="card"><div class="e">💬</div><b>WhatsApp con lámina</b><p>Abre el chat del cliente con tu mensaje, el plan y la imagen. Tú decides cuándo enviar.</p></div>
-      <div class="card"><div class="e">🎨</div><b>Motivos por colores</b><p>Ordénalos por grupo, A-Z o más usados. La lista aprende lo que más ocupas.</p></div>
-      <div class="card"><div class="e">📝</div><b>Formulario automático</b><p>El registro de no venta se llena con el teléfono y el motivo, avanza de hoja y se envía solo si lo eliges.</p></div>
-      <div class="card"><div class="e">🟧</div><b>Código en Genesys</b><p>Marca el código de conclusión sugerido en Genesys, sin enviarlo. Lo envías tú.</p></div>
-      <div class="card"><div class="e">😊</div><b>Confirmación</b><p>Al enviar aparece al centro "¡Tipificado por ClaroGo! correctamente!" y se va sola.</p></div>
-      <div class="card"><div class="e">⏱️</div><b>Llamada cortada</b><p>Si se cortó, la extensión ofrece la llamada anterior por 15 minutos para que la tipifiques.</p></div>
-      <div class="card"><div class="e">🔁</div><b>Clientes repetidos</b><p>Te avisa si ese teléfono ya fue tipificado: cuándo y con qué motivo.</p></div>
-      <div class="card"><div class="e">💰</div><b>Revisar deuda</b><p>Desde Mi Planilla abre el portal de pago de la compañía y escribe el RUT por ti.</p></div>
-      <div class="card"><div class="e">📤</div><b>Formulario de ventas</b><p>Desde la ficha del cliente, el formulario de ventas se abre lleno y te muestra lo escrito.</p></div>
-      <div class="card"><div class="e">🔒</div><b>Tus datos en tu equipo</b><p>No hay servidores propios: la información queda en tu navegador.</p></div>
-    </div>
+    <p class="tip">💡 ¿Borraste el ícono del escritorio? Repite el Paso 1 y el Paso 2 de la instalación: vuelve a crearlo y actualiza.</p>
   </section>
 
   <section id="problemas">
-    <h2><span class="ico">🧰</span>5. Si algo no funciona</h2>
-    <details><summary>Windows dice "Control Inteligente de Aplicaciones ha bloqueado un archivo"</summary><p>Es una protección de Windows 11 contra archivos descargados, como el instalador .bat. No la desactives: usa el comando de instalación de la sección 1, que no descarga programas y no se bloquea.</p></details>
-    <details><summary>No aparece el ícono de ClaroGo! en la barra</summary><p>Haz clic en el ícono de piezas de rompecabezas de Edge y presiona el alfiler junto a ClaroGo! Genesys.</p></details>
-    <details><summary>Dice "No encontré datos del cliente"</summary><p>Abre la llamada en Genesys con el panel "Interacción de llamada" visible y vuelve a presionar <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd>.</p></details>
-    <details><summary>El formulario no avanza o no se llena</summary><p>Mira el sello negro abajo a la izquierda del formulario: dice la versión y qué está haciendo. Si no aparece, abre edge://extensions y presiona "Volver a cargar". Siempre abre el registro desde la extensión, no desde un marcador.</p></details>
-    <details><summary>No marcó el código en Genesys</summary><p>Deja abierto en Genesys el recuadro "Códigos de conclusión" antes de presionar "Tipificar en formulario". Si igual no lo marca, te llega un aviso para hacerlo a mano.</p></details>
-    <details><summary>No veo los avisos</summary><p>Revisa que Windows no tenga silenciadas las notificaciones de Edge en Configuración, Sistema, Notificaciones.</p></details>
-    <details><summary>¿Cómo sé qué versión tengo?</summary><p>Está arriba en la ventana de la extensión y en edge://extensions. La versión más nueva aparece al comienzo de esta guía.</p></details>
-  </section>
-
-  <section id="claude">
-    <h2><span class="ico">✳️</span>6. Claude Code</h2>
-    <p class="sub">Claude Code es un asistente de inteligencia artificial que trabaja en tu computador: lee archivos, ejecuta comandos y hace tareas que le pides en español, como si conversaras. Con él se construyó ClaroGo!. Es opcional: la extensión funciona sin él.</p>
-
-    <h3>¿Dónde está?</h3>
-    <ul>
-      <li>En la aplicación de escritorio <b>Claude</b> (Windows o Mac), en la pestaña <b>Code</b>. También existe en la terminal y en la web.</li>
-      <li>Necesita una cuenta de Claude con un plan que incluya Claude Code.</li>
-    </ul>
-
-    <h3>¿Cómo se usa?</h3>
-    <ol>
-      <li>Abre una sesión nueva y elige la carpeta donde quieres trabajar (por ejemplo <code>Documentos\ClaroGo</code>).</li>
-      <li>Escribe lo que necesitas con tus palabras. Ejemplo: <i>"Actualiza la extensión ClaroGo! con el instalador"</i>.</li>
-      <li>Antes de ejecutar algo en tu equipo, Claude te pide permiso. Lee qué va a hacer y acepta solo si estás de acuerdo.</li>
-      <li>Al terminar te resume lo que hizo. Si algo no quedó como querías, díselo y lo corrige.</li>
-    </ol>
-
-    <div class="demo" data-demo>
-      <div class="demo-pantalla" style="min-height:300px">
-        <div class="escena" data-txt="Pídele en español lo que necesitas">
-          <div class="chat"><div class="tit">Claude · Code</div><div class="msgs">
-            <div class="yo">Actualiza la extensión ClaroGo! con el instalador</div>
-            <div class="cl">Voy a descargar los archivos de la extensión desde cotizadora.github.io a Documentos\ClaroGo\extension. ¿Te parece?</div>
-            <div class="yo">Sí, dale</div>
-            <div class="cl">✅ Listo: 11 archivos al día. Ahora presiona <b>Volver a cargar</b> en edge://extensions.</div>
-          </div></div>
-        </div>
-      </div>
-      <div class="demo-barra"><button type="button" aria-label="Pausar o reproducir">❚❚</button><span class="txt"></span><span class="prog"><i></i></span></div>
-    </div>
-
-    <h3>Actualizar sin descargar nada a mano</h3>
-    <p>Pídele a Claude Code que ejecute este comando en PowerShell (o pégalo tú en la Terminal). Descarga los archivos más nuevos a la misma carpeta:</p>
-    <div class="copiar"><code id="cmd-act">$d=&quot;$env:USERPROFILE\Documents\ClaroGo\extension&quot;; $b=&quot;https://cotizadora.github.io/clarogo&quot;; New-Item -ItemType Directory -Force $d | Out-Null; $l = (Invoke-RestMethod &quot;$b/ext/extension-archivos.txt?v=$(Get-Random)&quot;) -split &#39;\r?\n&#39; | Where-Object { $_ }; foreach ($f in $l) { Invoke-WebRequest &quot;$b/extension/$($f)?v=$(Get-Random)&quot; -OutFile &quot;$d\$f&quot; -UseBasicParsing }; Set-Clipboard $d; Write-Host &quot;ClaroGo!: $($l.Count) archivos listos en $d (ruta copiada)&quot; -ForegroundColor Green; Start-Process msedge edge://extensions</code><button type="button" data-copiar="cmd-act">Copiar</button></div>
-
-    <h3>Buenas prácticas</h3>
-    <ul>
-      <li>Nunca le des contraseñas, claves ni códigos de verificación. Claude no los necesita para estas tareas.</li>
-      <li>Revisa lo que te pide aprobar. Si no entiendes un paso, pregúntale qué hace antes de aceptar.</li>
-      <li>Pide resultados concretos: "deja el botón en verde", "que copie solo los equipos con más de 60 unidades".</li>
-      <li>Puede equivocarse: prueba lo que entrega antes de usarlo con clientes.</li>
-      <li>Para cambios a ClaroGo! o a la extensión, coordina con Eduardo: así todos usan la misma versión.</li>
-    </ul>
+    <h2><span class="ico">🧰</span>Si algo no funciona</h2>
+    <details><summary>No encuentro la Terminal</summary><p>Presiona la tecla <kbd>Windows</kbd>, escribe <b>PowerShell</b> y ábrelo. Funciona igual.</p></details>
+    <details><summary>La ventana dice "No se pudo descargar"</summary><p>Revisa tu conexión a internet y vuelve a intentarlo.</p></details>
+    <details><summary>No aparece el ícono rojo en Edge</summary><p>Haz clic en la pieza de rompecabezas de Edge, arriba a la derecha, y presiona el alfiler junto a ClaroGo! Genesys.</p></details>
+    <details><summary>Edge dice que la carpeta no tiene un manifiesto</summary><p>Elegiste otra carpeta. La correcta es <code>Documentos\ClaroGo\extension</code>. Vuelve a presionar "Cargar desempaquetada" y pega con <kbd>Ctrl</kbd>+<kbd>V</kbd>.</p></details>
+    <details><summary>¿Cómo sé qué versión tengo?</summary><p>Aparece arriba en la ventana de la extensión. La más nueva está al comienzo de esta página.</p></details>
   </section>
 </main>
 
-<footer>ClaroGo! es una herramienta no oficial, no pertenece a Claro Chile ni a Genesys. Hecha por Eduardo Pérez. Confirma con tu supervisión que puedes usarla antes de trabajar con datos de clientes.</footer>
-
+<footer>ClaroGo! es una herramienta no oficial, no pertenece a Claro Chile ni a Genesys. Hecha por Eduardo Pérez. Confirma con tu supervisión que puedes usarla.</footer>
 <script>
 // Versión más nueva de la extensión, leída del propio repositorio
 fetch('../extension/manifest.json', { cache: 'no-store' }).then(r => r.json()).then(m => {

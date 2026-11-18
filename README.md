@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: guía solo de instalación y actualización
+
+- ext/instalar.ps1 (se usa con `irm https://cotizadora.github.io/clarogo/ext/instalar.ps1 | iex`): crea Documentos\ClaroGo\extension, baja los archivos, deja Documentos\ClaroGo\actualizar.ps1 y el acceso directo "Actualizar ClaroGo!" en el escritorio, copia la ruta y abre edge://extensions.
+- La guía queda solo con instalar, actualizar y problemas frecuentes, para ejecutivos sin conocimientos técnicos.
+
 ### 18-11-2026: instalación por comando (sin .bat)
 
 - El Control Inteligente de Aplicaciones de Windows 11 bloquea el .bat descargado. La guía ahora usa un comando de PowerShell que se copia y se pega en la Terminal: descarga los archivos de la lista a Documentos\ClaroGo\extension, copia la ruta y abre edge://extensions. El .bat queda como alternativa para equipos sin ese control.
