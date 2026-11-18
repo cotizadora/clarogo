@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: ClaroGo! v2.5.0 y extensión 1.23.0, historial de contactos
+
+- La extensión guarda cada tipificación enviada (teléfono, motivo y fecha, hasta 5.000). Al leer una llamada avisa "Ya contactado N veces. Última: fecha · motivo" y manda ese historial a Mi Planilla.
+- Mi Planilla cruza el teléfono con sus filas anteriores: la fila nueva queda con la marca 🔁, la ficha muestra "Contactado antes" (tipificaciones de la extensión y llamadas previas con su tipificación) y aparece un aviso. Se incluye en "Exportar clientes".
+- Un solo aviso de "Tipificación enviada" por envío.
+
 ### 18-11-2026: extensión 1.22.1, aviso de envío garantizado
 
 - "Enviar automáticamente" viene marcado por defecto; la elección de cada ejecutivo se guarda y no cambia sola.

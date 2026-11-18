@@ -543,6 +543,8 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .fi-m-obs{grid-column:1/-1;background:#e3e6ec;border-color:#b3bac6;color:#374151}
 .fi-t{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:.74rem;font-weight:800;color:inherit;text-transform:uppercase;letter-spacing:.07em;margin:0 0 9px}
 .fi-t svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;padding:5px;box-sizing:content-box;background:#fff;border-radius:9px;box-shadow:0 1px 3px rgba(16,24,40,.08)}
+.fi-hist{margin:-4px 0 12px;padding:8px 12px;border-radius:12px;background:#fff4c2;border:2px solid #f0c000;color:#5c4300;font-size:.82rem}
+#ct-tabla .hist-m{display:block;font-size:.7rem;line-height:1;cursor:help}
 .fi-nota{margin-top:8px;font-size:.72rem;color:var(--muted);text-align:right}
 .fi-eq{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .fi-sin{display:inline-flex;align-items:center;gap:4px;margin:0;font-size:.74rem;font-weight:700;color:var(--text);text-transform:none;letter-spacing:0;cursor:pointer}
@@ -1067,7 +1069,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.4.0';
+const APP_VERSION = '2.5.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2668,6 +2670,7 @@ function ctFichaHTML(r) {
       : `<section class="fi-mod fi-m-${c}"><div class="fi-t">${ico}<span>${t}</span></div><div class="fi-g">${cs.map(campo).join('')}</div></section>`; };
   return `<tr class="ficha" data-id="${r.id}"><td colspan="13">
     <div class="fi-top"><div class="fi-acc"><button type="button" class="btn sm red" data-ct="script">▶ Pasar al Script de Cierre</button><button type="button" class="btn sm" data-subir title="Abre el formulario de ventas con los datos de este cliente ya escritos">📤 Subir venta</button><button type="button" class="btn sm" data-ct="copiar">📋 Copiar para WhatsApp</button><button type="button" class="btn sm" data-exportar title="Archivo con todos los datos de este cliente, para WhatsApp o para otro computador">💾 Exportar cliente</button><button type="button" class="btn sm dark" data-ct="ficha">Cerrar ficha ▴</button></div>${deudaBarra(r)}</div>
+    ${r.histTip ? `<div class="fi-hist">🔁 <b>Contactado antes:</b> ${esc(r.histTip)}</div>` : ''}
     <div class="fi-mods">${FICHA.map(modulo).join('')}
     <section class="fi-mod fi-m-obs"><div class="fi-t">${ICO.obs}<span>Observaciones</span></div><div class="fi-obs"><div class="fi-chips">${OBS_RAPIDAS.map(o => `<button type="button" data-obs="${esc(o)}">+ ${esc(o)}</button>`).join('')}</div><textarea data-k="notas" rows="3" placeholder="Pega o escribe aquí todo lo que conversaste con el cliente">${esc(r.notas || '')}</textarea></div></section></div>
     <div class="fi-nota">Todo se guarda solo, sea venta o no.</div></td></tr>`;
@@ -3058,6 +3061,7 @@ window.clarogoDesdeGenesys = (txt, extra = {}) => {
   if (location.hash !== '#control') location.hash = 'control';
   if (extra && extra.plan && PLANES_WA().some(p => p.title === extra.plan)) d.plan = extra.plan;
   if (extra && String(extra.notas || '').trim()) d.notas = String(extra.notas).trim().slice(0, 2000);
+  if (extra && String(extra.historial || '').trim()) d.histTip = 'Tipificado antes: ' + String(extra.historial).trim().slice(0, 400);
   if (extra && /^[0-9.]{7,10}-?[0-9kK]$/.test(String(extra.rut || '').trim())) { const c = String(extra.rut).replace(/[^0-9kK]/g, '').toUpperCase(); d.rut = c.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '-' + c.slice(-1); }
   setTimeout(() => { ctAgregar(d); if (!d.telefono) toast('Llegaron los datos de Genesys, pero sin teléfono.'); }, 120);
   return d.telefono ? 'ok' : 'sin-telefono';
@@ -3152,10 +3156,21 @@ function ctAgregar(datos, silencioso) {
   const fila = Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), fecha: hoyISO(), hora: `${p(d.getHours())}:${p(d.getMinutes())}`, campana: '', cola: '', rut: '', nombre: '', telefono: '', tipo: '', plan: '', notas: '' }, datos, { upd: Date.now() });
   const dup = silencioso && fila.rut && CT.find(x => !x.borrado && x.rut === fila.rut && x.fecha === fila.fecha);
   if (dup) { if (!silencioso) { ctNuevo = dup.id; ctPinta(); toast('Este cliente ya está en la planilla de hoy'); } return dup; }
+  // Cruce: si el teléfono ya estuvo en la planilla, se anota cuándo se llamó y cómo se tipificó
+  const t9 = String(fila.telefono || '').replace(/\D/g, '').slice(-9);
+  if (t9.length === 9) {
+    const antes = CT.filter(x => !x.borrado && String(x.telefono || '').replace(/\D/g, '').slice(-9) === t9).sort((a, b) => String(b.fecha + b.hora).localeCompare(String(a.fecha + a.hora)));
+    if (antes.length) {
+      const u = antes[0], f = String(u.fecha || '').split('-').reverse().join('-');
+      const enPlanilla = `En tu planilla ${antes.length === 1 ? '1 vez' : antes.length + ' veces'}, última el ${f} ${u.hora || ''}: ${u.tipo || 'sin tipificar'}`;
+      fila.histTip = [fila.histTip, enPlanilla].filter(Boolean).join(' · ');
+    }
+  }
   CT.unshift(fila); ctGuardar();
   if (silencioso) { ctRepintar(); return fila; }
   ctNuevo = fila.id; ctPinta();
   if (!datos || (!datos.rut && !datos.telefono)) toast(datos && Object.keys(datos).length === 0 ? 'Fila vacía agregada' : 'No encontré datos de Genesys. Agregué una fila vacía para completar a mano.');
+  else if (fila.histTip) toast('🔁 Cliente ya contactado antes. ' + fila.histTip);
   else toast('Cliente agregado' + (fila.telefono ? ' con su teléfono' : '') + '. Si conversas con él, abre su ficha con ▾.');
   return fila;
 }
@@ -3238,7 +3253,7 @@ function ctPinta() {
   const opt = (arr, sel, vacio) => `<option value="">${vacio}</option>` + arr.map(x => `<option${x === sel ? ' selected' : ''}>${esc(x)}</option>`).join('');
   const fmtF = iso => { const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/); return m ? `${m[3]}-${m[2]}-${m[1]}` : iso; };
   $('#ct-body').innerHTML = lista.map((r, i) => `<tr data-id="${r.id}" class="${r.id === ctNuevo ? 'nuevo ' : ''}${r.tipo === 'Venta' ? 't-venta ' : ''}${tipoColor(r.tipo)} ${r.fav ? 'fav ' : ''}${r.borrado ? 'borrado ' : ''}${r.id === ctAbierto ? 'abierta' : ''}">
-    <td class="c-n"><button class="estrella" data-ct="fav" title="${r.fav ? 'Quitar de favoritos' : 'Marcar como cliente favorito'}">${r.fav ? '★' : '☆'}</button><span data-ct="ficha" title="${esc(ctSeg(r))} · ${ctExtras(r)} datos en la ficha. Clic para abrir la ficha.">${i + 1}</span></td>
+    <td class="c-n"><button class="estrella" data-ct="fav" title="${r.fav ? 'Quitar de favoritos' : 'Marcar como cliente favorito'}">${r.fav ? '★' : '☆'}</button><span data-ct="ficha" title="${esc(ctSeg(r))} · ${ctExtras(r)} datos en la ficha. Clic para abrir la ficha.">${i + 1}</span>${r.histTip ? `<span class="hist-m" title="${esc('Contactado antes. ' + r.histTip)}">🔁</span>` : ''}</td>
     <td class="c-fecha"><input data-k="fecha" value="${esc(fmtF(r.fecha))}" placeholder="DD-MM-AAAA" title="${esc(fmtF(r.fecha))}"></td>
     <td class="c-hora"><input data-k="hora" value="${esc(r.hora)}" placeholder="HH:MM"></td>
     <td class="c-rut"><input data-k="rut" value="${esc(r.rut)}" placeholder="RUT" title="${esc(r.rut)}"></td>
@@ -3274,7 +3289,7 @@ function ctAScript(r) {
 /* ── Exportar e importar clientes ───────────────────────────────────
    Archivo de texto que se lee fácil en el celular (WhatsApp) y que trae al final los datos completos
    para importarlos en ClaroGo! en otro computador. No se pierde nada: se usa el registro más nuevo. */
-const CT_TXT_COLS = [['fecha', 'Fecha'], ['hora', 'Hora'], ['campana', 'Campaña'], ['cola', 'Cola'], ['rut', 'RUT'], ['nombre', 'Nombre'], ['telefono', 'Teléfono'], ['origen', 'Compañía de origen'], ['deuda', 'Revisión de deuda'], ['tipo', 'Tipificación'], ['plan', 'Plan'], ['notas', 'Observaciones'],
+const CT_TXT_COLS = [['fecha', 'Fecha'], ['hora', 'Hora'], ['campana', 'Campaña'], ['cola', 'Cola'], ['rut', 'RUT'], ['nombre', 'Nombre'], ['telefono', 'Teléfono'], ['origen', 'Compañía de origen'], ['deuda', 'Revisión de deuda'], ['histTip', 'Contactos anteriores'], ['tipo', 'Tipificación'], ['plan', 'Plan'], ['notas', 'Observaciones'],
   ['nac', 'Nacimiento'], ['mail', 'Correo'], ['fono', 'Número a portar'], ['contacto', 'Teléfono de contacto'], ['oferta', 'Oferta de la campaña'], ['medio', 'Validación enviada por'], ['tventa', 'Tipo de venta'], ['adic', 'Líneas adicionales'],
   ['eq', 'Equipo'], ['eqsku', 'SKU'], ['eqtotal', 'Monto total'], ['eqpie', 'Pago inicial'], ['eqforma', 'Forma de pago'], ['direccion', 'Dirección'], ['ref', 'Referencia'], ['eta', 'Despacho'], ['agenda', 'Llamar el'], ['agendaObs', 'Observación de la agenda']];
 const CT_MARCA = '--- DATOS PARA IMPORTAR EN CLAROGO! (no modificar) ---';

@@ -115,9 +115,20 @@ chrome.runtime.onMessage.addListener((msg, _de, responder) => {
 
 // Aviso de "Tipificación enviada": además del aviso dentro del formulario, una notificación de Windows que se va sola.
 // Así aparece siempre, aunque Google cambie de página al enviar.
+let ultimoAviso = 0;
 chrome.storage.onChanged.addListener((c, area) => {
   const env = area === 'local' && c.nv_enviado && c.nv_enviado.newValue;
-  if (!env || !env.aviso) return;
+  if (!env) return;
+  // Historial de tipificaciones por teléfono (máximo 5.000): permite saber si un cliente ya fue llamado y cómo se tipificó
+  if (env.tel && String(env.tel).length === 9) {
+    chrome.storage.local.get('historial_tip').then(o => {
+      const h = o.historial_tip || [];
+      if (!h.some(x => x.tel === env.tel && Math.abs(x.ts - env.ts) < 60000)) h.push({ tel: env.tel, motivo: env.motivo || env.texto || '', ts: env.ts });
+      chrome.storage.local.set({ historial_tip: h.slice(-5000) });
+    });
+  }
+  if (!env.aviso || Date.now() - ultimoAviso < 10000) return;   // un solo aviso por envío
+  ultimoAviso = Date.now();
   try {
     const id = 'cg-enviado-' + env.ts;
     chrome.notifications.create(id, { type: 'basic', iconUrl: 'icono-128.png', title: '✅ Tipificación enviada', message: env.texto || 'El registro de no venta se envió correctamente.', priority: 1 });

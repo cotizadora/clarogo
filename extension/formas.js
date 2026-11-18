@@ -103,7 +103,7 @@
       if (pedido && pedido.auto && e && !enviado) {
         marcar('enviando automáticamente…'); await esperar(900);
         const e2 = boton('Enviar'); if (!e2 || enviado) return;
-        await chrome.storage.local.set({ nv_enviado: { ts: Date.now(), aviso: !!pedido.aviso, texto: pedido.resumen || '' } });
+        await chrome.storage.local.set({ nv_enviado: { ts: Date.now(), aviso: !!pedido.aviso, texto: pedido.resumen || '', tel: pedido.tel || '', motivo: pedido.motivo || '' } });
         enviado = true; e2.click();
       }
     })();
@@ -114,7 +114,7 @@
     if (e) {
       if (!e.classList.contains('cg-enviar')) e.classList.add('cg-enviar');   // parpadea siempre, aunque Google vuelva a dibujar el botón
       if (!panel) armarPanel();
-      if (!e.dataset.cgClic) { e.dataset.cgClic = '1'; e.addEventListener('click', () => { enviado = true; if (esNV && pedido) chrome.storage.local.set({ nv_enviado: { ts: Date.now(), aviso: !!pedido.aviso, texto: pedido.resumen || '' } }); }, true); }
+      if (!e.dataset.cgClic) { e.dataset.cgClic = '1'; e.addEventListener('click', () => { enviado = true; if (esNV && pedido) chrome.storage.local.set({ nv_enviado: { ts: Date.now(), aviso: !!pedido.aviso, texto: pedido.resumen || '', tel: pedido.tel || '', motivo: pedido.motivo || '' } }); }, true); }
     } else if (panel && enviado) {
       // Formulario enviado: se quita el panel y se olvida el pedido
       clearInterval(reloj); panel.remove(); panel = null;

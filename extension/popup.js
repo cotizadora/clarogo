@@ -52,7 +52,7 @@ const conLimite = (p, ms) => Promise.race([p, esperar(ms).then(() => { throw new
 function extraEnvio() {
   let plan = '';
   try { const m = (typeof MENSAJES !== 'undefined' && MENSAJES[+document.querySelector('#wa-plan').value]) || null; if (m && m.id) plan = m.titulo; } catch (e) {}
-  return { plan, notas: (document.querySelector('#comentario').value || '').trim(), rut: (document.querySelector('#rut-cli').value || '').trim() };
+  return { plan, notas: (document.querySelector('#comentario').value || '').trim(), rut: (document.querySelector('#rut-cli').value || '').trim(), historial: HIST_TXT };
 }
 // Llama a Mi Planilla dentro de la pestaña. Devuelve false si la página no la reconoce.
 async function entregar(tabId) {
@@ -117,6 +117,19 @@ async function iniciar() {
   await pintarLlamada(d, null);
 }
 
+// Historial de tipificaciones (lo guarda fondo.js al enviar cada registro): avisa si este teléfono ya fue llamado
+let HIST_TXT = '';
+const fechaCorta = ts => { const x = new Date(ts), p = n => String(n).padStart(2, '0'); return `${p(x.getDate())}-${p(x.getMonth() + 1)}-${x.getFullYear()} ${p(x.getHours())}:${p(x.getMinutes())}`; };
+async function mostrarHistorial(tel) {
+  HIST_TXT = ''; const caja = document.querySelector('#hist'); if (!caja) return;
+  const t9 = String(tel || '').slice(-9); caja.hidden = true; if (t9.length !== 9) return;
+  let h = []; try { h = ((await chrome.storage.local.get('historial_tip')).historial_tip || []).filter(x => x.tel === t9).sort((a, b) => b.ts - a.ts); } catch (e) {}
+  if (!h.length) return;
+  HIST_TXT = h.slice(0, 5).map(x => fechaCorta(x.ts) + ' ' + x.motivo).join(' | ');
+  caja.textContent = `🔁 Ya contactado ${h.length === 1 ? '1 vez' : h.length + ' veces'}. Última: ${fechaCorta(h[0].ts)} · ${h[0].motivo}`;
+  caja.title = h.slice(0, 10).map(x => fechaCorta(x.ts) + ' · ' + x.motivo).join('\n');
+  caja.hidden = false;
+}
 // Última llamada leída: si la llamada se corta, se puede tipificar igual durante unos minutos
 const ANTERIOR_MS = 15 * 60000;
 async function llamadaAnterior(motivo) {
@@ -146,6 +159,7 @@ async function pintarLlamada(d, anterior) {
   $('#enviar').disabled = false;
   if (tel) prepararWhatsApp(tel, nombre);
   TEL_NV = (tel || '').replace(/\D/g, '');
+  await mostrarHistorial(TEL_NV);
   // Se guarda la llamada actual (si es la misma de antes, se conserva si ya fue tipificada)
   if (!anterior) {
     try {
@@ -214,7 +228,7 @@ function initNoVenta() {
     try { NV_USO[m] = [...(NV_USO[m] || []), Date.now()].slice(-60); await chrome.storage.local.set({ nvUso: NV_USO }); } catch (e) {}
     // Aviso para formas.js: pasa a la segunda página, recorre lo llenado y deja listo el botón Enviar
     const resumen = (m === '__otro' ? ($('#nv-otro').value || '').trim() : nvTexto(m)) + (TEL_NV ? ' · ' + TEL_NV.slice(-9) : '');
-    try { await chrome.storage.local.set({ nv_pedido: { ts: Date.now(), auto: $('#nv-auto').checked, aviso: $('#nv-aviso').checked, resumen } }); } catch (e) {}
+    try { await chrome.storage.local.set({ nv_pedido: { ts: Date.now(), auto: $('#nv-auto').checked, aviso: $('#nv-aviso').checked, resumen, tel: TEL_NV.slice(-9), motivo: m === '__otro' ? ($('#nv-otro').value || '').trim() : nvTexto(m) } }); } catch (e) {}
     marcarTipificada();
     await chrome.tabs.create({ url: nvURL(), active: true });
     window.close();
