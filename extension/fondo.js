@@ -113,6 +113,18 @@ chrome.runtime.onMessage.addListener((msg, _de, responder) => {
   if (msg && msg.tipo === 'wa') { abrirWhatsApp(msg.url, msg.img).then(responder, () => responder(false)); return true; }
 });
 
+// Aviso de "Tipificación enviada": además del aviso dentro del formulario, una notificación de Windows que se va sola.
+// Así aparece siempre, aunque Google cambie de página al enviar.
+chrome.storage.onChanged.addListener((c, area) => {
+  const env = area === 'local' && c.nv_enviado && c.nv_enviado.newValue;
+  if (!env || !env.aviso) return;
+  try {
+    const id = 'cg-enviado-' + env.ts;
+    chrome.notifications.create(id, { type: 'basic', iconUrl: 'icono-128.png', title: '✅ Tipificación enviada', message: env.texto || 'El registro de no venta se envió correctamente.', priority: 1 });
+    setTimeout(() => chrome.notifications.clear(id), 6000);
+  } catch (e) {}
+});
+
 // Formularios de ventas y no venta: en la segunda hoja Google carga la página de una forma en que Edge
 // no vuelve a activar formas.js. Aquí se vigila la pestaña y se inyecta el script cada vez que la hoja cambia.
 const FORMAS = /^https:\/\/docs\.google\.com\/forms\/d\/e\/(1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ|1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw)\//;

@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.22.1, aviso de envío garantizado
+
+- "Enviar automáticamente" viene marcado por defecto; la elección de cada ejecutivo se guarda y no cambia sola.
+- Al enviar la tipificación, además del aviso dentro del formulario aparece una notificación de Windows "Tipificación enviada" con el motivo y el teléfono, que se cierra sola a los 6 segundos (permiso nuevo: notificaciones).
+
 ### 18-11-2026: extensión 1.22.0, envío automático opcional
 
 - Motivos ordenados por grupo por defecto. El botón dice "Tipificar en formulario".
