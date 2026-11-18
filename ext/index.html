@@ -4,35 +4,52 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Instalar ClaroGo! Genesys</title>
-<meta name="description" content="Instala la extensión ClaroGo! Genesys en dos pasos. Herramienta no oficial.">
+<meta name="description" content="Instala la extensión ClaroGo! Genesys y actualízala con un doble clic. Herramienta no oficial.">
 <style>
-:root{--rojo:#d90429;--rojo-dk:#a8001f;--texto:#1f2430;--suave:#5f6673;--borde:#e3e6eb;--fondo:#f4f5f7;--tarjeta:#fff;--ok:#13804a}
+:root{--rojo:#d90429;--rojo-dk:#a8001f;--texto:#1f2430;--suave:#5f6673;--borde:#e3e6eb;--fondo:#f4f5f7;--tarjeta:#fff;--ok:#13804a;--azul:#1a56b8}
 *{box-sizing:border-box}
-body{margin:0;background:var(--fondo);color:var(--texto);font:16px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif}
-main{max-width:560px;margin:0 auto;padding:24px 16px 40px}
-h1{margin:0;font-size:1.6rem;text-align:center}
+body{margin:0;background:var(--fondo);color:var(--texto);font:18px/1.55 "Segoe UI",system-ui,-apple-system,sans-serif}
+main{max-width:980px;margin:0 auto;padding:36px 24px 48px}
+h1{margin:0;font-size:2.6rem;text-align:center;line-height:1.15}
 h1 b{color:var(--rojo)}
-.sub{margin:4px 0 22px;text-align:center;color:var(--suave);font-size:.9rem}
-.paso{background:var(--tarjeta);border:1px solid var(--borde);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 4px 14px rgba(0,0,0,.05)}
-.paso h2{margin:0 0 12px;font-size:1.1rem;display:flex;align-items:center;gap:10px}
-.num{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--rojo);color:#fff;font-size:.95rem;flex:none}
-.descargar{display:block;text-align:center;padding:18px;border-radius:14px;background:var(--rojo);color:#fff;text-decoration:none;font-weight:800;font-size:1.15rem}
+.sub{margin:6px 0 30px;text-align:center;color:var(--suave);font-size:1.05rem}
+.paso{background:var(--tarjeta);border:1px solid var(--borde);border-radius:22px;padding:26px 30px;margin-bottom:20px;box-shadow:0 6px 20px rgba(0,0,0,.06)}
+.paso h2{margin:0 0 18px;font-size:1.45rem;display:flex;align-items:center;gap:14px}
+.num{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--rojo);color:#fff;font-size:1.3rem;flex:none}
+.descargar{display:flex;align-items:center;justify-content:center;gap:12px;padding:24px;border-radius:16px;background:var(--rojo);color:#fff;text-decoration:none;font-weight:800;font-size:1.6rem}
 .descargar:hover{background:var(--rojo-dk)}
-.nota{margin:10px 0 0;color:var(--suave);font-size:.86rem}
-.navs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.nav{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 8px;border:2px solid var(--borde);border-radius:14px;background:#fff;font:inherit;font-weight:700;color:var(--texto);cursor:pointer}
+.nota{margin:14px 0 0;color:var(--suave);font-size:1rem}
+.navs{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.nav{display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px 12px;border:3px solid var(--borde);border-radius:18px;background:#fff;font:inherit;font-size:1.35rem;font-weight:800;color:var(--texto);cursor:pointer}
 .nav:hover{border-color:#b9c0cc}
 .nav[aria-pressed="true"]{border-color:var(--rojo);background:#fff5f6}
-.nav svg{width:52px;height:52px}
-ol{margin:14px 0 0;padding-left:22px}
-ol li{margin-bottom:10px}
-.copiar{display:flex;gap:8px;align-items:center;margin-top:6px}
-.copiar code{flex:1;min-width:0;padding:8px 10px;border-radius:9px;background:#f1f3f5;font:600 .95rem Consolas,monospace;overflow-wrap:anywhere}
-.copiar button{border:0;border-radius:9px;padding:9px 12px;background:var(--texto);color:#fff;font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;flex:none}
+.nav svg{width:84px;height:84px}
+ol{margin:22px 0 0;padding-left:28px;font-size:1.1rem}
+ol li{margin-bottom:16px;padding-left:4px}
+.copiar{display:flex;gap:10px;align-items:center;margin-top:8px;max-width:620px}
+.copiar code{flex:1;min-width:0;padding:12px 14px;border-radius:12px;background:#f1f3f5;font:600 1.05rem Consolas,monospace;overflow-wrap:anywhere}
+.copiar button{border:0;border-radius:12px;padding:12px 18px;background:var(--texto);color:#fff;font:inherit;font-size:1rem;font-weight:700;cursor:pointer;flex:none}
 .copiar button.ok{background:var(--ok)}
-kbd{padding:1px 6px;border:1px solid #c9ced6;border-bottom-width:2px;border-radius:5px;background:#fff;font:600 .85rem "Segoe UI",sans-serif}
-.listo{margin-top:12px;padding:10px 12px;border-radius:12px;background:#eaf7ef;color:#0d5c35;font-size:.9rem}
-footer{margin-top:20px;text-align:center;color:var(--suave);font-size:.78rem}
+kbd{padding:2px 8px;border:1px solid #c9ced6;border-bottom-width:3px;border-radius:6px;background:#fff;font:600 .95rem "Segoe UI",sans-serif}
+.act{display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:center}
+.icono-esc{display:flex;flex-direction:column;align-items:center;gap:8px;width:150px;padding:16px 10px;border-radius:14px;background:#2b5797;color:#fff;font-size:.95rem;text-align:center;line-height:1.25}
+.icono-esc svg{width:64px;height:64px}
+.act ol{margin:0}
+footer{margin-top:26px;text-align:center;color:var(--suave);font-size:.9rem}
+@media (max-width:700px){
+  body{font-size:16px}
+  main{padding:22px 16px 36px}
+  h1{font-size:1.9rem}
+  .paso{padding:18px}
+  .paso h2{font-size:1.15rem}
+  .num{width:34px;height:34px;font-size:1rem}
+  .descargar{font-size:1.2rem;padding:18px}
+  .nav{font-size:1.1rem;padding:16px 8px}
+  .nav svg{width:58px;height:58px}
+  ol{font-size:1rem}
+  .act{grid-template-columns:1fr}
+  .icono-esc{margin:0 auto}
+}
 @media (prefers-color-scheme:dark){
   :root{--texto:#e8eaed;--suave:#a6adb8;--borde:#343a46;--fondo:#14171c;--tarjeta:#1c2027}
   .nav{background:#232833;color:var(--texto)}
@@ -40,45 +57,57 @@ footer{margin-top:20px;text-align:center;color:var(--suave);font-size:.78rem}
   .copiar code{background:#262b35}
   .copiar button{background:#e8eaed;color:#14171c}
   kbd{background:#262b35;border-color:#4a5160}
-  .listo{background:#163524;color:#bfe9cf}
 }
 </style>
 </head>
 <body>
 <main>
   <h1>Claro<b>Go!</b> Genesys</h1>
-  <p class="sub">Instalación en dos pasos · herramienta no oficial</p>
+  <p class="sub">Instalar y actualizar la extensión · herramienta no oficial</p>
 
   <section class="paso">
-    <h2><span class="num">1</span>Descarga y abre el instalador</h2>
+    <h2><span class="num">1</span>Descarga el instalador y ábrelo con doble clic</h2>
     <a class="descargar" href="instalar-clarogo.bat" download="instalar-clarogo.bat">⬇ Descargar instalador</a>
-    <p class="nota">Ábrelo con doble clic. Tarda unos segundos y se cierra solo. Si Windows o el navegador preguntan, elige <b>Conservar</b> o <b>Ejecutar de todas formas</b>.</p>
+    <p class="nota">Tarda unos segundos y se cierra solo. Deja en tu escritorio el acceso <b>Actualizar ClaroGo!</b>. Si Windows o el navegador preguntan, elige <b>Conservar</b> o <b>Más información → Ejecutar de todas formas</b>.</p>
   </section>
 
   <section class="paso">
-    <h2><span class="num">2</span>¿Qué navegador usas?</h2>
+    <h2><span class="num">2</span>Elige tu navegador (solo la primera vez)</h2>
     <div class="navs">
       <button type="button" class="nav" data-nav="edge" aria-pressed="false">
         <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22" fill="#0c7bd6"/><path d="M13 27c0-7 5-12 12-12s11 4 11 9c0 2-1 3-3 3H19c1 4 5 6 9 6 3 0 5-1 7-2v5c-2 2-5 3-8 3-8 0-14-5-14-12z" fill="#fff"/><path d="M19 23h11c0-3-2-5-5-5s-5 2-6 5z" fill="#2fc46a"/></svg>
         Edge
       </button>
       <button type="button" class="nav" data-nav="chrome" aria-pressed="false">
-        <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22" fill="#db4437"/><path d="M24 2a22 22 0 0119 11H24a11 11 0 00-10 6L5 13A22 22 0 0124 2z" fill="#db4437"/><path d="M43 13a22 22 0 01-17 33l9-16a11 11 0 00-1-17z" fill="#f4b400"/><path d="M26 46A22 22 0 015 13l10 16a11 11 0 0011 6z" fill="#0f9d58"/><circle cx="24" cy="24" r="9" fill="#fff"/><circle cx="24" cy="24" r="7" fill="#4285f4"/></svg>
+        <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 2a22 22 0 0119 11H24a11 11 0 00-10 6L5 13A22 22 0 0124 2z" fill="#db4437"/><path d="M43 13a22 22 0 01-17 33l9-16a11 11 0 00-1-17z" fill="#f4b400"/><path d="M26 46A22 22 0 015 13l10 16a11 11 0 0011 6z" fill="#0f9d58"/><circle cx="24" cy="24" r="9" fill="#fff"/><circle cx="24" cy="24" r="7" fill="#4285f4"/></svg>
         Chrome
       </button>
     </div>
 
     <div id="pasos" hidden>
       <ol>
-        <li>Copia esta dirección, pégala en la barra de direcciones y presiona <kbd>Enter</kbd>:
+        <li>Copia esta dirección, pégala arriba en la barra de direcciones y presiona <kbd>Enter</kbd>:
           <div class="copiar"><code id="dir">edge://extensions</code><button type="button" data-copiar="dir">Copiar</button></div>
         </li>
-        <li>Activa <b>Modo para desarrolladores</b> (<span id="donde">abajo a la izquierda</span>).</li>
-        <li>Presiona <b>Cargar desempaquetada</b>, pega la carpeta con <kbd>Ctrl</kbd>+<kbd>V</kbd> y elige <b>Seleccionar carpeta</b>:
+        <li>Activa <b>Modo para desarrolladores</b> (<span id="donde">en el menú de la izquierda</span>).</li>
+        <li>Presiona <b>Cargar desempaquetada</b>, pega esta carpeta arriba en la ventana con <kbd>Ctrl</kbd>+<kbd>V</kbd> y presiona <b>Seleccionar carpeta</b>:
           <div class="copiar"><code id="carpeta">Documentos\ClaroGo\extension</code><button type="button" data-copiar="carpeta">Copiar</button></div>
         </li>
       </ol>
-      <p class="listo">✅ Listo. Los pasos 2 y 3 se hacen <b>una sola vez</b>. Para actualizar, solo vuelve a abrir el instalador y en el ícono de ClaroGo! presiona <b>Activar versión nueva</b>.</p>
+    </div>
+  </section>
+
+  <section class="paso">
+    <h2><span class="num">3</span>Para actualizar, siempre así</h2>
+    <div class="act">
+      <div class="icono-esc" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+        Actualizar ClaroGo!
+      </div>
+      <ol>
+        <li>Doble clic en <b>Actualizar ClaroGo!</b> de tu escritorio.</li>
+        <li>Haz clic en el ícono rojo de <b>ClaroGo!</b> del navegador y presiona <b>Activar versión nueva</b>.</li>
+      </ol>
     </div>
   </section>
 
@@ -90,13 +119,12 @@ footer{margin-top:20px;text-align:center;color:var(--suave);font-size:.78rem}
     edge: { dir: 'edge://extensions', donde: 'en el menú de la izquierda' },
     chrome: { dir: 'chrome://extensions', donde: 'arriba a la derecha' }
   };
-  var pasos = document.getElementById('pasos');
   function elegir(n) {
     if (!NAV[n]) return;
     document.querySelectorAll('[data-nav]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.nav === n ? 'true' : 'false'); });
     document.getElementById('dir').textContent = NAV[n].dir;
     document.getElementById('donde').textContent = NAV[n].donde;
-    pasos.hidden = false;
+    document.getElementById('pasos').hidden = false;
     try { localStorage.setItem('cg-nav', n); } catch (e) {}
   }
   document.querySelectorAll('[data-nav]').forEach(function (b) { b.addEventListener('click', function () { elegir(b.dataset.nav); }); });
@@ -105,12 +133,11 @@ footer{margin-top:20px;text-align:center;color:var(--suave);font-size:.78rem}
   var COPIA = { dir: function () { return document.getElementById('dir').textContent; }, carpeta: function () { return '%USERPROFILE%\\Documents\\ClaroGo\\extension'; } };
   document.querySelectorAll('[data-copiar]').forEach(function (b) {
     b.addEventListener('click', function () {
-      var txt = COPIA[b.dataset.copiar]();
       var hecho = function () { b.textContent = 'Copiado'; b.classList.add('ok'); setTimeout(function () { b.textContent = 'Copiar'; b.classList.remove('ok'); }, 1800); };
-      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(hecho, function () {});
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(COPIA[b.dataset.copiar]()).then(hecho, function () {});
     });
   });
-  // Recuerda el navegador elegido; si no hay, sugiere el que se está usando
+  // Recuerda el navegador elegido; si no hay, marca el que se está usando
   var guardado = null; try { guardado = localStorage.getItem('cg-nav'); } catch (e) {}
   if (guardado) elegir(guardado); else if (/Edg\//.test(navigator.userAgent)) elegir('edge'); else if (/Chrome\//.test(navigator.userAgent)) elegir('chrome');
 })();

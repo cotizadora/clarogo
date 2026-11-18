@@ -52,9 +52,9 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 Enlace para compartir: **https://cotizadora.github.io/clarogo/ext/**
 
-1. Descargar el instalador (`ext/instalar-clarogo.bat`) y abrirlo con doble clic. No necesita permisos de administrador: baja `ext/clarogo-genesys-extension.zip`, borra y reemplaza todo en `Documentos\ClaroGo\extension` (la misma ruta para todos), copia la ruta y se cierra solo.
+1. Descargar el instalador (`ext/instalar-clarogo.bat`) y abrirlo con doble clic. No necesita permisos de administrador: baja `ext/clarogo-genesys-extension.zip`, borra y reemplaza todo en `Documentos\ClaroGo\extension` (la misma ruta para todos), copia la ruta y se cierra solo. Además deja `Documentos\ClaroGo\actualizar-clarogo.bat` y el acceso **Actualizar ClaroGo!** en el escritorio.
 2. En la página elegir Edge o Chrome y seguir los 3 pasos (solo la primera vez): abrir edge://extensions o chrome://extensions, activar "Modo para desarrolladores", "Cargar desempaquetada" y pegar la carpeta.
-3. Para actualizar: volver a abrir el instalador y presionar "Activar versión nueva" en la ventanita de ClaroGo!.
+3. Para actualizar: doble clic en **Actualizar ClaroGo!** del escritorio y "Activar versión nueva" en la ventanita de ClaroGo!. El acceso siempre baja el instalador publicado más nuevo, así que los cambios al instalador también les llegan solos.
 
 **Importante al cambiar la extensión:** el instalador baja el zip, no la carpeta `extension/`. Cada vez que cambie la extensión hay que regenerar `ext/clarogo-genesys-extension.zip` con los archivos de `ext/extension-archivos.txt` (en la raíz del zip, sin carpeta). Los .bat se guardan con saltos de línea de Windows (`.gitattributes`).
 
@@ -67,6 +67,11 @@ Opción con Tampermonkey:
 5. No tener activa a la vez la extensión antigua ClaroGo! Genesys.
 
 ## Historial de cambios
+
+### 18-11-2026: acceso "Actualizar ClaroGo!" y página para PC
+
+- El instalador deja el acceso "Actualizar ClaroGo!" en el escritorio (también si el escritorio está en OneDrive). Ese acceso baja siempre el instalador más nuevo y lo ejecuta.
+- La página https://cotizadora.github.io/clarogo/ext/ es más grande, pensada para PC, y tiene un tercer paso que explica cómo actualizar.
 
 ### 18-11-2026: instalación simple de la extensión
 
