@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: ClaroGo! v2.7.4, inicio más ordenado
+
+- Inicio en PC: los enlaces de abajo (Canales críticos, Gestión operativa, Consultas y herramientas, ¿Tiene deuda?) tienen el mismo ancho que los botones de arriba y cada grupo va en su propio recuadro, todos de la misma altura. Canales críticos queda en una columna y el título de ¿Tiene deuda? cabe en una línea.
+
 ### 18-11-2026: ClaroGo! v2.7.3 y extensión 1.29.0
 
 - Extensión: después de la animación "¡Tipificado por ClaroGo! correctamente!" vuelve sola a la pestaña de Genesys y el botón Enviar del recuadro de conclusión brilla en neón verde hasta que el ejecutivo lo presiona (o 2 minutos). Nunca lo presiona por su cuenta. Si no encuentra el botón en 20 segundos, igual deja Genesys a la vista.

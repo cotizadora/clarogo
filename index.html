@@ -616,9 +616,12 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #home-links{display:none}
 /* Inicio en PC: enlaces a la mano debajo del menú; el botón Enlaces se oculta */
 @media (min-width:900px){
-  #home-links{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;width:100%;max-width:1180px;margin:clamp(8px,1.6vh,16px) auto 0;flex-shrink:0;text-align:left}
+  /* Mismo ancho que los botones de arriba; cada grupo en su propio recuadro, todos de la misma altura */
+  #home-links{display:grid;grid-template-columns:.9fr .7fr 1.2fr 1.2fr;gap:10px;align-items:stretch;width:100%;max-width:980px;margin:clamp(8px,1.6vh,16px) auto 0;flex-shrink:0;text-align:left}
+  #home-links>div{background:rgba(255,255,255,.6);border:1px solid var(--border);border-radius:14px;padding:8px 10px 10px;min-width:0}
   #home-links .links{grid-template-columns:1fr 1fr;gap:6px}
-  #home-links .lbl{margin-bottom:5px}
+  #home-links>div:nth-child(-n+2) .links{grid-template-columns:1fr}
+  #home-links .lbl{margin-bottom:6px;font-size:.62rem;letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #home-links .link{padding:7px 9px;gap:8px}
   #home-links .link small{display:none}
   #home-links .link b{font-size:.82rem;white-space:normal;line-height:1.15}
@@ -1071,7 +1074,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.7.3';
+const APP_VERSION = '2.7.4';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
