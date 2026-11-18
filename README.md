@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.17.1, recorrido visible en los formularios
+
+- El recorrido espera a que la pestaña esté a la vista, mueve la pantalla de forma directa a cada respuesta (sin depender del desplazamiento suave), la ilumina y oscurece el resto. Una lista fija abajo a la derecha muestra cada respuesta llenada y trae el botón "Ir al botón Enviar".
+
 ### 18-11-2026: extensión 1.17.0, formularios que se recorren solos
 
 - formas.js: en el registro de no venta abierto desde la extensión, pasa solo a la segunda página. En ese formulario y en el de ventas abierto lleno desde ClaroGo!, recorre con la pantalla cada respuesta escrita, la marca en azul y termina en el botón Enviar con el aviso "Listo para enviar". Enviar lo presiona siempre el ejecutivo.
