@@ -173,7 +173,7 @@ const nvGrupo = m => (NV_GRUPOS.find(g => g[2].includes(m)) || ['otro'])[0];
 const NV_CORTO = { 'CLIENTE CONFORME CON COMPAÑIA ACTUAL': 'Conforme con su compañía', 'PAGA MENOS EN LA COMPAÑIA ACTUAL': 'Paga menos en su compañía', 'CLIENTE PIDE NO SER CONTACTADO': 'Pide no ser contactado', 'PORTABILIDAD MENOS DE 120 DIAS': 'Portabilidad menos de 120 días', 'NO HAY STOCK DE EQUIPO SOLICITADO': 'Sin stock del equipo', 'EXTRANJERO SIN DOCUMENTACION': 'Extranjero sin documentación', 'MALA EXPERIENCIA CON CLARO': 'Mala experiencia con Claro', 'SE ENVIA INFO POR WSP': 'Se envía info por WhatsApp', 'NUMERO NO ACTIVO': 'Número no activo', 'C.I VENCIDO': 'Carnet vencido', 'SIN COBERTURA CLARO': 'Sin cobertura Claro' };
 const nvTexto = m => m === '__otro' ? 'Otro (escribir)' : (NV_CORTO[m] || m.charAt(0) + m.slice(1).toLowerCase());
 // Uso: cada vez que se abre un registro se guarda la fecha. El puntaje pesa más lo reciente (la mitad cada 14 días)
-let NV_USO = {}, NV_ORDEN = 'uso';
+let NV_USO = {}, NV_ORDEN = 'grupo';
 const nvPuntaje = m => (NV_USO[m] || []).reduce((s, t) => s + Math.pow(.5, (Date.now() - t) / (14 * 864e5)), 0);
 function nvPintarChips() {
   const todos = [...NV_MOTIVOS, '__otro'], cont = $('#nv-chips'), sel = $('#nv-motivo').value;
@@ -189,7 +189,7 @@ function nvPintar() {
   const m = $('#nv-motivo').value;
   $('#nv-otro').hidden = m !== '__otro';
   $('#nv-comp').hidden = !/CONFORME CON COMPA|PAGA MENOS/.test(m);
-  $('#nv-abrir').textContent = m ? '📝 Abrir registro: ' + nvTexto(m) : '📝 Elige un motivo';
+  $('#nv-abrir').textContent = m ? '📝 Tipificar en formulario: ' + nvTexto(m) : '📝 Tipificar en formulario';
   nvPintarChips();
 }function nvURL() {
   const m = $('#nv-motivo').value, otro = ($('#nv-otro').value || '').trim(), comp = $('#nv-comp').value, obs = ($('#comentario').value || '').trim();
@@ -213,13 +213,17 @@ function initNoVenta() {
     // Se guarda el uso para ordenar por "Más usados" (máximo 60 fechas por motivo)
     try { NV_USO[m] = [...(NV_USO[m] || []), Date.now()].slice(-60); await chrome.storage.local.set({ nvUso: NV_USO }); } catch (e) {}
     // Aviso para formas.js: pasa a la segunda página, recorre lo llenado y deja listo el botón Enviar
-    try { await chrome.storage.local.set({ nv_pedido: { ts: Date.now() } }); } catch (e) {}
+    const resumen = (m === '__otro' ? ($('#nv-otro').value || '').trim() : nvTexto(m)) + (TEL_NV ? ' · ' + TEL_NV.slice(-9) : '');
+    try { await chrome.storage.local.set({ nv_pedido: { ts: Date.now(), auto: $('#nv-auto').checked, aviso: $('#nv-aviso').checked, resumen } }); } catch (e) {}
     marcarTipificada();
     await chrome.tabs.create({ url: nvURL(), active: true });
     window.close();
   });
   nvPintar();
-  try { chrome.storage.local.get(['nvUso', 'nvOrden']).then(o => { NV_USO = o.nvUso || {}; NV_ORDEN = o.nvOrden || 'uso'; nvPintarChips(); }); } catch (e) {}
+  // Preferencias de cada ejecutivo: envío automático y aviso al enviar
+  ['nv-auto', 'nv-aviso'].forEach(id => $('#' + id).addEventListener('change', e => { try { chrome.storage.local.set({ [id]: e.target.checked }); } catch (x) {} }));
+  try { chrome.storage.local.get(['nv-auto', 'nv-aviso']).then(o => { if (typeof o['nv-auto'] === 'boolean') $('#nv-auto').checked = o['nv-auto']; if (typeof o['nv-aviso'] === 'boolean') $('#nv-aviso').checked = o['nv-aviso']; }); } catch (e) {}
+  try { chrome.storage.local.get(['nvUso', 'nvOrden']).then(o => { NV_USO = o.nvUso || {}; NV_ORDEN = o.nvOrden || 'grupo'; nvPintarChips(); }); } catch (e) {}
 }initNoVenta();
 
 /* ── WhatsApp Web con la oferta ───────────────────────────────────── */

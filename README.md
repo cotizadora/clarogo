@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.22.0, envío automático opcional
+
+- Motivos ordenados por grupo por defecto. El botón dice "Tipificar en formulario".
+- Casillas que cada ejecutivo decide y que se recuerdan: "Enviar automáticamente" (después de recorrer las respuestas, la extensión presiona Enviar) y "Avisar cuando se envíe" (aviso verde que se desvanece solo: "Tipificación enviada", con el motivo y el teléfono).
+
 ### 18-11-2026: extensión 1.21.0, motivos de no venta a la vista
 
 - Ventana de 790 px: a la izquierda los datos de la llamada, RUT, comentario, Mi Planilla y WhatsApp; a la derecha los 16 motivos de no venta más "Otro" como botones, con colores por grupo (Seguimiento verde, Rechazo del cliente rojo, Requisitos naranjo, Llamada gris, Otro lila).

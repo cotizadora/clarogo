@@ -11,11 +11,25 @@
   if (!esNV && !esVenta || document.documentElement.dataset.cgFormas || window.top !== window) return;
   document.documentElement.dataset.cgFormas = '1';
   const esperar = ms => new Promise(r => setTimeout(r, ms));
+  const boton0 = txt => [...document.querySelectorAll('[role="button"]')].find(b => b.innerText.trim() === txt);
   // Sello abajo a la izquierda: muestra que la extensión está funcionando en este formulario y en qué estado
   const sello = document.createElement('div');
   sello.style.cssText = 'position:fixed;left:12px;bottom:12px;z-index:2147483647;padding:6px 10px;border-radius:10px;background:#1f2430;color:#fff;font:600 12px "Segoe UI",system-ui,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.3)';
   const marcar = t => { sello.textContent = 'ClaroGo! v' + chrome.runtime.getManifest().version + ' · ' + t; if (!sello.isConnected) document.documentElement.appendChild(sello); };
   marcar('revisando…');
+
+  // Aviso que se desvanece solo: la tipificación se envió
+  const avisoEnviado = txt => {
+    const a = document.createElement('div');
+    a.style.cssText = 'position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:2147483647;max-width:min(520px,92vw);padding:16px 22px;border-radius:16px;background:#13804a;color:#fff;font:700 16px/1.4 "Segoe UI",system-ui,sans-serif;box-shadow:0 14px 36px rgba(0,0,0,.35);text-align:center;transition:opacity .8s';
+    a.textContent = '✅ Tipificación enviada' + (txt ? ': ' + txt : '');
+    document.documentElement.appendChild(a);
+    setTimeout(() => { a.style.opacity = '0'; }, 3500); setTimeout(() => a.remove(), 4500);
+  };
+  if (esNV) {
+    const env = (await chrome.storage.local.get('nv_enviado')).nv_enviado;
+    if (env && Date.now() - env.ts < 2 * 60000 && !boton0('Enviar')) { await chrome.storage.local.remove('nv_enviado'); if (env.aviso) avisoEnviado(env.texto); marcar('tipificación enviada'); return; }
+  }
 
   let pedido = null;
   if (esNV) {
@@ -82,7 +96,17 @@
     marcar('listo para enviar');
     const p = document.getElementById('cg-paso'); if (p) p.remove();
     // Recorrido rápido por las respuestas (si el navegador lo permite) y queda en el botón Enviar
-    (async () => { for (const q of preguntas) { ver(q); await esperar(700); } const e = boton('Enviar'); if (e) ver(e); })();
+    (async () => {
+      for (const q of preguntas) { ver(q); await esperar(700); }
+      const e = boton('Enviar'); if (e) ver(e);
+      // Envío automático: solo si el ejecutivo activó la casilla en la extensión
+      if (pedido && pedido.auto && e && !enviado) {
+        marcar('enviando automáticamente…'); await esperar(900);
+        const e2 = boton('Enviar'); if (!e2 || enviado) return;
+        await chrome.storage.local.set({ nv_enviado: { ts: Date.now(), aviso: !!pedido.aviso, texto: pedido.resumen || '' } });
+        enviado = true; e2.click();
+      }
+    })();
   };
 
   const reloj = setInterval(() => {
@@ -90,11 +114,15 @@
     if (e) {
       if (!e.classList.contains('cg-enviar')) e.classList.add('cg-enviar');   // parpadea siempre, aunque Google vuelva a dibujar el botón
       if (!panel) armarPanel();
-      if (!e.dataset.cgClic) { e.dataset.cgClic = '1'; e.addEventListener('click', () => { enviado = true; }, true); }
+      if (!e.dataset.cgClic) { e.dataset.cgClic = '1'; e.addEventListener('click', () => { enviado = true; if (esNV && pedido) chrome.storage.local.set({ nv_enviado: { ts: Date.now(), aviso: !!pedido.aviso, texto: pedido.resumen || '' } }); }, true); }
     } else if (panel && enviado) {
       // Formulario enviado: se quita el panel y se olvida el pedido
       clearInterval(reloj); panel.remove(); panel = null;
-      if (esNV) chrome.storage.local.remove('nv_pedido');
+      if (esNV) {
+        chrome.storage.local.remove('nv_pedido');
+        // Si Google mostró la confirmación sin recargar la página, el aviso se muestra aquí mismo
+        chrome.storage.local.get('nv_enviado').then(o => { const env = o.nv_enviado; if (env) { chrome.storage.local.remove('nv_enviado'); if (env.aviso) avisoEnviado(env.texto); } else if (pedido && pedido.aviso) avisoEnviado(pedido.resumen || ''); marcar('tipificación enviada'); });
+      }
     } else if (panel && !enviado) {
       // El ejecutivo volvió a la hoja anterior: se oculta el panel hasta que vuelva a aparecer Enviar
       panel.remove(); panel = null;

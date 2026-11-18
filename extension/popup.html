@@ -52,6 +52,9 @@
   .g-llam { background: #e8eaee; border-color: #b3bac6 !important; color: #374151; }
   .g-otro { background: #ece6ff; border-color: #a98be8 !important; color: #4f2a9e; }
   .nv select, .nv input { width: 100%; padding: 7px; border: 1px solid var(--border); border-radius: 8px; font: inherit; font-size: .84rem; margin-bottom: 6px; background: #fff; }
+  .nv-op { display: flex; gap: 12px; flex-wrap: wrap; margin: 2px 0 0; font-size: .74rem; font-weight: 700; }
+  .nv-op label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+  .nv-op input { width: auto; margin: 0; padding: 0; }
   .nv small { display: block; font-size: .7rem; color: var(--muted); margin-top: 6px; }
   p.nota { font-size: .72rem; color: var(--muted); margin: 10px 0 0; }
 </style>
@@ -79,7 +82,8 @@
     <div class="nv-chips" id="nv-chips"></div>
     <input id="nv-otro" placeholder="Escribe el motivo" hidden>
     <select id="nv-comp" hidden></select>
-    <button class="gris" id="nv-abrir" title="Se abre el formulario lleno; tú revisas y presionas Enviar">📝 Abrir el registro de no venta</button>
+    <div class="nv-op"><label><input type="checkbox" id="nv-auto"> Enviar automáticamente</label><label><input type="checkbox" id="nv-aviso" checked> Avisar cuando se envíe</label></div>
+    <button class="rojo" id="nv-abrir" title="Abre el formulario de tipificación lleno con este motivo">📝 Abrir el registro de no venta</button>
 
   </div>
   </div>
