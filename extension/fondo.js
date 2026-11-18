@@ -171,7 +171,7 @@ async function volverAGenesys() {
 async function volverAClaroGo() {
   try {
     const tabs = (await chrome.tabs.query({ url: 'https://cotizadora.github.io/clarogo/*' })).sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0));
-    const t = tabs.find(x => /#control/.test(x.url || '')) || tabs[0]; if (!t) return volverAGenesys();
+    const t = tabs.find(x => /#control/.test(x.url || '')) || tabs[0]; if (!t) return;
     await chrome.tabs.update(t.id, { active: true }); await chrome.windows.update(t.windowId, { focused: true });
   } catch (e) {}
 }
@@ -208,21 +208,22 @@ async function neonEnviarGenesys() {
   setTimeout(apagar, 120000);
   return 'ok';
 }
-// Ingreso de venta enviado: animación en el formulario y luego Genesys con el neón en Enviar
+// Formulario de venta enviado (trámite administrativo, después de cerrar y tipificar en Genesys):
+// solo muestra la animación. Genesys no se toca. Si quedan líneas de la misma venta, vuelve a ClaroGo! para la siguiente.
+let ultimaVenta = 0;
 chrome.storage.onChanged.addListener((c, area) => {
   const v = area === 'local' && c.venta_enviada && c.venta_enviada.newValue;
-  if (!v || Date.now() - ultimoGenesys < 10000) return;
-  ultimoGenesys = Date.now();
+  if (!v || Date.now() - ultimaVenta < 5000) return;
+  ultimaVenta = Date.now();
   const VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/*';
   setTimeout(async () => {
+    let vl = null; try { vl = (await chrome.storage.local.get('venta_lineas')).venta_lineas; } catch (e) {}
+    const quedan = vl && vl.quedan > 0 && Date.now() - vl.ts < 30 * 60000 ? vl.quedan : 0;
     try {
       const t = (await chrome.tabs.query({ url: VENTA })).sort((a, b) => (b.active - a.active) || ((b.lastAccessed || 0) - (a.lastAccessed || 0)))[0];
-      if (t) await chrome.scripting.executeScript({ target: { tabId: t.id }, func: avisoCentro, args: ['Venta ingresada'] });
+      if (t) await chrome.scripting.executeScript({ target: { tabId: t.id }, func: avisoCentro, args: [quedan ? `Faltan ${quedan} ${quedan === 1 ? 'línea' : 'líneas'} por subir` : 'Venta registrada', '¡Formulario de venta enviado!'] });
     } catch (e) {}
-    // Si quedan líneas de la misma venta por subir, se vuelve a ClaroGo! para abrir la siguiente; si no, a Genesys
-    let vl = null; try { vl = (await chrome.storage.local.get('venta_lineas')).venta_lineas; } catch (e) {}
-    if (vl && vl.quedan > 0 && Date.now() - vl.ts < 30 * 60000) setTimeout(volverAClaroGo, 4400);
-    else setTimeout(volverAGenesys, 4400);
+    if (quedan) setTimeout(volverAClaroGo, 4400);
   }, 1500);
 });
 
@@ -260,7 +261,7 @@ chrome.storage.onChanged.addListener((c, area) => {
 
 // Tarjeta al centro de la pantalla con los colores del formulario de Google (morado #5746E3). Se desvanece sola.
 // Corre dentro de la página del formulario: todo se crea elemento por elemento (Google no permite armar HTML con texto).
-function avisoCentro(texto) {
+function avisoCentro(texto, tituloTxt) {
   if (document.getElementById('cg-exito')) return;
   const el = (tag, css, txt) => { const n = document.createElement(tag); n.style.cssText = css; if (txt) n.textContent = txt; return n; };
   const fondo = el('div', 'position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:rgba(87,70,227,.18);transition:opacity .9s;font-family:"Google Sans",Roboto,"Segoe UI",Arial,sans-serif');

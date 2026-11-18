@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.33.0, el formulario de venta no toca Genesys
+
+- El formulario de **venta** es un trámite administrativo que se hace después de cerrar y tipificar en Genesys: al enviarlo solo aparece la animación "¡Formulario de venta enviado!". Si quedan líneas de la misma venta, vuelve a ClaroGo! para la siguiente; con la última se queda ahí. Ya no lleva a Genesys ni enciende el neón.
+- El registro de **no venta** sigue igual: animación, vuelta a Genesys y neón en Enviar.
+
 ### 18-11-2026: ClaroGo! v2.10.0 y extensión 1.32.0, varias líneas
 
 - **Subir la venta línea por línea:** el formulario de venta se envía una vez por número. Si el cliente tiene más de una línea, "Subir venta" (ficha, Ingreso de Venta) abre la lista de líneas: cada una abre el formulario con su número en "número a portar", siempre en la misma pestaña, y queda marcada en verde. El botón rojo abre la siguiente pendiente.
