@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.24.0, código de conclusión en Genesys
+
+- Segunda tipificación: al elegir un motivo de no venta se sugiere el código de conclusión de Genesys (menú "Genesys", se puede cambiar o dejar en "No marcar"). Al presionar "Tipificar en formulario" la extensión marca ese código en el recuadro Códigos de conclusión de Genesys (acw-gadgets-wrap-up) sin enviarlo; el ejecutivo lo envía en Genesys. Si el recuadro no está abierto, avisa con una notificación para marcarlo a mano.
+
 ### 18-11-2026: extensión 1.23.3, avisos compactos
 
 - Cliente repetido en una sola línea: "🔁 Ya tipificado: motivo · fecha (N veces)"; el detalle completo al pasar el mouse. Aviso de llamada anterior más corto. La ventana cabe sin scroll aunque aparezcan los dos avisos.

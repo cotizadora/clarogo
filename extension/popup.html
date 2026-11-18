@@ -43,9 +43,9 @@
   .nv-orden { display: flex; gap: 3px; }
   .nv-orden button { width: auto; margin: 0; padding: 3px 7px; font-size: .68rem; border-radius: 999px; background: #fff; border: 1px solid var(--border); color: var(--muted); }
   .nv-orden button.on { background: #1f2430; border-color: #1f2430; color: #fff; }
-  .nv-chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 6px; }
+  .nv-chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; margin-bottom: 5px; }
   .nv-chips .g-t { grid-column: 1 / -1; font-size: .62rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 1px 0 -2px; }
-  .nv-chips button { margin: 0; padding: 4px 6px; min-height: 28px; font-size: .68rem; line-height: 1.15; font-weight: 700; text-align: left; border-radius: 8px; border: 1.5px solid; }
+  .nv-chips button { margin: 0; padding: 3px 6px; min-height: 24px; font-size: .66rem; line-height: 1.15; font-weight: 700; text-align: left; border-radius: 8px; border: 1.5px solid; }
   .nv-chips button.on { box-shadow: 0 0 0 3px #1f2430; }
   .g-seg { background: #e3f6ea; border-color: #6cc795 !important; color: #0d6438; }
   .g-rech { background: #fde4e4; border-color: #ef8e8e !important; color: #8a1010; }
@@ -53,6 +53,8 @@
   .g-llam { background: #e8eaee; border-color: #b3bac6 !important; color: #374151; }
   .g-otro { background: #ece6ff; border-color: #a98be8 !important; color: #4f2a9e; }
   .nv select, .nv input { width: 100%; padding: 7px; border: 1px solid var(--border); border-radius: 8px; font: inherit; font-size: .84rem; margin-bottom: 6px; background: #fff; }
+  .gc-l { display: flex; align-items: center; gap: 6px; margin: 0 0 4px; font-size: .74rem; font-weight: 800; color: #c2410c; }
+  .gc-l select { flex: 1; min-width: 0; margin: 0 !important; padding: 5px 6px !important; font-size: .74rem !important; border-color: #f3c4a8 !important; background: #fff7f2 !important; }
   .nv-op { display: flex; gap: 12px; flex-wrap: wrap; margin: 2px 0 0; font-size: .74rem; font-weight: 700; }
   .nv-op label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
   .nv-op input { width: auto; margin: 0; padding: 0; }
@@ -84,6 +86,7 @@
     <div class="nv-chips" id="nv-chips"></div>
     <input id="nv-otro" placeholder="Escribe el motivo" hidden>
     <select id="nv-comp" hidden></select>
+    <label class="gc-l" title="Código de conclusión que se marca en Genesys (no se envía: lo envías tú en Genesys)">Genesys: <select id="gc-codigo"></select></label>
     <div class="nv-op"><label><input type="checkbox" id="nv-auto" checked> Enviar automáticamente</label><label><input type="checkbox" id="nv-aviso" checked> Avisar cuando se envíe</label></div>
     <button class="rojo" id="nv-abrir" title="Abre el formulario de tipificación lleno con este motivo">📝 Abrir el registro de no venta</button>
 

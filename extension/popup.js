@@ -217,9 +217,67 @@ function nvPintar() {
   if (obs) p.push(['entry.613959426', obs]);
   return NV_FORM + '?usp=pp_url&' + p.map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&');
 }
+/* ── Código de conclusión en Genesys (segunda tipificación) ─────────
+   Los motivos del formulario y los códigos de Genesys no calzan uno a uno: se sugiere uno y el ejecutivo puede cambiarlo.
+   La extensión solo lo marca en Genesys; enviarlo en Genesys es decisión del ejecutivo. */
+const GC_CODIGOS = ['Agendado / Pre-Cierre (llamar para cerrar venta)', 'Buzón de Voz', 'Cliente Corta Llamada en conversación', 'Cliente Corta Llamada en saludo', 'Cliente no desea que lo vuelvan a llamar (No Molestar)', 'FVC/Sin cobertura delivery (google)', 'Mudo / Sin Audio', 'No Venta / Deuda > $14.000 (según calculadora excel)', 'No Venta / No cumple el plazo 120 días', 'Rechazo/Cliente con deuda Claro', 'Rechazo/Cliente con deuda Operador Actual', 'Rechazo/Cliente con Serie No Vigente', 'Rechazo/Conformidad con su compañía actual', 'Rechazo/Desconfia de la llamada', 'Rechazo/Mala Experiencia Claro Cobertura (señal)', 'Rechazo/Mala Experiencia Claro Precio/postventa', 'Rechazo/Mejor oferta competencia $ precio', 'Rechazo/No aprueba validacion facial', 'Rechazo/No es el titular de la linea (pedir referido)', 'Rechazo/Tiene plan empresa (con rut empresa)', 'Venta + Equipo Outbound', 'Venta Outbound', 'Venta Referido Outbound', 'Volver a llamar (cliente no acepta, pero le interesa)', 'YA ES CLIENTE'];
+const GC_SUGERIDO = {
+  'CLIENTE EMPRESA': 'Rechazo/Tiene plan empresa (con rut empresa)',
+  'CLIENTE OFENSIVO': 'Cliente no desea que lo vuelvan a llamar (No Molestar)',
+  'CLIENTE PIDE NO SER CONTACTADO': 'Cliente no desea que lo vuelvan a llamar (No Molestar)',
+  'CLIENTE CONFORME CON COMPAÑIA ACTUAL': 'Rechazo/Conformidad con su compañía actual',
+  'CORTE DE LLAMADO': 'Cliente Corta Llamada en conversación',
+  'LLAMADA MUDA': 'Mudo / Sin Audio',
+  'MALA EXPERIENCIA CON CLARO': 'Rechazo/Mala Experiencia Claro Precio/postventa',
+  'PORTABILIDAD MENOS DE 120 DIAS': 'No Venta / No cumple el plazo 120 días',
+  'NO ES TITULAR': 'Rechazo/No es el titular de la linea (pedir referido)',
+  'NO HAY STOCK DE EQUIPO SOLICITADO': 'Volver a llamar (cliente no acepta, pero le interesa)',
+  'PAGA MENOS EN LA COMPAÑIA ACTUAL': 'Rechazo/Mejor oferta competencia $ precio',
+  'SE ENVIA INFO POR WSP': 'Volver a llamar (cliente no acepta, pero le interesa)',
+  'SIN COBERTURA CLARO': 'Rechazo/Mala Experiencia Claro Cobertura (señal)',
+  'C.I VENCIDO': 'Rechazo/Cliente con Serie No Vigente'
+};
+// Corre dentro de cada marco de Genesys: solo actúa en el recuadro "Códigos de conclusión" y solo marca (no envía)
+async function elegirConclusion(codigo) {
+  if (!/acw-gadgets-wrap-up/.test(location.pathname)) return null;
+  const norm = s => String(s || '').replace(/\s+/g, ' ').trim().toLowerCase();
+  const meta = norm(codigo);
+  const todos = () => { const out = []; const walk = r => r.querySelectorAll('*').forEach(e => { out.push(e); if (e.shadowRoot) walk(e.shadowRoot); }); walk(document); return out; };
+  const visible = e => !!(e.getClientRects && e.getClientRects().length);
+  const buscar = () => todos().filter(e => visible(e) && norm(e.textContent) === meta).sort((a, b) => a.querySelectorAll('*').length - b.querySelectorAll('*').length)[0];
+  let el = buscar();
+  if (!el) {   // si la lista está cerrada o es larga, se escribe en "Buscar códigos de conclusión"
+    const inp = todos().find(e => e.tagName === 'INPUT' && e.type !== 'hidden' && visible(e));
+    if (inp) {
+      inp.focus(); inp.click();
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(inp, codigo.slice(0, 18));
+      inp.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+      for (let i = 0; i < 10 && !el; i++) { await new Promise(r => setTimeout(r, 250)); el = buscar(); }
+    }
+  }
+  if (!el) return 'no';
+  const op = el.closest('[role="option"],[role="radio"],[role="menuitem"],gux-option,button,label,li') || el;
+  op.scrollIntoView({ block: 'center' });
+  ['pointerdown', 'mousedown', 'pointerup', 'mouseup'].forEach(t => op.dispatchEvent(new MouseEvent(t, { bubbles: true, composed: true })));
+  op.click();
+  return 'ok';
+}
+async function marcarEnGenesys(codigo) {
+  if (!codigo) return 'sin';
+  try {
+    const tabs = await chrome.tabs.query({ url: GENESYS });
+    for (const t of tabs) {
+      const r = await conLimite(chrome.scripting.executeScript({ target: { tabId: t.id, allFrames: true }, func: elegirConclusion, args: [codigo] }), 5000);
+      if ((r || []).some(x => x && x.result === 'ok')) return 'ok';
+    }
+  } catch (e) {}
+  return 'no';
+}
 function initNoVenta() {
+  $('#gc-codigo').innerHTML = '<option value="">No marcar en Genesys</option>' + GC_CODIGOS.map(() => '<option></option>').join('');
+  [...$('#gc-codigo').options].forEach((o, i) => { if (i > 0) { o.value = GC_CODIGOS[i - 1]; o.textContent = GC_CODIGOS[i - 1]; } });
   $('#nv-comp').innerHTML = '<option value="">Compañía actual del cliente</option>' + NV_COMPANIAS.map(x => `<option>${x}</option>`).join('');
-  $('#nv-chips').addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (!b) return; $('#nv-motivo').value = b.dataset.m; nvPintar(); if (b.dataset.m === '__otro') $('#nv-otro').focus(); });
+  $('#nv-chips').addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (!b) return; $('#nv-motivo').value = b.dataset.m; $('#gc-codigo').value = GC_SUGERIDO[b.dataset.m] || ''; nvPintar(); if (b.dataset.m === '__otro') $('#nv-otro').focus(); });
   $('#nv-orden').addEventListener('click', e => { const b = e.target.closest('[data-orden]'); if (!b) return; NV_ORDEN = b.dataset.orden; try { chrome.storage.local.set({ nvOrden: NV_ORDEN }); } catch (x) {} nvPintarChips(); });
   $('#nv-abrir').addEventListener('click', async () => {
     const m = $('#nv-motivo').value;
@@ -232,6 +290,13 @@ function initNoVenta() {
     try { await chrome.storage.local.remove('nv_enviado'); } catch (e) {}   // un registro nuevo nunca hereda el envío anterior
     try { await chrome.storage.local.set({ nv_pedido: { ts: Date.now(), auto: $('#nv-auto').checked, aviso: $('#nv-aviso').checked, resumen, tel: TEL_NV.slice(-9), motivo: m === '__otro' ? ($('#nv-otro').value || '').trim() : nvTexto(m) } }); } catch (e) {}
     marcarTipificada();
+    // Segunda tipificación: marca el código de conclusión en Genesys (sin enviarlo). Si no se pudo, se avisa
+    const codigo = $('#gc-codigo').value;
+    if (codigo) {
+      mostrar('Marcando el código en Genesys…', 'ok');
+      const r = await marcarEnGenesys(codigo);
+      if (r !== 'ok') { try { chrome.notifications.create('cg-gc-' + Date.now(), { type: 'basic', iconUrl: 'icono-128.png', title: 'Genesys: marca el código a mano', message: 'No encontré el recuadro de códigos de conclusión abierto. Código: ' + codigo, priority: 1 }); } catch (e) {} }
+    }
     await chrome.tabs.create({ url: nvURL(), active: true });
     window.close();
   });
