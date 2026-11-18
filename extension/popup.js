@@ -60,13 +60,14 @@ async function entregar(tabId) {
     const [res] = await conLimite(chrome.scripting.executeScript({
       target: { tabId }, world: 'MAIN', args: [TEXTO, extraEnvio()],
       func: (txt, extra) => (typeof window.clarogoDesdeGenesys === 'function') ? window.clarogoDesdeGenesys(txt, extra) : 'sin-planilla'
-    }), 2500);
+    }), 5000);   // recién encendido el computador la página puede tardar en responder
     return !!res && res.result !== 'sin-planilla';
   } catch (e) { return false; }
 }
 // Abre una pestaña nueva en la planilla y espera hasta que la página esté lista (máximo 15 segundos)
 async function abrirNueva() {
-  const tab = await chrome.tabs.create({ url: PLANILLA + '#control', active: true });
+  // Se abre en segundo plano: si pasara al frente, la ventana de la extensión se cerraría antes de entregar el cliente
+  const tab = await chrome.tabs.create({ url: PLANILLA + '#control', active: false });
   for (let i = 0; i < 30; i++) { await esperar(500); if (await entregar(tab.id)) return tab; }
   throw new Error('la planilla tardó demasiado en abrir');
 }
@@ -78,10 +79,10 @@ async function enviar() {
     const tabs = (await chrome.tabs.query({ url: PLANILLA + '*' })).filter(t => !t.discarded).sort((a, b) => a.id - b.id);
     // 1. Una pestaña que ya está en la planilla. 2. Una pestaña de ClaroGo! en el inicio u otra sección libre.
     // Las pestañas en Oferta, PNG, Stock o Script no se tocan: en ese caso se abre una pestaña nueva.
-    const candidata = tabs.find(t => seccionDe(t.url) === 'control') || tabs.find(t => !PROTEGIDAS.includes(seccionDe(t.url)));
+    const candidatas = [...tabs.filter(t => seccionDe(t.url) === 'control'), ...tabs.filter(t => seccionDe(t.url) !== 'control' && !PROTEGIDAS.includes(seccionDe(t.url)))];
     let tab = null;
-    if (candidata && await entregar(candidata.id)) tab = candidata;
-    else tab = await abrirNueva();       // no hay pestaña libre o no se reconoce: se abre desde cero
+    for (const c of candidatas) { if (await entregar(c.id)) { tab = c; break; } }   // prueba cada pestaña libre antes de abrir otra
+    if (!tab) tab = await abrirNueva();       // no hay pestaña libre o ninguna responde: se abre desde cero
     await chrome.tabs.update(tab.id, { active: true });
     await chrome.windows.update(tab.windowId, { focused: true });
     window.close();

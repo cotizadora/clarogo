@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: ClaroGo! v2.2.0 y extensión 1.15.1
+
+- Mi Planilla más ancha (hasta 1680 px) y filas de dos líneas. Botón de deuda con el logo arriba y el estado abajo (Revisar, Sin deuda, Con deuda).
+- Extensión 1.15.1: si la planilla tarda en responder (por ejemplo recién encendido el computador) espera hasta 5 segundos, prueba cada pestaña libre y abre la nueva en segundo plano para que la ventana de la extensión no se cierre antes de entregar el cliente.
+
 ### 17-11-2026: ClaroGo! v2.1.0, número de versión visible
 
 - La versión de ClaroGo! se ve arriba en todas las secciones, en la portada y en el pie (constante APP_VERSION). Se sube en cada cambio publicado.

@@ -39,6 +39,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 a{color:inherit}
 main{flex:1;width:100%;max-width:1200px;margin:0 auto;padding:16px 12px 40px}
+/* Mi Planilla usa más ancho de pantalla (hasta 40 % más) para que la tabla respire */
+body[data-view="control"] main{max-width:1680px}
+#ct-tabla tbody tr:not(.ficha) > td{height:48px}
 
 /* Barra superior */
 .top{position:sticky;top:0;z-index:20;background:var(--red);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.2)}
@@ -200,7 +203,7 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 .link.dest{border-left-color:#0f9d58}
 .link span{font-size:1.15rem;flex:none}
 #ct-tabla td.c-orig select{width:100%}
-#ct-tabla .deu-b{display:flex;align-items:center;justify-content:center;gap:3px;width:100%;height:26px;padding:0 3px;border:1px solid var(--border);border-radius:7px;background:#fff;font:inherit;font-size:.7rem;font-weight:800;color:#1f2430;cursor:pointer;white-space:nowrap}
+#ct-tabla .deu-b{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:100%;height:40px;padding:2px 3px;line-height:1.1;border:1px solid var(--border);border-radius:7px;background:#fff;font:inherit;font-size:.7rem;font-weight:800;color:#1f2430;cursor:pointer;white-space:nowrap}
 #ct-tabla .deu-b:hover{border-color:var(--red);background:#fff5f5}
 #ct-tabla .deu-b.ok{border-color:#14804a;color:#14804a;background:#effaf3}
 #ct-tabla .deu-b.mal{border-color:#c00000;color:#fff;background:#c00000}
@@ -473,7 +476,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla .acc button:hover{background:#eef2f7}
 #ct-tabla .acc .go{color:#fff;background:var(--red);font-size:.7rem}
 #ct-tabla .acc .go:hover{background:var(--red-dk)}
-.c-n{width:44px}.c-fecha{width:80px}.c-hora{width:44px}.c-rut{width:88px}.c-tel{width:88px}.c-orig{width:84px}.c-deu{width:48px}.c-tipo{width:122px}.c-plan{width:86px}.c-acc{width:320px}
+.c-n{width:46px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:96px}.c-tel{width:94px}.c-orig{width:96px}.c-deu{width:78px}.c-tipo{width:128px}.c-plan{width:86px}.c-acc{width:320px}
 .c-nombre{width:150px}.c-notas{width:auto}
 @media (max-width:1500px){.c-notas{display:none}}
 @media (max-width:1100px){.c-hora,.c-plan{display:none} #ct-tabla .acc .gen-t{display:none} .c-acc{width:270px}}
@@ -1038,7 +1041,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.1.0';
+const APP_VERSION = '2.2.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2604,8 +2607,8 @@ const origenNorm = o => { const c = deudaComp({ origen: o }); return c ? { claro
 const origenOpciones = o => { const v = origenNorm(o), lista = v && !ORIGENES.includes(v) ? [...ORIGENES, v] : ORIGENES; return '<option value="">Compañía</option>' + lista.map(x => `<option${x === v ? ' selected' : ''}>${esc(x)}</option>`).join(''); };
 const deudaBoton = r => {
   const c = deudaComp(r), port = DEUDA_PORTALES.find(x => x[0] === c), est = /tiene deuda/i.test(r.deuda || '') ? ' mal' : r.deuda && c && r.deuda.toLowerCase().startsWith(c) ? ' ok' : '';
-  if (!port) return `<button type="button" class="deu-b" data-deuda="?" title="Elige la compañía del cliente para revisar su deuda">$?</button>`;
-  return `<button type="button" class="deu-b${est}" data-deuda="${c}" title="${esc(r.deuda ? 'Última revisión: ' + r.deuda : `Revisar la deuda de este RUT en ${port[1]}`)}">${icoEnlace(port[2])}<span>${est === ' mal' ? '$!' : est ? '✓' : '$?'}</span></button>`;
+  if (!port) return `<button type="button" class="deu-b" data-deuda="?" title="Elige la compañía del cliente para revisar su deuda"><span>Elegir</span><span>compañía</span></button>`;
+  return `<button type="button" class="deu-b${est}" data-deuda="${c}" title="${esc(r.deuda ? 'Última revisión: ' + r.deuda : `Revisar la deuda de este RUT en ${port[1]}`)}">${icoEnlace(port[2])}<span>${est === ' mal' ? 'Con deuda' : est ? 'Sin deuda' : 'Revisar'}</span></button>`;
 };function deudaRevisar(id, comp) {
   const r = CT.find(x => x.id === id), port = DEUDA_PORTALES.find(x => x[0] === comp); if (!r || !port) return;
   const rut = String(r.rut || '').replace(/[^0-9kK]/g, '').toUpperCase();
