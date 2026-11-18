@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.25.1
+
+- "Activar versión nueva" ahora pide la recarga al fondo de la extensión y cierra la ventana antes, en vez de recargar desde la misma ventana.
+
 ### 18-11-2026: extensión 1.25.0, activar versión nueva sin ir a Extensiones
 
 - La ventana de la extensión compara su versión con la de la carpeta: si ya se descargó una más nueva muestra "⟳ Activar versión nueva", que recarga la extensión (chrome.runtime.reload). Si en internet hay una versión más nueva, muestra "⬇ Hay versión…" con la indicación de usar el acceso directo.

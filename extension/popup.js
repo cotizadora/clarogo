@@ -399,7 +399,7 @@ $('#version').textContent = 'v' + chrome.runtime.getManifest().version;
 const verMayor = (a, b) => { const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number); for (let i = 0; i < 3; i++) { if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0); } return false; };
 fetch(chrome.runtime.getURL('manifest.json') + '?v=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(m => {
   const b = $('#activar'), usada = chrome.runtime.getManifest().version;
-  if (m.version && m.version !== usada) { b.textContent = '⟳ Activar versión ' + m.version; b.hidden = false; b.onclick = () => chrome.runtime.reload(); return; }
+  if (m.version && m.version !== usada) { b.textContent = '⟳ Activar versión ' + m.version; b.hidden = false; b.onclick = () => { try { chrome.runtime.sendMessage({ tipo: 'recargar' }); } catch (e) {} window.close(); }; return; }
   // Si no hay nada descargado, se revisa si en internet hay una versión más nueva
   fetch('https://cotizadora.github.io/clarogo/extension/manifest.json?v=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(w => {
     if (!verMayor(w.version, usada)) return;

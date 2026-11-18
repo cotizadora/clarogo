@@ -110,6 +110,8 @@ async function abrirWhatsApp(url, img) {
 }
 
 chrome.runtime.onMessage.addListener((msg, _de, responder) => {
+  // "Activar versión nueva": se recarga desde el fondo, con la ventana ya cerrada (recargar desde la ventana puede dejarla trabada)
+  if (msg && msg.tipo === 'recargar') { setTimeout(() => chrome.runtime.reload(), 400); return; }
   if (msg && msg.tipo === 'wa') { abrirWhatsApp(msg.url, msg.img).then(responder, () => responder(false)); return true; }
 });
 
