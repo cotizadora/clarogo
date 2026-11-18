@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.23.3, avisos compactos
+
+- Cliente repetido en una sola línea: "🔁 Ya tipificado: motivo · fecha (N veces)"; el detalle completo al pasar el mouse. Aviso de llamada anterior más corto. La ventana cabe sin scroll aunque aparezcan los dos avisos.
+
 ### 18-11-2026: extensión 1.23.2 y guía para ejecutivos
 
 - Corrección: después de un envío, el registro siguiente se quedaba en la primera hoja (confundía la primera hoja con la confirmación del envío anterior). Ahora solo se reconoce la confirmación en "formResponse" sin preguntas, y cada registro nuevo borra el envío anterior.

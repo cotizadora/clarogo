@@ -126,7 +126,8 @@ async function mostrarHistorial(tel) {
   let h = []; try { h = ((await chrome.storage.local.get('historial_tip')).historial_tip || []).filter(x => x.tel === t9).sort((a, b) => b.ts - a.ts); } catch (e) {}
   if (!h.length) return;
   HIST_TXT = h.slice(0, 5).map(x => fechaCorta(x.ts) + ' ' + x.motivo).join(' | ');
-  caja.textContent = `🔁 Ya contactado ${h.length === 1 ? '1 vez' : h.length + ' veces'}. Última: ${fechaCorta(h[0].ts)} · ${h[0].motivo}`;
+  // Una sola línea: la última tipificación y la fecha corta. El detalle completo queda al pasar el mouse
+  caja.textContent = `🔁 Ya tipificado: ${h[0].motivo} · ${fechaCorta(h[0].ts).slice(0, 5)}${h.length > 1 ? ` (${h.length} veces)` : ''}`;
   caja.title = h.slice(0, 10).map(x => fechaCorta(x.ts) + ' · ' + x.motivo).join('\n');
   caja.hidden = false;
 }
@@ -154,7 +155,7 @@ async function pintarLlamada(d, anterior) {
   $('#datos').hidden = false;
   const copiado = await copiar(true);
   if (anterior) {
-    mostrar(`📞 LLAMADA ANTERIOR, leída ${haceCuanto(Date.now() - anterior.ts)}: ${tel || 'sin teléfono'}${nombre ? ' · ' + nombre : ''}. Ya no está en Genesys, pero puedes tipificarla.${anterior.tipificada ? ' Ya registraste la no venta de esta llamada.' : ''}`, 'anterior');
+    mostrar(`📞 Llamada anterior (${haceCuanto(Date.now() - anterior.ts)}). Puedes tipificarla.`, 'anterior');
   } else if (copiado) mostrar(tel ? '✓ Datos copiados.' : 'Datos copiados, pero esta llamada no trae teléfono.', tel ? 'ok' : 'mal');
   $('#enviar').disabled = false;
   if (tel) prepararWhatsApp(tel, nombre);
