@@ -4,6 +4,7 @@
 // 3. Guarda en la extensión el nombre y el mensaje del ejecutivo, para usarlos aunque ClaroGo! no responda.
 // 4. Revisión de deuda: recibe el RUT y la compañía, y devuelve el resultado que leyó el portal de pago.
 document.documentElement.dataset.clarogoExt = '1';
+document.documentElement.dataset.clarogoRutifAbre = '1';   // esta versión abre (o reutiliza) el Rutificador por su cuenta
 window.addEventListener('message', e => {
   if (e.source !== window || !e.data) return;
   if (e.data.tipo === 'clarogo-wa' && /^https:\/\/web\.whatsapp\.com\/send\?/.test(String(e.data.url || ''))) chrome.runtime.sendMessage({ tipo: 'wa', url: e.data.url, img: /^data:image\/(png|jpeg);base64,/.test(String(e.data.img || '')) ? e.data.img : '' });

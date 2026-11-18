@@ -43,8 +43,8 @@ main{flex:1;width:100%;max-width:1200px;margin:0 auto;padding:16px 12px 40px}
 body[data-view="control"] main{max-width:1680px}
 #ct-tabla tbody tr:not(.ficha) > td{height:48px}
 /* Nombre recién llegado del Rutificador: brillo neón por unos segundos */
-@keyframes neon{0%,100%{box-shadow:inset 0 0 0 2px #00e5ff,0 0 6px #00e5ff,0 0 14px #00e5ff;background:#e6fdff}50%{box-shadow:inset 0 0 0 2px #00b8d4,0 0 12px #00e5ff,0 0 26px #18ffff;background:#c9f9ff}}
-#ct-tabla td.neon{position:relative;z-index:2;animation:neon 1s ease-in-out 6}
+@keyframes neon{0%,100%{box-shadow:inset 0 0 0 2px #00e5ff,0 0 6px #00e5ff,0 0 14px #00e5ff;background:#e6fdff}50%{box-shadow:inset 0 0 0 3px #00b8d4,0 0 14px #00e5ff,0 0 30px #18ffff;background:#c9f9ff}}
+#ct-tabla td.neon{position:relative;z-index:2;animation:neon 1.1s ease-in-out infinite;cursor:pointer}
 
 /* Barra superior */
 .top{position:sticky;top:0;z-index:20;background:var(--red);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.2)}
@@ -1072,7 +1072,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.6.3';
+const APP_VERSION = '2.6.4';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2681,11 +2681,19 @@ window.addEventListener('message', e => {
       const td = tr.querySelector('td.c-nombre'); if (!td) return;
       tr.scrollIntoView({ block: 'center', behavior: 'smooth' });
       td.classList.remove('neon'); void td.offsetWidth; td.classList.add('neon');
-      setTimeout(() => td.classList.remove('neon'), 6500);
+      const apagar = () => td.classList.remove('neon');
+      setTimeout(apagar, 30000); td.addEventListener('click', apagar, { once: true });
     }, 350);
   };
   if (window.__rutifFila !== r.id) return;   // solo brilla en la pestaña desde donde se pidió
   window.__rutifFila = '';
+  // El título de la pestaña parpadea para encontrarla rápido, hasta unos segundos después de que se ve
+  const tituloOriginal = document.title; let n = 0;
+  clearInterval(window.__tituloReloj);
+  window.__tituloReloj = setInterval(() => {
+    document.title = n++ % 2 ? tituloOriginal : '🟢 ¡Nombre listo! · ClaroGo!';
+    if (!document.hidden && n > 16) { clearInterval(window.__tituloReloj); document.title = tituloOriginal; }
+  }, 700);
   if (!document.hidden) brillar();
   else document.addEventListener('visibilitychange', function f() { if (document.hidden) return; document.removeEventListener('visibilitychange', f); brillar(); });
 });
@@ -3469,7 +3477,8 @@ function initControl() {
       if (r.rut && ext) { window.__rutifFila = r.id; window.postMessage({ tipo: 'clarogo-rutif', rut: r.rut, id: r.id }, location.origin); }
       if (r.rut) copyText(r.rut, ext ? 'Buscando en el Rutificador. El nombre y la dirección llegan solos a esta fila.' : 'RUT copiado. Pégalo en el Rutificador.');
       else toast('Primero escribe el RUT del cliente en la fila.');
-      window.open('https://www.nombrerutyfirma.com/', '_blank', 'noopener');
+      // Con la extensión, ella abre el Rutificador (o reutiliza el que ya esté abierto)
+      if (!(r.rut && ext && document.documentElement.dataset.clarogoRutifAbre)) window.open('https://www.nombrerutyfirma.com/', '_blank', 'noopener');
     }
   });
   respPinta();

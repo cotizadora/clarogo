@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: ClaroGo! v2.6.4 y extensión 1.27.0
+
+- El neón del nombre dura hasta 30 segundos (se apaga al hacer clic en la celda) y el título de la pestaña de la planilla parpadea "🟢 ¡Nombre listo!" hasta que se ve.
+- La extensión abre el Rutificador al lado de la planilla o reutiliza el que ya esté abierto (permiso nuevo: nombrerutyfirma.com). Con una extensión antigua, la planilla lo sigue abriendo como antes.
+
 ### 18-11-2026: ClaroGo! v2.6.3 y extensión 1.26.4
 
 - El pedido del Rutificador pasa por el fondo de la extensión, que anota la pestaña de la planilla que lo hizo y vuelve exactamente a ella. El brillo neón solo se enciende en esa pestaña y espera a que esté a la vista.
