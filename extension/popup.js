@@ -123,12 +123,22 @@ const fechaCorta = ts => { const x = new Date(ts), p = n => String(n).padStart(2
 async function mostrarHistorial(tel) {
   HIST_TXT = ''; const caja = document.querySelector('#hist'); if (!caja) return;
   const t9 = String(tel || '').slice(-9); caja.hidden = true; if (t9.length !== 9) return;
-  let h = []; try { h = ((await chrome.storage.local.get('historial_tip')).historial_tip || []).filter(x => x.tel === t9).sort((a, b) => b.ts - a.ts); } catch (e) {}
-  if (!h.length) return;
+  let h = [], pl = [];
+  try {
+    const o = await chrome.storage.local.get(['historial_tip', 'planilla_ct']);
+    h = (o.historial_tip || []).filter(x => x.tel === t9).sort((a, b) => b.ts - a.ts);
+    // Lo que ya está en Mi Planilla para este teléfono (se copia en tiempo real desde ClaroGo!)
+    pl = ((o.planilla_ct && o.planilla_ct.filas) || []).filter(r => String(r.telefono || '').replace(/\D/g, '').slice(-9) === t9).sort((a, b) => String(b.fecha + b.hora).localeCompare(String(a.fecha + a.hora)));
+  } catch (e) {}
+  if (!h.length && !pl.length) return;
+  const fPl = r => String(r.fecha || '').split('-').reverse().join('-').slice(0, 5);
   HIST_TXT = h.slice(0, 5).map(x => fechaCorta(x.ts) + ' ' + x.motivo).join(' | ');
-  // Una sola línea: la última tipificación y la fecha corta. El detalle completo queda al pasar el mouse
-  caja.textContent = `🔁 Ya tipificado: ${h[0].motivo} · ${fechaCorta(h[0].ts).slice(0, 5)}${h.length > 1 ? ` (${h.length} veces)` : ''}`;
-  caja.title = h.slice(0, 10).map(x => fechaCorta(x.ts) + ' · ' + x.motivo).join('\n');
+  // Una sola línea: lo último de cada fuente. El detalle completo queda al pasar el mouse
+  const partes = [];
+  if (h.length) partes.push(`Tipificado: ${h[0].motivo} · ${fechaCorta(h[0].ts).slice(0, 5)}${h.length > 1 ? ` (${h.length})` : ''}`);
+  if (pl.length) partes.push(`Planilla: ${pl[0].tipo || 'sin tipificar'} · ${fPl(pl[0])}`);
+  caja.textContent = '🔁 ' + partes.join(' | ');
+  caja.title = [...h.slice(0, 8).map(x => fechaCorta(x.ts) + ' · ' + x.motivo), ...pl.slice(0, 8).map(r => `${fPl(r)} ${r.hora || ''} · Planilla: ${r.tipo || 'sin tipificar'}${r.nombre ? ' · ' + r.nombre : ''}${r.notas ? ' · ' + r.notas.slice(0, 60) : ''}`)].join('\n');
   caja.hidden = false;
 }
 // Última llamada leída: si la llamada se corta, se puede tipificar igual durante unos minutos
@@ -394,6 +404,7 @@ $('#wa-abrir').onclick = async () => {
 $('#enviar').onclick = enviar;
 // Versión instalada, tomada del manifest: así se ve de inmediato si la extensión se actualizó
 $('#version').textContent = 'v' + chrome.runtime.getManifest().version;
+$('#historial').addEventListener('click', () => { chrome.tabs.create({ url: chrome.runtime.getURL('historial.html') + (TEL_NV ? '#' + TEL_NV.slice(-9) : '') }); window.close(); });
 // Versión nueva descargada (con "Actualizar ClaroGo!"): los archivos de la carpeta ya cambiaron pero la extensión sigue
 // usando la anterior. El botón la recarga desde la carpeta, sin pasar por la página de extensiones.
 const verMayor = (a, b) => { const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number); for (let i = 0; i < 3; i++) { if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0); } return false; };

@@ -19,3 +19,24 @@ chrome.storage.onChanged.addListener((c, area) => {
 });
 // Un pedido de deuda que nadie usó en 10 minutos se borra
 chrome.storage.local.get('deuda_pedido').then(o => { if (o.deuda_pedido && Date.now() - o.deuda_pedido.ts > 10 * 60000) chrome.storage.local.remove('deuda_pedido'); });
+
+// 5. Mi Planilla para el Historial de la extensión: se copia un resumen de cada cliente (los más recientes, hasta 3.000)
+//    al abrir la planilla, cada vez que se guarda un cambio y cuando otra pestaña la modifica. Así la extensión ve lo mismo en tiempo real.
+const PL_CAMPOS = ['id', 'fecha', 'hora', 'rut', 'nombre', 'telefono', 'origen', 'tipo', 'plan', 'notas', 'deuda', 'histTip', 'direccion', 'mail', 'campana', 'agenda', 'eq', 'tventa', 'upd'];
+let plTimer = 0;
+function copiarPlanilla() {
+  clearTimeout(plTimer);
+  plTimer = setTimeout(() => {
+    let filas = [];
+    try { filas = JSON.parse(localStorage.getItem('clarogo_control_v1') || '[]'); } catch (e) { return; }
+    if (!Array.isArray(filas)) return;
+    const resumen = filas.filter(r => r && !r.borrado).sort((a, b) => (b.upd || 0) - (a.upd || 0)).slice(0, 3000).map(r => {
+      const o = {}; PL_CAMPOS.forEach(k => { if (r[k] != null && r[k] !== '') o[k] = typeof r[k] === 'string' ? r[k].slice(0, k === 'notas' || k === 'histTip' ? 400 : 160) : r[k]; });
+      return o;
+    });
+    try { chrome.storage.local.set({ planilla_ct: { ts: Date.now(), filas: resumen } }); } catch (e) {}
+  }, 300);
+}
+window.addEventListener('message', e => { if (e.source === window && e.data && e.data.tipo === 'clarogo-ct') copiarPlanilla(); });
+window.addEventListener('storage', e => { if (e.key === 'clarogo_control_v1') copiarPlanilla(); });
+copiarPlanilla();

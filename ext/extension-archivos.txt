@@ -1,6 +1,8 @@
 deuda.js
 fondo.js
 formas.js
+historial.html
+historial.js
 icono-128.png
 icono-16.png
 icono-32.png

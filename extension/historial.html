@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Historial · ClaroGo!</title>
+<style>
+  :root { --red: #e60000; --text: #1f2430; --muted: #5f6673; --border: #e3e6eb; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f4f5f8; color: var(--text); font: 14px/1.45 "Segoe UI", system-ui, sans-serif; }
+  header { position: sticky; top: 0; z-index: 2; background: var(--red); color: #fff; padding: 12px 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; box-shadow: 0 2px 10px rgba(0,0,0,.15); }
+  header b { font-size: 1.25rem; font-weight: 900; }
+  header input { flex: 1; min-width: 220px; max-width: 520px; border: 0; border-radius: 999px; padding: 9px 16px; font: inherit; font-size: .95rem; }
+  header .filtros { display: flex; gap: 6px; }
+  header .filtros button { border: 1.5px solid rgba(255,255,255,.7); background: transparent; color: #fff; border-radius: 999px; padding: 5px 12px; font: inherit; font-weight: 700; font-size: .82rem; cursor: pointer; }
+  header .filtros button.on { background: #fff; color: var(--red); }
+  header small { opacity: .9; margin-left: auto; }
+  main { max-width: 1100px; margin: 0 auto; padding: 16px; display: grid; gap: 12px; }
+  .vacio { text-align: center; color: var(--muted); padding: 40px 10px; }
+  .cli { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 12px 16px; box-shadow: 0 2px 8px rgba(16,24,40,.04); }
+  .cab { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+  .cab .nom { font-size: 1.05rem; font-weight: 800; }
+  .cab .tel { font-weight: 800; color: var(--red); }
+  .cab .dato { color: var(--muted); font-size: .86rem; }
+  .ev { display: grid; grid-template-columns: 112px 108px 1fr; gap: 2px 12px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: .88rem; }
+  .ev .f { color: var(--muted); white-space: nowrap; }
+  .chip { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: .74rem; font-weight: 800; white-space: nowrap; }
+  .c-pl { background: #e7efff; color: #1a56b8; }
+  .c-tip { background: #f1ecff; color: #5746e3; }
+  .ok { color: #13804a; font-weight: 700; } .mal { color: #c00000; font-weight: 700; } .neu { color: #8a6100; font-weight: 700; }
+  .ev .det { color: #374151; }
+  @media (max-width: 640px) { .ev { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <b>ClaroGo! · Historial</b>
+  <input id="q" type="search" placeholder="Buscar por teléfono, RUT o nombre" autocomplete="off">
+  <span class="filtros"><button type="button" data-f="todo" class="on">Todo</button><button type="button" data-f="pl">Mi Planilla</button><button type="button" data-f="tip">Tipificaciones</button></span>
+  <small id="resumen"></small>
+</header>
+<main id="lista"><div class="vacio">Cargando…</div></main>
+<script src="historial.js"></script>
+</body>
+</html>

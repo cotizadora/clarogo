@@ -1072,7 +1072,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.6.4';
+const APP_VERSION = '2.7.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2301,9 +2301,9 @@ function initFaq() {
    y que comparten todos los navegadores del mismo PC.
    ════════════════════════════════════════════════════════════════ */
 // Códigos de conclusión de Genesys según la Inducción VR (Venta, Buzón de voz, Mudo o corta llamada, No molestar) y otros frecuentes
-const TIPIFICACIONES = ['Venta', 'Volver a llamar', 'Buzón de voz', 'No contesta', 'Mudo o corta llamada', 'No interesado', 'No molestar', 'Ya es cliente Claro', 'Rechazo de evaluación', 'Número equivocado', 'Otro'];
+const TIPIFICACIONES = ['Venta', 'Volver a llamar', 'Pendiente validación, volver a llamar', 'Buzón de voz', 'No contesta', 'Mudo o corta llamada', 'No interesado', 'No molestar', 'Ya es cliente Claro', 'Rechazo de evaluación', 'Número equivocado', 'Otro'];
 // Color de la fila según la tipificación: verde (venta o por cerrar), amarillo (neutra) y rojo (negativa)
-const TIPO_VERDE = ['Venta', 'Volver a llamar'];
+const TIPO_VERDE = ['Venta', 'Volver a llamar', 'Pendiente validación, volver a llamar'];
 const TIPO_ROJO = ['No interesado', 'No molestar', 'Ya es cliente Claro', 'Rechazo de evaluación', 'Número equivocado'];
 const tipoColor = t => !t ? '' : TIPO_VERDE.includes(t) ? 't-verde' : TIPO_ROJO.includes(t) ? 't-rojo' : 't-amarillo';
 const CT_KEY = 'clarogo_control_v1';
@@ -2324,7 +2324,10 @@ const ctLeerLocal = () => { try { const v = JSON.parse(localStorage.getItem(CT_K
 // Antes de escribir combina con lo que dejó otra pestaña, así una pestaña antigua nunca borra registros nuevos
 let ctRepintarPend = false;
 const ctRepintar = () => { if (!undoGrupo) undoBase = JSON.stringify(CT); if (!ctListo) return; if ($('#ct-body').contains(document.activeElement)) { ctRepintarPend = true; return; } ctRepintarPend = false; ctPinta(); };
-const ctGuardarLocal = () => { try { const antes = JSON.stringify(CT); CT = ctMezclar(CT, ctLeerLocal()); localStorage.setItem(CT_KEY, JSON.stringify(CT)); if (JSON.stringify(CT) !== antes) ctRepintar(); } catch (e) { if (!ctAviso) { ctAviso = true; toast('El navegador no dejó guardar la copia local. Revisa que el archivo de respaldo esté activo.'); } } };
+// Cada vez que se guarda, se avisa a la extensión para que su Historial quede al día al instante
+let ctExtTimer = 0;
+const ctAvisarExt = () => { if (!document.documentElement.dataset.clarogoExt) return; clearTimeout(ctExtTimer); ctExtTimer = setTimeout(() => window.postMessage({ tipo: 'clarogo-ct' }, location.origin), 600); };
+const ctGuardarLocal = () => { try { const antes = JSON.stringify(CT); CT = ctMezclar(CT, ctLeerLocal()); localStorage.setItem(CT_KEY, JSON.stringify(CT)); ctAvisarExt(); if (JSON.stringify(CT) !== antes) ctRepintar(); } catch (e) { if (!ctAviso) { ctAviso = true; toast('El navegador no dejó guardar la copia local. Revisa que el archivo de respaldo esté activo.'); } } };
 // Cada cambio: copia local inmediata y guardado en el archivo a los pocos segundos
 function ctGuardar() { undoRegistrar(); ctGuardarLocal(); gMarcarGuardado(); clearTimeout(ctTimer); ctTimer = setTimeout(() => respSync('edición'), AUTO_EDIT_SEG * 1000); }
 
@@ -3446,7 +3449,7 @@ function initControl() {
     if (el.dataset.k === 'plan') { const pv = el.closest('td').querySelector('.plan-ver'); if (pv) { pv.textContent = el.value ? el.value.replace(/^Plan\s+/i, '') : 'Sin plan'; pv.classList.toggle('vacio', !el.value); } el.title = el.value || 'Elegir plan'; }
     if (el.dataset.k === 'tipo') { const tr = el.closest('tr'); tr.classList.toggle('t-venta', el.value === 'Venta'); tr.classList.remove('t-verde', 't-rojo', 't-amarillo'); if (tipoColor(el.value)) tr.classList.add(tipoColor(el.value)); }
     if (el.dataset.k === 'origen') { const td = $(`#ct-body tr[data-id="${r.id}"]:not(.ficha) td.c-deu`); if (td) td.innerHTML = deudaBoton(r); }
-    if (el.dataset.k === 'tipo' && e.type === 'change' && el.value === 'Volver a llamar' && !(r.agenda && !r.agendaHecho)) agDialogo(r);
+    if (el.dataset.k === 'tipo' && e.type === 'change' && /volver a llamar/i.test(el.value) && !(r.agenda && !r.agendaHecho)) agDialogo(r);
   };
   body.addEventListener('input', actualizar);
   body.addEventListener('change', actualizar);

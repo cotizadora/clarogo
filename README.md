@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: ClaroGo! v2.7.0 y extensión 1.28.0
+
+- Nueva tipificación "Pendiente validación, volver a llamar" en Mi Planilla (en verde y con la misma agenda que "Volver a llamar").
+- Botón "📋 Historial" en la extensión: abre una página con todos los clientes, juntando Mi Planilla y las tipificaciones enviadas desde la extensión. Busca por teléfono, RUT, nombre o tipificación.
+- La planilla se copia a la extensión en tiempo real cada vez que se guarda un cambio, así el Historial y el aviso de cliente repetido siempre tienen los datos al día.
+
 ### 18-11-2026: ClaroGo! v2.6.4 y extensión 1.27.0
 
 - El neón del nombre dura hasta 30 segundos (se apaga al hacer clic en la celda) y el título de la pestaña de la planilla parpadea "🟢 ¡Nombre listo!" hasta que se ve.
