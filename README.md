@@ -50,13 +50,13 @@ GitHub Pages publica la rama `main` desde la raíz. Cada push a `main` actualiza
 
 ## Instalar ClaroGo! Genesys (para ejecutivos)
 
-Extensión (la misma que usa Eduardo):
+Enlace para compartir: **https://cotizadora.github.io/clarogo/ext/**
 
-1. Descargar https://cotizadora.github.io/clarogo/ext/clarogo-genesys-extension.zip
-2. Clic derecho en el archivo descargado, "Extraer todo".
-3. Abrir edge://extensions (o chrome://extensions) y activar "Modo para desarrolladores".
-4. Presionar "Cargar desempaquetada" y elegir la carpeta extraída.
-5. Para actualizar: descargar el zip nuevo, reemplazar la carpeta y presionar "Volver a cargar" en la extensión.
+1. Descargar el instalador (`ext/instalar-clarogo.bat`) y abrirlo con doble clic. No necesita permisos de administrador: baja `ext/clarogo-genesys-extension.zip`, borra y reemplaza todo en `Documentos\ClaroGo\extension` (la misma ruta para todos), copia la ruta y se cierra solo.
+2. En la página elegir Edge o Chrome y seguir los 3 pasos (solo la primera vez): abrir edge://extensions o chrome://extensions, activar "Modo para desarrolladores", "Cargar desempaquetada" y pegar la carpeta.
+3. Para actualizar: volver a abrir el instalador y presionar "Activar versión nueva" en la ventanita de ClaroGo!.
+
+**Importante al cambiar la extensión:** el instalador baja el zip, no la carpeta `extension/`. Cada vez que cambie la extensión hay que regenerar `ext/clarogo-genesys-extension.zip` con los archivos de `ext/extension-archivos.txt` (en la raíz del zip, sin carpeta). Los .bat se guardan con saltos de línea de Windows (`.gitattributes`).
 
 Opción con Tampermonkey:
 
@@ -67,6 +67,12 @@ Opción con Tampermonkey:
 5. No tener activa a la vez la extensión antigua ClaroGo! Genesys.
 
 ## Historial de cambios
+
+### 18-11-2026: instalación simple de la extensión
+
+- Página nueva https://cotizadora.github.io/clarogo/ext/ con dos pasos: descargar el instalador y elegir Edge o Chrome.
+- `ext/instalar-clarogo.bat` rehecho: una sola descarga (el zip), reemplaza todos los archivos en `Documentos\ClaroGo\extension`, no abre ventanas y se cierra solo. Tarda alrededor de un segundo.
+- `.gitattributes` para que los .bat se publiquen con saltos de línea de Windows.
 
 ### 18-11-2026: ClaroGo! v2.7.4, inicio más ordenado
 

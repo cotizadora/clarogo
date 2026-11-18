@@ -1,0 +1,2 @@
+# Los .bat se publican tal cual, con saltos de línea de Windows (CRLF); si no, cmd puede fallar
+*.bat -text
