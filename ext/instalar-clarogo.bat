@@ -1,6 +1,6 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
-title ClaroGo! Genesys - instalar o actualizar
+title ClaroGo^^! Genesys - instalar o actualizar
 color 0F
 
 rem ClaroGo! Genesys: instala o actualiza la extension.
@@ -13,7 +13,7 @@ set "LISTA=%TEMP%\clarogo-archivos.txt"
 
 echo.
 echo  ==========================================================
-echo     ClaroGo! Genesys   -   instalar o actualizar
+echo     ClaroGo^^! Genesys   -   instalar o actualizar
 echo  ==========================================================
 echo.
 echo  Carpeta de la extension:
@@ -59,6 +59,7 @@ del /q "%LISTA%" >nul 2>&1
 set "VER="
 for /f "tokens=2 delims=:," %%V in ('findstr /c:"\"version\"" "%DEST%\manifest.json"') do set "VER=%%~V"
 if defined VER set "VER=!VER: =!"
+if defined VER set "VER=!VER:"=!"
 
 echo.
 echo  ==========================================================
@@ -76,7 +77,7 @@ echo    3. Presiona "Cargar desempaquetada", pega la ruta con Ctrl+V
 echo       en la barra de arriba de la ventana y elige "Seleccionar carpeta".
 echo.
 echo  ACTUALIZAR (las proximas veces):
-echo    Busca ClaroGo! Genesys y presiona "Volver a cargar" (flecha circular).
+echo    Busca ClaroGo^^! Genesys y presiona "Volver a cargar" (flecha circular).
 echo.
 start "" msedge "edge://extensions" >nul 2>&1
 
