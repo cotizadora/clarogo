@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.17.0, formularios que se recorren solos
+
+- formas.js: en el registro de no venta abierto desde la extensión, pasa solo a la segunda página. En ese formulario y en el de ventas abierto lleno desde ClaroGo!, recorre con la pantalla cada respuesta escrita, la marca en azul y termina en el botón Enviar con el aviso "Listo para enviar". Enviar lo presiona siempre el ejecutivo.
+
 ### 18-11-2026: ClaroGo! v2.4.0, fila abierta y ficha como un solo bloque
 
 - La fila abierta y su ficha comparten el mismo fondo y un marco azul grueso alrededor de ambas.

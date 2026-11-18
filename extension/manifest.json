@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ClaroGo! Genesys",
   "short_name": "ClaroGo!",
-  "version": "1.16.0",
+  "version": "1.17.0",
   "description": "Lee los datos del cliente en la llamada de Genesys y los copia o los envía a Mi Planilla de ClaroGo!. Herramienta no oficial.",
   "action": {
     "default_title": "ClaroGo!: tomar datos de Genesys (Alt+Shift+G)",
@@ -16,7 +16,8 @@
   "background": { "service_worker": "fondo.js" },
   "content_scripts": [
     { "matches": ["https://cotizadora.github.io/clarogo/*"], "js": ["puente.js"], "run_at": "document_start" },
-    { "matches": ["https://*.clarochile.cl/*", "https://*.entel.cl/*", "https://*.movistar.cl/*", "https://*.wom.cl/*", "https://wom.cl/*"], "js": ["deuda.js"], "run_at": "document_idle" }
+    { "matches": ["https://*.clarochile.cl/*", "https://*.entel.cl/*", "https://*.movistar.cl/*", "https://*.wom.cl/*", "https://wom.cl/*"], "js": ["deuda.js"], "run_at": "document_idle" },
+    { "matches": ["https://docs.google.com/forms/d/e/1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ/*", "https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/*"], "js": ["formas.js"], "run_at": "document_idle", "all_frames": true }
   ],
   "permissions": ["activeTab", "scripting", "clipboardWrite", "storage"],
   "host_permissions": [

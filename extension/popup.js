@@ -162,6 +162,8 @@ function initNoVenta() {
     const m = $('#nv-motivo').value;
     if (!m) { mostrar('Elige el motivo de no venta.', 'mal'); $('#nv-motivo').focus(); return; }
     if (m === '__otro' && !($('#nv-otro').value || '').trim()) { mostrar('Escribe el motivo en el cuadro "Otro".', 'mal'); $('#nv-otro').focus(); return; }
+    // Aviso para formas.js: pasa a la segunda página, recorre lo llenado y deja listo el botón Enviar
+    try { await chrome.storage.local.set({ nv_pedido: { ts: Date.now() } }); } catch (e) {}
     await chrome.tabs.create({ url: nvURL(), active: true });
     window.close();
   });
