@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: ClaroGo! v2.6.3 y extensión 1.26.4
+
+- El pedido del Rutificador pasa por el fondo de la extensión, que anota la pestaña de la planilla que lo hizo y vuelve exactamente a ella. El brillo neón solo se enciende en esa pestaña y espera a que esté a la vista.
+
 ### 18-11-2026: ClaroGo! v2.6.2 y extensión 1.26.3
 
 - Después del Rutificador la extensión vuelve a la pestaña de Mi Planilla y la celda del nombre de esa fila se ilumina con efecto neón unos segundos.

@@ -1072,7 +1072,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.6.2';
+const APP_VERSION = '2.6.3';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2671,14 +2671,23 @@ window.addEventListener('message', e => {
   if (dir) { r.direccion = dirFormato(dir); ['calle', 'num', 'int', 'comuna', 'region'].forEach(k => { delete r[k]; }); }
   r.upd = Date.now(); ctGuardar(); ctPinta();
   toast('✅ Rutificador: ' + [r.nombre, r.direccion].filter(Boolean).join(' · '));
-  // La celda del nombre se ilumina con efecto neón para mostrar que llegó completo
-  setTimeout(() => {
-    const tr = $(`#ct-body tr[data-id="${r.id}"]:not(.ficha)`); if (!tr) return;
-    const td = tr.querySelector('td.c-nombre'); if (!td) return;
-    tr.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    td.classList.remove('neon'); void td.offsetWidth; td.classList.add('neon');
-    setTimeout(() => td.classList.remove('neon'), 6500);
-  }, 150);
+  // La celda del nombre se ilumina con efecto neón para mostrar que llegó completo.
+  // Si la pestaña está escondida (el Rutificador está delante), espera a que vuelva a estar a la vista.
+  const brillar = () => {
+    if (location.hash !== '#control') location.hash = 'control';
+    setTimeout(() => {
+      ctPinta();
+      const tr = $(`#ct-body tr[data-id="${r.id}"]:not(.ficha)`); if (!tr) return;
+      const td = tr.querySelector('td.c-nombre'); if (!td) return;
+      tr.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      td.classList.remove('neon'); void td.offsetWidth; td.classList.add('neon');
+      setTimeout(() => td.classList.remove('neon'), 6500);
+    }, 350);
+  };
+  if (window.__rutifFila !== r.id) return;   // solo brilla en la pestaña desde donde se pidió
+  window.__rutifFila = '';
+  if (!document.hidden) brillar();
+  else document.addEventListener('visibilitychange', function f() { if (document.hidden) return; document.removeEventListener('visibilitychange', f); brillar(); });
 });
 window.addEventListener('message', e => {
   if (e.source !== window || !e.data || e.data.tipo !== 'clarogo-deuda-res') return;
@@ -3457,7 +3466,7 @@ function initControl() {
     if (b.dataset.ct === 'rutificador') {
       // Con la extensión, el Rutificador busca el RUT solo y devuelve el nombre completo y la dirección a esta fila
       const ext = !!document.documentElement.dataset.clarogoExt;
-      if (r.rut && ext) window.postMessage({ tipo: 'clarogo-rutif', rut: r.rut, id: r.id }, location.origin);
+      if (r.rut && ext) { window.__rutifFila = r.id; window.postMessage({ tipo: 'clarogo-rutif', rut: r.rut, id: r.id }, location.origin); }
       if (r.rut) copyText(r.rut, ext ? 'Buscando en el Rutificador. El nombre y la dirección llegan solos a esta fila.' : 'RUT copiado. Pégalo en el Rutificador.');
       else toast('Primero escribe el RUT del cliente en la fila.');
       window.open('https://www.nombrerutyfirma.com/', '_blank', 'noopener');

@@ -112,10 +112,19 @@ async function abrirWhatsApp(url, img) {
 chrome.runtime.onMessage.addListener((msg, _de, responder) => {
   // "Activar versión nueva": se recarga desde el fondo, con la ventana ya cerrada (recargar desde la ventana puede dejarla trabada)
   if (msg && msg.tipo === 'recargar') { setTimeout(() => chrome.runtime.reload(), 400); return; }
-  // Después del Rutificador se vuelve a la pestaña de Mi Planilla (primero la que está en #control)
+  // Pedido del Rutificador: se guarda con la pestaña de la planilla que lo hizo
+  if (msg && msg.tipo === 'rutif-pedido') {
+    const tab = _de && _de.tab ? _de.tab.id : 0;
+    chrome.storage.local.set({ rutif_pedido: { rut: msg.rut, id: msg.id, ts: Date.now() }, rutif_tab: { tab, ts: Date.now() } });
+    return;
+  }
+  // Después del Rutificador se vuelve a la misma pestaña de Mi Planilla desde donde se pidió
   if (msg && msg.tipo === 'volver-planilla') {
-    chrome.tabs.query({ url: 'https://cotizadora.github.io/clarogo/*' }).then(tabs => {
-      const t = tabs.find(x => /#control/.test(x.url || '')) || tabs[0]; if (!t) return;
+    chrome.storage.local.get('rutif_tab').then(async o => {
+      let t = null;
+      try { if (o.rutif_tab && o.rutif_tab.tab) t = await chrome.tabs.get(o.rutif_tab.tab); } catch (e) { t = null; }
+      if (!t) { const tabs = await chrome.tabs.query({ url: 'https://cotizadora.github.io/clarogo/*' }); t = tabs.find(x => /#control/.test(x.url || '')) || tabs[0]; }
+      if (!t) return;
       chrome.tabs.update(t.id, { active: true }); chrome.windows.update(t.windowId, { focused: true });
     }).catch(() => {});
     return;
