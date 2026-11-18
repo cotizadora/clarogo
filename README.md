@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.18.1, sello de estado en los formularios
+
+- Sello abajo a la izquierda en los formularios de ventas y no venta con la versión y el estado (revisando, activo, esperando la segunda hoja, listo para enviar, o por qué no actúa), para saber si la extensión está corriendo.
+
 ### 18-11-2026: extensión 1.18.0, panel "Listo para enviar" y ventana en dos columnas
 
 - Causa del recorrido que no funcionaba: Google Forms bloquea armar HTML con texto (Trusted Types) y el script se detenía. Ahora todo se crea elemento por elemento.

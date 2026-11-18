@@ -7,15 +7,21 @@
   const NV = '1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ';
   const VENTA = '1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw';
   const esNV = location.pathname.includes(NV), esVenta = location.pathname.includes(VENTA);
-  if (!esNV && !esVenta || window.__cgFormas) return;
+  if (!esNV && !esVenta || window.__cgFormas || window.top !== window) return;
   window.__cgFormas = true;
   const esperar = ms => new Promise(r => setTimeout(r, ms));
+  // Sello abajo a la izquierda: muestra que la extensión está funcionando en este formulario y en qué estado
+  const sello = document.createElement('div');
+  sello.style.cssText = 'position:fixed;left:12px;bottom:12px;z-index:2147483647;padding:6px 10px;border-radius:10px;background:#1f2430;color:#fff;font:600 12px "Segoe UI",system-ui,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.3)';
+  const marcar = t => { sello.textContent = 'ClaroGo! v' + chrome.runtime.getManifest().version + ' · ' + t; if (!sello.isConnected) document.documentElement.appendChild(sello); };
+  marcar('revisando…');
 
   let pedido = null;
   if (esNV) {
     pedido = (await chrome.storage.local.get('nv_pedido')).nv_pedido;
-    if (!pedido || Date.now() - pedido.ts > 15 * 60000) return;   // solo si se abrió desde la extensión hace poco
-  } else if (!/entry\./.test(location.search)) return;           // formulario de ventas abierto lleno desde ClaroGo!
+    if (!pedido || Date.now() - pedido.ts > 15 * 60000) { marcar('formulario no abierto desde la extensión'); return; }
+  } else if (!/entry\./.test(location.search)) { marcar('formulario sin datos de ClaroGo!'); return; }
+  marcar('activo');
 
   const estilo = document.createElement('style');
   estilo.textContent = `
@@ -45,6 +51,7 @@
     pedido.avanzo = true; await chrome.storage.local.set({ nv_pedido: pedido });
     await esperar(1000);
     const s = boton('Siguiente'); if (s) s.click();
+    marcar('esperando la segunda hoja');
   }
 
   // Paso 2: vigilar hasta que aparezca el botón Enviar (sirve si Google recarga la página o si cambia de hoja sin recargar)
@@ -88,6 +95,7 @@
     ir.onclick = () => { const e = boton('Enviar'); if (e) ver(e); };
     panel.append(ya, ir);
     document.documentElement.appendChild(panel);
+    marcar('listo para enviar');
     const p = document.getElementById('cg-paso'); if (p) p.remove();
     // Recorrido rápido por las respuestas (si el navegador lo permite) y queda en el botón Enviar
     (async () => { for (const q of preguntas) { ver(q); await esperar(700); } const e = boton('Enviar'); if (e) ver(e); })();
