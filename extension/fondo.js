@@ -167,6 +167,15 @@ async function volverAGenesys() {
   } catch (e) {}
 }
 
+// Vuelve a la pestaña de ClaroGo! (la de Mi Planilla si hay) para seguir con la siguiente línea de la venta
+async function volverAClaroGo() {
+  try {
+    const tabs = (await chrome.tabs.query({ url: 'https://cotizadora.github.io/clarogo/*' })).sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0));
+    const t = tabs.find(x => /#control/.test(x.url || '')) || tabs[0]; if (!t) return volverAGenesys();
+    await chrome.tabs.update(t.id, { active: true }); await chrome.windows.update(t.windowId, { focused: true });
+  } catch (e) {}
+}
+
 // Corre dentro de cada marco de Genesys. Actúa solo en el recuadro de conclusión (acw-gadgets-wrap-up):
 // busca el botón "Enviar" (también dentro de componentes con shadow DOM) y lo hace brillar hasta que se presiona.
 async function neonEnviarGenesys() {
@@ -210,7 +219,10 @@ chrome.storage.onChanged.addListener((c, area) => {
       const t = (await chrome.tabs.query({ url: VENTA })).sort((a, b) => (b.active - a.active) || ((b.lastAccessed || 0) - (a.lastAccessed || 0)))[0];
       if (t) await chrome.scripting.executeScript({ target: { tabId: t.id }, func: avisoCentro, args: ['Venta ingresada'] });
     } catch (e) {}
-    setTimeout(volverAGenesys, 4400);
+    // Si quedan líneas de la misma venta por subir, se vuelve a ClaroGo! para abrir la siguiente; si no, a Genesys
+    let vl = null; try { vl = (await chrome.storage.local.get('venta_lineas')).venta_lineas; } catch (e) {}
+    if (vl && vl.quedan > 0 && Date.now() - vl.ts < 30 * 60000) setTimeout(volverAClaroGo, 4400);
+    else setTimeout(volverAGenesys, 4400);
   }, 1500);
 });
 

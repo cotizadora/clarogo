@@ -68,6 +68,13 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: ClaroGo! v2.10.0 y extensión 1.32.0, varias líneas
+
+- **Subir la venta línea por línea:** el formulario de venta se envía una vez por número. Si el cliente tiene más de una línea, "Subir venta" (ficha, Ingreso de Venta) abre la lista de líneas: cada una abre el formulario con su número en "número a portar", siempre en la misma pestaña, y queda marcada en verde. El botón rojo abre la siguiente pendiente.
+- **Agregar líneas fácil:** en la ficha y en el Script, un cuadro por número con "+ Agregar línea" y ✕ para quitar. Pegar varios números de una vez los separa solos (quita el 56). Se guarda en el mismo dato de siempre (`adic`), así planilla, Script y extensión siguen conectados. La línea 1 es el número a portar.
+- **Extensión:** mientras queden líneas por subir, después de enviar cada formulario vuelve a ClaroGo! para la siguiente; con la última va a Genesys con el neón en Enviar.
+- **Cliente de prueba:** botón "🧪 Cliente de prueba (6 líneas)" en Mi Planilla. Crea "PRUEBA NO ENVIAR" con 6 números distintos para ver el flujo; el formulario muestra un aviso para no enviarlo.
+
 ### 18-11-2026: ClaroGo! v2.9.0, sección MuteReal
 
 - Sección nueva **MuteReal** (#mute): programa de Eduardo para Windows que muestra si el micrófono está realmente silenciado. Botón grande de descarga (`descargas/MuteReal.exe`), qué hace y cómo usarlo.

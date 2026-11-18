@@ -15,6 +15,8 @@ window.addEventListener('message', e => {
   if (e.data.tipo === 'clarogo-rutif' && /^[0-9kK.\-]{3,12}$/.test(String(e.data.rut || ''))) {
     try { chrome.runtime.sendMessage({ tipo: 'rutif-pedido', rut: String(e.data.rut), id: String(e.data.id || '').slice(0, 40) }).then(() => window.postMessage({ tipo: 'clarogo-rutif-ok' }, location.origin), () => {}); } catch (err) {}
   }
+  // Venta con varias líneas: cuántas faltan por subir (el fondo decide si vuelve a ClaroGo! o a Genesys)
+  if (e.data.tipo === 'clarogo-venta-lineas') chrome.storage.local.set({ venta_lineas: { quedan: Math.max(0, Math.min(50, +e.data.quedan || 0)), ts: Date.now() } });
   if (e.data.tipo === 'clarogo-perfil') chrome.storage.local.set({ nombre: String(e.data.nombre || '').slice(0, 80), plantilla: String(e.data.plantilla || '').slice(0, 2000), firma: String(e.data.firma || '').slice(0, 2000), telefono: String(e.data.telefono || '').slice(0, 40), planes: Array.isArray(e.data.planes) ? e.data.planes.slice(0, 20).map(p => ({ id: String(p.id || ''), titulo: String(p.titulo || '').slice(0, 80), detalle: String(p.detalle || '').slice(0, 3000), img: /^data:image\/(png|jpeg);base64,/.test(String(p.img || '')) && String(p.img).length < 4000000 ? p.img : '' })) : [] });
 });
 chrome.storage.onChanged.addListener((c, area) => {

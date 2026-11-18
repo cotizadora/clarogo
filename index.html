@@ -81,6 +81,22 @@ body[data-view="inicio"] #nav{visibility:hidden}
 
 /* Elementos comunes */
 .h{font-size:1.25rem;font-weight:800;margin-bottom:4px}
+/* Líneas: lista para subir la venta por número y cuadros para agregar líneas */
+#ln-lista{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.ln-fila{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--border);border-radius:10px}
+.ln-fila.sig{border-color:var(--red);background:#fff5f5}
+.ln-fila.ok{background:#effaf3;border-color:#bfe3cc}
+.ln-fila b{display:block;font-size:.95rem}
+.ln-fila small{color:var(--muted);font-size:.75rem}
+.ln-n{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;font-weight:800;font-size:.8rem}
+.ln-fila.ok .ln-n{background:#14804a}
+.ln-ui{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.ln-item{display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:9px;background:#fff;overflow:hidden}
+.ln-item i{font-style:normal;font-size:.7rem;font-weight:800;color:#fff;background:var(--muted);padding:0 6px;align-self:stretch;display:grid;place-items:center}
+.ln-item input{width:104px;border:0!important;padding:6px 6px!important;font:inherit;font-size:.85rem;background:transparent}
+.ln-item button{border:0;background:transparent;color:var(--muted);padding:0 8px;cursor:pointer;font-size:.8rem}
+.ln-item button:hover{color:var(--red)}
+.ln-cuenta{font-size:.75rem;color:var(--muted)}
 /* MuteReal: franja destacada en el inicio (solo PC, en celular va como botón) y su sección */
 .mute-banner{display:none}
 @media (min-width:900px){
@@ -792,7 +808,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
         <div><label for="sc-medio">Enlace de validación enviado por</label><select id="sc-medio"><option value="">Elegir medio</option><option>correo electrónico</option><option>WhatsApp</option><option>SMS</option></select></div>
         <div><label for="sc-tipo">Tipo de venta</label><select id="sc-tipo"><option value="port">PortIn Post-Post</option><option value="portpre">PortIn Pre-Post</option><option value="migra">Migración</option><option value="ln">Línea nueva</option></select></div>
         <div><label for="sc-plan">Plan</label><select id="sc-plan"></select></div>
-        <div style="grid-column:1/-1"><label for="sc-adic">Números de líneas adicionales (solo si aplica)</label><input type="text" id="sc-adic" placeholder="Ej: 9 1111 1111, 9 2222 2222"></div>
+        <div style="grid-column:1/-1"><label>Líneas adicionales (la línea 1 es el número a portar)</label><input type="hidden" id="sc-adic"><div class="ln-ui" id="sc-adic-ui"></div></div>
       </div>
       <div class="lbl" style="margin-top:14px">Equipo (solo si aplica)</div>
       <div class="form2">
@@ -889,6 +905,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
         <button class="btn sm" id="ct-excel">⬇ Exportar a Excel</button>
         <button class="btn sm" id="ct-exportar" title="Archivo con todos los datos de los clientes de la lista, para enviarlo por WhatsApp o abrirlo en otro computador">💾 Exportar clientes</button>
         <button class="btn sm" id="ct-importar" title="Cargar clientes desde un archivo exportado por ClaroGo!">📂 Importar clientes</button><input type="file" id="ct-imp-file" accept=".txt,.json,text/plain,application/json" hidden>
+        <button class="btn sm" id="ct-prueba" title="Crea un cliente de prueba con 6 líneas para ver cómo se sube la venta línea por línea">🧪 Cliente de prueba (6 líneas)</button>
       </div>
       <input class="full" type="search" id="ct-q" placeholder="Buscar RUT, nombre, teléfono o notas" autocomplete="off">
       <select id="ct-periodo" autocomplete="off"><option value="todo" selected>Todo el historial</option><option value="hoy">Hoy</option><option value="7">Últimos 7 días</option><option value="30">Últimos 30 días</option><option value="mes">Este mes</option><option value="rango">Entre fechas</option></select>
@@ -1097,6 +1114,16 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   </div>
 </dialog>
 
+<dialog id="dlg-lineas">
+  <div class="d-head"><div><h2>Subir la venta línea por línea</h2><p id="ln-sub"></p></div><button class="d-x" data-close>✕</button></div>
+  <div class="d-body">
+    <p id="ln-prueba" class="note red" hidden>🧪 Cliente de prueba: revisa cómo se llena el formulario, pero <b>no presiones Enviar</b>.</p>
+    <p style="font-size:.86rem">El formulario de venta se envía <b>una vez por cada número</b>. Abre la línea, revisa los datos, presiona <b>Enviar</b> en el formulario y vuelve aquí para la siguiente. Siempre se usa la misma pestaña.</p>
+    <div id="ln-lista"></div>
+    <div class="d-foot"><button class="btn" data-close>Cerrar</button><button class="btn red" id="ln-sig">Abrir siguiente línea</button></div>
+  </div>
+</dialog>
+
 <dialog id="dlg-pegar">
   <div class="d-head"><div><h2>Pegar desde Genesys</h2><p>Este navegador no permitió leer el portapapeles</p></div><button class="d-x" data-close>✕</button></div>
   <div class="d-body">
@@ -1122,7 +1149,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.9.0';
+const APP_VERSION = '2.10.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2067,6 +2094,7 @@ function scCargar(r) {
   if (!r.fono && r.telefono) $('#sc-fono').value = r.telefono;
   const p = PLANES_VIGENTES.find(x => x.title === r.plan); if (p) $('#sc-plan').value = p.id;
   $('#sc-rut').dispatchEvent(new Event('input', { bubbles: true }));
+  if ($('#sc-adic')._lnPinta) $('#sc-adic')._lnPinta();
   scCargando = false;
 }
 // Planilla → Script: si la fila vinculada cambió (en la planilla, el Rutificador, la extensión u otra pestaña),
@@ -2099,6 +2127,7 @@ function scGuardarEnFila(e) {
   r.upd = Date.now(); scFirma = r.id + ':' + r.upd; ctGuardar(); ctRepintar();
 }
 function initScript() {
+  lineasUI($('#sc-adic-ui'), $('#sc-adic'));
   const $v = id => $('#sc-' + id).value.trim(), rut = $('#sc-rut');
   const F = (val, ph) => val ? `<b class="fill">${esc(val)}</b>` : `<b class="fill empty">[${esc(ph)}]</b>`;
   const plata = s => { const n = String(s).replace(/[^\d]/g, ''); return n ? clp(+n) : ''; };
@@ -2167,13 +2196,28 @@ const FV_REGIONES = ['DE ARICA Y PARINACOTA','DE TARAPACÁ','DE ANTOFAGASTA','DE
 const FV = { fecha: 'entry.1681596587', rut: 'entry.202702879', nombre: 'entry.1000154781', mail: 'entry.727011340', contrato: 'entry.901628406', portar: 'entry.34004225', plan: 'entry.1509286259', dir: 'entry.1928379545', region: 'entry.5531571', comuna: 'entry.510377171', tipo: 'entry.1374338688', coneq: 'entry.1539772502', equipo: 'entry.1904621374' };
 const fvNorm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9ñ ]/g, ' ').replace(/\s+/g, ' ').trim();
 const fvOpcion = (lista, v) => { const n = fvNorm(v); if (!n) return ''; return lista.find(x => fvNorm(x) === n) || lista.find(x => fvNorm(x).replace(/^(de|del|de la|de los) /, '') === n.replace(/^(region )?(de|del|de la|de los) /, '').replace(/^region /, '')) || lista.find(x => n.length > 4 && fvNorm(x).includes(n)) || ''; };
-function ventaURL(r) {
+/* ── Líneas del cliente ─────────────────────────────────────────────
+   Línea 1 es el número a portar (o el teléfono); después van las líneas adicionales.
+   Acepta números separados por coma, punto y coma, salto de línea o pegados de corrido. */
+const numerosDe = txt => {
+  const out = [];
+  String(txt || '').split(/[,;\n/|]+/).forEach(trozo => {
+    let d = trozo.replace(/\D/g, '');
+    while (d.length >= 9) {
+      if (d.startsWith('56') && d.length >= 11 && d[2] === '9') d = d.slice(2);
+      out.push(d.slice(0, 9)); d = d.slice(9);
+    }
+  });
+  return out;
+};
+const lineasDe = r => [...new Set([...numerosDe(r.fono || r.telefono).slice(0, 1), ...numerosDe(r.adic)])];
+function ventaURL(r, numero) {
   const sep = r.calle || r.comuna ? r : dirSeparar(dirTexto(r));
   const planes = { 'Plan 500': 'Plan 500 GB', 'Plan 800': 'Plan 800 GB', 'Plan 1000': 'Plan 1000 GB', 'Plan Persona Mayor': 'Plan Adulto Mayor' };
   const coneq = r.sineq ? 'No' : r.eq ? 'Si' : '';
   const tipo = { port: coneq === 'Si' ? 'Porta con equipo' : 'Porta Post a Post', portpre: 'Porta Pre a Post', ln: 'Venta Linea Nueva', migra: 'Migracion' }[r.tventa] || '';
   const v = {
-    fecha: r.fecha || hoyISO(), rut: r.rut, nombre: r.nombre, mail: r.mail, contrato: r.telefono, portar: r.fono,
+    fecha: r.fecha || hoyISO(), rut: r.rut, nombre: r.nombre, mail: r.mail, contrato: r.telefono, portar: numero || r.fono,
     plan: planes[r.plan] || '', dir: dirTexto(r),
     region: fvOpcion(FV_REGIONES, sep.region), comuna: fvOpcion(FV_COMUNAS, sep.comuna), tipo, coneq,
     equipo: coneq === 'Si' ? (r.eqsku || r.eq || '') : ''
@@ -2181,8 +2225,68 @@ function ventaURL(r) {
   const q = Object.entries(v).filter(([, x]) => String(x || '').trim()).map(([k, x]) => FV[k] + '=' + encodeURIComponent(String(x).trim()));
   return FORM_VENTA + '?usp=pp_url&' + q.join('&');
 }
+// Varias líneas: el formulario se envía una vez por número. Se abre la lista para subirlas una tras otra.
+let lnFila = '';
+function lineasAbrir(id) {
+  lnFila = id; lineasPinta(); abrir('dlg-lineas');
+}
+function lineasPinta() {
+  const r = CT.find(x => x.id === lnFila); if (!r) return;
+  const ls = lineasDe(r), hechas = r.lineasForm || {}, hora = t => new Date(t).toTimeString().slice(0, 5);
+  const sig = ls.findIndex(n => !hechas[n]);
+  $('#ln-sub').textContent = `${r.nombre || 'Cliente sin nombre'} · ${ls.length} líneas · ${ls.filter(n => hechas[n]).length} abiertas`;
+  $('#ln-prueba').hidden = !/prueba/i.test(r.nombre || '');
+  $('#ln-lista').innerHTML = ls.map((n, i) => `<div class="ln-fila${hechas[n] ? ' ok' : ''}${i === sig ? ' sig' : ''}">
+    <span class="ln-n">${i + 1}</span><div><b>${n.replace(/^(\d)(\d{4})(\d{4})$/, '$1 $2 $3')}</b><small>${i === 0 ? 'Línea principal' : 'Línea adicional'}${hechas[n] ? ' · formulario abierto a las ' + hora(hechas[n]) : ''}</small></div>
+    <button type="button" class="btn sm${i === sig ? ' red' : ''}" data-ln="${n}">${hechas[n] ? 'Abrir de nuevo' : 'Abrir formulario'}</button></div>`).join('');
+  $('#ln-sig').disabled = sig < 0;
+  $('#ln-sig').textContent = sig < 0 ? '✅ Todas las líneas abiertas' : `Abrir línea ${sig + 1} de ${ls.length}`;
+}
+function lineaAbrirForm(numero) {
+  const r = CT.find(x => x.id === lnFila); if (!r) return;
+  window.open(ventaURL(r, numero), 'clarogo-venta');
+  r.lineasForm = Object.assign({}, r.lineasForm, { [numero]: Date.now() }); r.upd = Date.now(); ctGuardar(); lineasPinta();
+  const ls = lineasDe(r);
+  // Avisa a la extensión cuántas líneas faltan: al enviar el formulario vuelve aquí si quedan, o a Genesys si era la última
+  window.postMessage({ tipo: 'clarogo-venta-lineas', quedan: ls.filter(n => !r.lineasForm[n]).length }, location.origin);
+  toast(`Formulario de la línea ${ls.indexOf(numero) + 1} de ${ls.length} (${numero}). Revisa y presiona Enviar; luego vuelve aquí para la siguiente.`);
+}
+function initLineas() {
+  $('#ln-lista').addEventListener('click', e => { const b = e.target.closest('[data-ln]'); if (b) lineaAbrirForm(b.dataset.ln); });
+  $('#ln-sig').onclick = () => { const r = CT.find(x => x.id === lnFila); if (!r) return; const n = lineasDe(r).find(x => !(r.lineasForm || {})[x]); if (n) lineaAbrirForm(n); };
+}
+/* Cuadros de líneas: un número por cuadro, botón para agregar y pegar varios de una vez.
+   Escribe en un campo oculto (el mismo dato "adic" de siempre) y avisa con input/change, así planilla, Script y extensión siguen igual. */
+function lineasUI(cont, oculto) {
+  if (!cont || !oculto || cont.dataset.listo) return; cont.dataset.listo = '1';
+  const leer = () => String(oculto.value || '').split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
+  const escribir = (nums, tipo) => { oculto.value = nums.map(s => s.trim()).filter(Boolean).join(', '); oculto.dispatchEvent(new Event(tipo, { bubbles: true })); };
+  const pinta = (enfocar) => {
+    const nums = leer(); if (enfocar === 'nuevo') nums.push('');
+    cont.innerHTML = nums.map((n, i) => `<span class="ln-item"><i>${i + 2}</i><input value="${esc(n)}" data-i="${i}" inputmode="numeric" placeholder="9XXXXXXXX" aria-label="Línea ${i + 2}"><button type="button" data-q="${i}" title="Quitar esta línea">✕</button></span>`).join('')
+      + `<button type="button" class="btn sm ln-add" data-add>+ Agregar línea</button><span class="ln-cuenta">${leer().length ? `Total: ${leer().length + 1} líneas (principal + ${leer().length})` : 'Solo la línea principal'}</span>`;
+    if (enfocar === 'nuevo') { const ins = cont.querySelectorAll('input'); ins[ins.length - 1].focus(); }
+  };
+  oculto._lnPinta = () => pinta();
+  const todos = () => [...cont.querySelectorAll('.ln-item input')].map(i => i.value);
+  cont.addEventListener('input', e => { if (e.target.matches('.ln-item input')) escribir(todos(), 'input'); });
+  cont.addEventListener('change', e => { if (e.target.matches('.ln-item input')) { escribir(todos(), 'change'); pinta(); } });
+  cont.addEventListener('paste', e => {
+    if (!e.target.matches('.ln-item input')) return;
+    const nums = numerosDe((e.clipboardData || window.clipboardData).getData('text')); if (nums.length < 2) return;
+    e.preventDefault(); const lista = todos(), i = +e.target.dataset.i; lista.splice(i, 1, ...nums); escribir(lista, 'change'); pinta();
+    toast(`${nums.length} líneas agregadas`);
+  });
+  cont.addEventListener('click', e => {
+    if (e.target.closest('[data-add]')) { escribir(todos(), 'change'); pinta('nuevo'); return; }
+    const q = e.target.closest('[data-q]'); if (q) { const lista = todos(); lista.splice(+q.dataset.q, 1); escribir(lista, 'change'); pinta(); }
+  });
+  pinta();
+}
 function ventaAbrir(id, aqui) {
   const r = CT.find(x => x.id === id); if (!r) return toast('Elige un cliente de Mi Planilla.');
+  if (lineasDe(r).length > 1) return lineasAbrir(r.id);
+  window.postMessage({ tipo: 'clarogo-venta-lineas', quedan: 0 }, location.origin);
   const url = ventaURL(r);
   if (aqui) { if (location.hash !== '#venta') location.hash = 'venta'; $('#venta-frame').src = url + '&embedded=true'; }
   else window.open(url, 'clarogo-venta');   // reutiliza la pestaña del formulario si ya está abierta
@@ -2779,8 +2883,9 @@ function ctFichaHTML(r) {
     if (ph === 'MEDIOS') inp = `<select data-k="${k}"><option value="">Elegir</option>${MEDIOS.map(x => `<option${r[k] === x ? ' selected' : ''}>${x}</option>`).join('')}</select>`;
     else if (ph === 'GENERO') { const auto = generoPorNombre(r.nombre); inp = `<select data-k="${k}"><option value="">Automático${auto ? ` (${auto === 'F' ? 'estimada' : 'estimado'})` : r.nombre ? ' (solo el nombre)' : ''}</option><option value="F"${r[k] === 'F' ? ' selected' : ''}>Mujer: estimada</option><option value="M"${r[k] === 'M' ? ' selected' : ''}>Hombre: estimado</option><option value="N"${r[k] === 'N' ? ' selected' : ''}>Sin estimado(a), solo el nombre</option></select>`; }
     else if (ph === 'TVENTA') inp = `<select data-k="${k}"><option value="">Elegir</option>${TVENTA.map(([v, t]) => `<option value="${v}"${r[k] === v ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
+    else if (k === 'adic') inp = `<input type="hidden" data-k="adic" value="${esc(r.adic || '')}"><div class="ln-ui"></div>`;
     else inp = `<input data-k="${k}" value="${esc(k === 'direccion' ? dirTexto(r) : (r[k] || ''))}" placeholder="${esc(ph)}"${k === 'region' ? ' list="sc-regiones"' : k === 'eta' ? ' list="sc-etas"' : ''}>`;
-    return `<div${k === 'direccion' ? ' style="grid-column:1/-1"' : ''}><label>${l}</label>${inp}</div>`;
+    return `<div${k === 'direccion' || k === 'adic' ? ' style="grid-column:1/-1"' : ''}><label>${k === 'adic' ? 'Líneas adicionales (la línea 1 es el número a portar)' : l}</label>${inp}</div>`;
   };
   const MOD = { Cliente: ['cliente', ICO.cliente], Venta: ['venta', ICO.venta], Equipo: ['equipo', ICO.equipo], Despacho: ['despacho', ICO.despacho] };
   const modulo = ([t, cs]) => { const [c, ico] = MOD[t] || ['cliente', ICO.cliente]; return t === 'Equipo'
@@ -3390,6 +3495,7 @@ function ctPinta() {
       : `<button data-ct="wa" class="wa" title="Abrir WhatsApp Web con este cliente y enviarle la oferta"><svg viewBox="0 0 16 16"><path d="${ICONOS.wa}"/></svg></button><button data-ct="genesys" class="gen" title="Traer el teléfono desde Genesys (reemplaza el de esta fila)"><svg class="gico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="11.2" cy="2.6" r="1.8"/><rect x="4.2" y="5.4" width="6" height="9.4" rx="3"/></svg><span class="gen-t">Genesys</span></button><button data-ct="copiar" class="cop" title="Copiar los datos del cliente para WhatsApp (por ejemplo, para enviarlos a la supervisora)">📋</button><button data-ct="ficha" class="fic${r.id === ctAbierto ? ' on' : ''}" style="--i:${i}" title="${r.id === ctAbierto ? 'Cerrar la ficha' : 'Abrir la ficha con todos los datos del cliente'}">${r.id === ctAbierto ? '▴<span class="fic-t"> Cerrar</span>' : '▾<span class="fic-t"> Ficha</span>'}</button><button data-ct="rutificador" class="rutif" title="Copiar el RUT y abrir el Rutificador">RUTIFICADOR</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
   </tr>${r.id === ctAbierto && !r.borrado ? ctFichaHTML(r) : ''}`).join('');
   $$('#ct-body textarea.nom').forEach(nomAlto);
+  $$('#ct-body .ln-ui').forEach(c => lineasUI(c, c.previousElementSibling));
   $('#ct-vacio').hidden = lista.length > 0;
   // Si el período oculta registros, se dice cuántos hay y se ofrece verlos (los registros nunca se borran solos)
   const ocultos = verBorr ? 0 : CT.filter(r => !r.borrado).length - lista.length;
@@ -3488,6 +3594,17 @@ function initControl() {
   $('#ct-nueva').onclick = () => ctAgregar({});
   $('#ct-exportar').onclick = () => ctExportar(ctFiltradas().filter(r => !r.borrado), `clarogo-clientes-${hoyISO()}.txt`);
   $('#ct-importar').onclick = () => $('#ct-imp-file').click();
+  // Cliente de prueba: 6 números distintos (principal + 5 adicionales) para ver la subida línea por línea
+  $('#ct-prueba').onclick = () => {
+    const nums = []; while (nums.length < 6) { const x = '9' + String(Math.floor(Math.random() * 1e8)).padStart(8, '0'); if (!nums.includes(x)) nums.push(x); }
+    const r = ctAgregar({ rut: '11.111.111-1', nombre: 'PRUEBA NO ENVIAR', telefono: nums[0], fono: nums[0], contacto: nums[0], adic: nums.slice(1).join(', '),
+      plan: 'Plan 500', tventa: 'port', sineq: true, origen: 'Entel', mail: 'prueba@ejemplo.cl', direccion: 'Calle Prueba 123, Santiago, Región Metropolitana',
+      notas: 'Cliente de prueba con 6 líneas: no enviar el formulario' });
+    if (!r) return;
+    ctAbierto = r.id; ctNuevo = r.id; ctGuardar(); ctPinta();
+    setTimeout(() => { const t = $(`#ct-body tr.ficha[data-id="${r.id}"]`); if (t) t.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 100);
+    toast('🧪 Cliente de prueba creado con 6 líneas. En su ficha presiona "Subir venta" para ver la subida línea por línea.');
+  };
   $('#ct-imp-file').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (!f) return; if (f.size > 20e6) return toast('El archivo es demasiado grande.'); f.text().then(ctImportarTexto).catch(() => toast('No pude leer el archivo.')); });
   $('#ct-body').addEventListener('click', e => { const x = e.target.closest('[data-exportar]'); if (!x) return; const r = CT.find(y => y.id === x.closest('tr').dataset.id); if (r) ctExportar([r], `clarogo-cliente-${(r.nombre || r.rut || 'sin-nombre').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase().slice(0, 40)}-${hoyISO()}.txt`); });
   initColumnas();
@@ -3770,7 +3887,7 @@ async function limpiarCache() {
 /* ════════════════════════════════════════════════════════════════
    INICIO
    ════════════════════════════════════════════════════════════════ */
-$$('[data-app-ver]').forEach(e => { e.textContent = 'v' + APP_VERSION; }); initMenu(); initExcepciones(); initSugerencias(); iniciarRespaldo(); initWhatsApp(); initAgenda(); initPerfil(); initDeshacer(); initSonido(); mostrarTruco(); $('#truco').onclick = mostrarTruco; window.addEventListener('hashchange', () => { if ((location.hash || '#inicio') === '#inicio') mostrarTruco(); });
+$$('[data-app-ver]').forEach(e => { e.textContent = 'v' + APP_VERSION; }); initMenu(); initLineas(); initExcepciones(); initSugerencias(); iniciarRespaldo(); initWhatsApp(); initAgenda(); initPerfil(); initDeshacer(); initSonido(); mostrarTruco(); $('#truco').onclick = mostrarTruco; window.addEventListener('hashchange', () => { if ((location.hash || '#inicio') === '#inicio') mostrarTruco(); });
 try { if (sessionStorage.getItem('clarogo_limpio')) { sessionStorage.removeItem('clarogo_limpio'); setTimeout(() => toast('Caché limpiada. Tu planilla está a salvo.'), 400); } } catch (e) {}
 $('#cache-btn').onclick = limpiarCache;
 window.addEventListener('hashchange', route);
