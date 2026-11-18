@@ -101,7 +101,7 @@ async function leerPestana(tabId) {
 }
 async function iniciar() {
   const tabs = await chrome.tabs.query({ url: GENESYS });
-  if (!tabs.length) { mostrar('No encontré Genesys abierto. Abre Genesys con la llamada y vuelve a intentarlo.', 'mal'); return; }
+  if (!tabs.length) { await llamadaAnterior('No encontré Genesys abierto. Abre Genesys con la llamada y vuelve a intentarlo.'); return; }
   // Primero la pestaña que estás mirando (si es Genesys), luego la usada más recientemente
   tabs.sort((a, b) => (b.active - a.active) || ((b.lastAccessed || 0) - (a.lastAccessed || 0)));
   let todos = [];
@@ -113,7 +113,23 @@ async function iniciar() {
   }
   const d = Object.assign({}, ...todos.slice().reverse());
   const conDatos = Object.entries(d).filter(([, v]) => v);
-  if (!conDatos.length) { mostrar('No encontré datos del cliente. Abre la llamada con el panel "Interacción de llamada" visible y vuelve a intentarlo.', 'mal'); return; }
+  if (!conDatos.length) { await llamadaAnterior('No encontré datos del cliente. Abre la llamada con el panel "Interacción de llamada" visible y vuelve a intentarlo.'); return; }
+  await pintarLlamada(d, null);
+}
+
+// Última llamada leída: si la llamada se corta, se puede tipificar igual durante unos minutos
+const ANTERIOR_MS = 15 * 60000;
+async function llamadaAnterior(motivo) {
+  let u = null;
+  try { u = (await chrome.storage.local.get('ultima_llamada')).ultima_llamada; } catch (e) {}
+  if (!u || !u.d || Date.now() - u.ts > ANTERIOR_MS) { mostrar(motivo, 'mal'); return; }
+  await pintarLlamada(u.d, u);
+}
+const haceCuanto = ms => { const s = Math.round(ms / 1000); return s < 60 ? `hace ${s} s` : `hace ${Math.round(s / 60)} min`; };
+function marcarTipificada() {
+  try { chrome.storage.local.get('ultima_llamada').then(o => { const u = o.ultima_llamada; if (u && TEL_NV && String(u.tel || '') === TEL_NV) { u.tipificada = true; chrome.storage.local.set({ ultima_llamada: u }); } }); } catch (e) {}
+}
+async function pintarLlamada(d, anterior) {
   // Mismo formato que Ctrl+A en Genesys: CLAVE: y el valor en la línea siguiente
   TEXTO = Object.entries(d).map(([k, v]) => `${k}:\n${v || k}`).join('\n');
   const tel = telFormato(d.FONO_CONTACTO) || telFormato(d.Fono1) || telFormato(d.Fono2) || telFormato(d.LEGACY_ID);
@@ -123,10 +139,20 @@ async function iniciar() {
   $('#datos').innerHTML = filas.map(([k, v]) => `<tr><td>${k}</td><td${k === 'Teléfono' ? ' class="tel"' : ''}></td></tr>`).join('');
   [...$('#datos').querySelectorAll('tr')].forEach((tr, i) => { tr.lastChild.textContent = filas[i][1]; });
   $('#datos').hidden = false;
-  if (await copiar(true)) mostrar(tel ? '✓ Datos copiados.' : 'Datos copiados, pero esta llamada no trae teléfono.', tel ? 'ok' : 'mal');
+  const copiado = await copiar(true);
+  if (anterior) {
+    mostrar(`📞 LLAMADA ANTERIOR, leída ${haceCuanto(Date.now() - anterior.ts)}: ${tel || 'sin teléfono'}${nombre ? ' · ' + nombre : ''}. Ya no está en Genesys, pero puedes tipificarla.${anterior.tipificada ? ' Ya registraste la no venta de esta llamada.' : ''}`, 'anterior');
+  } else if (copiado) mostrar(tel ? '✓ Datos copiados.' : 'Datos copiados, pero esta llamada no trae teléfono.', tel ? 'ok' : 'mal');
   $('#enviar').disabled = false;
   if (tel) prepararWhatsApp(tel, nombre);
   TEL_NV = (tel || '').replace(/\D/g, '');
+  // Se guarda la llamada actual (si es la misma de antes, se conserva si ya fue tipificada)
+  if (!anterior) {
+    try {
+      const prev = (await chrome.storage.local.get('ultima_llamada')).ultima_llamada;
+      chrome.storage.local.set({ ultima_llamada: { d, tel: TEL_NV, ts: Date.now(), tipificada: !!(prev && prev.tel === TEL_NV && prev.tipificada) } });
+    } catch (e) {}
+  }
 }
 
 /* ── No venta: formulario "Registro de atención (NO VENTA)" de la empresa ──
@@ -164,6 +190,7 @@ function initNoVenta() {
     if (m === '__otro' && !($('#nv-otro').value || '').trim()) { mostrar('Escribe el motivo en el cuadro "Otro".', 'mal'); $('#nv-otro').focus(); return; }
     // Aviso para formas.js: pasa a la segunda página, recorre lo llenado y deja listo el botón Enviar
     try { await chrome.storage.local.set({ nv_pedido: { ts: Date.now() } }); } catch (e) {}
+    marcarTipificada();
     await chrome.tabs.create({ url: nvURL(), active: true });
     window.close();
   });

@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.20.0, tipificar la llamada anterior
+
+- La extensión guarda la última llamada que leyó. Si al abrirla ya no hay llamada en Genesys (se cortó), muestra esa llamada en amarillo con el teléfono, el nombre y hace cuánto se leyó, para tipificarla o enviarla a la planilla. Solo durante 15 minutos y avisa si ya se registró la no venta de esa llamada. Si hay una llamada activa, siempre se muestra la actual.
+
 ### 18-11-2026: extensión 1.19.0, el script llega a la segunda hoja
 
 - En la segunda hoja del registro de no venta (formResponse) Edge no activaba formas.js. Ahora fondo.js vigila la pestaña del formulario y le inyecta el script cada vez que la hoja cambia (permiso nuevo: docs.google.com/forms). El script corre una sola vez por página.
