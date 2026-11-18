@@ -42,6 +42,9 @@ main{flex:1;width:100%;max-width:1200px;margin:0 auto;padding:16px 12px 40px}
 /* Mi Planilla usa más ancho de pantalla (hasta 40 % más) para que la tabla respire */
 body[data-view="control"] main{max-width:1680px}
 #ct-tabla tbody tr:not(.ficha) > td{height:48px}
+/* Nombre recién llegado del Rutificador: brillo neón por unos segundos */
+@keyframes neon{0%,100%{box-shadow:inset 0 0 0 2px #00e5ff,0 0 6px #00e5ff,0 0 14px #00e5ff;background:#e6fdff}50%{box-shadow:inset 0 0 0 2px #00b8d4,0 0 12px #00e5ff,0 0 26px #18ffff;background:#c9f9ff}}
+#ct-tabla td.neon{position:relative;z-index:2;animation:neon 1s ease-in-out 6}
 
 /* Barra superior */
 .top{position:sticky;top:0;z-index:20;background:var(--red);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.2)}
@@ -1069,7 +1072,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.6.1';
+const APP_VERSION = '2.6.2';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2668,6 +2671,14 @@ window.addEventListener('message', e => {
   if (dir) { r.direccion = dirFormato(dir); ['calle', 'num', 'int', 'comuna', 'region'].forEach(k => { delete r[k]; }); }
   r.upd = Date.now(); ctGuardar(); ctPinta();
   toast('✅ Rutificador: ' + [r.nombre, r.direccion].filter(Boolean).join(' · '));
+  // La celda del nombre se ilumina con efecto neón para mostrar que llegó completo
+  setTimeout(() => {
+    const tr = $(`#ct-body tr[data-id="${r.id}"]:not(.ficha)`); if (!tr) return;
+    const td = tr.querySelector('td.c-nombre'); if (!td) return;
+    tr.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    td.classList.remove('neon'); void td.offsetWidth; td.classList.add('neon');
+    setTimeout(() => td.classList.remove('neon'), 6500);
+  }, 150);
 });
 window.addEventListener('message', e => {
   if (e.source !== window || !e.data || e.data.tipo !== 'clarogo-deuda-res') return;

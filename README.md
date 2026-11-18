@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: ClaroGo! v2.6.2 y extensión 1.26.3
+
+- Después del Rutificador la extensión vuelve a la pestaña de Mi Planilla y la celda del nombre de esa fila se ilumina con efecto neón unos segundos.
+
 ### 18-11-2026: ClaroGo! v2.6.1
 
 - El nombre del Rutificador (APELLIDO1 APELLIDO2 NOMBRES) se pasa a "Nombres Apellido1 Apellido2", manteniendo juntos los apellidos compuestos (de la, del, san...).
