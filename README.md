@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: ClaroGo! v2.6.1
+
+- El nombre del Rutificador (APELLIDO1 APELLIDO2 NOMBRES) se pasa a "Nombres Apellido1 Apellido2", manteniendo juntos los apellidos compuestos (de la, del, san...).
+
 ### 18-11-2026: extensión 1.26.2, Rutificador más seguro
 
 - rutif.js espera hasta 6 segundos el pedido de la planilla, cambia a la pestaña "RUT" antes de escribir, reenvía la búsqueda si la página no cambia y muestra un sello abajo a la izquierda con el paso en que va.

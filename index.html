@@ -1069,7 +1069,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.6.0';
+const APP_VERSION = '2.6.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2647,13 +2647,23 @@ const deudaBoton = r => {
   window.open(port[3], '_blank', 'noopener');
   toast(document.documentElement.dataset.clarogoExt ? `Revisando la deuda en ${port[1]}. Si aparece "No soy un robot", resuélvelo.` : `RUT copiado. Pégalo en ${port[1]} con Ctrl+V.`);
 }
+// El Rutificador entrega "APELLIDO1 APELLIDO2 NOMBRES": se pasa a "Nombres Apellido1 Apellido2".
+// Los apellidos compuestos (de, del, de la, san...) se mantienen juntos.
+function nombreOrden(txt) {
+  const p = String(txt || '').replace(/\s+/g, ' ').trim().split(' ').filter(Boolean);
+  const PART = /^(de|del|la|las|los|san|santa|mac|mc|van|von|y)$/i, unidades = [];
+  for (let i = 0; i < p.length; i++) { let u = p[i]; while (PART.test(p[i]) && i + 1 < p.length) { i++; u += ' ' + p[i]; } unidades.push(u); }
+  if (unidades.length < 2) return p.join(' ');
+  const nApe = unidades.length >= 3 ? 2 : 1;
+  return [...unidades.slice(nApe), ...unidades.slice(0, nApe)].join(' ');
+}
 // Respuesta del Rutificador (extensión): nombre completo y dirección para la fila que lo pidió
 const nombrePropio = s => String(s || '').toLowerCase().replace(/(^|[\s'-])(\p{L})/gu, (m, a, b) => a + b.toUpperCase()).replace(/\s+/g, ' ').trim().replace(/ (De|Del|La|Las|Los|Y)(?= )/g, m => m.toLowerCase());
 window.addEventListener('message', e => {
   if (e.source !== window || !e.data || e.data.tipo !== 'clarogo-rutif-res') return;
   const r = CT.find(x => x.id === e.data.id); if (!r) return;
   if (!e.data.encontrado) return toast('El Rutificador no encontró datos para ese RUT.');
-  const nom = nombrePropio(e.data.nombre), dir = [e.data.direccion, e.data.comuna].map(x => String(x || '').trim()).filter(Boolean).join(', ');
+  const nom = nombrePropio(nombreOrden(e.data.nombre)), dir = [e.data.direccion, e.data.comuna].map(x => String(x || '').trim()).filter(Boolean).join(', ');
   if (nom) r.nombre = nom.slice(0, 120);
   if (dir) { r.direccion = dirFormato(dir); ['calle', 'num', 'int', 'comuna', 'region'].forEach(k => { delete r[k]; }); }
   r.upd = Date.now(); ctGuardar(); ctPinta();
