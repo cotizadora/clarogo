@@ -17,11 +17,18 @@ echo   ClaroGo! Genesys: descargando la version mas nueva...
 curl.exe -fsSL "%WEB%/clarogo-genesys-extension.zip?v=%RANDOM%%RANDOM%" -o "%ZIP%"
 if errorlevel 1 goto error
 
-if exist "%DEST%" rmdir /s /q "%DEST%"
-mkdir "%DEST%" 2>nul
-tar -xf "%ZIP%" -C "%DEST%" 2>nul
-if errorlevel 1 powershell -NoProfile -Command "Expand-Archive -Force -LiteralPath '%ZIP%' -DestinationPath '%DEST%'"
+rem Se descomprime aparte y solo si viene completa reemplaza la carpeta (si falla, la extension anterior queda intacta)
+set "NUEVO=%TEMP%\clarogo-extension-nueva"
+if exist "%NUEVO%" rmdir /s /q "%NUEVO%"
+mkdir "%NUEVO%" 2>nul
+tar -xf "%ZIP%" -C "%NUEVO%" 2>nul
+if errorlevel 1 powershell -NoProfile -Command "Expand-Archive -Force -LiteralPath '%ZIP%' -DestinationPath '%NUEVO%'"
 del /q "%ZIP%" 2>nul
+if not exist "%NUEVO%\manifest.json" goto error
+if not exist "%NUEVO%\fondo.js" goto error
+robocopy "%NUEVO%" "%DEST%" /MIR /NFL /NDL /NJH /NJS /NP >nul
+if errorlevel 8 goto error
+rmdir /s /q "%NUEVO%" 2>nul
 if not exist "%DEST%\manifest.json" goto error
 
 rem Actualizador local: baja siempre el instalador mas nuevo y lo ejecuta
