@@ -522,19 +522,25 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .wa-btn:hover{background:#1da851}
 #ct-tabla tr.abierta td{background:#eaf1ff}
 #ct-tabla tr.abierta td.c-n{background:#d6e4ff;color:#1a56b8}
-#ct-tabla tr.ficha td{height:auto;white-space:normal;overflow:visible;background:#fbfcfe;padding:12px 14px 14px;border-top:0;border-left:3px solid #1a56b8}
-#ct-tabla tr.ficha:hover td{background:#fbfcfe}
+#ct-tabla tr.ficha td{height:auto;white-space:normal;overflow:visible;background:#e6eeff;padding:12px 14px 14px;border:3px solid #1a56b8;border-top:1px dashed #8fb0ec}
+#ct-tabla tr.ficha:hover td{background:#e6eeff}
+/* La fila abierta y su ficha son un solo bloque: mismo fondo y un marco grueso alrededor de ambas */
+#ct-tabla tbody tr.abierta > td,#ct-tabla tbody tr.abierta:hover > td,#ct-tabla tbody tr.abierta > td.c-n{background:#e6eeff}
+#ct-tabla tbody tr.abierta > td{border-top:3px solid #1a56b8;border-bottom:1px dashed #8fb0ec}
+#ct-tabla tbody tr.abierta > td:first-child{border-left:3px solid #1a56b8}
+#ct-tabla tbody tr.abierta > td:last-child{border-right:3px solid #1a56b8}
 /* Ficha: botones arriba y un módulo con fondo propio para cada tema */
 .fi-top{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;padding:9px 12px;margin-bottom:12px;background:#fff;border:1px solid #dfe3ea;border-radius:14px;box-shadow:0 2px 8px rgba(16,24,40,.06)}
 .fi-acc{display:flex;flex-wrap:wrap;gap:6px}
 .fi-mods{display:grid;gap:12px}
 @media (min-width:1100px){.fi-mods{grid-template-columns:1fr 1fr}}
 .fi-mod{padding:11px 14px 13px;border:1px solid;border-radius:16px}
-.fi-m-cliente{background:#f3f7ff;border-color:#d6e3fb;color:#1a56b8}
-.fi-m-venta{background:#f0faf4;border-color:#cdebd8;color:#13804a}
-.fi-m-equipo{background:#f7f3ff;border-color:#e2d8fa;color:#6b3fc7}
-.fi-m-despacho{background:#fff8ec;border-color:#f3dfb6;color:#b0610a}
-.fi-m-obs{grid-column:1/-1;background:#f7f8fa;border-color:#e2e5ea;color:#4b5563}
+.fi-mod{border-width:2px}
+.fi-m-cliente{background:#cfe0ff;border-color:#7ea6ee;color:#123f8f}
+.fi-m-venta{background:#c9efd8;border-color:#6cc795;color:#0d6438}
+.fi-m-equipo{background:#e2d4ff;border-color:#a98be8;color:#4f2a9e}
+.fi-m-despacho{background:#ffe0b0;border-color:#eeb35c;color:#8a4a06}
+.fi-m-obs{grid-column:1/-1;background:#e3e6ec;border-color:#b3bac6;color:#374151}
 .fi-t{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:.74rem;font-weight:800;color:inherit;text-transform:uppercase;letter-spacing:.07em;margin:0 0 9px}
 .fi-t svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;padding:5px;box-sizing:content-box;background:#fff;border-radius:9px;box-shadow:0 1px 3px rgba(16,24,40,.08)}
 .fi-nota{margin-top:8px;font-size:.72rem;color:var(--muted);text-align:right}
@@ -546,7 +552,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #eq-texto{width:100%;font:inherit}
 .fi-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px 10px}
 @media (min-width:900px){.fi-g{grid-template-columns:repeat(auto-fill,minmax(165px,1fr))}}
-.fi-g label{display:block;font-size:.72rem;font-weight:700;color:#4b5563;margin:0 0 3px}
+.fi-g label{display:block;font-size:.72rem;font-weight:700;color:inherit;opacity:.85;margin:0 0 3px}
 #ct-tabla .fi-g input,#ct-tabla .fi-g select{height:34px;border:1px solid #d5dae2;border-radius:10px;background:#fff;padding:0 10px;width:100%;color:var(--text)}
 #ct-tabla .fi-g input:focus,#ct-tabla .fi-g select:focus{outline:2px solid currentColor;outline-offset:-1px}
 #ct-tabla .fi-obs textarea{width:100%;min-height:72px;color:var(--text);border:1px solid #d5dae2;border-radius:10px;background:#fff;padding:6px 8px;font:inherit;font-size:.82rem;resize:vertical}
@@ -1061,7 +1067,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.3.0';
+const APP_VERSION = '2.4.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 

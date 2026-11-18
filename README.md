@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: ClaroGo! v2.4.0, fila abierta y ficha como un solo bloque
+
+- La fila abierta y su ficha comparten el mismo fondo y un marco azul grueso alrededor de ambas.
+- Módulos de la ficha con colores más intensos y bordes más marcados (Cliente azul, Venta verde, Equipo lila, Despacho naranjo, Observaciones gris).
+
 ### 18-11-2026: extensión 1.16.0, registro de no venta
 
 - En la ventana de la extensión: "No venta: registro de atención" con los 16 motivos del formulario "Registro de atención (NO VENTA)" y "Otro (escribir)". Abre el formulario con Cliente evaluado: No, NO, el teléfono de la llamada, el motivo (o el texto de Otro), la compañía si el motivo es "conforme" o "paga menos", y el comentario como observación. El ejecutivo revisa, presiona Siguiente y Enviar.
