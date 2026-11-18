@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: ClaroGo! v2.6.0 y extensión 1.26.0, Rutificador automático
+
+- El botón RUTIFICADOR de Mi Planilla, con la extensión, pide la búsqueda: rutif.js escribe el RUT en nombrerutyfirma.com, busca, lee Nombre, Dirección y Ciudad/Comuna del resultado y los devuelve a la fila (nombre con mayúscula inicial y dirección ordenada). Sin extensión sigue copiando el RUT y abriendo la página.
+- ext/extension-archivos.txt incluye rutif.js.
+
 ### 18-11-2026: extensión 1.25.1
 
 - "Activar versión nueva" ahora pide la recarga al fondo de la extensión y cierra la ventana antes, en vez de recargar desde la misma ventana.

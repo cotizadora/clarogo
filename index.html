@@ -1069,7 +1069,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.5.0';
+const APP_VERSION = '2.6.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2647,6 +2647,18 @@ const deudaBoton = r => {
   window.open(port[3], '_blank', 'noopener');
   toast(document.documentElement.dataset.clarogoExt ? `Revisando la deuda en ${port[1]}. Si aparece "No soy un robot", resuélvelo.` : `RUT copiado. Pégalo en ${port[1]} con Ctrl+V.`);
 }
+// Respuesta del Rutificador (extensión): nombre completo y dirección para la fila que lo pidió
+const nombrePropio = s => String(s || '').toLowerCase().replace(/(^|[\s'-])(\p{L})/gu, (m, a, b) => a + b.toUpperCase()).replace(/\s+/g, ' ').trim().replace(/ (De|Del|La|Las|Los|Y)(?= )/g, m => m.toLowerCase());
+window.addEventListener('message', e => {
+  if (e.source !== window || !e.data || e.data.tipo !== 'clarogo-rutif-res') return;
+  const r = CT.find(x => x.id === e.data.id); if (!r) return;
+  if (!e.data.encontrado) return toast('El Rutificador no encontró datos para ese RUT.');
+  const nom = nombrePropio(e.data.nombre), dir = [e.data.direccion, e.data.comuna].map(x => String(x || '').trim()).filter(Boolean).join(', ');
+  if (nom) r.nombre = nom.slice(0, 120);
+  if (dir) { r.direccion = dirFormato(dir); ['calle', 'num', 'int', 'comuna', 'region'].forEach(k => { delete r[k]; }); }
+  r.upd = Date.now(); ctGuardar(); ctPinta();
+  toast('✅ Rutificador: ' + [r.nombre, r.direccion].filter(Boolean).join(' · '));
+});
 window.addEventListener('message', e => {
   if (e.source !== window || !e.data || e.data.tipo !== 'clarogo-deuda-res') return;
   const r = CT.find(x => x.id === e.data.id); if (!r) return;
@@ -3421,7 +3433,14 @@ function initControl() {
     if (b.dataset.ct === 'borrar') { r.borrado = true; r.upd = Date.now(); ctGuardar(); ctPinta(); toast('Registro borrado. Puedes recuperarlo con "Ver borrados".'); }
     if (b.dataset.ct === 'restaurar') { r.borrado = false; r.upd = Date.now(); ctGuardar(); ctPinta(); toast('Registro recuperado'); }
     if (b.dataset.ct === 'script') ctAScript(r);
-    if (b.dataset.ct === 'rutificador') { if (r.rut) copyText(r.rut, 'RUT copiado. Pégalo en el Rutificador.'); window.open('https://www.nombrerutyfirma.com/', '_blank', 'noopener'); }
+    if (b.dataset.ct === 'rutificador') {
+      // Con la extensión, el Rutificador busca el RUT solo y devuelve el nombre completo y la dirección a esta fila
+      const ext = !!document.documentElement.dataset.clarogoExt;
+      if (r.rut && ext) window.postMessage({ tipo: 'clarogo-rutif', rut: r.rut, id: r.id }, location.origin);
+      if (r.rut) copyText(r.rut, ext ? 'Buscando en el Rutificador. El nombre y la dirección llegan solos a esta fila.' : 'RUT copiado. Pégalo en el Rutificador.');
+      else toast('Primero escribe el RUT del cliente en la fila.');
+      window.open('https://www.nombrerutyfirma.com/', '_blank', 'noopener');
+    }
   });
   respPinta();
   ctPinta();
