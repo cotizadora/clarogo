@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: ClaroGo! v2.3.0, columna Agendar y ficha por módulos
+
+- Nueva columna "Agendar" con ícono de calendario: azul si hay llamada agendada, amarillo si es hoy y rojo si está atrasada.
+- Ficha del cliente: botones de acción y revisión de deuda arriba; módulos Cliente, Venta, Equipo, Despacho y Observaciones en marcos con esquinas redondeadas y fondo propio, con íconos de línea.
+
 ### 18-11-2026: ClaroGo! v2.2.0 y extensión 1.15.1
 
 - Mi Planilla más ancha (hasta 1680 px) y filas de dos líneas. Botón de deuda con el logo arriba y el estado abajo (Revisar, Sin deuda, Con deuda).
