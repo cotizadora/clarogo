@@ -11,6 +11,8 @@
   header { background: var(--red); color: #fff; padding: 7px 14px; display: flex; align-items: center; gap: 8px; }
   header b { font-size: 1.1rem; font-weight: 900; }
   header small { opacity: .85; font-size: .72rem; margin-left: auto; white-space: nowrap; }
+  #activar { width: auto; margin: 0; padding: 3px 10px; border-radius: 999px; background: #ffd400; color: #1f2430; font-size: .74rem; font-weight: 900; animation: latido 1.2s ease-in-out infinite; }
+  @keyframes latido { 50% { transform: scale(1.07); box-shadow: 0 0 0 4px rgba(255,212,0,.35); } }
   header .ver { background: #fff; color: var(--red); font-weight: 800; font-size: .74rem; padding: 2px 8px; border-radius: 999px; }
   main { padding: 10px 12px 12px; display: grid; grid-template-columns: 5fr 6fr; gap: 0 12px; align-items: start; }
   .col { min-width: 0; }
@@ -63,7 +65,7 @@
 </style>
 </head>
 <body>
-<header><b>ClaroGo!</b><span>Genesys</span><span class="ver" id="version" title="Versión instalada"></span><small title="Herramienta no oficial, no es de Claro Chile">No oficial</small></header>
+<header><b>ClaroGo!</b><span>Genesys</span><span class="ver" id="version" title="Versión instalada"></span><button type="button" id="activar" hidden title="Ya descargaste una versión nueva: presiona para empezar a usarla">⟳ Activar versión nueva</button><small title="Herramienta no oficial, no es de Claro Chile">No oficial</small></header>
 <main>
   <div class="col">
   <p id="estado">Buscando la llamada en Genesys…</p>

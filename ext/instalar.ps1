@@ -37,17 +37,19 @@ try {
   Write-Host "     $dest" -ForegroundColor White -BackgroundColor DarkBlue
   Write-Host '  (la ruta ya esta copiada: en Edge pegala con Ctrl+V)' -ForegroundColor Cyan
   Write-Host ''
-  Write-Host '  Ahora ve a la pagina de extensiones de tu navegador' -ForegroundColor Yellow
-  Write-Host '  (tu favorito "Extensiones", o escribe edge://extensions en Edge o chrome://extensions en Chrome):' -ForegroundColor Yellow
-  Write-Host '   - Si es la PRIMERA VEZ: con "Modo para desarrolladores" activado,'
-  Write-Host '     presiona "Cargar desempaquetada", pega con Ctrl+V y elige "Seleccionar carpeta".'
-  Write-Host '   - Si ya la tenias: busca ClaroGo! Genesys y presiona "Volver a cargar" (flecha circular).'
+  Write-Host '  SI YA TENIAS LA EXTENSION:' -ForegroundColor Yellow
+  Write-Host '     abre ClaroGo! (icono rojo del navegador) y presiona "Activar version nueva".'
+  Write-Host ''
+  Write-Host '  SI ES LA PRIMERA VEZ:' -ForegroundColor Yellow
+  Write-Host '     en tu favorito "Extensiones" (edge://extensions o chrome://extensions),'
+  Write-Host '     con "Modo para desarrolladores" activado, presiona "Cargar desempaquetada",'
+  Write-Host '     pega con Ctrl+V y elige "Seleccionar carpeta".'
 } catch {
   Write-Host ''
   Write-Host '  No se pudo descargar. Revisa tu conexion a internet y vuelve a intentarlo.' -ForegroundColor Red
 }
 Write-Host ''
-Read-Host '  Presiona Enter para cerrar'
+Read-Host '  Presiona Enter para cerrar esta ventana'
 '@
 
 New-Item -ItemType Directory -Force $dest | Out-Null
@@ -65,5 +67,6 @@ $lnk.Save()
 Write-Host ''
 Write-Host '  Se creo el acceso directo "Actualizar ClaroGo!" en tu escritorio.' -ForegroundColor Cyan
 
-# Primera descarga
+# Primera descarga y luego se cierra la ventana de la Terminal
 & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $actual
+exit

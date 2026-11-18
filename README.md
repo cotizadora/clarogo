@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.25.0, activar versión nueva sin ir a Extensiones
+
+- La ventana de la extensión compara su versión con la de la carpeta: si ya se descargó una más nueva muestra "⟳ Activar versión nueva", que recarga la extensión (chrome.runtime.reload). Si en internet hay una versión más nueva, muestra "⬇ Hay versión…" con la indicación de usar el acceso directo.
+- El instalador se cierra solo al terminar y explica los dos casos (primera vez y actualización).
+
 ### 18-11-2026: favorito de Extensiones
 
 - Edge no deja que otro programa abra edge://extensions (quedaba en blanco): el instalador ya no lo intenta y explica dónde ir. La guía parte abriendo edge://extensions (o chrome://extensions) con un botón Copiar y guardándola en favoritos con Ctrl+D; para actualizar se usa ese favorito.
