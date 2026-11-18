@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: ClaroGo! v2.7.2, importar la planilla completa
+
+- Mi Planilla: "Importar clientes" ahora también acepta el archivo de la planilla (`ClaroGo-planilla-control.json`) y las copias automáticas descargadas, no solo la exportación de clientes en .txt. Sirve para pasar los clientes a un computador nuevo. Se suman a los que ya hay y no se borra nada.
+
 ### 18-11-2026: ClaroGo! v2.7.1 y extensión 1.28.1
 
 - Arreglo del Rutificador: después de activar una versión nueva, la pestaña de ClaroGo! ya abierta quedaba desconectada y el Rutificador no se abría. Ahora la extensión vuelve a conectarse sola a las pestañas abiertas.

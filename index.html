@@ -1072,7 +1072,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.7.1';
+const APP_VERSION = '2.7.2';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -3367,9 +3367,13 @@ function ctImportarTexto(txt) {
   const t = String(txt || ''), i = t.indexOf(CT_MARCA);
   let datos = null;
   try { datos = JSON.parse(i >= 0 ? t.slice(i + CT_MARCA.length).split('--- FIN ---')[0].trim() : t.trim()); } catch (e) {}
-  if (!datos || datos.app !== 'clarogo' || !Array.isArray(datos.clientes)) return toast('Este archivo no es una exportación de clientes de ClaroGo!.');
+  // Acepta la exportación de clientes (.txt) y también el archivo de la planilla o una copia automática (.json con "registros")
+  const clientes = !datos ? null
+    : datos.app === 'clarogo' && Array.isArray(datos.clientes) ? datos.clientes
+    : datos.app === 'ClaroGo!' && Array.isArray(datos.registros) ? datos.registros : null;
+  if (!clientes) return toast('Este archivo no es una exportación de clientes ni una planilla de ClaroGo!.');
   let nuevos = 0, actualizados = 0;
-  datos.clientes.slice(0, 5000).forEach(c => {
+  clientes.slice(0, 5000).forEach(c => {
     if (!c || typeof c !== 'object' || typeof c.id !== 'string' || !c.id) return;
     const limpio = {}; Object.entries(c).forEach(([k, v]) => { if (/^[a-zA-Z]{1,20}$/.test(k) && ['string', 'number', 'boolean'].includes(typeof v)) limpio[k] = typeof v === 'string' ? v.slice(0, 5000) : v; });
     const r = CT.find(x => x.id === limpio.id);
