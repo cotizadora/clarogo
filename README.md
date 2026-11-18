@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: instalador .bat y guía completa
+
+- ext/instalar-clarogo.bat: crea Documentos\ClaroGo\extension, descarga cada archivo de la extensión desde GitHub Pages (lista en ext/extension-archivos.txt), copia la ruta al portapapeles y abre edge://extensions. Para actualizar se vuelve a ejecutar y se presiona "Volver a cargar". Al publicar una versión nueva hay que regenerar ext/extension-archivos.txt si cambian los archivos.
+- ext/guia.html: guía con instalación, actualización, uso con demostraciones animadas, funciones, problemas frecuentes y una sección de Claude Code. Vista previa para WhatsApp en ext/guia-preview.png.
+
 ### 18-11-2026: extensión 1.24.0, código de conclusión en Genesys
 
 - Segunda tipificación: al elegir un motivo de no venta se sugiere el código de conclusión de Genesys (menú "Genesys", se puede cambiar o dejar en "No marcar"). Al presionar "Tipificar en formulario" la extensión marca ese código en el recuadro Códigos de conclusión de Genesys (acw-gadgets-wrap-up) sin enviarlo; el ejecutivo lo envía en Genesys. Si el recuadro no está abierto, avisa con una notificación para marcarlo a mano.
