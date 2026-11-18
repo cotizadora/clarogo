@@ -199,6 +199,21 @@ async function neonEnviarGenesys() {
   setTimeout(apagar, 120000);
   return 'ok';
 }
+// Ingreso de venta enviado: animación en el formulario y luego Genesys con el neón en Enviar
+chrome.storage.onChanged.addListener((c, area) => {
+  const v = area === 'local' && c.venta_enviada && c.venta_enviada.newValue;
+  if (!v || Date.now() - ultimoGenesys < 10000) return;
+  ultimoGenesys = Date.now();
+  const VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/*';
+  setTimeout(async () => {
+    try {
+      const t = (await chrome.tabs.query({ url: VENTA })).sort((a, b) => (b.active - a.active) || ((b.lastAccessed || 0) - (a.lastAccessed || 0)))[0];
+      if (t) await chrome.scripting.executeScript({ target: { tabId: t.id }, func: avisoCentro, args: ['Venta ingresada'] });
+    } catch (e) {}
+    setTimeout(volverAGenesys, 4400);
+  }, 1500);
+});
+
 chrome.storage.onChanged.addListener((c, area) => {
   const env = area === 'local' && c.nv_enviado && c.nv_enviado.newValue;
   if (!env) return;

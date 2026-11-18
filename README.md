@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: ClaroGo! v2.8.0 y extensión 1.30.0
+
+- Extensión: después de enviar el formulario de **ingreso de venta** también aparece la animación y luego vuelve a Genesys con el botón Enviar en neón (antes solo pasaba con el registro de no venta).
+- Mi Planilla: la dirección del cliente (por ejemplo la que trae el Rutificador) se ve bajo el nombre en una sola línea: calle número, comuna, región. Completa al pasar el mouse. La columna Nombre es más ancha; en pantallas de hasta 1500 px se oculta la hora (sigue en la ficha) para que todo quepa.
+
 ### 18-11-2026: acceso "Actualizar ClaroGo!" y página para PC
 
 - El instalador deja el acceso "Actualizar ClaroGo!" en el escritorio (también si el escritorio está en OneDrive). Ese acceso baja siempre el instalador más nuevo y lo ejecuta.

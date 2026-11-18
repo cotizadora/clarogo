@@ -426,6 +426,8 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla td.c-nombre{white-space:normal;height:auto}
 #ct-tabla td textarea.nom{display:block;width:100%;min-height:27px;border:0;border-radius:0;background:transparent;padding:5px 6px 4px;font:inherit;font-size:.8rem;line-height:1.3;color:var(--text);resize:none;overflow:hidden;white-space:pre-wrap;word-break:break-word;field-sizing:content}
 #ct-tabla td textarea.nom{max-height:calc(2.6em + 9px)}
+/* Dirección del cliente a simple vista, en una sola línea bajo el nombre (completa al pasar el mouse) */
+#ct-tabla .dir-mini{padding:0 6px 5px;font-size:.7rem;line-height:1.25;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #ct-tabla td textarea.nom:focus{outline:2px solid #217346;outline-offset:-2px;background:#fff;max-height:none}
 #ct-tabla .tel-nom{display:none}
 /* Ancho de columnas ajustable: se arrastra el borde derecho del título (doble clic vuelve al ancho original) */
@@ -479,8 +481,8 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla .acc .go{color:#fff;background:var(--red);font-size:.7rem}
 #ct-tabla .acc .go:hover{background:var(--red-dk)}
 .c-n{width:46px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:96px}.c-tel{width:94px}.c-orig{width:96px}.c-deu{width:78px}.c-tipo{width:128px}.c-plan{width:86px}.c-ag{width:84px}.c-acc{width:390px}
-.c-nombre{width:150px}.c-notas{width:auto}
-@media (max-width:1500px){.c-notas{display:none} .c-acc{width:322px} .c-orig{width:86px} #ct-tabla .acc{gap:3px;padding:0 2px} #ct-tabla .acc .gen-t{display:none}}
+.c-nombre{width:240px}.c-notas{width:auto}
+@media (max-width:1500px){.c-notas,.c-hora{display:none} .c-nombre{width:230px} .c-rut{width:88px} .c-tipo{width:112px} .c-ag{width:78px} .c-acc{width:322px} .c-orig{width:86px} #ct-tabla .acc{gap:3px;padding:0 2px} #ct-tabla .acc .gen-t{display:none}}
 @media (max-width:1100px){.c-hora,.c-plan{display:none} #ct-tabla .acc .gen-t{display:none} .c-acc{width:320px}}
 @media (max-width:720px){#ct-tabla .tel-nom{display:block;font-size:.66rem;font-weight:700;line-height:1.2;padding:3px 4px 0;white-space:normal;word-break:break-word;color:var(--text)} #ct-tabla td.c-tel{white-space:normal;height:auto}.c-fecha,.c-notas,.c-rut,.c-nombre{display:none}.c-tel{width:auto}.c-orig{width:60px}.c-tipo{width:80px}.c-n{width:36px}.c-acc{width:140px} #ct-tabla .acc .fic{padding:0 6px} #ct-tabla .acc .fic .fic-t{display:none} #ct-tabla .acc .gen-t{display:none} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
 #ct-resumen .chip b{margin-left:4px}
@@ -1074,7 +1076,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.7.4';
+const APP_VERSION = '2.8.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -3313,7 +3315,7 @@ function ctPinta() {
     <td class="c-fecha"><input data-k="fecha" value="${esc(fmtF(r.fecha))}" placeholder="DD-MM-AAAA" title="${esc(fmtF(r.fecha))}"></td>
     <td class="c-hora"><input data-k="hora" value="${esc(r.hora)}" placeholder="HH:MM"></td>
     <td class="c-rut"><input data-k="rut" value="${esc(r.rut)}" placeholder="RUT" title="${esc(r.rut)}"></td>
-    <td class="c-nombre"><textarea data-k="nombre" class="nom" rows="1" placeholder="Pegar nombre" title="${esc(r.nombre)}">${esc(r.nombre)}</textarea></td>
+    <td class="c-nombre"><textarea data-k="nombre" class="nom" rows="1" placeholder="Pegar nombre" title="${esc(r.nombre)}">${esc(r.nombre)}</textarea>${dirTexto(r) ? `<div class="dir-mini" title="${esc(dirTexto(r))}">📍 ${esc(dirTexto(r))}</div>` : ''}</td>
     <td class="c-tel"><div class="tel-nom">${esc(r.nombre || '')}</div><input data-k="telefono" value="${esc(r.telefono)}" placeholder="9XXXXXXXX" title="${esc(r.telefono)}"></td>
     <td class="c-orig"><select data-k="origen" title="Compañía de origen. Cámbiala para revisar la deuda en otra compañía.">${origenOpciones(r.origen)}</select></td>
     <td class="c-deu">${deudaBoton(r)}</td>
