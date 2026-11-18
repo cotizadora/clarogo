@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.20.1, sin panel de resumen
+
+- Se quita el panel "Listo para enviar" con el resumen: en el formulario quedan el recorrido por las respuestas marcadas y el botón Enviar de Google parpadeando hasta que el ejecutivo lo presiona.
+
 ### 18-11-2026: extensión 1.20.0, tipificar la llamada anterior
 
 - La extensión guarda la última llamada que leyó. Si al abrirla ya no hay llamada en Genesys (se cortó), muestra esa llamada en amarillo con el teléfono, el nombre y hace cuánto se leyó, para tipificarla o enviarla a la planilla. Solo durante 15 minutos y avisa si ya se registró la no venta de esa llamada. Si hay una llamada activa, siempre se muestra la actual.

@@ -77,25 +77,8 @@
   const armarPanel = () => {
     const preguntas = [...document.querySelectorAll('[role="listitem"]')].filter(lleno);
     preguntas.forEach(q => q.classList.add('cg-lleno'));
-    // Google Forms no permite armar HTML con texto (Trusted Types): todo se crea elemento por elemento
-    const el = (tag, props, ...hijos) => { const n = document.createElement(tag); Object.assign(n, props || {}); hijos.forEach(h => n.append(h)); return n; };
-    panel = el('div', { id: 'cg-panel' },
-      el('h3', { textContent: '✅ Listo para enviar' }),
-      el('p', { className: 'cg-sub', textContent: 'ClaroGo! llenó estas respuestas. Toca una para verla en el formulario.' }));
-    preguntas.forEach(q => {
-      const f = el('div', { className: 'cg-fila' },
-        el('b', {}, el('span', { className: 'cg-ok', textContent: '✓ ' }), titulo(q).slice(0, 70)),
-        el('span', { textContent: valor(q).slice(0, 140) }));
-      f.onclick = () => ver(q);
-      panel.append(f);
-    });
-    // Solo el ejecutivo decide: este botón presiona el Enviar de Google únicamente cuando él lo toca
-    const ya = el('button', { id: 'cg-enviar-ya', textContent: 'Enviar formulario' });
-    ya.onclick = () => { const e = boton('Enviar'); if (e) { enviado = true; e.click(); } };
-    const ir = el('button', { id: 'cg-ir', textContent: 'Ver el botón Enviar en la página' });
-    ir.onclick = () => { const e = boton('Enviar'); if (e) ver(e); };
-    panel.append(ya, ir);
-    document.documentElement.appendChild(panel);
+    // Sin panel de resumen: el ejecutivo revisa en el mismo formulario. Solo se marca que ya se preparó esta hoja.
+    panel = document.createElement('div');
     marcar('listo para enviar');
     const p = document.getElementById('cg-paso'); if (p) p.remove();
     // Recorrido rápido por las respuestas (si el navegador lo permite) y queda en el botón Enviar
