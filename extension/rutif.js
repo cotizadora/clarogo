@@ -35,8 +35,9 @@
   }
 
   // Resultado: columnas Nombre, RUT, Sexo, Dirección, Ciudad/Comuna
-  const cab = [...tabla.querySelectorAll('th')].map(th => th.innerText.trim().toLowerCase());
-  const col = txt => cab.findIndex(c => c.startsWith(txt));
+  // Los títulos pueden traer íconos o enlaces de publicidad (por ejemplo en "Nombre"): se busca la palabra dentro del texto
+  const cab = [...tabla.querySelectorAll('thead th, tr:first-child th')].map(th => th.textContent.replace(/\s+/g, ' ').trim().toLowerCase());
+  const col = txt => cab.findIndex(c => c.includes(txt));
   const iNom = col('nombre'), iRut = col('rut'), iDir = col('direcci'), iCom = cab.findIndex(c => /comuna|ciudad/.test(c));
   const filas = [...tabla.querySelectorAll('tbody tr')].map(tr => [...tr.querySelectorAll('td')].map(td => td.innerText.trim())).filter(c => c.length >= 3);
   const fila = filas.find(c => soloRut(c[iRut]) === soloRut(p.rut)) || (filas.length === 1 ? filas[0] : null);

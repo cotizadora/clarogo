@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.26.1
+
+- Rutificador: el título "Nombre" puede venir dentro de un enlace de publicidad; ahora se busca la palabra dentro del texto de cada título. Probado con una página de resultados real guardada por Eduardo.
+
 ### 18-11-2026: ClaroGo! v2.6.0 y extensión 1.26.0, Rutificador automático
 
 - El botón RUTIFICADOR de Mi Planilla, con la extensión, pide la búsqueda: rutif.js escribe el RUT en nombrerutyfirma.com, busca, lee Nombre, Dirección y Ciudad/Comuna del resultado y los devuelve a la fila (nombre con mayúscula inicial y dirección ordenada). Sin extensión sigue copiando el RUT y abriendo la página.
