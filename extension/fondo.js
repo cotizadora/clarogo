@@ -109,6 +109,16 @@ async function abrirWhatsApp(url, img) {
   return modo;
 }
 
+// Al instalar o activar una versión nueva, las pestañas de ClaroGo! ya abiertas quedan desconectadas de la extensión.
+// Se les vuelve a poner el puente para que el Rutificador y el Historial sigan funcionando sin tener que recargar.
+chrome.runtime.onInstalled.addListener(async d => {
+  if (d && d.reason !== 'install' && d.reason !== 'update') return;
+  try {
+    const tabs = await chrome.tabs.query({ url: 'https://cotizadora.github.io/clarogo/*' });
+    for (const t of tabs) chrome.scripting.executeScript({ target: { tabId: t.id }, files: ['puente.js'] }).catch(() => {});
+  } catch (e) {}
+});
+
 chrome.runtime.onMessage.addListener((msg, _de, responder) => {
   // "Activar versión nueva": se recarga desde el fondo, con la ventana ya cerrada (recargar desde la ventana puede dejarla trabada)
   if (msg && msg.tipo === 'recargar') { setTimeout(() => chrome.runtime.reload(), 400); return; }

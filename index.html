@@ -1072,7 +1072,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.7.0';
+const APP_VERSION = '2.7.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2665,6 +2665,7 @@ function nombreOrden(txt) {
 }
 // Respuesta del Rutificador (extensión): nombre completo y dirección para la fila que lo pidió
 const nombrePropio = s => String(s || '').toLowerCase().replace(/(^|[\s'-])(\p{L})/gu, (m, a, b) => a + b.toUpperCase()).replace(/\s+/g, ' ').trim().replace(/ (De|Del|La|Las|Los|Y)(?= )/g, m => m.toLowerCase());
+window.addEventListener('message', e => { if (e.source === window && e.data && e.data.tipo === 'clarogo-rutif-ok') clearTimeout(window.__rutifEspera); });
 window.addEventListener('message', e => {
   if (e.source !== window || !e.data || e.data.tipo !== 'clarogo-rutif-res') return;
   const r = CT.find(x => x.id === e.data.id); if (!r) return;
@@ -3482,6 +3483,11 @@ function initControl() {
       else toast('Primero escribe el RUT del cliente en la fila.');
       // Con la extensión, ella abre el Rutificador (o reutiliza el que ya esté abierto)
       if (!(r.rut && ext && document.documentElement.dataset.clarogoRutifAbre)) window.open('https://www.nombrerutyfirma.com/', '_blank', 'noopener');
+      // Si la extensión no confirma en 1,5 s (por ejemplo, recién actualizada), se abre igual y se avisa
+      else if (document.documentElement.dataset.clarogoRutifOk) {
+        clearTimeout(window.__rutifEspera);
+        window.__rutifEspera = setTimeout(() => { window.open('https://www.nombrerutyfirma.com/', '_blank', 'noopener'); toast('La extensión no respondió: recarga ClaroGo! con F5. Por ahora pega el RUT en el Rutificador (ya está copiado).'); }, 1500);
+      }
     }
   });
   respPinta();

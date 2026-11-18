@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: ClaroGo! v2.7.1 y extensión 1.28.1
+
+- Arreglo del Rutificador: después de activar una versión nueva, la pestaña de ClaroGo! ya abierta quedaba desconectada y el Rutificador no se abría. Ahora la extensión vuelve a conectarse sola a las pestañas abiertas.
+- Si aun así la extensión no responde en 1,5 segundos, ClaroGo! abre el Rutificador igual (con el RUT copiado) y avisa que hay que recargar con F5.
+
 ### 18-11-2026: ClaroGo! v2.7.0 y extensión 1.28.0
 
 - Nueva tipificación "Pendiente validación, volver a llamar" en Mi Planilla (en verde y con la misma agenda que "Volver a llamar").
