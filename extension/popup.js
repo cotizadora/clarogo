@@ -162,13 +162,36 @@ const NV_FORM = 'https://docs.google.com/forms/d/e/1FAIpQLSeWwyqN1vbUn3wOvHTImDs
 const NV_MOTIVOS = ['CLIENTE EMPRESA', 'CLIENTE OFENSIVO', 'CLIENTE PIDE NO SER CONTACTADO', 'CLIENTE CONFORME CON COMPAÑIA ACTUAL', 'CORTE DE LLAMADO', 'LLAMADA MUDA', 'MALA EXPERIENCIA CON CLARO', 'PORTABILIDAD MENOS DE 120 DIAS', 'NO ES TITULAR', 'NO HAY STOCK DE EQUIPO SOLICITADO', 'PAGA MENOS EN LA COMPAÑIA ACTUAL', 'SE ENVIA INFO POR WSP', 'SIN COBERTURA CLARO', 'EXTRANJERO SIN DOCUMENTACION', 'C.I VENCIDO', 'NUMERO NO ACTIVO'];
 const NV_COMPANIAS = ['WOM', 'ENTEL', 'MOVISTAR', 'MUNDO PACIFICO', 'Otros'];
 let TEL_NV = '';
+// Grupos de motivos con su color: seguimiento (verde), rechazo del cliente (rojo), requisitos (naranjo), llamada (gris)
+const NV_GRUPOS = [
+  ['seg', 'Seguimiento', ['SE ENVIA INFO POR WSP']],
+  ['rech', 'Rechazo del cliente', ['CLIENTE CONFORME CON COMPAÑIA ACTUAL', 'PAGA MENOS EN LA COMPAÑIA ACTUAL', 'MALA EXPERIENCIA CON CLARO', 'CLIENTE PIDE NO SER CONTACTADO', 'CLIENTE OFENSIVO']],
+  ['req', 'Requisitos', ['PORTABILIDAD MENOS DE 120 DIAS', 'NO ES TITULAR', 'SIN COBERTURA CLARO', 'NO HAY STOCK DE EQUIPO SOLICITADO', 'CLIENTE EMPRESA', 'EXTRANJERO SIN DOCUMENTACION', 'C.I VENCIDO', 'NUMERO NO ACTIVO']],
+  ['llam', 'Llamada', ['CORTE DE LLAMADO', 'LLAMADA MUDA']]
+];
+const nvGrupo = m => (NV_GRUPOS.find(g => g[2].includes(m)) || ['otro'])[0];
+const NV_CORTO = { 'CLIENTE CONFORME CON COMPAÑIA ACTUAL': 'Conforme con su compañía', 'PAGA MENOS EN LA COMPAÑIA ACTUAL': 'Paga menos en su compañía', 'CLIENTE PIDE NO SER CONTACTADO': 'Pide no ser contactado', 'PORTABILIDAD MENOS DE 120 DIAS': 'Portabilidad menos de 120 días', 'NO HAY STOCK DE EQUIPO SOLICITADO': 'Sin stock del equipo', 'EXTRANJERO SIN DOCUMENTACION': 'Extranjero sin documentación', 'MALA EXPERIENCIA CON CLARO': 'Mala experiencia con Claro', 'SE ENVIA INFO POR WSP': 'Se envía info por WhatsApp', 'NUMERO NO ACTIVO': 'Número no activo', 'C.I VENCIDO': 'Carnet vencido', 'SIN COBERTURA CLARO': 'Sin cobertura Claro' };
+const nvTexto = m => m === '__otro' ? 'Otro (escribir)' : (NV_CORTO[m] || m.charAt(0) + m.slice(1).toLowerCase());
+// Uso: cada vez que se abre un registro se guarda la fecha. El puntaje pesa más lo reciente (la mitad cada 14 días)
+let NV_USO = {}, NV_ORDEN = 'uso';
+const nvPuntaje = m => (NV_USO[m] || []).reduce((s, t) => s + Math.pow(.5, (Date.now() - t) / (14 * 864e5)), 0);
+function nvPintarChips() {
+  const todos = [...NV_MOTIVOS, '__otro'], cont = $('#nv-chips'), sel = $('#nv-motivo').value;
+  const chip = m => `<button type="button" class="g-${m === '__otro' ? 'otro' : nvGrupo(m)}${m === sel ? ' on' : ''}" data-m="${m}" title="${m === '__otro' ? 'Escribir otro motivo' : m}">${nvTexto(m)}</button>`;
+  if (NV_ORDEN === 'grupo') cont.innerHTML = NV_GRUPOS.map(([g, t, ms]) => `<div class="g-t">${t}</div>` + ms.map(chip).join('')).join('') + `<div class="g-t">Otro</div>` + chip('__otro');
+  else {
+    const lista = NV_MOTIVOS.slice().sort(NV_ORDEN === 'az' ? (a, b) => nvTexto(a).localeCompare(nvTexto(b), 'es') : (a, b) => (nvPuntaje(b) - nvPuntaje(a)) || nvTexto(a).localeCompare(nvTexto(b), 'es'));
+    cont.innerHTML = lista.map(chip).join('') + chip('__otro');
+  }
+  [...$('#nv-orden').querySelectorAll('button')].forEach(b => b.classList.toggle('on', b.dataset.orden === NV_ORDEN));
+}
 function nvPintar() {
   const m = $('#nv-motivo').value;
   $('#nv-otro').hidden = m !== '__otro';
   $('#nv-comp').hidden = !/CONFORME CON COMPA|PAGA MENOS/.test(m);
-  try { chrome.storage.local.set({ nvMotivo: m }); } catch (e) {}
-}
-function nvURL() {
+  $('#nv-abrir').textContent = m ? '📝 Abrir registro: ' + nvTexto(m) : '📝 Elige un motivo';
+  nvPintarChips();
+}function nvURL() {
   const m = $('#nv-motivo').value, otro = ($('#nv-otro').value || '').trim(), comp = $('#nv-comp').value, obs = ($('#comentario').value || '').trim();
   const p = [['entry.1000912384', 'No'], ['entry.1655228490', 'NO']];
   if (TEL_NV) p.push(['entry.1534465510', TEL_NV.slice(-9)]);
@@ -180,14 +203,15 @@ function nvURL() {
   return NV_FORM + '?usp=pp_url&' + p.map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&');
 }
 function initNoVenta() {
-  $('#nv-motivo').innerHTML = '<option value="">Elige el motivo de no venta</option>' + NV_MOTIVOS.map(x => `<option></option>`).join('') + '<option value="__otro">Otro (escribir)</option>';
-  [...$('#nv-motivo').options].forEach((o, i) => { if (i > 0 && i <= NV_MOTIVOS.length) { o.value = NV_MOTIVOS[i - 1]; o.textContent = NV_MOTIVOS[i - 1]; } });
   $('#nv-comp').innerHTML = '<option value="">Compañía actual del cliente</option>' + NV_COMPANIAS.map(x => `<option>${x}</option>`).join('');
-  $('#nv-motivo').addEventListener('change', nvPintar);
+  $('#nv-chips').addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (!b) return; $('#nv-motivo').value = b.dataset.m; nvPintar(); if (b.dataset.m === '__otro') $('#nv-otro').focus(); });
+  $('#nv-orden').addEventListener('click', e => { const b = e.target.closest('[data-orden]'); if (!b) return; NV_ORDEN = b.dataset.orden; try { chrome.storage.local.set({ nvOrden: NV_ORDEN }); } catch (x) {} nvPintarChips(); });
   $('#nv-abrir').addEventListener('click', async () => {
     const m = $('#nv-motivo').value;
-    if (!m) { mostrar('Elige el motivo de no venta.', 'mal'); $('#nv-motivo').focus(); return; }
+    if (!m) { mostrar('Elige el motivo de no venta.', 'mal'); return; }
     if (m === '__otro' && !($('#nv-otro').value || '').trim()) { mostrar('Escribe el motivo en el cuadro "Otro".', 'mal'); $('#nv-otro').focus(); return; }
+    // Se guarda el uso para ordenar por "Más usados" (máximo 60 fechas por motivo)
+    try { NV_USO[m] = [...(NV_USO[m] || []), Date.now()].slice(-60); await chrome.storage.local.set({ nvUso: NV_USO }); } catch (e) {}
     // Aviso para formas.js: pasa a la segunda página, recorre lo llenado y deja listo el botón Enviar
     try { await chrome.storage.local.set({ nv_pedido: { ts: Date.now() } }); } catch (e) {}
     marcarTipificada();
@@ -195,8 +219,8 @@ function initNoVenta() {
     window.close();
   });
   nvPintar();
-}
-initNoVenta();
+  try { chrome.storage.local.get(['nvUso', 'nvOrden']).then(o => { NV_USO = o.nvUso || {}; NV_ORDEN = o.nvOrden || 'uso'; nvPintarChips(); }); } catch (e) {}
+}initNoVenta();
 
 /* ── WhatsApp Web con la oferta ───────────────────────────────────── */
 // Los mensajes de cada plan vienen de ClaroGo! (así siempre están al día). Si no hay ClaroGo! abierto, se usan los guardados.

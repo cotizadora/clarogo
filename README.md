@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.21.0, motivos de no venta a la vista
+
+- Ventana de 790 px: a la izquierda los datos de la llamada, RUT, comentario, Mi Planilla y WhatsApp; a la derecha los 16 motivos de no venta más "Otro" como botones, con colores por grupo (Seguimiento verde, Rechazo del cliente rojo, Requisitos naranjo, Llamada gris, Otro lila).
+- Orden elegible y recordado: Más usados (cada uso pesa la mitad cada 14 días, así se adapta solo), A-Z o Por grupo. Cabe completa sin scroll (máximo 594 px de alto).
+
 ### 18-11-2026: extensión 1.20.1, sin panel de resumen
 
 - Se quita el panel "Listo para enviar" con el resumen: en el formulario quedan el recorrido por las respuestas marcadas y el botón Enviar de Google parpadeando hasta que el ejecutivo lo presiona.
