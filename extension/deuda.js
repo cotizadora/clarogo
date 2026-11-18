@@ -23,10 +23,13 @@
   const esperar = ms => new Promise(r => setTimeout(r, ms));
   const rutTexto = (rut, puntos) => { const c = String(rut).replace(/[^0-9kK]/g, '').toUpperCase(); if (c.length < 2) return ''; const cu = c.slice(0, -1), dv = c.slice(-1); return (puntos ? cu.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : cu) + '-' + dv; };
 
-  // Aviso fijo arriba a la derecha
+  // Aviso fijo arriba a la derecha mientras se busca; el resultado final sale grande arriba al centro
   let caja = null;
-  const aviso = (texto, color) => {
-    if (!caja) { caja = document.createElement('div'); caja.style.cssText = 'position:fixed;top:14px;right:14px;z-index:2147483647;max-width:340px;padding:12px 16px;border-radius:12px;font:15px/1.4 "Segoe UI",system-ui,sans-serif;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.35);white-space:pre-line;cursor:pointer'; caja.title = 'Clic para cerrar'; caja.onclick = () => caja.remove(); document.documentElement.appendChild(caja); }
+  const aviso = (texto, color, grande) => {
+    if (!caja) { caja = document.createElement('div'); caja.title = 'Clic para cerrar'; caja.onclick = () => caja.remove(); document.documentElement.appendChild(caja); }
+    caja.style.cssText = grande
+      ? 'position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:2147483647;width:min(560px,92vw);padding:22px 26px;border-radius:18px;font:700 24px/1.35 "Segoe UI",system-ui,sans-serif;color:#fff;text-align:center;box-shadow:0 16px 44px rgba(0,0,0,.45);white-space:pre-line;cursor:pointer;border:4px solid rgba(255,255,255,.85)'
+      : 'position:fixed;top:14px;right:14px;z-index:2147483647;max-width:340px;padding:12px 16px;border-radius:12px;font:15px/1.4 "Segoe UI",system-ui,sans-serif;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.35);white-space:pre-line;cursor:pointer';
     caja.textContent = texto; caja.style.background = color;
   };
 
@@ -72,7 +75,7 @@
   };
   const fin = async r => {
     obs.disconnect(); clearInterval(reloj);
-    aviso(r.deuda ? `⚠️ TIENE DEUDA en ${NOMBRE}: ${r.monto}\nRevisa el detalle en pantalla.` : `✅ SIN DEUDA en ${NOMBRE}`, r.deuda ? '#c00000' : '#14804a');
+    aviso(r.deuda ? `⚠️ TIENE DEUDA en ${NOMBRE}\n${r.monto}\n` + 'Revisa el detalle en pantalla.' : `✅ SIN DEUDA en ${NOMBRE}`, r.deuda ? '#c00000' : '#14804a', true);
     await chrome.storage.local.set({ deuda_res: { id: p.id || '', comp: COMP, deuda: r.deuda, monto: r.monto || '', texto: r.texto, ts: Date.now() } });
     await chrome.storage.local.remove('deuda_pedido');
   };

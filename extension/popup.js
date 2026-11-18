@@ -307,7 +307,11 @@ function initNoVenta() {
       const r = await marcarEnGenesys(codigo);
       if (r !== 'ok') { try { chrome.notifications.create('cg-gc-' + Date.now(), { type: 'basic', iconUrl: 'icono-128.png', title: 'Genesys: marca el código a mano', message: 'No encontré el recuadro de códigos de conclusión abierto. Código: ' + codigo, priority: 1 }); } catch (e) {} }
     }
-    await chrome.tabs.create({ url: nvURL(), active: true });
+    // Si el formulario ya está abierto en una pestaña, se reutiliza (no se juntan pestañas); si no, se abre una nueva
+    let tabNV = null;
+    try { tabNV = (await chrome.tabs.query({ url: 'https://docs.google.com/forms/d/e/1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ/*' })).sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0))[0] || null; } catch (e) {}
+    if (tabNV) { await chrome.tabs.update(tabNV.id, { url: nvURL(), active: true }); try { await chrome.windows.update(tabNV.windowId, { focused: true }); } catch (e) {} }
+    else await chrome.tabs.create({ url: nvURL(), active: true });
     window.close();
   });
   nvPintar();

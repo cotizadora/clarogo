@@ -208,7 +208,7 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 #ct-tabla td.c-orig select{width:100%}
 #ct-tabla .deu-b{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:100%;height:40px;padding:2px 3px;line-height:1.1;border:1px solid var(--border);border-radius:7px;background:#fff;font:inherit;font-size:.7rem;font-weight:800;color:#1f2430;cursor:pointer;white-space:nowrap}
 #ct-tabla .deu-b:hover{border-color:var(--red);background:#fff5f5}
-#ct-tabla .deu-b.ok{border-color:#14804a;color:#14804a;background:#effaf3}
+#ct-tabla .deu-b.ok{border-color:#14804a;color:#fff;background:#14804a}
 #ct-tabla .deu-b.mal{border-color:#c00000;color:#fff;background:#c00000}
 #ct-tabla .deu-b span{display:inline}
 #ct-tabla .deu-b .lk-logo{width:16px;height:16px;border-radius:4px}
@@ -426,8 +426,6 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla td.c-nombre{white-space:normal;height:auto}
 #ct-tabla td textarea.nom{display:block;width:100%;min-height:27px;border:0;border-radius:0;background:transparent;padding:5px 6px 4px;font:inherit;font-size:.8rem;line-height:1.3;color:var(--text);resize:none;overflow:hidden;white-space:pre-wrap;word-break:break-word;field-sizing:content}
 #ct-tabla td textarea.nom{max-height:calc(2.6em + 9px)}
-/* Dirección del cliente a simple vista, en una sola línea bajo el nombre (completa al pasar el mouse) */
-#ct-tabla .dir-mini{padding:0 6px 5px;font-size:.7rem;line-height:1.25;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #ct-tabla td textarea.nom:focus{outline:2px solid #217346;outline-offset:-2px;background:#fff;max-height:none}
 #ct-tabla .tel-nom{display:none}
 /* Ancho de columnas ajustable: se arrastra el borde derecho del título (doble clic vuelve al ancho original) */
@@ -481,10 +479,10 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla .acc .go{color:#fff;background:var(--red);font-size:.7rem}
 #ct-tabla .acc .go:hover{background:var(--red-dk)}
 .c-n{width:46px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:96px}.c-tel{width:94px}.c-orig{width:96px}.c-deu{width:78px}.c-tipo{width:128px}.c-plan{width:86px}.c-ag{width:84px}.c-acc{width:390px}
-.c-nombre{width:240px}.c-notas{width:auto}
-@media (max-width:1500px){.c-notas,.c-hora{display:none} .c-nombre{width:230px} .c-rut{width:88px} .c-tipo{width:112px} .c-ag{width:78px} .c-acc{width:322px} .c-orig{width:86px} #ct-tabla .acc{gap:3px;padding:0 2px} #ct-tabla .acc .gen-t{display:none}}
+.c-nombre{width:150px}.c-dir{width:260px}.c-notas{width:auto}
+@media (max-width:1500px){.c-notas,.c-hora{display:none} .c-nombre{width:140px} .c-dir{width:114px} .c-fecha{width:80px} .c-rut{width:88px} .c-tel{width:90px} .c-deu{width:72px} .c-tipo{width:112px} .c-ag{width:78px} .c-acc{width:322px} .c-orig{width:80px} #ct-tabla .acc{gap:3px;padding:0 2px} #ct-tabla .acc .gen-t{display:none}}
 @media (max-width:1100px){.c-hora,.c-plan{display:none} #ct-tabla .acc .gen-t{display:none} .c-acc{width:320px}}
-@media (max-width:720px){#ct-tabla .tel-nom{display:block;font-size:.66rem;font-weight:700;line-height:1.2;padding:3px 4px 0;white-space:normal;word-break:break-word;color:var(--text)} #ct-tabla td.c-tel{white-space:normal;height:auto}.c-fecha,.c-notas,.c-rut,.c-nombre{display:none}.c-tel{width:auto}.c-orig{width:60px}.c-tipo{width:80px}.c-n{width:36px}.c-acc{width:140px} #ct-tabla .acc .fic{padding:0 6px} #ct-tabla .acc .fic .fic-t{display:none} #ct-tabla .acc .gen-t{display:none} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
+@media (max-width:720px){#ct-tabla .tel-nom{display:block;font-size:.66rem;font-weight:700;line-height:1.2;padding:3px 4px 0;white-space:normal;word-break:break-word;color:var(--text)} #ct-tabla td.c-tel{white-space:normal;height:auto}.c-fecha,.c-notas,.c-rut,.c-nombre,.c-dir{display:none}.c-tel{width:auto}.c-orig{width:60px}.c-tipo{width:80px}.c-n{width:36px}.c-acc{width:140px} #ct-tabla .acc .fic{padding:0 6px} #ct-tabla .acc .fic .fic-t{display:none} #ct-tabla .acc .gen-t{display:none} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
 #ct-resumen .chip b{margin-left:4px}
 .resp{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:.84rem}
 .resp .resp-b{display:flex;gap:6px;flex-wrap:wrap}
@@ -878,8 +876,8 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     </div>
     <div class="card" id="ag-panel" hidden style="padding:12px 14px"></div>
     <div class="chips" id="ct-resumen"></div>    <div class="ct-wrap"><table id="ct-tabla">
-      <colgroup><col class="c-n"><col class="c-fecha"><col class="c-hora"><col class="c-rut"><col class="c-nombre"><col class="c-tel"><col class="c-orig"><col class="c-deu"><col class="c-tipo"><col class="c-plan"><col class="c-notas"><col class="c-ag"><col class="c-acc"></colgroup>
-      <thead><tr><th class="c-n"></th><th class="c-fecha">Fecha</th><th class="c-hora">Hora</th><th class="c-rut">RUT</th><th class="c-nombre">Nombre</th><th class="c-tel">Teléfono</th><th class="c-orig" title="Compañía de origen">Compañía</th><th class="c-deu" title="Revisar si el cliente tiene deuda en su compañía">Deuda</th><th class="c-tipo">Tipificación</th><th class="c-plan">Plan</th><th class="c-notas">Notas</th><th class="c-ag" title="Agenda una llamada de vuelta">Agendar</th><th class="c-acc"></th></tr></thead>
+      <colgroup><col class="c-n"><col class="c-fecha"><col class="c-hora"><col class="c-rut"><col class="c-nombre"><col class="c-dir"><col class="c-tel"><col class="c-orig"><col class="c-deu"><col class="c-tipo"><col class="c-plan"><col class="c-notas"><col class="c-ag"><col class="c-acc"></colgroup>
+      <thead><tr><th class="c-n"></th><th class="c-fecha">Fecha</th><th class="c-hora">Hora</th><th class="c-rut">RUT</th><th class="c-nombre">Nombre</th><th class="c-dir">Dirección</th><th class="c-tel">Teléfono</th><th class="c-orig" title="Compañía de origen">Compañía</th><th class="c-deu" title="Revisar si el cliente tiene deuda en su compañía">Deuda</th><th class="c-tipo">Tipificación</th><th class="c-plan">Plan</th><th class="c-notas">Notas</th><th class="c-ag" title="Agenda una llamada de vuelta">Agendar</th><th class="c-acc"></th></tr></thead>
       <tbody id="ct-body"></tbody>
     </table></div>
     <div class="empty" id="ct-vacio" hidden>No hay llamadas en este período. Pega la primera desde Genesys.</div>
@@ -1076,7 +1074,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.8.0';
+const APP_VERSION = '2.8.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2126,7 +2124,7 @@ function ventaAbrir(id, aqui) {
   const r = CT.find(x => x.id === id); if (!r) return toast('Elige un cliente de Mi Planilla.');
   const url = ventaURL(r);
   if (aqui) { if (location.hash !== '#venta') location.hash = 'venta'; $('#venta-frame').src = url + '&embedded=true'; }
-  else window.open(url, '_blank', 'noopener');
+  else window.open(url, 'clarogo-venta');   // reutiliza la pestaña del formulario si ya está abierta
   toast('Formulario abierto con los datos de ' + (r.nombre || 'el cliente') + '. Revisa, completa lo que falta y presiona Enviar.');
 }
 function initVenta() {
@@ -2654,7 +2652,8 @@ const deudaBoton = r => {
   const rutG = rut.slice(0, -1) + '-' + rut.slice(-1);
   if (document.documentElement.dataset.clarogoExt) window.postMessage({ tipo: 'clarogo-deuda', comp, rut: rutG, id }, location.origin);
   try { navigator.clipboard.writeText(rutG).catch(() => {}); } catch (e) {}
-  window.open(port[3], '_blank', 'noopener');
+  // Siempre la misma pestaña para los portales de pago: no se juntan pestañas
+  window.open(port[3], 'clarogo-deuda');
   toast(document.documentElement.dataset.clarogoExt ? `Revisando la deuda en ${port[1]}. Si aparece "No soy un robot", resuélvelo.` : `RUT copiado. Pégalo en ${port[1]} con Ctrl+V.`);
 }
 // El Rutificador entrega "APELLIDO1 APELLIDO2 NOMBRES": se pasa a "Nombres Apellido1 Apellido2".
@@ -3315,7 +3314,8 @@ function ctPinta() {
     <td class="c-fecha"><input data-k="fecha" value="${esc(fmtF(r.fecha))}" placeholder="DD-MM-AAAA" title="${esc(fmtF(r.fecha))}"></td>
     <td class="c-hora"><input data-k="hora" value="${esc(r.hora)}" placeholder="HH:MM"></td>
     <td class="c-rut"><input data-k="rut" value="${esc(r.rut)}" placeholder="RUT" title="${esc(r.rut)}"></td>
-    <td class="c-nombre"><textarea data-k="nombre" class="nom" rows="1" placeholder="Pegar nombre" title="${esc(r.nombre)}">${esc(r.nombre)}</textarea>${dirTexto(r) ? `<div class="dir-mini" title="${esc(dirTexto(r))}">📍 ${esc(dirTexto(r))}</div>` : ''}</td>
+    <td class="c-nombre"><textarea data-k="nombre" class="nom" rows="1" placeholder="Pegar nombre" title="${esc(r.nombre)}">${esc(r.nombre)}</textarea></td>
+    <td class="c-dir"><input data-k="direccion" value="${esc(dirTexto(r))}" placeholder="Dirección" title="${esc(dirTexto(r))}"></td>
     <td class="c-tel"><div class="tel-nom">${esc(r.nombre || '')}</div><input data-k="telefono" value="${esc(r.telefono)}" placeholder="9XXXXXXXX" title="${esc(r.telefono)}"></td>
     <td class="c-orig"><select data-k="origen" title="Compañía de origen. Cámbiala para revisar la deuda en otra compañía.">${origenOpciones(r.origen)}</select></td>
     <td class="c-deu">${deudaBoton(r)}</td>

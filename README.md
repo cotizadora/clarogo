@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: ClaroGo! v2.8.1 y extensión 1.31.0
+
+- Mi Planilla: la dirección pasa a su propia columna **Dirección**, después de Nombre, editable (por si el Rutificador no la trae al día). Es el mismo dato que el campo Dirección de la ficha. Reemplaza la línea bajo el nombre de la v2.8.0.
+- Deuda: el resultado en el portal de pago sale como aviso grande arriba al centro, rojo "TIENE DEUDA" con el monto o verde "SIN DEUDA". En la planilla el botón "Sin deuda" ahora es verde sólido (el de "Con deuda" ya era rojo).
+- Menos pestañas: los portales de deuda se abren siempre en la misma pestaña, el formulario de ingreso de venta reutiliza su pestaña y la extensión reutiliza la pestaña del registro de no venta si ya está abierta.
+
 ### 18-11-2026: ClaroGo! v2.8.0 y extensión 1.30.0
 
 - Extensión: después de enviar el formulario de **ingreso de venta** también aparece la animación y luego vuelve a Genesys con el botón Enviar en neón (antes solo pasaba con el registro de no venta).
