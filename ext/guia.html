@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guía ClaroGo! Genesys</title>
+<meta name="description" content="Guía rápida de la extensión ClaroGo! Genesys para ejecutivos de televentas. Herramienta no oficial.">
+<style>
+  :root { --rojo: #e60000; --rojo-dk: #b30000; --texto: #1f2430; --suave: #5f6673; --borde: #e3e6eb; --fondo: #f6f7f9; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--texto); font: 16px/1.55 "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; }
+  header { background: linear-gradient(135deg, var(--rojo), var(--rojo-dk)); color: #fff; padding: 34px 16px 30px; text-align: center; }
+  header h1 { margin: 0; font-size: clamp(1.7rem, 5vw, 2.4rem); font-weight: 900; letter-spacing: -.01em; }
+  header p { margin: 8px auto 0; max-width: 620px; opacity: .92; }
+  header .chip { display: inline-block; margin-top: 12px; padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,.18); font-size: .82rem; font-weight: 700; }
+  main { max-width: 820px; margin: 0 auto; padding: 22px 16px 40px; }
+  nav.indice { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 22px; }
+  nav.indice a { padding: 6px 12px; border-radius: 999px; background: #fff; border: 1px solid var(--borde); color: var(--texto); text-decoration: none; font-size: .88rem; font-weight: 600; }
+  nav.indice a:hover { border-color: var(--rojo); color: var(--rojo); }
+  section { background: #fff; border: 1px solid var(--borde); border-radius: 16px; padding: 18px 20px; margin: 0 0 16px; box-shadow: 0 2px 8px rgba(16,24,40,.04); }
+  h2 { margin: 0 0 10px; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
+  h2 .ico { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: #fff1f1; font-size: 1.2rem; flex: none; }
+  ol, ul { margin: 6px 0 0; padding-left: 22px; }
+  li { margin: 5px 0; }
+  .tip { margin: 12px 0 0; padding: 10px 14px; border-radius: 12px; background: #eef4ff; border: 1px solid #c9daf8; font-size: .94rem; }
+  .ojo { margin: 12px 0 0; padding: 10px 14px; border-radius: 12px; background: #fff7e0; border: 1px solid #f3d27a; font-size: .94rem; }
+  kbd { display: inline-block; padding: 1px 7px; border: 1px solid #c9ced6; border-bottom-width: 2px; border-radius: 6px; background: #f8f9fb; font: 600 .85rem "Segoe UI", system-ui, sans-serif; }
+  .grupos { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; margin-top: 10px; }
+  .g { padding: 8px 10px; border-radius: 10px; border: 1.5px solid; font-size: .88rem; }
+  .g b { display: block; }
+  .g-seg { background: #e3f6ea; border-color: #6cc795; color: #0d6438; }
+  .g-rech { background: #fde4e4; border-color: #ef8e8e; color: #8a1010; }
+  .g-req { background: #fff1d6; border-color: #eeb35c; color: #7a4205; }
+  .g-llam { background: #e8eaee; border-color: #b3bac6; color: #374151; }
+  .g-otro { background: #ece6ff; border-color: #a98be8; color: #4f2a9e; }
+  .boton { display: inline-block; margin-top: 10px; padding: 11px 18px; border-radius: 12px; background: var(--rojo); color: #fff; text-decoration: none; font-weight: 800; }
+  .boton:hover { background: var(--rojo-dk); }
+  footer { text-align: center; color: var(--suave); font-size: .82rem; padding: 0 16px 30px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>ClaroGo! Genesys</h1>
+  <p>Tu ayudante para las llamadas: toma los datos del cliente desde Genesys, los manda a tu planilla, abre WhatsApp con la oferta y tipifica la no venta en un par de clics.</p>
+  <span class="chip">Herramienta no oficial · hecha por Eduardo Pérez</span>
+</header>
+
+<main>
+  <nav class="indice">
+    <a href="#instalar">Instalar</a><a href="#llamada">Durante la llamada</a><a href="#whatsapp">WhatsApp</a><a href="#tipificar">Tipificar no venta</a><a href="#anterior">Llamada cortada</a><a href="#historial">Clientes repetidos</a><a href="#planilla">En ClaroGo!</a>
+  </nav>
+
+  <section id="instalar">
+    <h2><span class="ico">⬇️</span>Instalar (una sola vez)</h2>
+    <ol>
+      <li>Descarga la extensión: <a href="https://cotizadora.github.io/clarogo/ext/clarogo-genesys-extension.zip">clarogo-genesys-extension.zip</a>.</li>
+      <li>Haz clic derecho en el archivo descargado y elige <b>"Extraer todo"</b>. Guarda la carpeta en un lugar fijo, por ejemplo en Documentos.</li>
+      <li>En Edge abre <b>edge://extensions</b> (en Chrome, chrome://extensions) y activa <b>"Modo para desarrolladores"</b>.</li>
+      <li>Presiona <b>"Cargar desempaquetada"</b> y elige la carpeta que extrajiste.</li>
+      <li>Fija el ícono rojo de ClaroGo! en la barra para tenerlo siempre a mano.</li>
+    </ol>
+    <p class="tip">💡 Abre <a href="https://cotizadora.github.io/clarogo/">ClaroGo!</a> una vez y completa <b>"Mi mensaje"</b> con tu nombre y teléfono: la extensión los usa en los mensajes de WhatsApp.</p>
+    <p class="ojo">🔄 Cuando haya una versión nueva: descarga el zip otra vez, reemplaza la carpeta y presiona <b>"Volver a cargar"</b> en edge://extensions. El número de versión aparece arriba en la ventana de la extensión.</p>
+  </section>
+
+  <section id="llamada">
+    <h2><span class="ico">📞</span>Durante la llamada</h2>
+    <ol>
+      <li>Con la llamada abierta en Genesys, presiona <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>G</kbd> o el ícono de ClaroGo!.</li>
+      <li>A la izquierda ves el <b>teléfono, RUT, nombre y campaña</b>. Los datos ya quedan copiados.</li>
+      <li>Pregúntale el RUT al cliente y anótalo en <b>"RUT del cliente"</b>. Si quieres, deja un comentario.</li>
+      <li>Presiona <b>"Enviar a Mi Planilla"</b>: el cliente aparece como fila nueva en tu planilla de ClaroGo!.</li>
+    </ol>
+  </section>
+
+  <section id="whatsapp">
+    <h2><span class="ico">💬</span>WhatsApp con la oferta</h2>
+    <ul>
+      <li>Elige el plan (por defecto el Plan 500) y deja marcado <b>"Adjuntar la lámina"</b> si quieres mandar la imagen.</li>
+      <li>Presiona <b>"WhatsApp Web"</b>: se abre el chat del cliente con el mensaje escrito y la lámina pegada.</li>
+      <li>Revisa y presiona enviar en WhatsApp. <b>La extensión nunca envía mensajes sola.</b></li>
+    </ul>
+  </section>
+
+  <section id="tipificar">
+    <h2><span class="ico">📝</span>Tipificar una no venta</h2>
+    <ol>
+      <li>A la derecha están todos los motivos como botones, por colores:</li>
+    </ol>
+    <div class="grupos">
+      <div class="g g-seg"><b>Seguimiento</b>Se envía info por WhatsApp</div>
+      <div class="g g-rech"><b>Rechazo del cliente</b>Conforme, paga menos, mala experiencia…</div>
+      <div class="g g-req"><b>Requisitos</b>Menos de 120 días, no es titular, sin cobertura…</div>
+      <div class="g g-llam"><b>Llamada</b>Corte de llamado, llamada muda</div>
+      <div class="g g-otro"><b>Otro</b>Escribe tú el motivo</div>
+    </div>
+    <ol start="2">
+      <li>Toca el motivo. Si es "conforme" o "paga menos", elige la compañía del cliente.</li>
+      <li>Presiona <b>"Tipificar en formulario"</b>. El formulario de no venta se abre, se llena solo con el teléfono y el motivo, y pasa a la segunda hoja.</li>
+      <li>Con <b>"Enviar automáticamente"</b> marcado, se envía solo. Si lo desmarcas, revisas y presionas <b>Enviar</b> (queda parpadeando).</li>
+      <li>Al final aparece al centro: <b>😊 ¡Tipificado por ClaroGo! correctamente!</b></li>
+    </ol>
+    <p class="tip">💡 Arriba de los motivos puedes ordenarlos <b>Por grupo</b>, <b>A-Z</b> o por los <b>Más usados</b>: la lista se acomoda sola a lo que más ocupas. Tus casillas y el orden quedan guardados.</p>
+  </section>
+
+  <section id="anterior">
+    <h2><span class="ico">⏱️</span>Si se cortó la llamada</h2>
+    <p>¿Se cortó y no alcanzaste a tipificar? Abre la extensión igual: aparece en <b>amarillo</b> la <b>llamada anterior</b>, con su teléfono y nombre, para que la tipifiques. Está disponible por 15 minutos y te avisa si ya la habías tipificado.</p>
+  </section>
+
+  <section id="historial">
+    <h2><span class="ico">🔁</span>Clientes que se repiten</h2>
+    <p>Cada tipificación queda guardada. Si te vuelve a caer el mismo teléfono, la extensión te avisa: <b>"Ya contactado 2 veces. Última: fecha · motivo"</b>. En tu planilla, ese cliente aparece con la marca 🔁 y su historial en la ficha.</p>
+    <p class="ojo">El historial se guarda en tu navegador: es tuyo, no se comparte con otros ejecutivos.</p>
+  </section>
+
+  <section id="planilla">
+    <h2><span class="ico">📋</span>En ClaroGo! (Mi Planilla)</h2>
+    <ul>
+      <li><b>Deuda:</b> el botón con el logo de la compañía revisa si el RUT tiene deuda. Cambia la compañía en el menú para revisar otra.</li>
+      <li><b>Ficha:</b> con <b>▾ Ficha</b> completas todos los datos del cliente, ordenados por módulos de colores.</li>
+      <li><b>Subir venta:</b> en la ficha, <b>"📤 Subir venta"</b> abre el formulario de ventas ya lleno. Tú completas RAC, TRX, delivery y origen, y lo envías.</li>
+      <li><b>Agendar:</b> la columna <b>Agendar</b> te recuerda la llamada de vuelta con sonido y color.</li>
+    </ul>
+    <a class="boton" href="https://cotizadora.github.io/clarogo/">Abrir ClaroGo!</a>
+  </section>
+</main>
+<footer>ClaroGo! es una herramienta no oficial, no pertenece a Claro Chile ni a Genesys. Los datos de los clientes quedan solo en tu computador.</footer>
+</body>
+</html>

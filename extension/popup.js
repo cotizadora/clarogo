@@ -228,6 +228,7 @@ function initNoVenta() {
     try { NV_USO[m] = [...(NV_USO[m] || []), Date.now()].slice(-60); await chrome.storage.local.set({ nvUso: NV_USO }); } catch (e) {}
     // Aviso para formas.js: pasa a la segunda página, recorre lo llenado y deja listo el botón Enviar
     const resumen = (m === '__otro' ? ($('#nv-otro').value || '').trim() : nvTexto(m)) + (TEL_NV ? ' · ' + TEL_NV.slice(-9) : '');
+    try { await chrome.storage.local.remove('nv_enviado'); } catch (e) {}   // un registro nuevo nunca hereda el envío anterior
     try { await chrome.storage.local.set({ nv_pedido: { ts: Date.now(), auto: $('#nv-auto').checked, aviso: $('#nv-aviso').checked, resumen, tel: TEL_NV.slice(-9), motivo: m === '__otro' ? ($('#nv-otro').value || '').trim() : nvTexto(m) } }); } catch (e) {}
     marcarTipificada();
     await chrome.tabs.create({ url: nvURL(), active: true });

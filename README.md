@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.23.2 y guía para ejecutivos
+
+- Corrección: después de un envío, el registro siguiente se quedaba en la primera hoja (confundía la primera hoja con la confirmación del envío anterior). Ahora solo se reconoce la confirmación en "formResponse" sin preguntas, y cada registro nuevo borra el envío anterior.
+- Guía para compartir: https://cotizadora.github.io/clarogo/ext/guia.html (instalar, durante la llamada, WhatsApp, tipificar, llamada cortada, clientes repetidos y Mi Planilla).
+
 ### 18-11-2026: extensión 1.23.1, aviso final al centro
 
 - Al enviar la tipificación aparece al centro del formulario una tarjeta con los colores del formulario de Google (morado #5746E3): carita sonriente, "¡Tipificado por ClaroGo! correctamente!" y el motivo con el teléfono. Se desvanece sola en unos 4 segundos. Si no se puede mostrar en la página, queda la notificación de Windows como respaldo.

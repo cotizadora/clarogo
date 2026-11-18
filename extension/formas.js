@@ -28,9 +28,11 @@
     document.documentElement.appendChild(a);
     setTimeout(() => { a.style.opacity = '0'; }, 3500); setTimeout(() => a.remove(), 4500);
   };
-  if (esNV) {
+  // Página de confirmación de un envío: solo la de "formResponse" sin preguntas (nunca la primera hoja de un registro nuevo)
+  if (esNV && /formResponse$/.test(location.pathname)) {
     const env = (await chrome.storage.local.get('nv_enviado')).nv_enviado;
-    if (env && Date.now() - env.ts < 2 * 60000 && !boton0('Enviar')) { await chrome.storage.local.remove('nv_enviado'); if (env.aviso) avisoEnviado(env.texto); marcar('tipificación enviada'); return; }
+    await esperar(800);
+    if (env && Date.now() - env.ts < 2 * 60000 && !boton0('Enviar') && !boton0('Siguiente') && !document.querySelector('[role="listitem"]')) { await chrome.storage.local.remove('nv_enviado'); marcar('tipificación enviada'); return; }
   }
 
   let pedido = null;
