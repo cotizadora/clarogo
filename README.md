@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.19.0, el script llega a la segunda hoja
+
+- En la segunda hoja del registro de no venta (formResponse) Edge no activaba formas.js. Ahora fondo.js vigila la pestaña del formulario y le inyecta el script cada vez que la hoja cambia (permiso nuevo: docs.google.com/forms). El script corre una sola vez por página.
+
 ### 18-11-2026: extensión 1.18.1, sello de estado en los formularios
 
 - Sello abajo a la izquierda en los formularios de ventas y no venta con la versión y el estado (revisando, activo, esperando la segunda hoja, listo para enviar, o por qué no actúa), para saber si la extensión está corriendo.

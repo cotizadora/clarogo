@@ -7,8 +7,9 @@
   const NV = '1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ';
   const VENTA = '1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw';
   const esNV = location.pathname.includes(NV), esVenta = location.pathname.includes(VENTA);
-  if (!esNV && !esVenta || window.__cgFormas || window.top !== window) return;
-  window.__cgFormas = true;
+  // Una sola vez por página: si Google reemplaza la página, el sello desaparece y el script vuelve a correr
+  if (!esNV && !esVenta || document.documentElement.dataset.cgFormas || window.top !== window) return;
+  document.documentElement.dataset.cgFormas = '1';
   const esperar = ms => new Promise(r => setTimeout(r, ms));
   // Sello abajo a la izquierda: muestra que la extensión está funcionando en este formulario y en qué estado
   const sello = document.createElement('div');

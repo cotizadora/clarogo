@@ -112,3 +112,12 @@ async function abrirWhatsApp(url, img) {
 chrome.runtime.onMessage.addListener((msg, _de, responder) => {
   if (msg && msg.tipo === 'wa') { abrirWhatsApp(msg.url, msg.img).then(responder, () => responder(false)); return true; }
 });
+
+// Formularios de ventas y no venta: en la segunda hoja Google carga la página de una forma en que Edge
+// no vuelve a activar formas.js. Aquí se vigila la pestaña y se inyecta el script cada vez que la hoja cambia.
+const FORMAS = /^https:\/\/docs\.google\.com\/forms\/d\/e\/(1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ|1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw)\//;
+chrome.tabs.onUpdated.addListener((tabId, cambio, tab) => {
+  const url = cambio.url || (tab && tab.url) || '';
+  if (!FORMAS.test(url) || (cambio.status !== 'complete' && !cambio.url)) return;
+  setTimeout(() => { chrome.scripting.executeScript({ target: { tabId }, files: ['formas.js'] }).catch(() => {}); }, cambio.url && cambio.status !== 'complete' ? 1500 : 300);
+});
