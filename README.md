@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.18.0, panel "Listo para enviar" y ventana en dos columnas
+
+- Causa del recorrido que no funcionaba: Google Forms bloquea armar HTML con texto (Trusted Types) y el script se detenía. Ahora todo se crea elemento por elemento.
+- formas.js vigila la página: cuando aparece el botón Enviar (con o sin recarga) muestra un panel fijo con las respuestas llenadas, un botón "Enviar formulario" que parpadea y que solo envía si el ejecutivo lo presiona, y deja parpadeando el Enviar de Google hasta que se envía.
+- Ventana de la extensión en dos columnas (620 px de ancho) para verla completa sin scroll.
+
 ### 18-11-2026: extensión 1.17.2, recorrido en la segunda hoja
 
 - Con la sesión de Google iniciada, el formulario cambia a la segunda hoja sin recargar la página y el recorrido no partía. Ahora, después de presionar Siguiente, la extensión espera ahí mismo a que aparezca el botón Enviar y sigue con el recorrido.
