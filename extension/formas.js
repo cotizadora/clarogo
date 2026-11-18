@@ -34,8 +34,13 @@
     pedido.avanzo = true; await chrome.storage.local.set({ nv_pedido: pedido });
     await esperar(1200);
     const s = boton('Siguiente'); if (s) s.click();
-    return;   // la página siguiente vuelve a cargar este script
+    // Google cambia a la segunda hoja sin recargar la página: se espera aquí mismo a que aparezca el botón Enviar
+    for (let i = 0; i < 60 && !boton('Enviar'); i++) await esperar(250);
+    if (!boton('Enviar')) return;   // si recargó la página completa, el script nuevo sigue desde ahí
+    await esperar(600);
   }
+  if (window.__cgRecorrido) return;   // nunca dos recorridos a la vez en la misma página
+  window.__cgRecorrido = true;
 
   // Paso 2: recorrer las respuestas escritas
   const lleno = q => {

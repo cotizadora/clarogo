@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.17.2, recorrido en la segunda hoja
+
+- Con la sesión de Google iniciada, el formulario cambia a la segunda hoja sin recargar la página y el recorrido no partía. Ahora, después de presionar Siguiente, la extensión espera ahí mismo a que aparezca el botón Enviar y sigue con el recorrido.
+
 ### 18-11-2026: extensión 1.17.1, recorrido visible en los formularios
 
 - El recorrido espera a que la pestaña esté a la vista, mueve la pantalla de forma directa a cada respuesta (sin depender del desplazamiento suave), la ilumina y oscurece el resto. Una lista fija abajo a la derecha muestra cada respuesta llenada y trae el botón "Ir al botón Enviar".
