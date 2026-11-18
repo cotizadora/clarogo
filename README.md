@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: extensión 1.26.2, Rutificador más seguro
+
+- rutif.js espera hasta 6 segundos el pedido de la planilla, cambia a la pestaña "RUT" antes de escribir, reenvía la búsqueda si la página no cambia y muestra un sello abajo a la izquierda con el paso en que va.
+
 ### 18-11-2026: extensión 1.26.1
 
 - Rutificador: el título "Nombre" puede venir dentro de un enlace de publicidad; ahora se busca la palabra dentro del texto de cada título. Probado con una página de resultados real guardada por Eduardo.
