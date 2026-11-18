@@ -189,27 +189,36 @@
     <h2><span class="ico">⬇️</span>Instalar (solo la primera vez)</h2>
     <p class="sub">Son 3 pasos. Hazlos en el computador donde usas Genesys.</p>
 
-    <h3>Paso 1 · Copia esta línea</h3>
+    <h3>Paso 1 · Abre la página de extensiones y guárdala en favoritos</h3>
+    <ol>
+      <li>Copia esta dirección: <span class="copiar" style="display:inline-flex;margin:0"><code id="url-edge">edge://extensions</code><button type="button" data-copiar="url-edge">📋 Copiar</button></span> <small>(en Chrome: <code id="url-chrome">chrome://extensions</code> <button type="button" data-copiar="url-chrome" style="border:0;border-radius:8px;padding:2px 8px;background:#1f2430;color:#fff;cursor:pointer">Copiar</button>)</small></li>
+      <li>Abre una <b>pestaña nueva</b> en tu navegador, pega la dirección arriba en la barra con <kbd>Ctrl</kbd> + <kbd>V</kbd> y presiona <kbd>Enter</kbd>.</li>
+      <li>Presiona <kbd>Ctrl</kbd> + <kbd>D</kbd> y luego <b>Listo</b>: queda guardada en tus favoritos como <b>"Extensiones"</b>. La usarás para actualizar.</li>
+      <li>Activa <b>"Modo para desarrolladores"</b> (abajo a la izquierda en Edge, arriba a la derecha en Chrome). Deja esa pestaña abierta.</li>
+    </ol>
+
+    <h3>Paso 2 · Copia esta línea y pégala en la Terminal</h3>
     <div class="copiar"><code id="cmd-inst">irm https://cotizadora.github.io/clarogo/ext/instalar.ps1 | iex</code><button type="button" data-copiar="cmd-inst">📋 Copiar</button></div>
-
-    <h3>Paso 2 · Pégala en la Terminal</h3>
     <ol>
-      <li>Haz <b>clic derecho</b> en el botón <b>Inicio</b> de Windows (el logo de abajo a la izquierda).</li>
-      <li>Elige <b>Terminal</b> (en algunos equipos dice <b>Windows PowerShell</b>).</li>
+      <li>Haz <b>clic derecho</b> en el botón <b>Inicio</b> de Windows (el logo de abajo a la izquierda) y elige <b>Terminal</b> (en algunos equipos dice <b>Windows PowerShell</b>).</li>
       <li>En la ventana negra, pega con <kbd>Ctrl</kbd> + <kbd>V</kbd> y presiona <kbd>Enter</kbd>.</li>
-      <li>Espera a que diga <b>LISTO</b>. Se abre sola la página de extensiones de Edge.</li>
+      <li>Espera a que diga <b>LISTO</b>. Te muestra la carpeta donde quedó la extensión y ya deja la ruta copiada.</li>
     </ol>
 
-    <h3>Paso 3 · Activa la extensión en Edge</h3>
+    <h3>Paso 3 · Carga la extensión</h3>
     <ol>
-      <li>Abajo a la izquierda, activa <b>"Modo para desarrolladores"</b>.</li>
-      <li>Arriba, presiona <b>"Cargar desempaquetada"</b>.</li>
-      <li>En la ventana que se abre, presiona <kbd>Ctrl</kbd> + <kbd>V</kbd> (la ruta ya está copiada), luego <kbd>Enter</kbd> y <b>"Seleccionar carpeta"</b>.</li>
-      <li>Haz clic en la pieza de rompecabezas de Edge y presiona el alfiler junto a <b>ClaroGo! Genesys</b> para dejar el ícono rojo a la vista.</li>
+      <li>Vuelve a la pestaña de <b>Extensiones</b> y presiona <b>"Cargar desempaquetada"</b>.</li>
+      <li>En la ventana que se abre, presiona <kbd>Ctrl</kbd> + <kbd>V</kbd>, luego <kbd>Enter</kbd> y <b>"Seleccionar carpeta"</b>.</li>
+      <li>Haz clic en la pieza de rompecabezas del navegador y presiona el alfiler junto a <b>ClaroGo! Genesys</b> para dejar el ícono rojo a la vista.</li>
     </ol>
-
     <div class="demo" data-demo>
       <div class="demo-pantalla">
+        <div class="escena" data-txt="Paso 1: abre Extensiones, guárdala con Ctrl+D y activa Modo para desarrolladores">
+          <div class="edge"><div class="url"><span>edge://extensions</span></div><div class="cuerpo">
+            <div class="lado">Extensiones<br><br>Extensiones instaladas<br>Mantener a salvo<div class="dev"><span class="sw prende brilla"></span> Modo para desarrolladores</div></div>
+            <div class="der"><div class="barra-dev" style="opacity:.35"><span>Cargar desempaquetada</span><span>Empaquetar</span><span>Actualizar</span></div><p style="color:#666">Aparecen botones nuevos arriba.</p></div>
+          </div></div>
+        </div>
         <div class="escena" data-txt="Paso 2: pega la línea en la Terminal y presiona Enter">
           <div class="cmd"><div class="tit">Terminal · Windows PowerShell</div><pre class="escribe"><span>PS C:\Users\tu-usuario&gt; irm https://cotizadora.github.io/clarogo/ext/instalar.ps1 | iex
 </span><span style="animation-delay:.7s">  Se creo el acceso directo "Actualizar ClaroGo!" en tu escritorio.
@@ -217,13 +226,8 @@
 </span><span class="ok" style="animation-delay:1.4s">   OK  manifest.json
    OK  popup.html
    OK  popup.js
-</span><span class="t" style="animation-delay:2.2s">  LISTO: version descargada.</span></pre></div>
-        </div>
-        <div class="escena" data-txt="Paso 3: activa Modo para desarrolladores">
-          <div class="edge"><div class="url"><span>edge://extensions</span></div><div class="cuerpo">
-            <div class="lado">Extensiones<br><br>Extensiones instaladas<br>Mantener a salvo<div class="dev"><span class="sw prende brilla"></span> Modo para desarrolladores</div></div>
-            <div class="der"><div class="barra-dev" style="opacity:.35"><span>Cargar desempaquetada</span><span>Empaquetar</span><span>Actualizar</span></div><p style="color:#666">Aparecen botones nuevos arriba.</p></div>
-          </div></div>
+</span><span class="t" style="animation-delay:2.2s">  LISTO: version descargada.
+  La extension quedo en esta carpeta: C:\Users\tu-usuario\Documents\ClaroGo\extension</span></pre></div>
         </div>
         <div class="escena" data-txt="Paso 3: Cargar desempaquetada, Ctrl+V y Seleccionar carpeta">
           <div class="edge" style="position:relative"><div class="url"><span>edge://extensions</span></div><div class="cuerpo">
@@ -248,7 +252,7 @@
     <p class="sub">Dos clics y listo. Tus datos y configuraciones no se pierden.</p>
     <div class="pasos3">
       <div class="paso"><span class="n">1</span><b>Doble clic en "Actualizar ClaroGo!"</b><p>Está en tu escritorio. Se abre una ventana que descarga lo nuevo y dice <b>LISTO</b>.</p></div>
-      <div class="paso"><span class="n">2</span><b>Presiona "Volver a cargar"</b><p>En la página de extensiones que se abre, busca ClaroGo! Genesys y presiona la <b>flecha circular</b>.</p></div>
+      <div class="paso"><span class="n">2</span><b>Presiona "Volver a cargar"</b><p>Abre tu favorito <b>"Extensiones"</b>, busca ClaroGo! Genesys y presiona la <b>flecha circular</b>.</p></div>
     </div>
     <div class="demo" data-demo>
       <div class="demo-pantalla">

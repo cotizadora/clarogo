@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 18-11-2026: favorito de Extensiones
+
+- Edge no deja que otro programa abra edge://extensions (quedaba en blanco): el instalador ya no lo intenta y explica dónde ir. La guía parte abriendo edge://extensions (o chrome://extensions) con un botón Copiar y guardándola en favoritos con Ctrl+D; para actualizar se usa ese favorito.
+
 ### 18-11-2026: guía solo de instalación y actualización
 
 - ext/instalar.ps1 (se usa con `irm https://cotizadora.github.io/clarogo/ext/instalar.ps1 | iex`): crea Documentos\ClaroGo\extension, baja los archivos, deja Documentos\ClaroGo\actualizar.ps1 y el acceso directo "Actualizar ClaroGo!" en el escritorio, copia la ruta y abre edge://extensions.

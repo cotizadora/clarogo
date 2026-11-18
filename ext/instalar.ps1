@@ -2,7 +2,7 @@
 # Se usa pegando en la Terminal:  irm https://cotizadora.github.io/clarogo/ext/instalar.ps1 | iex
 # 1. Crea la carpeta Documentos\ClaroGo\extension y baja los archivos de la extension.
 # 2. Deja en Documentos\ClaroGo el actualizador y un acceso directo "Actualizar ClaroGo!" en el escritorio.
-# 3. Copia la ruta de la carpeta y abre la pagina de extensiones de Edge.
+# 3. Copia la ruta de la carpeta y explica que hacer en la pagina de extensiones del navegador.
 # No pide claves ni datos personales y no instala programas.
 
 $ErrorActionPreference = 'Stop'
@@ -37,11 +37,11 @@ try {
   Write-Host "     $dest" -ForegroundColor White -BackgroundColor DarkBlue
   Write-Host '  (la ruta ya esta copiada: en Edge pegala con Ctrl+V)' -ForegroundColor Cyan
   Write-Host ''
-  Write-Host '  Ahora, en la pagina de extensiones que se abre:' -ForegroundColor Yellow
-  Write-Host '   - Si es la PRIMERA VEZ: activa "Modo para desarrolladores",'
+  Write-Host '  Ahora ve a la pagina de extensiones de tu navegador' -ForegroundColor Yellow
+  Write-Host '  (tu favorito "Extensiones", o escribe edge://extensions en Edge o chrome://extensions en Chrome):' -ForegroundColor Yellow
+  Write-Host '   - Si es la PRIMERA VEZ: con "Modo para desarrolladores" activado,'
   Write-Host '     presiona "Cargar desempaquetada", pega con Ctrl+V y elige "Seleccionar carpeta".'
   Write-Host '   - Si ya la tenias: busca ClaroGo! Genesys y presiona "Volver a cargar" (flecha circular).'
-  Start-Process 'msedge.exe' 'edge://extensions'
 } catch {
   Write-Host ''
   Write-Host '  No se pudo descargar. Revisa tu conexion a internet y vuelve a intentarlo.' -ForegroundColor Red
