@@ -87,7 +87,9 @@ body[data-view="inicio"] #nav{visibility:hidden}
 .ln-fila.sig{border-color:var(--red);background:#fff5f5}
 .ln-fila.ok{background:#effaf3;border-color:#bfe3cc}
 .ln-fila b{display:block;font-size:.95rem}
-.ln-fila small{color:var(--muted);font-size:.75rem}
+.ln-fila small{display:block;color:var(--muted);font-size:.75rem}
+.ln-fila .ln-oferta{color:#1f2430;font-weight:700}
+.ln-fila .ln-oferta.adic{color:#13804a}
 .ln-n{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;font-weight:800;font-size:.8rem}
 .ln-fila.ok .ln-n{background:#14804a}
 .ln-ui{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
@@ -1177,7 +1179,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <div class="d-head"><div><h2>Subir la venta línea por línea</h2><p id="ln-sub"></p></div><button class="d-x" data-close>✕</button></div>
   <div class="d-body">
     <p id="ln-prueba" class="note red" hidden>🧪 Cliente de prueba: revisa cómo se llena el formulario, pero <b>no presiones Enviar</b>.</p>
-    <p style="font-size:.86rem">El formulario de venta se envía <b>una vez por cada número</b>. Abre la línea, revisa los datos, presiona <b>Enviar</b> en el formulario y vuelve aquí para la siguiente. Siempre se usa la misma pestaña.</p>
+    <p style="font-size:.86rem">El formulario de venta se envía <b>una vez por cada número</b>, cada uno con su plan, de forma normal. Que una línea es <b>adicional</b> se marca en el <b>Front</b>, donde además lleva su oferta de adicional (más barata). Abre la línea, revisa los datos, presiona <b>Enviar</b> en el formulario y vuelve aquí para la siguiente. Siempre se usa la misma pestaña.</p>
     <div id="ln-lista"></div>
     <div class="d-foot"><button class="btn" data-close>Cerrar</button><button class="btn red" id="ln-sig">Abrir siguiente línea</button></div>
   </div>
@@ -1208,7 +1210,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.12.0';
+const APP_VERSION = '2.12.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2292,6 +2294,14 @@ let lnFila = '';
 function lineasAbrir(id) {
   lnFila = id; lineasPinta(); abrir('dlg-lineas');
 }
+// Oferta comercial de cada línea: la principal con el precio del plan y las adicionales con su precio de adicional (más barato)
+function ofertaLinea(r, i) {
+  if (r.plan === PLAN_MAYOR.title) return i === 0 ? `${PLAN_MAYOR.title}: ${clp(PLAN_MAYOR.promo)} por ${PLAN_MAYOR.meses} meses, luego ${clp(PLAN_MAYOR.price)}` : 'El Plan Persona Mayor no tiene líneas adicionales';
+  const p = PLANES_VIGENTES.find(x => x.title === r.plan); if (!p) return '';
+  if (i === 0) return `${p.title}: ` + (p.promo ? `${clp(p.promo)} por ${PROMO_MESES} meses, luego ${clp(p.price)}` : clp(p.price));
+  const a = ADICIONALES[p.gb]; if (!a) return '';
+  return `Adicional ${p.title}: ` + (a.meses ? `${clp(a.promo)} por ${a.meses} meses, luego ${clp(a.luego)}` : `${clp(a.promo)} fijo`);
+}
 function lineasPinta() {
   const r = CT.find(x => x.id === lnFila); if (!r) return;
   const ls = lineasDe(r), hechas = r.lineasForm || {}, hora = t => new Date(t).toTimeString().slice(0, 5);
@@ -2299,7 +2309,7 @@ function lineasPinta() {
   $('#ln-sub').textContent = `${r.nombre || 'Cliente sin nombre'} · ${ls.length} líneas · ${ls.filter(n => hechas[n]).length} abiertas`;
   $('#ln-prueba').hidden = !/prueba/i.test(r.nombre || '');
   $('#ln-lista').innerHTML = ls.map((n, i) => `<div class="ln-fila${hechas[n] ? ' ok' : ''}${i === sig ? ' sig' : ''}">
-    <span class="ln-n">${i + 1}</span><div><b>${n.replace(/^(\d)(\d{4})(\d{4})$/, '$1 $2 $3')}</b><small>${i === 0 ? 'Línea principal' : 'Línea adicional'}${hechas[n] ? ' · formulario abierto a las ' + hora(hechas[n]) : ''}</small></div>
+    <span class="ln-n">${i + 1}</span><div><b>${n.replace(/^(\d)(\d{4})(\d{4})$/, '$1 $2 $3')}</b><small>${i === 0 ? 'Línea principal' : 'Línea adicional · en el Front márcala como adicional'}${hechas[n] ? ' · formulario abierto a las ' + hora(hechas[n]) : ''}</small>${ofertaLinea(r, i) ? `<small class="ln-oferta${i ? ' adic' : ''}">${esc(ofertaLinea(r, i))}</small>` : ''}</div>
     <button type="button" class="btn sm${i === sig ? ' red' : ''}" data-ln="${n}">${hechas[n] ? 'Abrir de nuevo' : 'Abrir formulario'}</button></div>`).join('');
   $('#ln-sig').disabled = sig < 0;
   $('#ln-sig').textContent = sig < 0 ? '✅ Todas las líneas abiertas' : `Abrir línea ${sig + 1} de ${ls.length}`;

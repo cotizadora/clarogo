@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 19-11-2026: ClaroGo! v2.12.1, oferta de cada línea al subir la venta
+
+- Aclarado con Eduardo: el formulario de ingreso de venta se envía uno por línea, cada uno con su plan normal ("Plan Vendido" solo tiene Plan 500/800/1000 GB y Adulto Mayor). Que una línea es adicional se marca en el Front, donde lleva su oferta de adicional.
+- La lista "Subir la venta línea por línea" muestra la oferta de cada línea: la principal con el precio del plan y las adicionales, en verde, con su precio de adicional (ADICIONALES), más el recordatorio "en el Front márcala como adicional". Plan Persona Mayor: avisa que no tiene adicionales.
+
 ### 19-11-2026: ClaroGo! v2.12.0 y GoExt 1.39.0, Rutificador automático en segundo plano
 
 - Apenas se pega un RUT válido (columna RUT de la planilla, fila que llega de Genesys o RUT del Script), GoExt busca en el Rutificador **en segundo plano**: abre o reutiliza su pestaña sin activarla y no cambia de ventana.
