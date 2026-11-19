@@ -181,7 +181,29 @@ chrome.runtime.onInstalled.addListener(async d => {
   } catch (e) {}
 });
 
+// Llamada nueva en Genesys (llamada.js): GoExt se abre sola, si el ejecutivo lo tiene activado (por defecto sí).
+// El navegador solo deja abrir la ventanita en una ventana que esté a la vista; si no se puede, avisa con una notificación.
+const LLAMADAS_VISTAS = new Map();
+async function abrirPorLlamada(msg) {
+  try {
+    const o = await chrome.storage.local.get('autoAbrir');
+    if (o.autoAbrir === false) return;
+    const ahora = Date.now();
+    for (const [k, t] of LLAMADAS_VISTAS) if (ahora - t > 30 * 60000) LLAMADAS_VISTAS.delete(k);
+    if (LLAMADAS_VISTAS.has(msg.clave)) return;   // una sola vez por llamada
+    LLAMADAS_VISTAS.set(msg.clave, ahora);
+    if (chrome.action && typeof chrome.action.openPopup === 'function') { await chrome.action.openPopup(); return; }
+    throw new Error('sin openPopup');
+  } catch (e) {
+    try {
+      const id = 'cg-llamada-' + Date.now();
+      chrome.notifications.create(id, { type: 'basic', iconUrl: 'icono-128.png', title: '📞 Llamada nueva: ' + String(msg.tel || '').replace(/^(\d)(\d{4})(\d{4})$/, '$1 $2 $3'), message: 'Abre GoExt con su ícono o con Alt+Shift+G para tomar los datos.', priority: 2 });
+      setTimeout(() => chrome.notifications.clear(id), 15000);
+    } catch (x) {}
+  }
+}
 chrome.runtime.onMessage.addListener((msg, _de, responder) => {
+  if (msg && msg.tipo === 'llamada' && /^\d{9}$/.test(String(msg.tel || ''))) { abrirPorLlamada(msg); return; }
   // "Activar versión nueva": se recarga desde el fondo, con la ventana ya cerrada (recargar desde la ventana puede dejarla trabada)
   if (msg && msg.tipo === 'recargar') { setTimeout(() => chrome.runtime.reload(), 400); return; }
   // Pedido del Rutificador: se guarda con la pestaña de la planilla que lo hizo

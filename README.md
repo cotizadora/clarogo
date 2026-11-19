@@ -68,6 +68,13 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 19-11-2026: GoExt 1.40.0, se abre sola al entrar una llamada
+
+- Nuevo `llamada.js` (en todos los marcos de Genesys): cada 2,5 segundos lee los cuadros del panel "Interacción de llamada" y, cuando aparece un teléfono de cliente nuevo, avisa al fondo. Solo lee, no cambia nada en Genesys.
+- El fondo abre la ventanita de GoExt sola (`chrome.action.openPopup`), una vez por llamada. Si el navegador no lo permite (ventana no visible o versión antigua), muestra una notificación "📞 Llamada nueva" para abrirla con el ícono o Alt+Shift+G.
+- Casilla en la ventanita: "📞 Abrir GoExt sola al entrar una llamada" (activada por defecto). La apertura manual sigue igual.
+- Se quitó el mensaje "No se pudo copiar: … Document is not focused": si el navegador no deja copiar, prueba otro método y sigue sin mostrar error.
+
 ### 19-11-2026: ClaroGo! v2.12.1, oferta de cada línea al subir la venta
 
 - Aclarado con Eduardo: el formulario de ingreso de venta se envía uno por línea, cada uno con su plan normal ("Plan Vendido" solo tiene Plan 500/800/1000 GB y Adulto Mayor). Que una línea es adicional se marca en el Front, donde lleva su oferta de adicional.

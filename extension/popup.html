@@ -64,6 +64,8 @@
   .nv-op input { width: auto; margin: 0; padding: 0; }
   .nv small { display: block; font-size: .7rem; color: var(--muted); margin-top: 6px; }
   p.nota { font-size: .72rem; color: var(--muted); margin: 10px 0 0; }
+  .auto-abrir { margin: 0; padding: 8px 14px 10px; border-top: 1px solid #e3e6eb; font-size: .78rem; color: var(--muted); }
+  .auto-abrir label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -97,6 +99,7 @@
   </div>
   </div>
 </main>
+<p class="auto-abrir"><label title="Cuando entra una llamada nueva en Genesys, GoExt se abre sola con los datos del cliente. El ícono y Alt+Shift+G siguen funcionando igual."><input type="checkbox" id="auto-abrir" checked> 📞 Abrir GoExt sola al entrar una llamada</label></p>
 <script src="popup.js"></script>
 </body>
 </html>

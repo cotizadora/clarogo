@@ -35,9 +35,16 @@ const telFormato = s => { let d = String(s || '').replace(/\D/g, ''); if (d.leng
 
 function mostrar(estado, clase) { $('#estado').textContent = estado; $('#estado').className = clase || ''; }
 
+// Copia los datos. Si el navegador no deja (por ejemplo, la ventanita se abrió sola y aún no tiene el foco),
+// prueba con el método antiguo y, si tampoco se puede, sigue sin mostrar error: el botón Enviar no lo necesita.
 async function copiar(silencioso) {
-  try { await navigator.clipboard.writeText(TEXTO); if (!silencioso) mostrar('Copiado. Pégalo en Mi Planilla.', 'ok'); return true; }
-  catch (e) { mostrar('No se pudo copiar: ' + e.message, 'mal'); return false; }
+  try { await navigator.clipboard.writeText(TEXTO); if (!silencioso) mostrar('Copiado. Pégalo en Mi Planilla.', 'ok'); return true; } catch (e) {}
+  try {
+    const t = document.createElement('textarea'); t.value = TEXTO; t.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(t); t.select();
+    const ok = document.execCommand('copy'); t.remove();
+    if (ok) { if (!silencioso) mostrar('Copiado. Pégalo en Mi Planilla.', 'ok'); return true; }
+  } catch (e) {}
+  return false;
 }
 
 // Secciones que un ejecutivo deja abiertas a la mano: nunca se le cambian
@@ -167,6 +174,7 @@ async function pintarLlamada(d, anterior) {
   if (anterior) {
     mostrar(`📞 Llamada anterior (${haceCuanto(Date.now() - anterior.ts)}). Puedes tipificarla.`, 'anterior');
   } else if (copiado) mostrar(tel ? '✓ Datos copiados.' : 'Datos copiados, pero esta llamada no trae teléfono.', tel ? 'ok' : 'mal');
+  else mostrar(tel ? '✓ Datos de la llamada listos.' : 'Esta llamada no trae teléfono.', tel ? 'ok' : 'mal');
   $('#enviar').disabled = false;
   if (tel) prepararWhatsApp(tel, nombre);
   TEL_NV = (tel || '').replace(/\D/g, '');
@@ -435,3 +443,8 @@ fetch(chrome.runtime.getURL('manifest.json') + '?v=' + Date.now(), { cache: 'no-
   }).catch(() => {});
 }).catch(() => {});
 iniciar();
+// Preferencia: abrir GoExt sola al entrar una llamada (la guarda llamada.js / fondo.js; por defecto activada)
+try {
+  chrome.storage.local.get('autoAbrir').then(o => { $('#auto-abrir').checked = o.autoAbrir !== false; });
+  $('#auto-abrir').addEventListener('change', e => { chrome.storage.local.set({ autoAbrir: e.target.checked }); mostrar(e.target.checked ? 'GoExt se abrirá sola al entrar una llamada.' : 'GoExt ya no se abrirá sola. Ábrela con el ícono o Alt+Shift+G.', 'ok'); });
+} catch (e) {}
