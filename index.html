@@ -1190,7 +1190,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.11.2';
+const APP_VERSION = '2.11.3';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -3936,6 +3936,8 @@ async function limpiarCache() {
    ════════════════════════════════════════════════════════════════ */
 // Descargas: botones que copian una dirección o una carpeta
 document.addEventListener('click', e => { const b = e.target.closest('[data-copiar-txt]'); if (!b) return; try { navigator.clipboard.writeText(b.dataset.copiarTxt).then(() => { const t = b.textContent; b.textContent = 'Copiado'; setTimeout(() => { b.textContent = t; }, 1600); }, () => toast('No se pudo copiar')); } catch (x) {} });
+// En Chrome la página de extensiones es chrome://extensions (edge://extensions no abre en Chrome)
+if (!/Edg\//.test(navigator.userAgent)) $$('[data-copiar-txt="edge://extensions"]').forEach(b => { b.dataset.copiarTxt = 'chrome://extensions'; const c = b.previousElementSibling; if (c) c.textContent = 'chrome://extensions'; const s = b.closest('li') && b.closest('li').querySelector('small'); if (s) s.innerHTML = 'En Edge: <code>edge://extensions</code>'; });
 $$('[data-app-ver]').forEach(e => { e.textContent = 'v' + APP_VERSION; }); initMenu(); initLineas(); initExcepciones(); initSugerencias(); iniciarRespaldo(); initWhatsApp(); initAgenda(); initPerfil(); initDeshacer(); initSonido(); mostrarTruco(); $('#truco').onclick = mostrarTruco; window.addEventListener('hashchange', () => { if ((location.hash || '#inicio') === '#inicio') mostrarTruco(); });
 try { if (sessionStorage.getItem('clarogo_limpio')) { sessionStorage.removeItem('clarogo_limpio'); setTimeout(() => toast('Caché limpiada. Tu planilla está a salvo.'), 400); } } catch (e) {}
 $('#cache-btn').onclick = limpiarCache;

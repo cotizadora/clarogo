@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 19-11-2026: ClaroGo! v2.11.3, enlace para compartir GoExt
+
+- Enlace para WhatsApp: **https://cotizadora.github.io/clarogo/goext/**. Su vista previa es `goext/goext-invitacion.png` (1200×630, estilo de la imagen de ClaroGo!, ícono G! y "ClaroGo! funciona mucho mejor con GoExt") y al abrirlo lleva a ClaroGo! #descargas.
+- Descargas: en Chrome el botón Copiar muestra y copia `chrome://extensions` (antes siempre copiaba `edge://extensions`, que no abre en Chrome).
+
 ### 19-11-2026: ClaroGo! v2.11.2 y GoExt 1.36.0, actualizar con un clic
 
 - El instalador registra, solo para el usuario y sin administrador, el enlace `goext://` (HKCU\Software\Classes\goext) que ejecuta `Documentos\ClaroGo\actualizar-clarogo.bat`.
