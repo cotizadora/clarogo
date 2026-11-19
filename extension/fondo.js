@@ -226,7 +226,7 @@ async function finDeLlamada() {
   }
 }
 chrome.runtime.onMessage.addListener((msg, _de, responder) => {
-  if (msg && msg.tipo === 'llamada' && /^\d{9}$/.test(String(msg.tel || ''))) { abrirPorLlamada(msg); return; }
+  if (msg && msg.tipo === 'llamada' && /^\d{9}$/.test(String(msg.tel || ''))) { abrirPorLlamada(msg); setTimeout(() => revisarVersion(false), 5000); return; }
   if (msg && msg.tipo === 'corte-ejecutivo') { chrome.storage.local.set({ corte_ejecutivo: Date.now() }); return; }
   if (msg && msg.tipo === 'fin-llamada') { finDeLlamada(); return; }
   // Al cerrarse la alerta de llamada cortada: GoExt se abre con el motivo listo para tipificar
@@ -401,3 +401,39 @@ chrome.tabs.onUpdated.addListener((tabId, cambio, tab) => {
   ultimaPestanaForm = tabId;
   setTimeout(() => { chrome.scripting.executeScript({ target: { tabId }, files: ['formas.js'] }).catch(() => {}); }, cambio.url && cambio.status !== 'complete' ? 1500 : 300);
 });
+// Aviso de versión nueva para todos los ejecutivos, sin tener que abrir la ventanita:
+// al abrir el navegador y con cada llamada (como máximo cada 2 horas) se compara la versión en uso con la publicada.
+// - Si ya está descargada en la carpeta pero no activada: notificación "clic para activarla".
+// - Si hay una más nueva en internet: notificación "clic para actualizar" (abre actualizar.html, que la baja y la activa).
+const verMayorF = (a, b) => { const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number); for (let i = 0; i < 3; i++) { if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0); } return false; };
+async function revisarVersion(forzar) {
+  try {
+    const o = await chrome.storage.local.get(['rev_version', 'aviso_version']);
+    if (!forzar && o.rev_version && Date.now() - o.rev_version < 2 * 3600000) return;
+    await chrome.storage.local.set({ rev_version: Date.now() });
+    const usada = chrome.runtime.getManifest().version;
+    const local = await fetch(chrome.runtime.getURL('manifest.json') + '?v=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).catch(() => ({}));
+    let tipo = '', nueva = '';
+    if (local.version && verMayorF(local.version, usada)) { tipo = 'activar'; nueva = local.version; }
+    else {
+      const web = await fetch('https://cotizadora.github.io/clarogo/extension/manifest.json?v=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).catch(() => ({}));
+      if (web.version && verMayorF(web.version, usada)) { tipo = 'bajar'; nueva = web.version; }
+    }
+    if (!tipo) return;
+    const av = o.aviso_version || {};
+    if (av.version === nueva && av.tipo === tipo && Date.now() - av.ts < 4 * 3600000) return;   // no repetir el mismo aviso seguido
+    await chrome.storage.local.set({ aviso_version: { version: nueva, tipo, ts: Date.now() } });
+    chrome.notifications.create('cg-ver-' + tipo + '-' + Date.now(), {
+      type: 'basic', iconUrl: 'icono-128.png', priority: 2, requireInteraction: true,
+      title: tipo === 'activar' ? `GoExt ${nueva} está lista` : `Hay una versión nueva de GoExt (${nueva})`,
+      message: tipo === 'activar' ? 'Haz clic aquí para activarla.' : 'Haz clic aquí para actualizar. Se descarga y se activa sola.'
+    });
+  } catch (e) {}
+}
+chrome.notifications.onClicked.addListener(id => {
+  if (!String(id).startsWith('cg-ver-')) return;
+  chrome.notifications.clear(id);
+  if (id.startsWith('cg-ver-activar')) chrome.runtime.reload();
+  else chrome.tabs.create({ url: chrome.runtime.getURL('actualizar.html'), active: true });
+});
+chrome.runtime.onStartup.addListener(() => setTimeout(() => revisarVersion(true), 20000));

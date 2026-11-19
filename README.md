@@ -68,6 +68,13 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 19-11-2026: ClaroGo! v2.12.2 y GoExt 1.42.0, GoExt se actualiza sola
+
+- Por qué Eduardo dejó de ver el aviso: después de cada publicación se ejecutaba el actualizador en su PC para comprobar, así su carpeta ya estaba al día. Ya no se hace: Eduardo actualiza igual que sus compañeros.
+- El instalador programa la tarea de Windows del usuario "GoExt actualizar" (sin administrador): cada 2 horas ejecuta `goext-silencioso.vbs`, que corre el actualizador sin abrir ventanas (`/silencioso`: sin mensajes, sin portapapeles, sin accesos). Al abrir el navegador, GoExt parte con la versión nueva.
+- GoExt avisa con una notificación de Windows al abrir el navegador y con las llamadas (máximo cada 2 horas): "GoExt X está lista: clic para activarla" (si ya está en la carpeta) o "Hay una versión nueva: clic para actualizar". No se reactiva sola en medio del día para no cortar el seguimiento de una llamada.
+- Para pruebas, la variable `GOEXT_BASE` hace que el instalador use otra carpeta y otra tarea, sin tocar la instalación real.
+
 ### 19-11-2026: GoExt 1.41.0, alerta de llamada cortada
 
 - Cuando termina una llamada, Genesys muestra la tipificación (recuadro `acw-gadgets-wrap-up`). `llamada.js` detecta cuando ese recuadro se hace visible y avisa al fondo. También detecta si el ejecutivo presionó el botón Desconectar.
