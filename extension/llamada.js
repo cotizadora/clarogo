@@ -4,6 +4,25 @@
 // No cambia nada en Genesys: solo lee.
 (() => {
   if (window.__goextLlamada) return; window.__goextLlamada = true;
+
+  // Fin de llamada: en el recuadro "Códigos de conclusión" (tipificación de Genesys). Cuando se hace visible,
+  // la llamada terminó: se avisa al fondo, que decide si fue el cliente quien cortó.
+  if (/acw-gadgets-wrap-up/.test(location.pathname)) {
+    let visible = false;
+    setInterval(() => {
+      const v = window.innerWidth > 0 && window.innerHeight > 0 && !!document.body && (document.body.textContent || '').trim().length > 0;
+      if (v && !visible) { try { chrome.runtime.sendMessage({ tipo: 'fin-llamada' }); } catch (e) {} }
+      visible = v;
+    }, 1000);
+    return;
+  }
+  // El ejecutivo cortó con el botón de Genesys: así no se confunde con un corte del cliente
+  document.addEventListener('click', e => {
+    const b = (e.composedPath ? e.composedPath() : [e.target]).find(n => n && n.tagName && (n.tagName === 'BUTTON' || n.getAttribute && n.getAttribute('role') === 'button' || n.tagName === 'GUX-BUTTON'));
+    if (!b) return;
+    const t = [b.getAttribute('aria-label'), b.getAttribute('title'), b.textContent].join(' ');
+    if (/desconect|disconnect|colgar|finalizar llamada|terminar llamada|end call|hang ?up/i.test(t)) { try { chrome.runtime.sendMessage({ tipo: 'corte-ejecutivo' }); } catch (x) {} }
+  }, true);
   const esClave = t => /^[A-Za-z][A-Za-z0-9_]*:$/.test(t);
   const textoPropio = el => [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('').trim();
   const leer = () => {

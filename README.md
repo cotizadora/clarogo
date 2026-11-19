@@ -68,6 +68,13 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 19-11-2026: GoExt 1.41.0, alerta de llamada cortada
+
+- Cuando termina una llamada, Genesys muestra la tipificación (recuadro `acw-gadgets-wrap-up`). `llamada.js` detecta cuando ese recuadro se hace visible y avisa al fondo. También detecta si el ejecutivo presionó el botón Desconectar.
+- Si no fue el ejecutivo (no presionó Desconectar en los últimos 8 segundos), se abre al centro de la ventana una alerta roja "📵 LLAMADA CORTADA" (`cortada.html`, ventana emergente encima de cualquier pestaña). Se desvanece al mover el mouse, hacer clic, usar la rueda o presionar una tecla (después de 0,9 s), o sola a los 10 segundos.
+- Al cerrarse, GoExt se abre con el motivo "Corte de llamado" marcado. Si el cliente cortó en los primeros 25 segundos, el código de Genesys sugerido es "Cliente Corta Llamada en saludo".
+- Casilla en la ventanita: "📵 Avisar si el cliente corta la llamada" (activada por defecto).
+
 ### 19-11-2026: GoExt 1.40.0, se abre sola al entrar una llamada
 
 - Nuevo `llamada.js` (en todos los marcos de Genesys): cada 2,5 segundos lee los cuadros del panel "Interacción de llamada" y, cuando aparece un teléfono de cliente nuevo, avisa al fondo. Solo lee, no cambia nada en Genesys.

@@ -15,3 +15,5 @@ rutif.js
 actualizar.html
 actualizar.js
 llamada.js
+cortada.html
+cortada.js

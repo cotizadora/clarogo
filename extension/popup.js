@@ -448,3 +448,22 @@ try {
   chrome.storage.local.get('autoAbrir').then(o => { $('#auto-abrir').checked = o.autoAbrir !== false; });
   $('#auto-abrir').addEventListener('change', e => { chrome.storage.local.set({ autoAbrir: e.target.checked }); mostrar(e.target.checked ? 'GoExt se abrirá sola al entrar una llamada.' : 'GoExt ya no se abrirá sola. Ábrela con el ícono o Alt+Shift+G.', 'ok'); });
 } catch (e) {}
+// Preferencia: alerta "LLAMADA CORTADA" (por defecto activada)
+try {
+  chrome.storage.local.get('avisoCorte').then(o => { $('#aviso-corte').checked = o.avisoCorte !== false; });
+  $('#aviso-corte').addEventListener('change', e => { chrome.storage.local.set({ avisoCorte: e.target.checked }); mostrar(e.target.checked ? 'Te avisaré si el cliente corta la llamada.' : 'Ya no aparecerá la alerta de llamada cortada.', 'ok'); });
+} catch (e) {}
+// Viene de la alerta de llamada cortada: el motivo "Corte de llamado" queda marcado y, si cortó apenas contestó,
+// el código de Genesys sugerido es "Cliente Corta Llamada en saludo"
+try {
+  chrome.storage.local.get('corte').then(o => {
+    const c = o.corte; if (!c || Date.now() - c.ts > 120000) return;
+    chrome.storage.local.remove('corte');
+    setTimeout(() => {
+      const b = document.querySelector('#nv-chips [data-m="CORTE DE LLAMADO"]'); if (b) b.click();
+      if (c.temprano && $('#gc-codigo')) $('#gc-codigo').value = 'Cliente Corta Llamada en saludo';
+      const nv = $('#nv'); if (nv && nv.scrollIntoView) nv.scrollIntoView({ block: 'center' });
+      mostrar('📵 El cliente cortó: "Corte de llamado" listo. Revisa y presiona "Abrir el registro de no venta".', 'mal');
+    }, 900);
+  });
+} catch (e) {}
