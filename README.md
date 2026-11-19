@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 19-11-2026: GoExt 1.44.0, sin apertura automática
+
+- Pedido de Eduardo: se elimina la apertura automática de GoExt al entrar una llamada (la ventana aparte se montaba sobre todo y aparecía en la barra de tareas). GoExt se abre solo de forma manual: ícono o Alt+Shift+G. Se quitó la casilla "Abrir GoExt sola".
+- La alerta "LLAMADA CORTADA" ya no es una ventana: es un recuadro rojo dentro de la pestaña que se está mirando (Genesys, ClaroGo!, WhatsApp, etc.), que no bloquea los clics y se desvanece con el mouse o el teclado. Si GoExt no puede dibujar en esa pestaña, queda una notificación de Windows. Al abrir GoExt con el ícono en los 2 minutos siguientes, el motivo "Corte de llamado" aparece listo.
+- Se borraron `cortada.html` y `cortada.js`. `llamada.js` sigue, solo para anotar la hora de la llamada y revisar si hay versión nueva.
+
 ### 19-11-2026: GoExt 1.43.0, la ventanita sí aparece al entrar la llamada
 
 - Caso: la ventanita no se abría al entrar una llamada.

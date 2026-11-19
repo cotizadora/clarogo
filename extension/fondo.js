@@ -191,41 +191,32 @@ async function conectarGenesys() {
 }
 chrome.runtime.onStartup.addListener(() => setTimeout(conectarGenesys, 5000));
 
-// Llamada nueva en Genesys (llamada.js): GoExt se abre sola, si el ejecutivo lo tiene activado (por defecto sí).
-// El navegador solo deja abrir la ventanita en una ventana que esté a la vista; si no se puede, avisa con una notificación.
-const LLAMADAS_VISTAS = new Map();
-// Abre la ventanita de GoExt sin que el ejecutivo haga clic:
-// 1. la ventanita de siempre, si el navegador lo permite; 2. si no, la misma como ventana propia arriba a la derecha.
-async function abrirVentanita() {
-  try { if (chrome.action && typeof chrome.action.openPopup === 'function') { await chrome.action.openPopup(); return; } } catch (e) {}
-  const w = await chrome.windows.getLastFocused().catch(() => ({}));
-  const ancho = 420, alto = 640;
-  await chrome.windows.create({ url: chrome.runtime.getURL('popup.html?sola=1'), type: 'popup', width: ancho, height: alto,
-    left: Math.max(0, Math.round((w.left || 0) + (w.width || 1280) - ancho - 16)), top: Math.max(0, Math.round((w.top || 0) + 70)), focused: true });
-}
+// Llamada nueva en Genesys (llamada.js): solo se anota la hora de la llamada (sirve para saber si el cliente cortó
+// apenas contestó). GoExt NO se abre sola: el ejecutivo la abre con el ícono o con Alt+Shift+G, como siempre.
 async function abrirPorLlamada(msg) {
   try { await chrome.storage.local.set({ ultima_llamada: { ts: Date.now(), clave: msg.clave } }); } catch (e) {}
-  try {
-    const o = await chrome.storage.local.get('autoAbrir');
-    if (o.autoAbrir === false) return;
-    const ahora = Date.now();
-    for (const [k, t] of LLAMADAS_VISTAS) if (ahora - t > 30 * 60000) LLAMADAS_VISTAS.delete(k);
-    if (LLAMADAS_VISTAS.has(msg.clave)) return;   // una sola vez por llamada
-    LLAMADAS_VISTAS.set(msg.clave, ahora);
-    await abrirVentanita();
-    return;
-  } catch (e) {
-    try {
-      const id = 'cg-llamada-' + Date.now();
-      chrome.notifications.create(id, { type: 'basic', iconUrl: 'icono-128.png', title: '📞 Llamada nueva: ' + String(msg.tel || '').replace(/^(\d)(\d{4})(\d{4})$/, '$1 $2 $3'), message: 'Abre GoExt con su ícono o con Alt+Shift+G para tomar los datos.', priority: 2 });
-      setTimeout(() => chrome.notifications.clear(id), 15000);
-    } catch (x) {}
-  }
 }
 // Llamada cortada: Genesys muestra la tipificación al terminar la llamada. Si el ejecutivo no presionó Desconectar
-// en los últimos segundos, fue el cliente quien cortó: alerta roja al centro, encima de cualquier pestaña,
-// y luego GoExt se abre con el motivo "Corte de llamado" listo.
+// en los últimos segundos, fue el cliente quien cortó: alerta roja al centro, encima de cualquier pestaña.
+// Al abrir GoExt con el ícono en los 2 minutos siguientes, el motivo "Corte de llamado" aparece listo.
 let ultimoFin = 0;
+// Se ejecuta dentro de la pestaña: recuadro rojo "LLAMADA CORTADA" al centro, encima de la página.
+// Se desvanece al mover el mouse, hacer clic, usar la rueda o presionar una tecla (tras 0,9 s), o solo a los 10 segundos.
+function avisoCortada(temprano) {
+  if (document.getElementById('goext-cortada')) return;
+  const caja = document.createElement('div');
+  caja.id = 'goext-cortada';
+  caja.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2147483647;width:min(480px,90vw);padding:26px 24px;border-radius:20px;background:#c00000;color:#fff;text-align:center;font:700 18px/1.4 "Segoe UI",system-ui,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.45);border:4px solid rgba(255,255,255,.9);transition:opacity .6s;pointer-events:none';
+  const linea = (txt, css) => { const d = document.createElement('div'); d.textContent = txt; d.style.cssText = css; caja.appendChild(d); };
+  linea('📵', 'font-size:52px;line-height:1');
+  linea('LLAMADA CORTADA', 'font-size:36px;letter-spacing:.04em;margin:6px 0 4px');
+  linea(temprano ? 'El cliente cortó apenas contestó. Tipifica la llamada.' : 'El cliente cortó. Tipifica la llamada.', 'font-weight:600');
+  document.documentElement.appendChild(caja);
+  let listo = false;
+  const cerrar = () => { if (listo) return; listo = true; caja.style.opacity = '0'; setTimeout(() => caja.remove(), 650); ['mousemove', 'mousedown', 'keydown', 'wheel'].forEach(t => window.removeEventListener(t, cerrar, true)); };
+  setTimeout(() => ['mousemove', 'mousedown', 'keydown', 'wheel'].forEach(t => window.addEventListener(t, cerrar, true)), 900);
+  setTimeout(cerrar, 10000);
+}
 async function finDeLlamada() {
   if (Date.now() - ultimoFin < 15000) return;   // una sola alerta por llamada
   ultimoFin = Date.now();
@@ -234,12 +225,12 @@ async function finDeLlamada() {
   if (o.corte_ejecutivo && Date.now() - o.corte_ejecutivo < 8000) return;   // cortó el ejecutivo
   const temprano = !!(o.ultima_llamada && Date.now() - o.ultima_llamada.ts < 25000);
   try { await chrome.storage.local.set({ corte: { ts: Date.now(), temprano } }); } catch (e) {}
+  // El aviso se dibuja dentro de la pestaña que el ejecutivo está mirando (sin ventanas nuevas ni barra de tareas).
+  // Si GoExt no puede dibujar en esa pestaña, queda solo una notificación de Windows.
   try {
-    const w = await chrome.windows.getLastFocused();
-    const ancho = 480, alto = 270;
-    const left = Math.max(0, Math.round((w.left || 0) + ((w.width || 1280) - ancho) / 2));
-    const top = Math.max(0, Math.round((w.top || 0) + ((w.height || 800) - alto) / 2.4));
-    await chrome.windows.create({ url: chrome.runtime.getURL('cortada.html' + (temprano ? '?temprano=1' : '')), type: 'popup', width: ancho, height: alto, left, top, focused: true });
+    const [t] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+    if (!t) throw new Error('sin pestaña');
+    await chrome.scripting.executeScript({ target: { tabId: t.id }, func: avisoCortada, args: [temprano] });
   } catch (e) {
     try { const id = 'cg-corte-' + Date.now(); chrome.notifications.create(id, { type: 'basic', iconUrl: 'icono-128.png', title: '📵 LLAMADA CORTADA', message: 'El cliente cortó. Tipifica la llamada.', priority: 2 }); setTimeout(() => chrome.notifications.clear(id), 12000); } catch (x) {}
   }
@@ -248,8 +239,8 @@ chrome.runtime.onMessage.addListener((msg, _de, responder) => {
   if (msg && msg.tipo === 'llamada' && /^\d{9}$/.test(String(msg.tel || ''))) { abrirPorLlamada(msg); setTimeout(() => revisarVersion(false), 5000); return; }
   if (msg && msg.tipo === 'corte-ejecutivo') { chrome.storage.local.set({ corte_ejecutivo: Date.now() }); return; }
   if (msg && msg.tipo === 'fin-llamada') { finDeLlamada(); return; }
-  // Al cerrarse la alerta de llamada cortada: GoExt se abre con el motivo listo para tipificar
-  if (msg && msg.tipo === 'abrir-tipificacion') { setTimeout(abrirVentanita, 750); return; }
+  // Al cerrarse la alerta de llamada cortada ya no se abre nada solo: el ejecutivo abre GoExt con el ícono
+  if (msg && msg.tipo === 'abrir-tipificacion') return;
   // "Activar versión nueva": se recarga desde el fondo, con la ventana ya cerrada (recargar desde la ventana puede dejarla trabada)
   if (msg && msg.tipo === 'recargar') { setTimeout(() => chrome.runtime.reload(), 400); return; }
   // Pedido del Rutificador: se guarda con la pestaña de la planilla que lo hizo

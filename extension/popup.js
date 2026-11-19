@@ -443,11 +443,6 @@ fetch(chrome.runtime.getURL('manifest.json') + '?v=' + Date.now(), { cache: 'no-
   }).catch(() => {});
 }).catch(() => {});
 iniciar();
-// Preferencia: abrir GoExt sola al entrar una llamada (la guarda llamada.js / fondo.js; por defecto activada)
-try {
-  chrome.storage.local.get('autoAbrir').then(o => { $('#auto-abrir').checked = o.autoAbrir !== false; });
-  $('#auto-abrir').addEventListener('change', e => { chrome.storage.local.set({ autoAbrir: e.target.checked }); mostrar(e.target.checked ? 'GoExt se abrirá sola al entrar una llamada.' : 'GoExt ya no se abrirá sola. Ábrela con el ícono o Alt+Shift+G.', 'ok'); });
-} catch (e) {}
 // Preferencia: alerta "LLAMADA CORTADA" (por defecto activada)
 try {
   chrome.storage.local.get('avisoCorte').then(o => { $('#aviso-corte').checked = o.avisoCorte !== false; });
