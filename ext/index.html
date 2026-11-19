@@ -20,7 +20,7 @@ h1 b{color:var(--rojo)}
 .descargar:hover{background:var(--rojo-dk)}
 .nota{margin:14px 0 0;color:var(--suave);font-size:1rem}
 .zip{margin-top:18px;padding:14px 18px;border:2px dashed #e0a800;border-radius:16px;background:#fffbea;color:#1f2430;text-align:left}
-.zip summary{cursor:pointer;font-weight:800}
+.zip .zip-t{font-weight:800;margin:0 0 6px}
 .zip p,.zip ol{font-size:1rem;margin:10px 0}
 .zip ol{padding-left:24px}
 .descargar.chico{font-size:1.1rem;padding:14px;margin:8px 0}
@@ -74,16 +74,16 @@ footer{margin-top:26px;text-align:center;color:var(--suave);font-size:.9rem}
     <h2><span class="num">1</span>Descarga el instalador y ábrelo con doble clic</h2>
     <a class="descargar" href="instalar-clarogo.bat" download="instalar-clarogo.bat">⬇ Descargar instalador</a>
     <p class="nota">Tarda unos segundos y se cierra solo. Deja en tu escritorio el acceso <b>Actualizar GoExt</b>. Si Windows o el navegador preguntan, elige <b>Conservar</b> o <b>Más información → Ejecutar de todas formas</b>.</p>
-    <details class="zip">
-      <summary>🛡️ ¿El computador bloquea el instalador? (Control inteligente de aplicaciones)</summary>
-      <p>Windows 11 puede bloquearlo porque no tiene firma digital. <b>No desactives esa protección.</b> Instala GoExt así, sin ejecutar nada:</p>
+    <div class="zip">
+      <p class="zip-t">🛡️ Alternativa: si el computador no te deja abrir el instalador (Control inteligente de aplicaciones)</p>
+      <p>Windows 11 puede bloquearlo porque no tiene firma digital. <b>No desactives esa protección.</b> Descarga GoExt directamente desde aquí, sin ejecutar nada:</p>
       <a class="descargar chico" href="clarogo-genesys-extension.zip" download="goext.zip">⬇ Descargar GoExt en .zip</a>
       <ol>
         <li>Abre <b>Descargas</b>, clic derecho en <b>goext.zip</b> → <b>Extraer todo</b> → <b>Extraer</b>. Queda la carpeta <b>goext</b>.</li>
         <li>En el paso 2 de abajo, cuando presiones <b>Cargar desempaquetada</b>, elige la carpeta <b>Descargas → goext</b> (en vez de la ruta que dice ahí). No la borres ni la muevas después.</li>
         <li><b>Para actualizar:</b> descarga el .zip otra vez, <b>Extraer todo</b>, con <b>Examinar</b> elige la misma carpeta <b>goext</b> y acepta <b>Reemplazar</b>. Luego en GoExt presiona <b>Activar versión nueva</b>.</li>
       </ol>
-    </details>
+    </div>
   </section>
 
   <section class="paso">

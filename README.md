@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 19-11-2026: ClaroGo! v2.11.5, alternativa .zip a la vista
+
+- En Descargas y en la página de instalación, la alternativa "si el computador no te deja abrir el instalador" queda completa y visible justo debajo del botón del instalador (ya no hay que hacer clic para desplegarla).
+
 ### 19-11-2026: GoExt 1.38.0, la lámina se adjunta siempre
 
 - Desde la planilla (botón WhatsApp) y desde GoExt el envío es el mismo: mensaje y lámina. Antes la lámina solo se adjuntaba en el modo rápido; si WhatsApp Web no estaba abierto o había que recargarlo (número que no está en los contactos), salía solo el texto.
