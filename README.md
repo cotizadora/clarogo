@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 19-11-2026: ClaroGo! v2.11.1 y GoExt 1.35.0, la lámina llega a WhatsApp
+
+- Problema: en un PC donde GoExt se instaló con ClaroGo! ya abierto, WhatsApp salía solo con el texto. ClaroGo! manda las láminas a GoExt solo al cargar la página, así que GoExt nunca las recibía.
+- Ahora, apenas GoExt se conecta a una pestaña de ClaroGo! ya abierta, la página le reenvía nombre, mensaje y láminas (`clarogo-ext-hola`). Además, si al abrir WhatsApp a GoExt le faltan láminas, se las pide directo a ClaroGo! (`window.clarogoLaminasWA`).
+- Si WhatsApp Web no acepta pegar la imagen, aparece un aviso de Windows: la lámina ya está copiada y se pega con Ctrl+V.
+
 ### 19-11-2026: ClaroGo! v2.11.0, sección Descargas
 
 - La sección de MuteReal pasa a ser **Descargas** (#descargas; el enlace antiguo #mute lleva ahí). Tiene dos bloques: **GoExt** (destacado: "ClaroGo! funciona mucho mejor con GoExt", botón del instalador, pasos para instalar con botones de copiar y cómo actualizar, enlace a la guía completa) y **MuteReal**.

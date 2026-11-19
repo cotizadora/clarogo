@@ -1190,7 +1190,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.11.0';
+const APP_VERSION = '2.11.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -3019,6 +3019,10 @@ function perfilGuardar(nombre, plantilla, telefono, firma) {
   perfilAvisar();
 }
 /* La extension recibe el nombre, el mensaje y el detalle de cada plan, para armar saludo + oferta aunque ClaroGo! no responda */
+// GoExt avisa cuando se conecta con la página ya abierta: se le reenvían nombre, mensaje y láminas
+window.addEventListener('message', e => { if (e.source === window && e.data && e.data.tipo === 'clarogo-ext-hola') setTimeout(() => perfilAvisar(), 300); });
+// GoExt también puede pedir las láminas directamente al abrir WhatsApp, si no las tiene guardadas
+window.clarogoLaminasWA = async () => Promise.all(PLANES_WA().map(async p => ({ id: p.id, img: await laminaDataURL(p.id) })));
 const perfilAvisar = async () => {
   const planes = [];
   for (const p of PLANES_WA()) planes.push({ id: p.id, titulo: p.title, detalle: p.id === PLAN_MAYOR.id ? mayorMensaje() : vMensaje(p), img: await laminaDataURL(p.id) });

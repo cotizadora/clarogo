@@ -44,5 +44,8 @@ function copiarPlanilla() {
   }, 300);
 }
 window.addEventListener('message', e => { if (e.source === window && e.data && e.data.tipo === 'clarogo-ct') copiarPlanilla(); });
+// 6. Si GoExt se conectó con la página ya abierta (recién instalada o actualizada), se le pide a ClaroGo!
+//    que vuelva a mandar nombre, mensaje y láminas: sin esto WhatsApp salía sin la imagen del plan.
+window.postMessage({ tipo: 'clarogo-ext-hola' }, location.origin);
 window.addEventListener('storage', e => { if (e.key === 'clarogo_control_v1') copiarPlanilla(); });
 copiarPlanilla();

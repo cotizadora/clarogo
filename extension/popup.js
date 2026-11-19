@@ -375,7 +375,17 @@ async function prepararWhatsApp(tel, nombre) {
     for (const t of tabs) {
       try {
         const [r] = await conLimite(chrome.scripting.executeScript({ target: { tabId: t.id }, world: 'MAIN', args: [nombre || '', TEL], func: (n, t) => typeof window.clarogoMensajesWA === 'function' ? window.clarogoMensajesWA(n, t) : null }), 1500);
-        if (r && Array.isArray(r.result) && r.result.length) { MENSAJES = r.result; pintarPlanes(); break; }
+        if (r && Array.isArray(r.result) && r.result.length) {
+          MENSAJES = r.result; pintarPlanes();
+          // Faltan láminas guardadas (GoExt recién instalada): se piden a esta misma pestaña de ClaroGo!
+          if (MENSAJES.some(m => m.id && !IMGS[m.id])) {
+            try {
+              const [l] = await conLimite(chrome.scripting.executeScript({ target: { tabId: t.id }, world: 'MAIN', func: () => typeof window.clarogoLaminasWA === 'function' ? window.clarogoLaminasWA() : null }), 8000);
+              if (l && Array.isArray(l.result)) { l.result.forEach(x => { if (x && x.id && /^data:image\/(png|jpeg);base64,/.test(String(x.img || ''))) IMGS[x.id] = x.img; }); pintarLamina(); }
+            } catch (e) {}
+          }
+          break;
+        }
       } catch (e) {}
     }
   } catch (e) {}

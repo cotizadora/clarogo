@@ -91,6 +91,13 @@ async function chatRapido(numero, texto, img) {
   } catch (e) { return 'error: ' + e.message; }
 }
 
+function avisoLamina() {
+  try {
+    const id = 'cg-lamina-' + Date.now();
+    chrome.notifications.create(id, { type: 'basic', iconUrl: 'icono-128.png', title: 'GoExt: falta la imagen del plan', message: 'WhatsApp no aceptó pegarla sola. Ya está copiada: haz clic en el chat y presiona Ctrl+V.', priority: 2 });
+    setTimeout(() => chrome.notifications.clear(id), 12000);
+  } catch (e) {}
+}
 async function abrirWhatsApp(url, img) {
   if (!/^https:\/\/web\.whatsapp\.com\/send\?/.test(url)) return false;
   const u = new URL(url), numero = u.searchParams.get('phone') || '', texto = u.searchParams.get('text') || '';
@@ -104,6 +111,8 @@ async function abrirWhatsApp(url, img) {
     const [r] = await chrome.scripting.executeScript({ target: { tabId: t.id }, func: chatRapido, args: [numero, texto, /^data:image\/(png|jpeg);base64,/.test(String(img || '')) ? img : ''] });
     // 'ok-sin-lamina': el chat y el mensaje quedaron; la lámina queda en el portapapeles para Ctrl+V
     if (r && (r.result === 'ok' || r.result === 'ok-sin-lamina')) modo = 'rapido';
+    // WhatsApp no aceptó la imagen pegada: queda copiada y se avisa para pegarla a mano
+    if (r && r.result === 'ok-sin-lamina' && img) avisoLamina();
   } catch (e) {}
   if (modo !== 'rapido') await chrome.tabs.update(t.id, { url, active: true });
   return modo;
