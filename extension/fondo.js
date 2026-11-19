@@ -98,11 +98,63 @@ function avisoLamina() {
     setTimeout(() => chrome.notifications.clear(id), 12000);
   } catch (e) {}
 }
+// Se ejecuta dentro de WhatsApp Web ya cargado con el chat y el mensaje escrito (pestaña nueva o recargada):
+// pega la lámina como imagen y deja la vista previa lista para enviar. Devuelve 'esperar' si el chat aún no carga.
+async function soloLamina(texto, img) {
+  const esperar = ms => new Promise(r => setTimeout(r, ms));
+  const visible = el => !!el && el.getClientRects().length > 0;
+  const cajaActual = () => document.querySelector('footer [contenteditable="true"]');
+  if (!cajaActual()) return 'esperar';
+  const inicio = texto.replace(/\s+/g, ' ').trim().slice(0, 25);
+  const estaPegado = c => c && c.textContent.replace(/\s+/g, ' ').includes(inicio);
+  // WhatsApp escribe el mensaje del enlace un instante después de mostrar el chat
+  for (let i = 0; i < 24 && inicio && !estaPegado(cajaActual()); i++) await esperar(250);
+  if (document.documentElement.dataset.cgLamina) return 'ok';   // ya se adjuntó en esta carga
+  document.documentElement.dataset.cgLamina = '1';
+  try {
+    const [cab, b64] = String(img).split(','), tipo = (cab.match(/data:([^;]+)/) || [])[1] || 'image/png';
+    const bin = atob(b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+    const archivo = new File([u], 'lamina-plan.' + (tipo.includes('jpeg') ? 'jpg' : 'png'), { type: tipo });
+    const caja = cajaActual(); if (!caja) return 'ok-sin-lamina';
+    const antes = new Set([...document.querySelectorAll('img')]);
+    caja.focus();
+    const dt = new DataTransfer(); dt.items.add(archivo);
+    caja.dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true }));
+    let vista = null; for (let i = 0; i < 14 && !vista; i++) { await esperar(250); vista = [...document.querySelectorAll('img')].find(x => !antes.has(x) && visible(x) && /^blob:|^data:/.test(x.src)); }
+    if (!vista) return 'ok-sin-lamina';
+    // El mensaje ya va aparte: se vacía el pie de la imagen si WhatsApp lo copió ahí
+    for (let i = 0; i < 8; i++) {
+      const pie = [...document.querySelectorAll('[contenteditable="true"]')].find(e => e !== cajaActual() && !e.closest('footer') && visible(e) && estaPegado(e));
+      if (pie) { pie.focus(); document.execCommand('selectAll', false, null); document.execCommand('delete', false, null); }
+      await esperar(250);
+    }
+    return 'ok';
+  } catch (e) { return 'ok-sin-lamina'; }
+}
+// Espera a que WhatsApp Web cargue el chat en esa pestaña (hasta 45 segundos) y adjunta la lámina
+async function laminaAlCargar(tabId, texto, img) {
+  if (!/^data:image\/(png|jpeg);base64,/.test(String(img || ''))) return;
+  const esperar = ms => new Promise(r => setTimeout(r, ms));
+  await esperar(2500);
+  for (let i = 0; i < 30; i++) {
+    try {
+      const t = await chrome.tabs.get(tabId);
+      if (t.status === 'complete') {
+        const [r] = await chrome.scripting.executeScript({ target: { tabId }, func: soloLamina, args: [texto, img] });
+        if (r && r.result === 'ok') return;
+        if (r && r.result === 'ok-sin-lamina') return avisoLamina();
+      }
+    } catch (e) {}
+    await esperar(1500);
+  }
+  avisoLamina();
+}
 async function abrirWhatsApp(url, img) {
   if (!/^https:\/\/web\.whatsapp\.com\/send\?/.test(url)) return false;
   const u = new URL(url), numero = u.searchParams.get('phone') || '', texto = u.searchParams.get('text') || '';
   const tabs = (await chrome.tabs.query({ url: 'https://web.whatsapp.com/*' })).sort((a, b) => a.id - b.id);
-  if (!tabs.length) { await chrome.tabs.create({ url, active: true }); return 'nueva'; }
+  // WhatsApp no estaba abierto: pestaña nueva con el mensaje y, cuando cargue el chat, se adjunta la lámina
+  if (!tabs.length) { const nt = await chrome.tabs.create({ url, active: true }); if (img) laminaAlCargar(nt.id, texto, img); return 'nueva'; }
   const t = tabs[0];
   await chrome.tabs.update(t.id, { active: true });
   await chrome.windows.update(t.windowId, { focused: true });
@@ -114,7 +166,8 @@ async function abrirWhatsApp(url, img) {
     // WhatsApp no aceptó la imagen pegada: queda copiada y se avisa para pegarla a mano
     if (r && r.result === 'ok-sin-lamina' && img) avisoLamina();
   } catch (e) {}
-  if (modo !== 'rapido') await chrome.tabs.update(t.id, { url, active: true });
+  // Modo rápido no calzó: se recarga WhatsApp con el mensaje y, cuando cargue el chat, se adjunta la lámina
+  if (modo !== 'rapido') { await chrome.tabs.update(t.id, { url, active: true }); if (img) laminaAlCargar(t.id, texto, img); }
   return modo;
 }
 

@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 19-11-2026: GoExt 1.38.0, la lámina se adjunta siempre
+
+- Desde la planilla (botón WhatsApp) y desde GoExt el envío es el mismo: mensaje y lámina. Antes la lámina solo se adjuntaba en el modo rápido; si WhatsApp Web no estaba abierto o había que recargarlo (número que no está en los contactos), salía solo el texto.
+- Ahora, en esos casos, GoExt espera a que WhatsApp cargue el chat (hasta 45 segundos) y pega la lámina como imagen (`soloLamina` / `laminaAlCargar` en fondo.js). Si WhatsApp no la acepta, avisa que está copiada para Ctrl+V.
+- El .zip sigue siendo solo una alternativa opcional para cuando Windows bloquea el instalador; el instalador .bat es el camino principal.
+
 ### 19-11-2026: ClaroGo! v2.11.4 y GoExt 1.37.0, instalar sin instalador
 
 - Caso: en Windows 11 el **Control inteligente de aplicaciones** bloquea el instalador .bat porque no tiene firma digital. No se debe desactivar.
