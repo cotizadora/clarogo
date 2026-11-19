@@ -1149,7 +1149,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.10.0';
+const APP_VERSION = '2.10.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2797,7 +2797,7 @@ const OBS_RAPIDAS = ['Interesado, llamar más tarde', 'Pide la oferta por WhatsA
 let ctAbierto = '';
 /* ── ¿Tiene deuda? ──────────────────────────────────────────────────
    En la ficha, un botón por compañía: copia el RUT del cliente y abre el portal de pago de esa compañía.
-   Con la extensión ClaroGo! Genesys (1.14.0 o más nueva) el RUT se escribe solo y el resultado vuelve a la fila. */
+   Con la extensión GoExt (1.14.0 o más nueva) el RUT se escribe solo y el resultado vuelve a la fila. */
 const DEUDA_PORTALES = [['claro', 'Claro', 'img:logos/claro.png', 'https://sucursalvirtual.clarochile.cl/PagoExpress'], ['entel', 'Entel', 'img:logos/entel.png', 'https://miperfil.entel.cl/PagoUnificado/Home'], ['movistar', 'Movistar', 'img:logos/movistar.png', 'https://pagos.movistar.cl/publico/'], ['wom', 'WOM', 'wom', 'https://www.wom.cl/paga-aqui/']];
 const deudaBarra = r => `<div class="fi-deuda"><b>¿Tiene deuda?</b>${DEUDA_PORTALES.map(([c, n, ico]) => `<button type="button" class="btn sm" data-deuda="${c}" title="Copia el RUT y revisa la deuda en ${n}">${icoEnlace(ico)} ${n}</button>`).join('')}<span class="fi-deuda-r${/tiene deuda/i.test(r.deuda || '') ? ' mal' : r.deuda ? ' ok' : ''}">${esc(r.deuda || (r.rut ? '' : 'Primero escribe el RUT del cliente'))}</span></div>`;
 // Compañía de la fila según lo que diga la columna Compañía (viene de Genesys o se escribe a mano)
@@ -2901,7 +2901,7 @@ function ctFichaHTML(r) {
 // Completa una fila con lo leído de Genesys: solo llena lo vacío, nunca borra lo que ya escribiste
 let ctPegarEnFila = () => {};
 /* ── WhatsApp Web con la oferta ─────────────────────────────────────
-   Con la extensión ClaroGo! Genesys se reutiliza la pestaña de WhatsApp Web que ya esté abierta.
+   Con la extensión GoExt se reutiliza la pestaña de WhatsApp Web que ya esté abierta.
    Sin la extensión se usa siempre la misma pestaña que abrió ClaroGo! (nombre "clarogo-whatsapp"). */
 const waNumero = tel => { let d = String(tel || '').replace(/\D/g, ''); if (d.length === 11 && d.startsWith('56')) d = d.slice(2); return d.length === 9 ? '56' + d : ''; };
 // Planes que se pueden enviar por WhatsApp: el Plan 500 (el más barato) siempre va primero y es el de por defecto
@@ -3052,7 +3052,7 @@ const TRUCOS = [
   'En Stock, el Filtro rápido muestra de inmediato los equipos con pie $0 y con stock disponible.',
   'Pega la dirección tal como la copias: ClaroGo! la ordena sola y la separa en calle, número y comuna para el Script.',
   'Cada hora se guarda en silencio una copia de tu planilla. Si algo falta, búscalo en "Copias automáticas".',
-  'Con la extensión ClaroGo! Genesys (Alt+Shift+G) mandas el teléfono de la llamada directo a tu planilla.',
+  'Con la extensión GoExt (Alt+Shift+G) mandas el teléfono de la llamada directo a tu planilla.',
   'Las filas se pintan verde, amarillo o rojo según la tipificación, para ver de un vistazo cómo vas.',
   'El botón Genesys de una fila reemplaza su teléfono por el de la llamada que tengas copiada.',
   'Lo que completes en Ver Script queda guardado también en la fila del cliente en tu planilla.',
@@ -3100,7 +3100,7 @@ function waDialogo(r) {
   $('#wa-para').textContent = r.nombre || r.telefono || 'Cliente';
   $('#wa-texto').value = waTexto(WA_DEFECTO, r);
   $('#wa-lamina').checked = waAdjuntar();
-  $('#wa-nota').textContent = document.documentElement.dataset.clarogoExt ? 'Se usará la pestaña de WhatsApp Web que ya tengas abierta.' : 'Se abre WhatsApp Web en una pestaña aparte y las próximas veces usa esa misma. Con la extensión ClaroGo! Genesys también reutiliza la que ya tengas abierta.';
+  $('#wa-nota').textContent = document.documentElement.dataset.clarogoExt ? 'Se usará la pestaña de WhatsApp Web que ya tengas abierta.' : 'Se abre WhatsApp Web en una pestaña aparte y las próximas veces usa esa misma. Con la extensión GoExt también reutiliza la que ya tengas abierta.';
   abrir('dlg-wa');
 }
 function initWhatsApp() {
@@ -3278,7 +3278,7 @@ window.clarogoMensajesWA = (nombre, tel) => {
   return PLANES_WA().map(p => ({ id: p.id, titulo: p.title, texto: waTexto(p.id, cli) })).concat([{ id: '', titulo: 'Solo la presentación, sin plan', texto: waTexto('', cli) }]);
 };
 
-// La extensión ClaroGo! Genesys llama a esta función para crear una fila nueva con los datos de la llamada
+// La extensión GoExt llama a esta función para crear una fila nueva con los datos de la llamada
 window.clarogoDesdeGenesys = (txt, extra = {}) => {
   const d = leerGenesys(txt || '');
   if (location.hash !== '#control') location.hash = 'control';

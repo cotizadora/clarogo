@@ -15,7 +15,7 @@
   // Sello abajo a la izquierda: muestra que la extensión está funcionando en este formulario y en qué estado
   const sello = document.createElement('div');
   sello.style.cssText = 'position:fixed;left:12px;bottom:12px;z-index:2147483647;padding:6px 10px;border-radius:10px;background:#1f2430;color:#fff;font:600 12px "Segoe UI",system-ui,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.3)';
-  const marcar = t => { sello.textContent = 'ClaroGo! v' + chrome.runtime.getManifest().version + ' · ' + t; if (!sello.isConnected) document.documentElement.appendChild(sello); };
+  const marcar = t => { sello.textContent = 'GoExt v' + chrome.runtime.getManifest().version + ' · ' + t; if (!sello.isConnected) document.documentElement.appendChild(sello); };
   marcar('revisando…');
 
   // Aviso que se desvanece solo: la tipificación se envió
@@ -66,7 +66,7 @@
   // Paso 1: primera hoja del registro de no venta → Siguiente
   for (let i = 0; i < 40 && !boton('Siguiente') && !boton('Enviar'); i++) await esperar(250);
   if (esNV && boton('Siguiente') && !boton('Enviar') && !pedido.avanzo) {
-    paso('ClaroGo!: "Cliente evaluado: No" listo. Pasando a la hoja del motivo…');
+    paso('GoExt: "Cliente evaluado: No" listo. Pasando a la hoja del motivo…');
     pedido.avanzo = true; await chrome.storage.local.set({ nv_pedido: pedido });
     await esperar(1000);
     const s = boton('Siguiente'); if (s) s.click();

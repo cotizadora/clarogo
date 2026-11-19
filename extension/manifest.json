@@ -1,17 +1,17 @@
 {
   "manifest_version": 3,
-  "name": "ClaroGo! Genesys",
-  "short_name": "ClaroGo!",
-  "version": "1.33.0",
-  "description": "Lee los datos del cliente en la llamada de Genesys y los copia o los envía a Mi Planilla de ClaroGo!. Herramienta no oficial.",
+  "name": "GoExt",
+  "short_name": "GoExt",
+  "version": "1.34.0",
+  "description": "GoExt: lee los datos del cliente en la llamada de Genesys y los copia o los envía a Mi Planilla de ClaroGo!. Herramienta no oficial.",
   "action": {
-    "default_title": "ClaroGo!: tomar datos de Genesys (Alt+Shift+G)",
+    "default_title": "GoExt: tomar datos de Genesys (Alt+Shift+G)",
     "default_popup": "popup.html",
     "default_icon": { "16": "icono-16.png", "32": "icono-32.png", "48": "icono-48.png", "128": "icono-128.png" }
   },
   "icons": { "16": "icono-16.png", "32": "icono-32.png", "48": "icono-48.png", "128": "icono-128.png" },
   "commands": {
-    "_execute_action": { "suggested_key": { "default": "Alt+Shift+G" }, "description": "Abrir ClaroGo! y leer los datos de Genesys" }
+    "_execute_action": { "suggested_key": { "default": "Alt+Shift+G" }, "description": "Abrir GoExt y leer los datos de Genesys" }
   },
   "background": { "service_worker": "fondo.js" },
   "content_scripts": [

@@ -11,7 +11,7 @@
   // Sello abajo a la izquierda: muestra que la extensión está trabajando y en qué paso va
   const sello = document.createElement('div');
   sello.style.cssText = 'position:fixed;left:12px;bottom:12px;z-index:2147483647;padding:6px 10px;border-radius:10px;background:#1f2430;color:#fff;font:600 12px "Segoe UI",system-ui,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.3)';
-  const marcar = t => { sello.textContent = 'ClaroGo! v' + chrome.runtime.getManifest().version + ' · ' + t; if (!sello.isConnected) document.documentElement.appendChild(sello); };
+  const marcar = t => { sello.textContent = 'GoExt v' + chrome.runtime.getManifest().version + ' · ' + t; if (!sello.isConnected) document.documentElement.appendChild(sello); };
   // Aviso grande arriba
   const aviso = document.createElement('div');
   aviso.style.cssText = 'position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:2147483647;max-width:min(560px,92vw);padding:12px 18px;border-radius:14px;font:600 15px/1.4 "Segoe UI",system-ui,sans-serif;color:#fff;background:#1a56b8;box-shadow:0 10px 30px rgba(0,0,0,.3);text-align:center';
@@ -34,9 +34,9 @@
     const pestana = document.querySelector('a[href="#rut"], a[aria-controls="rut"]');
     if (pestana) { pestana.click(); await esperar(400); }
     const campo = document.querySelector('#rut input[name="term"], form[action*="rut"] input[name="term"], #formato-live input[name="term"]');
-    if (!campo) { marcar('no encontré el cuadro del RUT'); decir('ClaroGo!: no encontré dónde escribir el RUT. Pégalo con Ctrl+V.', '#8a1010'); return; }
+    if (!campo) { marcar('no encontré el cuadro del RUT'); decir('GoExt: no encontré dónde escribir el RUT. Pégalo con Ctrl+V.', '#8a1010'); return; }
     marcar('buscando el RUT ' + rutPuntos(p.rut) + '…');
-    decir('ClaroGo!: buscando el RUT ' + rutPuntos(p.rut) + '…');
+    decir('GoExt: buscando el RUT ' + rutPuntos(p.rut) + '…');
     const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
     campo.focus(); set.call(campo, rutPuntos(p.rut)); ['input', 'change', 'keyup'].forEach(t => campo.dispatchEvent(new Event(t, { bubbles: true })));
     p.enviado = Date.now(); await chrome.storage.local.set({ rutif_pedido: p });
@@ -58,7 +58,7 @@
   const fila = filas.find(c => soloRut(c[iRut]) === soloRut(p.rut)) || (filas.length === 1 ? filas[0] : null);
   if (!fila) {
     marcar('sin resultados para este RUT');
-    decir('ClaroGo!: el Rutificador no encontró datos para el RUT ' + rutPuntos(p.rut) + '.', '#8a1010');
+    decir('GoExt: el Rutificador no encontró datos para el RUT ' + rutPuntos(p.rut) + '.', '#8a1010');
     await chrome.storage.local.set({ rutif_res: { id: p.id, ts: Date.now(), encontrado: false } });
     await chrome.storage.local.remove('rutif_pedido');
     return;

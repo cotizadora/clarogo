@@ -1,4 +1,4 @@
-// ClaroGo! Genesys: abre WhatsApp Web con el cliente y el mensaje.
+// GoExt (extensión de ClaroGo!): abre WhatsApp Web con el cliente y el mensaje.
 // Modo rápido (experimental): si WhatsApp Web ya está abierto, presiona "Nuevo chat", busca el número,
 // abre el chat y deja el mensaje escrito, sin recargar. Si algo no calza, recarga la pestaña como antes.
 // El mensaje nunca se envía solo: el ejecutivo lo revisa y presiona Enter.
@@ -270,7 +270,7 @@ function avisoCentro(texto, tituloTxt) {
   const franja = el('div', 'height:10px;background:#5746E3');
   const cuerpo = el('div', 'padding:22px 26px 24px');
   const cara = el('div', 'font-size:58px;line-height:1;margin-bottom:10px', '😊');
-  const titulo = el('div', 'font-size:22px;font-weight:600;color:#202124;margin-bottom:6px', '¡Tipificado por ClaroGo! correctamente!');
+  const titulo = el('div', 'font-size:22px;font-weight:600;color:#202124;margin-bottom:6px', '¡Tipificado por GoExt correctamente!');
   const detalle = el('div', 'display:inline-block;margin-top:6px;padding:6px 14px;border-radius:999px;background:#EEEDFC;color:#5746E3;font-size:14px;font-weight:600', texto || 'Registro de atención enviado');
   cuerpo.append(cara, titulo, detalle); tarjeta.append(franja, cuerpo); fondo.append(tarjeta);
   document.documentElement.appendChild(fondo);

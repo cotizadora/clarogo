@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 19-11-2026: ClaroGo! v2.10.1 y extensión 1.34.0, la extensión se llama GoExt
+
+- Nombres: **ClaroGo!** es la página y **GoExt** es la extensión (antes "ClaroGo! Genesys"). Cambiado en el manifiesto, la ventanita, el Historial, los avisos de deuda, Rutificador y formularios, la página de instalación, la guía antigua, la página de privacidad y los textos de ClaroGo!.
+- El acceso del escritorio ahora se llama **Actualizar GoExt**. El instalador borra el antiguo "Actualizar ClaroGo!" para que no queden dos. El archivo del instalador sigue siendo `ext/instalar-clarogo.bat` porque los accesos ya instalados lo buscan por ese nombre.
+- Sin cambiar: el script de Tampermonkey (`ext/clarogo-genesys.user.js`, opción antigua).
+
 ### 18-11-2026: extensión 1.33.0, el formulario de venta no toca Genesys
 
 - El formulario de **venta** es un trámite administrativo que se hace después de cerrar y tipificar en Genesys: al enviarlo solo aparece la animación "¡Formulario de venta enviado!". Si quedan líneas de la misma venta, vuelve a ClaroGo! para la siguiente; con la última se queda ahí. Ya no lleva a Genesys ni enciende el neón.

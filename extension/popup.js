@@ -1,4 +1,4 @@
-// ClaroGo! Genesys: lee los cuadros de la llamada (FONO_CONTACTO, RUT_PERSONA, etc.),
+// GoExt (extensión de ClaroGo!): lee los cuadros de la llamada (FONO_CONTACTO, RUT_PERSONA, etc.),
 // los copia en el formato que entiende Mi Planilla y, si se pide, los envía a una pestaña de ClaroGo!.
 const PLANILLA = 'https://cotizadora.github.io/clarogo/';
 const $ = s => document.querySelector(s);
@@ -409,7 +409,7 @@ $('#enviar').onclick = enviar;
 // Versión instalada, tomada del manifest: así se ve de inmediato si la extensión se actualizó
 $('#version').textContent = 'v' + chrome.runtime.getManifest().version;
 $('#historial').addEventListener('click', () => { chrome.tabs.create({ url: chrome.runtime.getURL('historial.html') + (TEL_NV ? '#' + TEL_NV.slice(-9) : '') }); window.close(); });
-// Versión nueva descargada (con "Actualizar ClaroGo!"): los archivos de la carpeta ya cambiaron pero la extensión sigue
+// Versión nueva descargada (con "Actualizar GoExt"): los archivos de la carpeta ya cambiaron pero la extensión sigue
 // usando la anterior. El botón la recarga desde la carpeta, sin pasar por la página de extensiones.
 const verMayor = (a, b) => { const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number); for (let i = 0; i < 3; i++) { if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0); } return false; };
 fetch(chrome.runtime.getURL('manifest.json') + '?v=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(m => {
@@ -419,8 +419,8 @@ fetch(chrome.runtime.getURL('manifest.json') + '?v=' + Date.now(), { cache: 'no-
   fetch('https://cotizadora.github.io/clarogo/extension/manifest.json?v=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(w => {
     if (!verMayor(w.version, usada)) return;
     b.textContent = '⬇ Hay versión ' + w.version; b.hidden = false; b.style.animation = 'none';
-    b.title = 'Haz doble clic en "Actualizar ClaroGo!" de tu escritorio y luego vuelve a abrir esta ventana';
-    b.onclick = () => mostrar('Hay una versión nueva: haz doble clic en "Actualizar ClaroGo!" de tu escritorio y vuelve a abrir ClaroGo!.', 'anterior');
+    b.title = 'Haz doble clic en "Actualizar GoExt" de tu escritorio y luego vuelve a abrir esta ventana';
+    b.onclick = () => mostrar('Hay una versión nueva: haz doble clic en "Actualizar GoExt" de tu escritorio y vuelve a abrir GoExt.', 'anterior');
   }).catch(() => {});
 }).catch(() => {});
 iniciar();

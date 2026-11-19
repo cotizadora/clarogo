@@ -44,16 +44,16 @@
   if (!p.enviado) {
     let campo = null;
     for (let i = 0; i < 40 && !campo; i++) { campo = document.querySelector(SITIO.campo); if (!campo) await esperar(500); }
-    if (!campo) { aviso(`ClaroGo!: no encontré dónde escribir el RUT en ${NOMBRE}. RUT copiado: pégalo con Ctrl+V.`, '#555'); return; }
+    if (!campo) { aviso(`GoExt: no encontré dónde escribir el RUT en ${NOMBRE}. RUT copiado: pégalo con Ctrl+V.`, '#555'); return; }
     ponerValor(campo, rutTexto(p.rut, SITIO.puntos));
     await esperar(800);
     let boton = document.querySelector(SITIO.boton);
     if (COMP === 'entel') boton = [...document.querySelectorAll('button')].find(b => /ingresar/i.test(b.textContent)) || boton;
     p.enviado = Date.now(); await chrome.storage.local.set({ deuda_pedido: p });
     if (boton) { boton.classList.remove('disabled'); boton.disabled = false; boton.click(); }
-    aviso(`ClaroGo!: RUT ${rutTexto(p.rut, true)} escrito en ${NOMBRE}.\nSi aparece "No soy un robot", resuélvelo y presiona el botón. Yo leo el resultado.`, '#1a56b8');
+    aviso(`GoExt: RUT ${rutTexto(p.rut, true)} escrito en ${NOMBRE}.\nSi aparece "No soy un robot", resuélvelo y presiona el botón. Yo leo el resultado.`, '#1a56b8');
   } else {
-    aviso(`ClaroGo!: buscando la deuda en ${NOMBRE}…`, '#1a56b8');
+    aviso(`GoExt: buscando la deuda en ${NOMBRE}…`, '#1a56b8');
   }
 
   // ── Paso 2: leer el resultado ──
