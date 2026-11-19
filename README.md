@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 19-11-2026: ClaroGo! v2.13.0, módulo "Números a portar"
+
+- Ficha del cliente: módulo propio "📱 Números a portar", primero y a lo ancho, aparte del teléfono de contacto (que sigue en Cliente). Línea 1 con su número, su plan (para elegir) y su precio; debajo cada línea adicional con su número y, al lado, su plan de adicional y precio. "+ Agregar línea" y ✕ para quitar. Muestra cuántas líneas son.
+- Se quitaron "Número a portar" de Cliente y "Líneas adicionales" de Venta para que no estén repetidos. Cambiar el plan en el módulo actualiza la columna Plan de la fila y los precios.
+
 ### 19-11-2026: GoExt 1.44.0, sin apertura automática
 
 - Pedido de Eduardo: se elimina la apertura automática de GoExt al entrar una llamada (la ventana aparte se montaba sobre todo y aparecía en la barra de tareas). GoExt se abre solo de forma manual: ícono o Alt+Shift+G. Se quitó la casilla "Abrir GoExt sola".

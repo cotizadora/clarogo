@@ -599,6 +599,20 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .fi-m-equipo{background:#e2d4ff;border-color:#a98be8;color:#4f2a9e}
 .fi-m-despacho{background:#ffe0b0;border-color:#eeb35c;color:#8a4a06}
 .fi-m-obs{grid-column:1/-1;background:#e3e6ec;border-color:#b3bac6;color:#374151}
+/* Números a portar: un solo módulo, a lo ancho, con cada número y su plan al lado */
+.fi-m-lineas{grid-column:1/-1;background:#ffe3e6;border-color:#f08a96;color:#8f0f1f}
+.fi-m-lineas .fl-cuenta{margin-left:auto;font-size:.72rem;font-weight:700;text-transform:none;letter-spacing:0;color:#8f0f1f}
+.fl-fila{display:grid;grid-template-columns:auto minmax(120px,170px) minmax(150px,210px) 1fr;gap:8px;align-items:center;margin-bottom:8px}
+.fl-n{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;font-weight:800;font-size:.8rem}
+.fl-fila input,.fl-fila select{height:34px;border-radius:9px}
+.fl-precio{font-size:.82rem;font-weight:700;color:#1f2430}
+.ln-ui.ln-filas{flex-direction:column;align-items:stretch;gap:6px}
+.ln-ui.ln-filas .ln-item{display:grid;grid-template-columns:26px minmax(120px,170px) 1fr auto;gap:8px;align-items:center;border:0;background:transparent;overflow:visible}
+.ln-ui.ln-filas .ln-item i{width:26px;height:26px;border-radius:50%;padding:0;background:#c9303f;font-size:.8rem}
+.ln-ui.ln-filas .ln-item input{width:auto;height:34px;border:1px solid var(--border)!important;border-radius:9px;background:#fff}
+.ln-ui.ln-filas .ln-plan{font-size:.82rem;font-weight:700;color:#13804a}
+.ln-ui.ln-filas .ln-add{align-self:flex-start}
+@media (max-width:700px){.fl-fila{grid-template-columns:auto 1fr}.fl-fila select,.fl-precio{grid-column:2}.ln-ui.ln-filas .ln-item{grid-template-columns:26px 1fr auto}.ln-ui.ln-filas .ln-plan{grid-column:2}}
 .fi-t{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:.74rem;font-weight:800;color:inherit;text-transform:uppercase;letter-spacing:.07em;margin:0 0 9px}
 .fi-t svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;padding:5px;box-sizing:content-box;background:#fff;border-radius:9px;box-shadow:0 1px 3px rgba(16,24,40,.08)}
 .fi-hist{margin:-4px 0 12px;padding:8px 12px;border-radius:12px;background:#fff4c2;border:2px solid #f0c000;color:#5c4300;font-size:.82rem}
@@ -1211,7 +1225,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.12.2';
+const APP_VERSION = '2.13.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2303,6 +2317,18 @@ function ofertaLinea(r, i) {
   const a = ADICIONALES[p.gb]; if (!a) return '';
   return `Adicional ${p.title}: ` + (a.meses ? `${clp(a.promo)} por ${a.meses} meses, luego ${clp(a.luego)}` : `${clp(a.promo)} fijo`);
 }
+/* Ficha del cliente: módulo único "Números a portar", aparte del teléfono de contacto.
+   Línea 1 (principal) con su plan para elegir; debajo cada línea adicional con su plan de adicional y su precio. */
+function fichaLineasHTML(r) {
+  const planes = PLANES_WA().map(p => `<option${p.title === r.plan ? ' selected' : ''}>${esc(p.title)}</option>`).join('');
+  return `<section class="fi-mod fi-m-lineas"><div class="fi-t"><span>📱 Números a portar</span><small class="fl-cuenta">${lineasDe(r).length || 0} ${lineasDe(r).length === 1 ? 'línea' : 'líneas'}</small></div>
+    <div class="fl-fila"><span class="fl-n">1</span><input data-k="fono" value="${esc(r.fono || r.telefono || '')}" placeholder="9XXXXXXXX" inputmode="numeric" aria-label="Número a portar, línea principal">
+      <select data-k="plan" aria-label="Plan de la línea principal"><option value="">Elegir plan</option>${planes}</select>
+      <span class="fl-precio">${esc(ofertaLinea(r, 0) || 'Línea principal')}</span></div>
+    <input type="hidden" data-k="adic" value="${esc(r.adic || '')}"><div class="ln-ui ln-filas" data-fila="${r.id}"></div></section>`;
+}
+// Etiqueta del plan al lado de cada línea adicional del módulo (se recalcula si cambia el plan)
+const etiquetaAdic = id => i => { const r = CT.find(x => x.id === id); return r ? (ofertaLinea(r, i + 1) || 'Línea adicional') : ''; };
 function lineasPinta() {
   const r = CT.find(x => x.id === lnFila); if (!r) return;
   const ls = lineasDe(r), hechas = r.lineasForm || {}, hora = t => new Date(t).toTimeString().slice(0, 5);
@@ -2330,13 +2356,13 @@ function initLineas() {
 }
 /* Cuadros de líneas: un número por cuadro, botón para agregar y pegar varios de una vez.
    Escribe en un campo oculto (el mismo dato "adic" de siempre) y avisa con input/change, así planilla, Script y extensión siguen igual. */
-function lineasUI(cont, oculto) {
+function lineasUI(cont, oculto, etiqueta) {
   if (!cont || !oculto || cont.dataset.listo) return; cont.dataset.listo = '1';
   const leer = () => String(oculto.value || '').split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
   const escribir = (nums, tipo) => { oculto.value = nums.map(s => s.trim()).filter(Boolean).join(', '); oculto.dispatchEvent(new Event(tipo, { bubbles: true })); };
   const pinta = (enfocar) => {
     const nums = leer(); if (enfocar === 'nuevo') nums.push('');
-    cont.innerHTML = nums.map((n, i) => `<span class="ln-item"><i>${i + 2}</i><input value="${esc(n)}" data-i="${i}" inputmode="numeric" placeholder="9XXXXXXXX" aria-label="Línea ${i + 2}"><button type="button" data-q="${i}" title="Quitar esta línea">✕</button></span>`).join('')
+    cont.innerHTML = nums.map((n, i) => `<span class="ln-item"><i>${i + 2}</i><input value="${esc(n)}" data-i="${i}" inputmode="numeric" placeholder="9XXXXXXXX" aria-label="Línea ${i + 2}">${etiqueta ? `<small class="ln-plan">${esc(etiqueta(i))}</small>` : ''}<button type="button" data-q="${i}" title="Quitar esta línea">✕</button></span>`).join('')
       + `<button type="button" class="btn sm ln-add" data-add>+ Agregar línea</button><span class="ln-cuenta">${leer().length ? `Total: ${leer().length + 1} líneas (principal + ${leer().length})` : 'Solo la línea principal'}</span>`;
     if (enfocar === 'nuevo') { const ins = cont.querySelectorAll('input'); ins[ins.length - 1].focus(); }
   };
@@ -2861,8 +2887,8 @@ function leerGenesys(txt) {
 const MEDIOS = ['correo electrónico', 'WhatsApp', 'SMS'];
 const TVENTA = [['port', 'PortIn Post-Post'], ['portpre', 'PortIn Pre-Post'], ['migra', 'Migración'], ['ln', 'Línea nueva']];
 const FICHA = [
-  ['Cliente', [['nac', 'Fecha de nacimiento', 'DD-MM-AAAA'], ['mail', 'Correo electrónico', 'correo@ejemplo.com'], ['fono', 'Número a portar', '9XXXXXXXX'], ['contacto', 'Teléfono de contacto', '9XXXXXXXX'], ['origen', 'Compañía de origen', 'Ej: Movistar'], ['genero', 'Trato en WhatsApp', 'GENERO']]],
-  ['Venta', [['medio', 'Validación enviada por', 'MEDIOS'], ['tventa', 'Tipo de venta', 'TVENTA'], ['adic', 'Líneas adicionales', '9 1111 1111, 9 2222 2222'], ['oferta', 'Oferta de la campaña (Genesys)', '']]],
+  ['Cliente', [['nac', 'Fecha de nacimiento', 'DD-MM-AAAA'], ['mail', 'Correo electrónico', 'correo@ejemplo.com'], ['contacto', 'Teléfono de contacto', '9XXXXXXXX'], ['origen', 'Compañía de origen', 'Ej: Movistar'], ['genero', 'Trato en WhatsApp', 'GENERO']]],
+  ['Venta', [['medio', 'Validación enviada por', 'MEDIOS'], ['tventa', 'Tipo de venta', 'TVENTA'], ['oferta', 'Oferta de la campaña (Genesys)', '']]],
   ['Equipo', [['eq', 'Equipo', 'Ej: Samsung A17 5G 128GB'], ['eqsku', 'SKU', 'Ej: 70016839'], ['eqtotal', 'Monto total', '$0'], ['eqpie', 'Pago inicial', '$0'], ['eqforma', 'Forma de pago', 'Ej: 18 cuotas de $22.000']]],
   ['Despacho', [['direccion', 'Dirección', 'Ej: Las Zinnias 5790 Huechuraba, Región Metropolitana'], ['ref', 'Referencia o entrecalles', ''], ['eta', 'Tiempo de despacho', '']]]
 ];
@@ -3008,7 +3034,7 @@ function ctFichaHTML(r) {
   return `<tr class="ficha" data-id="${r.id}"><td colspan="13">
     <div class="fi-top"><div class="fi-acc"><button type="button" class="btn sm red" data-ct="script">▶ Pasar al Script de Cierre</button><button type="button" class="btn sm" data-subir title="Abre el formulario de ventas con los datos de este cliente ya escritos">📤 Subir venta</button><button type="button" class="btn sm" data-ct="copiar">📋 Copiar para WhatsApp</button><button type="button" class="btn sm" data-exportar title="Archivo con todos los datos de este cliente, para WhatsApp o para otro computador">💾 Exportar cliente</button><button type="button" class="btn sm dark" data-ct="ficha">Cerrar ficha ▴</button></div>${deudaBarra(r)}</div>
     ${r.histTip ? `<div class="fi-hist">🔁 <b>Contactado antes:</b> ${esc(r.histTip)}</div>` : ''}
-    <div class="fi-mods">${FICHA.map(modulo).join('')}
+    <div class="fi-mods">${fichaLineasHTML(r)}${FICHA.map(modulo).join('')}
     <section class="fi-mod fi-m-obs"><div class="fi-t">${ICO.obs}<span>Observaciones</span></div><div class="fi-obs"><div class="fi-chips">${OBS_RAPIDAS.map(o => `<button type="button" data-obs="${esc(o)}">+ ${esc(o)}</button>`).join('')}</div><textarea data-k="notas" rows="3" placeholder="Pega o escribe aquí todo lo que conversaste con el cliente">${esc(r.notas || '')}</textarea></div></section></div>
     <div class="fi-nota">Todo se guarda solo, sea venta o no.</div></td></tr>`;
 }
@@ -3615,7 +3641,7 @@ function ctPinta() {
       : `<button data-ct="wa" class="wa" title="Abrir WhatsApp Web con este cliente y enviarle la oferta"><svg viewBox="0 0 16 16"><path d="${ICONOS.wa}"/></svg></button><button data-ct="genesys" class="gen" title="Traer el teléfono desde Genesys (reemplaza el de esta fila)"><svg class="gico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="11.2" cy="2.6" r="1.8"/><rect x="4.2" y="5.4" width="6" height="9.4" rx="3"/></svg><span class="gen-t">Genesys</span></button><button data-ct="copiar" class="cop" title="Copiar los datos del cliente para WhatsApp (por ejemplo, para enviarlos a la supervisora)">📋</button><button data-ct="ficha" class="fic${r.id === ctAbierto ? ' on' : ''}" style="--i:${i}" title="${r.id === ctAbierto ? 'Cerrar la ficha' : 'Abrir la ficha con todos los datos del cliente'}">${r.id === ctAbierto ? '▴<span class="fic-t"> Cerrar</span>' : '▾<span class="fic-t"> Ficha</span>'}</button><button data-ct="rutificador" class="rutif" title="Copiar el RUT y abrir el Rutificador">RUTIFICADOR</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
   </tr>${r.id === ctAbierto && !r.borrado ? ctFichaHTML(r) : ''}`).join('');
   $$('#ct-body textarea.nom').forEach(nomAlto);
-  $$('#ct-body .ln-ui').forEach(c => lineasUI(c, c.previousElementSibling));
+  $$('#ct-body .ln-ui').forEach(c => lineasUI(c, c.previousElementSibling, c.dataset.fila ? etiquetaAdic(c.dataset.fila) : null));
   $('#ct-vacio').hidden = lista.length > 0;
   // Si el período oculta registros, se dice cuántos hay y se ofrece verlos (los registros nunca se borran solos)
   const ocultos = verBorr ? 0 : CT.filter(r => !r.borrado).length - lista.length;
@@ -3756,7 +3782,14 @@ function initControl() {
     r.upd = Date.now(); ctGuardar();
     // Dirección corregida a mano: manda sobre la que estaba separada en calle, número, comuna y región
     if (el.dataset.k === 'direccion') ['calle', 'num', 'int', 'comuna', 'region'].forEach(k => { delete r[k]; });
-    if (el.dataset.k === 'plan') { const pv = el.closest('td').querySelector('.plan-ver'); if (pv) { pv.textContent = el.value ? el.value.replace(/^Plan\s+/i, '') : 'Sin plan'; pv.classList.toggle('vacio', !el.value); } el.title = el.value || 'Elegir plan'; }
+    if (el.dataset.k === 'plan') {
+      // Plan cambiado en la fila o en el módulo "Números a portar": se actualizan los dos y el precio de cada línea
+      $$(`#ct-body tr[data-id="${r.id}"] .plan-ver`).forEach(pv => { pv.textContent = el.value ? el.value.replace(/^Plan\s+/i, '') : 'Sin plan'; pv.classList.toggle('vacio', !el.value); });
+      el.title = el.value || 'Elegir plan';
+      $$(`#ct-body tr.ficha[data-id="${r.id}"] .fl-precio`).forEach(x => { x.textContent = ofertaLinea(r, 0) || 'Línea principal'; });
+      $$(`#ct-body tr.ficha[data-id="${r.id}"] .ln-filas`).forEach(c => { const o = c.previousElementSibling; if (o && o._lnPinta) o._lnPinta(); });
+    }
+    if (el.dataset.k === 'fono' || el.dataset.k === 'adic') { const n = lineasDe(r).length; $$(`#ct-body tr.ficha[data-id="${r.id}"] .fl-cuenta`).forEach(x => { x.textContent = n + (n === 1 ? ' línea' : ' líneas'); }); }
     if (el.dataset.k === 'tipo') { const tr = el.closest('tr'); tr.classList.toggle('t-venta', el.value === 'Venta'); tr.classList.remove('t-verde', 't-rojo', 't-amarillo'); if (tipoColor(el.value)) tr.classList.add(tipoColor(el.value)); }
     if (el.dataset.k === 'origen') { const td = $(`#ct-body tr[data-id="${r.id}"]:not(.ficha) td.c-deu`); if (td) td.innerHTML = deudaBoton(r); }
     if (el.dataset.k === 'rut' && e.type === 'change') rutifAuto(r);
