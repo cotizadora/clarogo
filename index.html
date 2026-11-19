@@ -600,15 +600,16 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .fi-m-despacho{background:#ffe0b0;border-color:#eeb35c;color:#8a4a06}
 .fi-m-obs{grid-column:1/-1;background:#e3e6ec;border-color:#b3bac6;color:#374151}
 /* Números a portar: un solo módulo, a lo ancho, con cada número y su plan al lado */
-.fi-m-lineas{grid-column:1/-1;background:#ffe3e6;border-color:#f08a96;color:#8f0f1f}
-.fi-m-lineas .fl-cuenta{margin-left:auto;font-size:.72rem;font-weight:700;text-transform:none;letter-spacing:0;color:#8f0f1f}
-.fl-fila{display:grid;grid-template-columns:auto minmax(120px,170px) minmax(150px,210px) 1fr;gap:8px;align-items:center;margin-bottom:8px}
-.fl-n{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;font-weight:800;font-size:.8rem}
+.fi-lineas{margin-top:12px;padding-top:10px;border-top:2px dashed #6cc795}
+.fl-t{display:flex;align-items:center;gap:8px;font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin:0 0 9px;color:#0d6438}
+.fi-lineas .fl-cuenta{margin-left:auto;font-size:.72rem;font-weight:700;text-transform:none;letter-spacing:0;color:#0d6438}
+.fl-fila{display:grid;grid-template-columns:auto minmax(110px,150px) minmax(130px,170px) 1fr;gap:8px;align-items:center;margin-bottom:8px}
+.fl-n{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#0d6438;color:#fff;font-weight:800;font-size:.8rem}
 .fl-fila input,.fl-fila select{height:34px;border-radius:9px}
 .fl-precio{font-size:.82rem;font-weight:700;color:#1f2430}
 .ln-ui.ln-filas{flex-direction:column;align-items:stretch;gap:6px}
-.ln-ui.ln-filas .ln-item{display:grid;grid-template-columns:26px minmax(120px,170px) 1fr auto;gap:8px;align-items:center;border:0;background:transparent;overflow:visible}
-.ln-ui.ln-filas .ln-item i{width:26px;height:26px;border-radius:50%;padding:0;background:#c9303f;font-size:.8rem}
+.ln-ui.ln-filas .ln-item{display:grid;grid-template-columns:26px minmax(110px,150px) 1fr auto;gap:8px;align-items:center;border:0;background:transparent;overflow:visible}
+.ln-ui.ln-filas .ln-item i{width:26px;height:26px;border-radius:50%;padding:0;background:#13804a;font-size:.8rem}
 .ln-ui.ln-filas .ln-item input{width:auto;height:34px;border:1px solid var(--border)!important;border-radius:9px;background:#fff}
 .ln-ui.ln-filas .ln-plan{font-size:.82rem;font-weight:700;color:#13804a}
 .ln-ui.ln-filas .ln-add{align-self:flex-start}
@@ -1225,7 +1226,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.13.0';
+const APP_VERSION = '2.13.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2317,15 +2318,15 @@ function ofertaLinea(r, i) {
   const a = ADICIONALES[p.gb]; if (!a) return '';
   return `Adicional ${p.title}: ` + (a.meses ? `${clp(a.promo)} por ${a.meses} meses, luego ${clp(a.luego)}` : `${clp(a.promo)} fijo`);
 }
-/* Ficha del cliente: módulo único "Números a portar", aparte del teléfono de contacto.
+/* Ficha del cliente: "Números a portar" va solo dentro del módulo Venta, aparte del teléfono de contacto (Cliente).
    Línea 1 (principal) con su plan para elegir; debajo cada línea adicional con su plan de adicional y su precio. */
 function fichaLineasHTML(r) {
   const planes = PLANES_WA().map(p => `<option${p.title === r.plan ? ' selected' : ''}>${esc(p.title)}</option>`).join('');
-  return `<section class="fi-mod fi-m-lineas"><div class="fi-t"><span>📱 Números a portar</span><small class="fl-cuenta">${lineasDe(r).length || 0} ${lineasDe(r).length === 1 ? 'línea' : 'líneas'}</small></div>
+  return `<div class="fi-lineas"><div class="fl-t"><span>📱 Números a portar</span><small class="fl-cuenta">${lineasDe(r).length || 0} ${lineasDe(r).length === 1 ? 'línea' : 'líneas'}</small></div>
     <div class="fl-fila"><span class="fl-n">1</span><input data-k="fono" value="${esc(r.fono || r.telefono || '')}" placeholder="9XXXXXXXX" inputmode="numeric" aria-label="Número a portar, línea principal">
       <select data-k="plan" aria-label="Plan de la línea principal"><option value="">Elegir plan</option>${planes}</select>
       <span class="fl-precio">${esc(ofertaLinea(r, 0) || 'Línea principal')}</span></div>
-    <input type="hidden" data-k="adic" value="${esc(r.adic || '')}"><div class="ln-ui ln-filas" data-fila="${r.id}"></div></section>`;
+    <input type="hidden" data-k="adic" value="${esc(r.adic || '')}"><div class="ln-ui ln-filas" data-fila="${r.id}"></div></div>`;
 }
 // Etiqueta del plan al lado de cada línea adicional del módulo (se recalcula si cambia el plan)
 const etiquetaAdic = id => i => { const r = CT.find(x => x.id === id); return r ? (ofertaLinea(r, i + 1) || 'Línea adicional') : ''; };
@@ -2888,7 +2889,7 @@ const MEDIOS = ['correo electrónico', 'WhatsApp', 'SMS'];
 const TVENTA = [['port', 'PortIn Post-Post'], ['portpre', 'PortIn Pre-Post'], ['migra', 'Migración'], ['ln', 'Línea nueva']];
 const FICHA = [
   ['Cliente', [['nac', 'Fecha de nacimiento', 'DD-MM-AAAA'], ['mail', 'Correo electrónico', 'correo@ejemplo.com'], ['contacto', 'Teléfono de contacto', '9XXXXXXXX'], ['origen', 'Compañía de origen', 'Ej: Movistar'], ['genero', 'Trato en WhatsApp', 'GENERO']]],
-  ['Venta', [['medio', 'Validación enviada por', 'MEDIOS'], ['tventa', 'Tipo de venta', 'TVENTA'], ['oferta', 'Oferta de la campaña (Genesys)', '']]],
+  ['Venta', [['medio', 'Validación enviada por', 'MEDIOS'], ['tventa', 'Tipo de venta', 'TVENTA']]],
   ['Equipo', [['eq', 'Equipo', 'Ej: Samsung A17 5G 128GB'], ['eqsku', 'SKU', 'Ej: 70016839'], ['eqtotal', 'Monto total', '$0'], ['eqpie', 'Pago inicial', '$0'], ['eqforma', 'Forma de pago', 'Ej: 18 cuotas de $22.000']]],
   ['Despacho', [['direccion', 'Dirección', 'Ej: Las Zinnias 5790 Huechuraba, Región Metropolitana'], ['ref', 'Referencia o entrecalles', ''], ['eta', 'Tiempo de despacho', '']]]
 ];
@@ -3030,11 +3031,11 @@ function ctFichaHTML(r) {
   const MOD = { Cliente: ['cliente', ICO.cliente], Venta: ['venta', ICO.venta], Equipo: ['equipo', ICO.equipo], Despacho: ['despacho', ICO.despacho] };
   const modulo = ([t, cs]) => { const [c, ico] = MOD[t] || ['cliente', ICO.cliente]; return t === 'Equipo'
       ? `<section class="fi-mod fi-m-${c}"><div class="fi-t">${ico}<span>Equipo</span><label class="fi-sin"><input type="checkbox" data-k="sineq"${r.sineq ? ' checked' : ''}> Sin equipo</label><button type="button" class="btn sm" data-eqpegar${r.sineq ? ' disabled' : ''}>Pegar equipo del Stock</button></div><div class="fi-g${r.sineq ? ' fi-off' : ''}">${cs.map(campo).join('')}</div></section>`
-      : `<section class="fi-mod fi-m-${c}"><div class="fi-t">${ico}<span>${t}</span></div><div class="fi-g">${cs.map(campo).join('')}</div></section>`; };
+      : `<section class="fi-mod fi-m-${c}"><div class="fi-t">${ico}<span>${t}</span></div><div class="fi-g">${cs.map(campo).join('')}</div>${t === 'Venta' ? fichaLineasHTML(r) : ''}</section>`; };
   return `<tr class="ficha" data-id="${r.id}"><td colspan="13">
     <div class="fi-top"><div class="fi-acc"><button type="button" class="btn sm red" data-ct="script">▶ Pasar al Script de Cierre</button><button type="button" class="btn sm" data-subir title="Abre el formulario de ventas con los datos de este cliente ya escritos">📤 Subir venta</button><button type="button" class="btn sm" data-ct="copiar">📋 Copiar para WhatsApp</button><button type="button" class="btn sm" data-exportar title="Archivo con todos los datos de este cliente, para WhatsApp o para otro computador">💾 Exportar cliente</button><button type="button" class="btn sm dark" data-ct="ficha">Cerrar ficha ▴</button></div>${deudaBarra(r)}</div>
     ${r.histTip ? `<div class="fi-hist">🔁 <b>Contactado antes:</b> ${esc(r.histTip)}</div>` : ''}
-    <div class="fi-mods">${fichaLineasHTML(r)}${FICHA.map(modulo).join('')}
+    <div class="fi-mods">${FICHA.map(modulo).join('')}
     <section class="fi-mod fi-m-obs"><div class="fi-t">${ICO.obs}<span>Observaciones</span></div><div class="fi-obs"><div class="fi-chips">${OBS_RAPIDAS.map(o => `<button type="button" data-obs="${esc(o)}">+ ${esc(o)}</button>`).join('')}</div><textarea data-k="notas" rows="3" placeholder="Pega o escribe aquí todo lo que conversaste con el cliente">${esc(r.notas || '')}</textarea></div></section></div>
     <div class="fi-nota">Todo se guarda solo, sea venta o no.</div></td></tr>`;
 }

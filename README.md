@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 19-11-2026: ClaroGo! v2.13.1, números a portar solo en Venta
+
+- Pedido de Eduardo: los números a portar no pueden estar en dos módulos. Ahora "📱 Números a portar" va solo dentro del módulo verde Venta (línea 1 con su plan y precio, adicionales con su plan de adicional). Cliente queda solo con el teléfono de contacto. Ya no hay rectángulo aparte.
+- Se quitó "Oferta de la campaña (Genesys)" de la ficha (el dato se sigue guardando).
+
 ### 19-11-2026: ClaroGo! v2.13.0, módulo "Números a portar"
 
 - Ficha del cliente: módulo propio "📱 Números a portar", primero y a lo ancho, aparte del teléfono de contacto (que sigue en Cliente). Línea 1 con su número, su plan (para elegir) y su precio; debajo cada línea adicional con su número y, al lado, su plan de adicional y precio. "+ Agregar línea" y ✕ para quitar. Muestra cuántas líneas son.
