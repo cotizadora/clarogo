@@ -27,7 +27,8 @@ const revisar = async () => {
   const seg = (Date.now() - inicio) / 1000;
   if (seg > 25 && !$('#nota').dataset.mano) {
     $('#nota').dataset.mano = '1';
-    $('#nota').innerHTML = 'Si no pasó nada, haz doble clic en <b>Actualizar GoExt</b> de tu escritorio (o en el instalador). Desde esa vez el botón de GoExt actualiza solo. Esta pestaña sigue esperando y activa la versión nueva apenas llegue.';
+    $('#nota').innerHTML = 'Si no pasó nada, haz doble clic en <b>Actualizar GoExt</b> de tu escritorio (o en el instalador). Desde esa vez el botón de GoExt actualiza solo. Esta pestaña sigue esperando y activa la versión nueva apenas llegue.'
+      + '<br><br><b>Si tu computador bloquea el instalador</b> (Control inteligente de aplicaciones): <a href="https://cotizadora.github.io/clarogo/ext/clarogo-genesys-extension.zip" download="goext.zip">descarga GoExt en .zip</a>, haz <b>Extraer todo</b> en la misma carpeta donde la tienes y acepta <b>Reemplazar</b>. Esta pestaña la activa sola.';
   }
   if (seg < 180) setTimeout(revisar, 2000);
   else { $('#giro').hidden = true; $('#estado').textContent = 'No llegó una versión nueva'; $('#detalle').textContent = 'Revisa tu internet y vuelve a intentarlo.'; }

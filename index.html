@@ -115,6 +115,11 @@ body[data-view="inicio"] #nav{visibility:hidden}
 .dl-copiar code{flex:1;min-width:0;padding:6px 9px;border-radius:8px;background:#f1f3f5;font:600 .85rem Consolas,monospace;overflow-wrap:anywhere}
 .mute-card small code{font:600 .8rem Consolas,monospace}
 .dl-guia{margin:12px 0 0;font-size:.9rem}
+.dl-zip{margin-top:14px;padding:12px 16px;border:1px dashed #e0a800;border-radius:14px;background:#fffbea}
+.dl-zip summary{cursor:pointer;font-weight:800;font-size:.95rem}
+.dl-zip p,.dl-zip ol{font-size:.92rem;line-height:1.55;margin:10px 0}
+.dl-zip ol{padding-left:22px}
+.dl-zip code{font:600 .85rem Consolas,monospace}
 .dl-guia a{color:var(--red);font-weight:700}
 .mute-hero{display:flex;gap:16px;align-items:center;margin-bottom:14px}
 .mute-ico{display:grid;place-items:center;width:64px;height:64px;border-radius:18px;background:var(--red);font-size:2rem;flex:none}
@@ -970,6 +975,17 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
           <li>La primera vez el navegador pregunta si abre el actualizador: marca <b>Permitir siempre</b> y presiona <b>Abrir</b>. También puedes usar <b>Actualizar GoExt</b> del escritorio.</li>
         </ol><p class="dl-guia"><a href="ext/" target="_blank" rel="noopener">Ver la guía de instalación completa ↗</a></p></div>
       </div>
+      <details class="dl-zip">
+        <summary>🛡️ ¿El computador bloquea el instalador? (Control inteligente de aplicaciones)</summary>
+        <p>Windows 11 puede bloquear el instalador porque no tiene firma digital. <b>No desactives esa protección.</b> Instala GoExt así, sin ejecutar nada:</p>
+        <a class="btn red" href="ext/clarogo-genesys-extension.zip" download="goext.zip">⬇ Descargar GoExt en .zip</a>
+        <ol>
+          <li>Abre la carpeta <b>Descargas</b>, haz clic derecho en <b>goext.zip</b> → <b>Extraer todo</b> → <b>Extraer</b>. Queda una carpeta llamada <b>goext</b>.</li>
+          <li>En <code>edge://extensions</code> (o <code>chrome://extensions</code>) activa <b>Modo para desarrolladores</b>.</li>
+          <li>Presiona <b>Cargar desempaquetada</b> y elige la carpeta <b>Descargas → goext</b>. No la borres ni la muevas después.</li>
+        </ol>
+        <p><b>Para actualizar:</b> descarga el .zip otra vez, haz <b>Extraer todo</b> y, con <b>Examinar</b>, elige la misma carpeta <b>goext</b> (aunque el archivo se llame "goext (1)") y acepta <b>Reemplazar los archivos</b>. Luego, en el ícono de GoExt, presiona <b>Activar versión nueva</b>.</p>
+      </details>
     </div>
 
     <div class="dl-bloque" id="dl-mute">
@@ -1190,7 +1206,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.11.3';
+const APP_VERSION = '2.11.4';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 

@@ -68,6 +68,13 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 19-11-2026: ClaroGo! v2.11.4 y GoExt 1.37.0, instalar sin instalador
+
+- Caso: en Windows 11 el **Control inteligente de aplicaciones** bloquea el instalador .bat porque no tiene firma digital. No se debe desactivar.
+- Descargas y la página de instalación tienen ahora "¿El computador bloquea el instalador?": descargar GoExt en .zip (se guarda como `goext.zip`), Extraer todo, y Cargar desempaquetada la carpeta `Descargas\goext`. Para actualizar: Extraer todo el .zip nuevo en esa misma carpeta, Reemplazar, y "Activar versión nueva".
+- La pestaña de actualización de GoExt, si el actualizador no responde, ofrece el .zip y espera la versión nueva para activarla sola.
+- Pendiente para una solución definitiva: publicar GoExt en la tienda de complementos de Edge (se instala con un clic, se actualiza sola y no la bloquea Windows). Requiere una cuenta de Microsoft Partner Center de Eduardo.
+
 ### 19-11-2026: ClaroGo! v2.11.3, enlace para compartir GoExt
 
 - Enlace para WhatsApp: **https://cotizadora.github.io/clarogo/goext/**. Su vista previa es `goext/goext-invitacion.png` (1200×630, estilo de la imagen de ClaroGo!, ícono G! y "ClaroGo! funciona mucho mejor con GoExt") y al abrirlo lleva a ClaroGo! #descargas.
