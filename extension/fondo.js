@@ -179,11 +179,30 @@ chrome.runtime.onInstalled.addListener(async d => {
     const tabs = await chrome.tabs.query({ url: 'https://cotizadora.github.io/clarogo/*' });
     for (const t of tabs) chrome.scripting.executeScript({ target: { tabId: t.id }, files: ['puente.js'] }).catch(() => {});
   } catch (e) {}
+  conectarGenesys();
 });
+// Las pestañas de Genesys que ya estaban abiertas no reciben el vigilante de llamadas hasta recargarlas:
+// se les pone al instalar, al actualizar y al abrir el navegador, en todos sus marcos.
+async function conectarGenesys() {
+  try {
+    const tabs = await chrome.tabs.query({ url: ['https://*.pure.cloud/*', 'https://*.mypurecloud.com/*', 'https://*.genesys.cloud/*'] });
+    for (const t of tabs) chrome.scripting.executeScript({ target: { tabId: t.id, allFrames: true }, files: ['llamada.js'] }).catch(() => {});
+  } catch (e) {}
+}
+chrome.runtime.onStartup.addListener(() => setTimeout(conectarGenesys, 5000));
 
 // Llamada nueva en Genesys (llamada.js): GoExt se abre sola, si el ejecutivo lo tiene activado (por defecto sí).
 // El navegador solo deja abrir la ventanita en una ventana que esté a la vista; si no se puede, avisa con una notificación.
 const LLAMADAS_VISTAS = new Map();
+// Abre la ventanita de GoExt sin que el ejecutivo haga clic:
+// 1. la ventanita de siempre, si el navegador lo permite; 2. si no, la misma como ventana propia arriba a la derecha.
+async function abrirVentanita() {
+  try { if (chrome.action && typeof chrome.action.openPopup === 'function') { await chrome.action.openPopup(); return; } } catch (e) {}
+  const w = await chrome.windows.getLastFocused().catch(() => ({}));
+  const ancho = 420, alto = 640;
+  await chrome.windows.create({ url: chrome.runtime.getURL('popup.html?sola=1'), type: 'popup', width: ancho, height: alto,
+    left: Math.max(0, Math.round((w.left || 0) + (w.width || 1280) - ancho - 16)), top: Math.max(0, Math.round((w.top || 0) + 70)), focused: true });
+}
 async function abrirPorLlamada(msg) {
   try { await chrome.storage.local.set({ ultima_llamada: { ts: Date.now(), clave: msg.clave } }); } catch (e) {}
   try {
@@ -193,8 +212,8 @@ async function abrirPorLlamada(msg) {
     for (const [k, t] of LLAMADAS_VISTAS) if (ahora - t > 30 * 60000) LLAMADAS_VISTAS.delete(k);
     if (LLAMADAS_VISTAS.has(msg.clave)) return;   // una sola vez por llamada
     LLAMADAS_VISTAS.set(msg.clave, ahora);
-    if (chrome.action && typeof chrome.action.openPopup === 'function') { await chrome.action.openPopup(); return; }
-    throw new Error('sin openPopup');
+    await abrirVentanita();
+    return;
   } catch (e) {
     try {
       const id = 'cg-llamada-' + Date.now();
@@ -230,7 +249,7 @@ chrome.runtime.onMessage.addListener((msg, _de, responder) => {
   if (msg && msg.tipo === 'corte-ejecutivo') { chrome.storage.local.set({ corte_ejecutivo: Date.now() }); return; }
   if (msg && msg.tipo === 'fin-llamada') { finDeLlamada(); return; }
   // Al cerrarse la alerta de llamada cortada: GoExt se abre con el motivo listo para tipificar
-  if (msg && msg.tipo === 'abrir-tipificacion') { setTimeout(() => { try { chrome.action.openPopup().catch(() => {}); } catch (e) {} }, 750); return; }
+  if (msg && msg.tipo === 'abrir-tipificacion') { setTimeout(abrirVentanita, 750); return; }
   // "Activar versión nueva": se recarga desde el fondo, con la ventana ya cerrada (recargar desde la ventana puede dejarla trabada)
   if (msg && msg.tipo === 'recargar') { setTimeout(() => chrome.runtime.reload(), 400); return; }
   // Pedido del Rutificador: se guarda con la pestaña de la planilla que lo hizo

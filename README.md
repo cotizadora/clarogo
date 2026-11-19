@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 19-11-2026: GoExt 1.43.0, la ventanita sí aparece al entrar la llamada
+
+- Caso: la ventanita no se abría al entrar una llamada.
+- El vigilante de llamadas (`llamada.js`) solo llegaba a las pestañas de Genesys cargadas después de instalar o actualizar GoExt. Ahora se conecta solo a las pestañas de Genesys ya abiertas (al instalar, al actualizar y al abrir el navegador), sin recargar.
+- Si el navegador no deja abrir la ventanita sola (`chrome.action.openPopup`), GoExt la abre como ventana propia arriba a la derecha (`popup.html?sola=1`). Lo mismo después de la alerta de llamada cortada.
+
 ### 19-11-2026: ClaroGo! v2.12.2 y GoExt 1.42.0, GoExt se actualiza sola
 
 - Por qué Eduardo dejó de ver el aviso: después de cada publicación se ejecutaba el actualizador en su PC para comprobar, así su carpeta ya estaba al día. Ya no se hace: Eduardo actualiza igual que sus compañeros.
