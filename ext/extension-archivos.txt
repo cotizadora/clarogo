@@ -12,3 +12,5 @@ popup.html
 popup.js
 puente.js
 rutif.js
+actualizar.html
+actualizar.js

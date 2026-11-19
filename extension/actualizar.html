@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Actualizando GoExt</title>
+<style>
+:root{--rojo:#d90429;--texto:#1f2430;--suave:#5f6673;--borde:#e3e6eb;--fondo:#f4f5f7;--ok:#13804a}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--fondo);color:var(--texto);font:17px/1.5 "Segoe UI",system-ui,sans-serif;padding:24px}
+.caja{width:min(560px,100%);background:#fff;border:1px solid var(--borde);border-radius:20px;padding:30px;box-shadow:0 10px 30px rgba(0,0,0,.08);text-align:center}
+h1{margin:0 0 6px;font-size:1.7rem}
+h1 b{color:var(--rojo)}
+#estado{font-size:1.15rem;font-weight:700;margin:14px 0 6px}
+#detalle{color:var(--suave);margin:0 0 18px}
+.giro{width:46px;height:46px;margin:6px auto;border:5px solid #f3c7cf;border-top-color:var(--rojo);border-radius:50%;animation:g 1s linear infinite}
+.giro.ok{border-color:var(--ok);animation:none}
+@keyframes g{to{transform:rotate(360deg)}}
+button{border:0;border-radius:12px;padding:13px 20px;background:var(--rojo);color:#fff;font:inherit;font-weight:800;cursor:pointer}
+.nota{margin-top:18px;padding:12px 14px;border-radius:12px;background:#fff8e1;color:#6b4e00;font-size:.92rem;text-align:left}
+</style>
+</head>
+<body>
+<div class="caja">
+  <h1>Go<b>Ext</b></h1>
+  <div class="giro" id="giro"></div>
+  <p id="estado">Actualizando…</p>
+  <p id="detalle">Se abre el actualizador de tu escritorio. Tarda unos segundos.</p>
+  <button type="button" id="otra">Abrir el actualizador</button>
+  <p class="nota" id="nota">La primera vez el navegador pregunta si quieres abrir el actualizador: marca <b>Permitir siempre</b> y presiona <b>Abrir</b>. Las próximas veces será automático.</p>
+</div>
+<script src="actualizar.js"></script>
+</body>
+</html>

@@ -68,6 +68,13 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 19-11-2026: ClaroGo! v2.11.2 y GoExt 1.36.0, actualizar con un clic
+
+- El instalador registra, solo para el usuario y sin administrador, el enlace `goext://` (HKCU\Software\Classes\goext) que ejecuta `Documentos\ClaroGo\actualizar-clarogo.bat`.
+- En GoExt, el aviso de versión nueva ahora dice "⬇ Actualizar a X.Y.Z": abre `actualizar.html`, que lanza `goext://actualizar`, revisa cada 2 segundos la versión de la carpeta y recarga GoExt sola cuando llega la nueva. La primera vez el navegador pregunta si abre el actualizador ("Permitir siempre").
+- Si el PC tiene un instalador antiguo (sin el enlace), la página explica que hay que usar "Actualizar GoExt" del escritorio una vez; desde ahí queda el enlace.
+- Archivos nuevos en la extensión: `actualizar.html` y `actualizar.js` (agregados a `ext/extension-archivos.txt`). Probado en el PC de Eduardo: abrir `goext://actualizar` ejecuta el actualizador.
+
 ### 19-11-2026: ClaroGo! v2.11.1 y GoExt 1.35.0, la lámina llega a WhatsApp
 
 - Problema: en un PC donde GoExt se instaló con ClaroGo! ya abierto, WhatsApp salía solo con el texto. ClaroGo! manda las láminas a GoExt solo al cargar la página, así que GoExt nunca las recibía.

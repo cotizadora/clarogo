@@ -43,6 +43,11 @@ echo echo.>> "%ACT%"
 echo echo   No se pudo conectar. Revisa tu internet y vuelve a intentarlo.>> "%ACT%"
 echo timeout /t 8 ^>nul>> "%ACT%"
 
+rem Enlace goext:// solo para este usuario (no necesita administrador): GoExt lo usa para actualizarse con un clic
+reg add "HKCU\Software\Classes\goext" /ve /d "URL:GoExt" /f >nul 2>&1
+reg add "HKCU\Software\Classes\goext" /v "URL Protocol" /d "" /f >nul 2>&1
+reg add "HKCU\Software\Classes\goext\shell\open\command" /ve /d "\"%SystemRoot%\System32\cmd.exe\" /c \"%ACT%\"" /f >nul 2>&1
+
 rem Acceso directo en el escritorio (tambien si el escritorio esta en OneDrive)
 rem Se borra el acceso antiguo "Actualizar ClaroGo!" para que no queden dos
 powershell -NoProfile -Command "$e=[Environment]::GetFolderPath('Desktop');Remove-Item (Join-Path $e 'Actualizar ClaroGo!.lnk') -ErrorAction SilentlyContinue;$s=(New-Object -ComObject WScript.Shell).CreateShortcut((Join-Path $e 'Actualizar GoExt.lnk'));$s.TargetPath='%ACT%';$s.WorkingDirectory='%BASE%';$s.IconLocation='%SystemRoot%\System32\shell32.dll,238';$s.Description='Actualiza GoExt, la extension de ClaroGo!';$s.Save()" 2>nul

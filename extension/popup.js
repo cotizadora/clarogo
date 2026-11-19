@@ -428,9 +428,10 @@ fetch(chrome.runtime.getURL('manifest.json') + '?v=' + Date.now(), { cache: 'no-
   // Si no hay nada descargado, se revisa si en internet hay una versión más nueva
   fetch('https://cotizadora.github.io/clarogo/extension/manifest.json?v=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(w => {
     if (!verMayor(w.version, usada)) return;
-    b.textContent = '⬇ Hay versión ' + w.version; b.hidden = false; b.style.animation = 'none';
-    b.title = 'Haz doble clic en "Actualizar GoExt" de tu escritorio y luego vuelve a abrir esta ventana';
-    b.onclick = () => mostrar('Hay una versión nueva: haz doble clic en "Actualizar GoExt" de tu escritorio y vuelve a abrir GoExt.', 'anterior');
+    b.textContent = '⬇ Actualizar a ' + w.version; b.hidden = false; b.style.animation = 'none';
+    b.title = 'Descarga y activa la versión nueva con un clic';
+    // Con un clic: se abre la página de actualización de GoExt, que ejecuta el actualizador del escritorio y se reactiva sola
+    b.onclick = () => { chrome.tabs.create({ url: chrome.runtime.getURL('actualizar.html'), active: true }); window.close(); };
   }).catch(() => {});
 }).catch(() => {});
 iniciar();
