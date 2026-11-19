@@ -69,6 +69,6 @@
   marcar('enviado a la planilla');
   decir('✅ Enviado a tu planilla: ' + [res.nombre, [res.direccion, res.comuna].filter(Boolean).join(', ')].filter(Boolean).join(' · '), '#13804a');
   setTimeout(() => { aviso.style.transition = 'opacity .8s'; aviso.style.opacity = '0'; }, 6000);
-  // Vuelve a la pestaña de Mi Planilla, donde la fila se ilumina
-  setTimeout(() => { try { chrome.runtime.sendMessage({ tipo: 'volver-planilla' }); } catch (e) {} }, 1200);
+  // Vuelve a la pestaña de Mi Planilla, donde la fila se ilumina (en segundo plano no hace falta: el ejecutivo nunca salió de ahí)
+  if (!p.fondo) setTimeout(() => { try { chrome.runtime.sendMessage({ tipo: 'volver-planilla' }); } catch (e) {} }, 1200);
 })();

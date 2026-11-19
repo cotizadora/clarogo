@@ -187,13 +187,14 @@ chrome.runtime.onMessage.addListener((msg, _de, responder) => {
   // Pedido del Rutificador: se guarda con la pestaña de la planilla que lo hizo
   if (msg && msg.tipo === 'rutif-pedido') {
     const origen = _de && _de.tab ? _de.tab : null;
-    chrome.storage.local.set({ rutif_pedido: { rut: msg.rut, id: msg.id, ts: Date.now() }, rutif_tab: { tab: origen ? origen.id : 0, ts: Date.now() } }).then(async () => {
+    const fondo = !!msg.fondo;   // al pegar el RUT: se busca en segundo plano, sin cambiar de pestaña ni de ventana
+    chrome.storage.local.set({ rutif_pedido: { rut: msg.rut, id: msg.id, ts: Date.now(), fondo }, rutif_tab: { tab: origen ? origen.id : 0, ts: Date.now() } }).then(async () => {
       // Si ya hay un Rutificador abierto se usa ese; si no, se abre uno al lado de la planilla
       const URL_RUTIF = 'https://www.nombrerutyfirma.com/';
       let t = null;
       try { t = (await chrome.tabs.query({ url: ['https://www.nombrerutyfirma.com/*', 'https://nombrerutyfirma.com/*'] }))[0] || null; } catch (e) {}
-      if (t) { await chrome.tabs.update(t.id, { url: URL_RUTIF, active: true }); chrome.windows.update(t.windowId, { focused: true }); }
-      else chrome.tabs.create(origen ? { url: URL_RUTIF, active: true, index: origen.index + 1, windowId: origen.windowId } : { url: URL_RUTIF, active: true });
+      if (t) { await chrome.tabs.update(t.id, { url: URL_RUTIF, active: !fondo }); if (!fondo) chrome.windows.update(t.windowId, { focused: true }); }
+      else chrome.tabs.create(origen ? { url: URL_RUTIF, active: !fondo, index: origen.index + 1, windowId: origen.windowId } : { url: URL_RUTIF, active: !fondo });
     });
     return;
   }

@@ -476,6 +476,8 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla th{background:#f3f3f3;color:#333;font-weight:600;text-align:center;font-size:.74rem;border-bottom:2px solid #b9bcc2}
 #ct-tabla td.c-n,#ct-tabla th.c-n{background:#f3f3f3;color:#6b6f76;text-align:center;font-size:.72rem;cursor:default}
 #ct-tabla td.c-nombre{white-space:normal;height:auto}
+#ct-tabla td.c-nombre.rutif-espera::after{content:"⏳ Buscando en el Rutificador…";display:block;padding:0 6px 5px;font-size:.68rem;font-weight:700;color:#1a56b8;animation:rutifLatido 1.2s ease-in-out infinite}
+@keyframes rutifLatido{50%{opacity:.45}}
 #ct-tabla td textarea.nom{display:block;width:100%;min-height:27px;border:0;border-radius:0;background:transparent;padding:5px 6px 4px;font:inherit;font-size:.8rem;line-height:1.3;color:var(--text);resize:none;overflow:hidden;white-space:pre-wrap;word-break:break-word;field-sizing:content}
 #ct-tabla td textarea.nom{max-height:calc(2.6em + 9px)}
 #ct-tabla td textarea.nom:focus{outline:2px solid #217346;outline-offset:-2px;background:#fff;max-height:none}
@@ -1206,7 +1208,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.11.5';
+const APP_VERSION = '2.12.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2181,6 +2183,7 @@ function scGuardarEnFila(e) {
   }
   if (id === 'plan') { const p = PLANES_VIGENTES.find(x => x.id === e.target.value); if (p) r.plan = p.title; }
   else r[scClave(id)] = e.target.value.trim();
+  if (id === 'rut' && e.type === 'change') rutifAuto(r);
   if (['calle', 'num', 'int', 'comuna', 'region'].includes(id)) { ['calle', 'num', 'int', 'comuna', 'region'].forEach(k => { const el = $('#sc-' + k); if (el) r[k] = el.value.trim(); }); r.direccion = dirArmar(r); }
   if (!r.telefono && (r.contacto || r.fono)) r.telefono = r.contacto || r.fono;
   r.upd = Date.now(); scFirma = r.id + ':' + r.upd; ctGuardar(); ctRepintar();
@@ -2893,10 +2896,51 @@ function nombreOrden(txt) {
 // Respuesta del Rutificador (extensión): nombre completo y dirección para la fila que lo pidió
 const nombrePropio = s => String(s || '').toLowerCase().replace(/(^|[\s'-])(\p{L})/gu, (m, a, b) => a + b.toUpperCase()).replace(/\s+/g, ' ').trim().replace(/ (De|Del|La|Las|Los|Y)(?= )/g, m => m.toLowerCase());
 window.addEventListener('message', e => { if (e.source === window && e.data && e.data.tipo === 'clarogo-rutif-ok') clearTimeout(window.__rutifEspera); });
+/* Rutificador automático: apenas se pega un RUT válido (planilla, Genesys o Script), GoExt lo busca en segundo plano,
+   sin cambiar de pestaña. La fila muestra "Buscando en el Rutificador…" hasta que llegan el nombre y la dirección. */
+const RUTIF_ESPERA = new Set();
+function rutifEsperaMarca(id, on) {
+  if (on) RUTIF_ESPERA.add(id); else RUTIF_ESPERA.delete(id);
+  const td = $(`#ct-body tr[data-id="${id}"]:not(.ficha) td.c-nombre`); if (td) td.classList.toggle('rutif-espera', on);
+}
+function rutifAuto(r) {
+  if (!r || !document.documentElement.dataset.clarogoRutifFondo || /prueba/i.test(r.nombre || '')) return;
+  const rut = String(r.rut || '').replace(/[^0-9kK]/g, '').toUpperCase();
+  if (rut.length < 7 || !rutValido(r.rut) || r.rutifAuto === rut) return;
+  r.rutifAuto = rut;   // una sola búsqueda automática por RUT
+  window.__rutifFondo = r.id;
+  window.postMessage({ tipo: 'clarogo-rutif', rut: r.rut, id: r.id, fondo: true }, location.origin);
+  rutifEsperaMarca(r.id, true);
+  toast('⏳ Buscando nombre y dirección en el Rutificador… Se llenan solos en esta fila. Puedes seguir trabajando.');
+  clearTimeout(window.__rutifFondoReloj);
+  window.__rutifFondoReloj = setTimeout(() => {
+    if (window.__rutifFondo !== r.id) return;
+    window.__rutifFondo = ''; rutifEsperaMarca(r.id, false);
+    toast('El Rutificador no respondió a tiempo. Puedes usar el botón RUTIFICADOR de la fila.');
+  }, 30000);
+}
+// RUT pegado en la columna RUT de la planilla: se formatea y se busca al tiro, sin esperar a salir del cuadro
+document.addEventListener('paste', e => {
+  const el = e.target.closest && e.target.closest('#ct-body [data-k="rut"]'); if (!el) return;
+  setTimeout(() => { el.value = rutFormato(el.value); el.dispatchEvent(new Event('change', { bubbles: true })); }, 0);
+});
 window.addEventListener('message', e => {
   if (e.source !== window || !e.data || e.data.tipo !== 'clarogo-rutif-res') return;
+  const deFondo = window.__rutifFondo && window.__rutifFondo === e.data.id;
+  if (deFondo) { window.__rutifFondo = ''; clearTimeout(window.__rutifFondoReloj); rutifEsperaMarca(e.data.id, false); }
   const r = CT.find(x => x.id === e.data.id); if (!r) return;
   if (!e.data.encontrado) return toast('El Rutificador no encontró datos para ese RUT.');
+  if (deFondo) {
+    // En segundo plano: se llena la fila y se ilumina el nombre, sin mover al ejecutivo de donde está
+    const nomF = nombrePropio(nombreOrden(e.data.nombre)), dirF = [e.data.direccion, e.data.comuna].map(x => String(x || '').trim()).filter(Boolean).join(', ');
+    if (nomF) r.nombre = nomF.slice(0, 120);
+    if (dirF) { r.direccion = dirFormato(dirF); ['calle', 'num', 'int', 'comuna', 'region'].forEach(k => { delete r[k]; }); }
+    r.upd = Date.now(); ctGuardar(); ctPinta();
+    toast('✅ Rutificador: ' + [r.nombre, r.direccion].filter(Boolean).join(' · '));
+    const td = $(`#ct-body tr[data-id="${r.id}"]:not(.ficha) td.c-nombre`);
+    if (td && location.hash === '#control') { td.classList.remove('neon'); void td.offsetWidth; td.classList.add('neon'); setTimeout(() => td.classList.remove('neon'), 8000); }
+    return;
+  }
   const nom = nombrePropio(nombreOrden(e.data.nombre)), dir = [e.data.direccion, e.data.comuna].map(x => String(x || '').trim()).filter(Boolean).join(', ');
   if (nom) r.nombre = nom.slice(0, 120);
   if (dir) { r.direccion = dirFormato(dir); ['calle', 'num', 'int', 'comuna', 'region'].forEach(k => { delete r[k]; }); }
@@ -3453,6 +3497,8 @@ function ctAgregar(datos, silencioso) {
     }
   }
   CT.unshift(fila); ctGuardar();
+  // RUT que llega pegado (Genesys, Script): el Rutificador busca solo en segundo plano
+  if (fila.rut) setTimeout(() => rutifAuto(fila), 400);
   if (silencioso) { ctRepintar(); return fila; }
   ctNuevo = fila.id; ctPinta();
   if (!datos || (!datos.rut && !datos.telefono)) toast(datos && Object.keys(datos).length === 0 ? 'Fila vacía agregada' : 'No encontré datos de Genesys. Agregué una fila vacía para completar a mano.');
@@ -3544,7 +3590,7 @@ function ctPinta() {
     <td class="c-fecha"><input data-k="fecha" value="${esc(fmtF(r.fecha))}" placeholder="DD-MM-AAAA" title="${esc(fmtF(r.fecha))}"></td>
     <td class="c-hora"><input data-k="hora" value="${esc(r.hora)}" placeholder="HH:MM"></td>
     <td class="c-rut"><input data-k="rut" value="${esc(r.rut)}" placeholder="RUT" title="${esc(r.rut)}"></td>
-    <td class="c-nombre"><textarea data-k="nombre" class="nom" rows="1" placeholder="Pegar nombre" title="${esc(r.nombre)}">${esc(r.nombre)}</textarea></td>
+    <td class="c-nombre${RUTIF_ESPERA.has(r.id) ? ' rutif-espera' : ''}"><textarea data-k="nombre" class="nom" rows="1" placeholder="Pegar nombre" title="${esc(r.nombre)}">${esc(r.nombre)}</textarea></td>
     <td class="c-dir"><input data-k="direccion" value="${esc(dirTexto(r))}" placeholder="Dirección" title="${esc(dirTexto(r))}"></td>
     <td class="c-tel"><div class="tel-nom">${esc(r.nombre || '')}</div><input data-k="telefono" value="${esc(r.telefono)}" placeholder="9XXXXXXXX" title="${esc(r.telefono)}"></td>
     <td class="c-orig"><select data-k="origen" title="Compañía de origen. Cámbiala para revisar la deuda en otra compañía.">${origenOpciones(r.origen)}</select></td>
@@ -3702,6 +3748,7 @@ function initControl() {
     if (el.dataset.k === 'plan') { const pv = el.closest('td').querySelector('.plan-ver'); if (pv) { pv.textContent = el.value ? el.value.replace(/^Plan\s+/i, '') : 'Sin plan'; pv.classList.toggle('vacio', !el.value); } el.title = el.value || 'Elegir plan'; }
     if (el.dataset.k === 'tipo') { const tr = el.closest('tr'); tr.classList.toggle('t-venta', el.value === 'Venta'); tr.classList.remove('t-verde', 't-rojo', 't-amarillo'); if (tipoColor(el.value)) tr.classList.add(tipoColor(el.value)); }
     if (el.dataset.k === 'origen') { const td = $(`#ct-body tr[data-id="${r.id}"]:not(.ficha) td.c-deu`); if (td) td.innerHTML = deudaBoton(r); }
+    if (el.dataset.k === 'rut' && e.type === 'change') rutifAuto(r);
     if (el.dataset.k === 'tipo' && e.type === 'change' && /volver a llamar/i.test(el.value) && !(r.agenda && !r.agendaHecho)) agDialogo(r);
   };
   body.addEventListener('input', actualizar);

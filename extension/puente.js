@@ -6,6 +6,7 @@
 document.documentElement.dataset.clarogoExt = '1';
 document.documentElement.dataset.clarogoRutifAbre = '1';   // esta versión abre (o reutiliza) el Rutificador por su cuenta
 document.documentElement.dataset.clarogoRutifOk = '1';     // y confirma cada pedido con 'clarogo-rutif-ok'
+document.documentElement.dataset.clarogoRutifFondo = '1';  // y puede buscar en segundo plano, sin cambiar de pestaña
 window.addEventListener('message', e => {
   if (e.source !== window || !e.data) return;
   if (e.data.tipo === 'clarogo-wa' && /^https:\/\/web\.whatsapp\.com\/send\?/.test(String(e.data.url || ''))) chrome.runtime.sendMessage({ tipo: 'wa', url: e.data.url, img: /^data:image\/(png|jpeg);base64,/.test(String(e.data.img || '')) ? e.data.img : '' });
@@ -13,7 +14,7 @@ window.addEventListener('message', e => {
   // El fondo guarda el pedido junto con esta pestaña, para volver exactamente a ella después del Rutificador
   // Si la extensión recibió el pedido se avisa a la página; si no responde, la página abre el Rutificador por su cuenta
   if (e.data.tipo === 'clarogo-rutif' && /^[0-9kK.\-]{3,12}$/.test(String(e.data.rut || ''))) {
-    try { chrome.runtime.sendMessage({ tipo: 'rutif-pedido', rut: String(e.data.rut), id: String(e.data.id || '').slice(0, 40) }).then(() => window.postMessage({ tipo: 'clarogo-rutif-ok' }, location.origin), () => {}); } catch (err) {}
+    try { chrome.runtime.sendMessage({ tipo: 'rutif-pedido', rut: String(e.data.rut), id: String(e.data.id || '').slice(0, 40), fondo: !!e.data.fondo }).then(() => window.postMessage({ tipo: 'clarogo-rutif-ok' }, location.origin), () => {}); } catch (err) {}
   }
   // Venta con varias líneas: cuántas faltan por subir (el fondo decide si vuelve a ClaroGo! o a Genesys)
   if (e.data.tipo === 'clarogo-venta-lineas') chrome.storage.local.set({ venta_lineas: { quedan: Math.max(0, Math.min(50, +e.data.quedan || 0)), ts: Date.now() } });

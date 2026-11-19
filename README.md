@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 19-11-2026: ClaroGo! v2.12.0 y GoExt 1.39.0, Rutificador automático en segundo plano
+
+- Apenas se pega un RUT válido (columna RUT de la planilla, fila que llega de Genesys o RUT del Script), GoExt busca en el Rutificador **en segundo plano**: abre o reutiliza su pestaña sin activarla y no cambia de ventana.
+- Mientras tanto, la celda del nombre muestra "⏳ Buscando en el Rutificador…" y aparece un aviso. Cuando llega, se llenan nombre y dirección, el nombre se ilumina (si se está en la planilla) y el ejecutivo no se mueve de la sección donde está. Una sola búsqueda automática por RUT; el cliente de prueba no se busca. Si en 30 segundos no responde, avisa y queda el botón RUTIFICADOR.
+- El botón RUTIFICADOR de la fila sigue igual (abre el Rutificador a la vista y vuelve a la planilla).
+
 ### 19-11-2026: ClaroGo! v2.11.5, alternativa .zip a la vista
 
 - En Descargas y en la página de instalación, la alternativa "si el computador no te deja abrir el instalador" queda completa y visible justo debajo del botón del instalador (ya no hay que hacer clic para desplegarla).
