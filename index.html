@@ -106,11 +106,20 @@ body[data-view="inicio"] #nav{visibility:hidden}
   .mute-banner b{font-size:1rem;letter-spacing:.02em}
   .mute-banner .mb-b{margin-left:auto;padding:7px 14px;border-radius:999px;background:#fff;color:#b00020;font-weight:800;font-size:.85rem;white-space:nowrap}
 }
-#v-mute{max-width:860px;margin:0 auto}
+#v-descargas{max-width:880px;margin:0 auto}
+#v-descargas .dl-titulo{font-size:1.7rem}
+.dl-bloque{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:18px;box-shadow:var(--shadow)}
+.dl-h{font-size:1.4rem;font-weight:800;margin:0 0 4px;display:flex;align-items:center;gap:10px}
+.dl-tag{font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;background:var(--red);color:#fff;padding:3px 9px;border-radius:999px}
+.dl-copiar{display:flex;gap:8px;align-items:center;margin:6px 0 2px}
+.dl-copiar code{flex:1;min-width:0;padding:6px 9px;border-radius:8px;background:#f1f3f5;font:600 .85rem Consolas,monospace;overflow-wrap:anywhere}
+.mute-card small code{font:600 .8rem Consolas,monospace}
+.dl-guia{margin:12px 0 0;font-size:.9rem}
+.dl-guia a{color:var(--red);font-weight:700}
 .mute-hero{display:flex;gap:16px;align-items:center;margin-bottom:14px}
 .mute-ico{display:grid;place-items:center;width:64px;height:64px;border-radius:18px;background:var(--red);font-size:2rem;flex:none}
-#v-mute .h{font-size:1.7rem}
-#v-mute .sub{font-size:1rem;margin:0}
+#v-descargas .dl-bloque .sub{font-size:1rem;margin:0}
+
 .mute-dl{display:block;text-align:center;padding:20px;border-radius:16px;background:var(--red);color:#fff;text-decoration:none;font-weight:800;font-size:1.4rem;box-shadow:0 8px 22px rgba(176,0,32,.25)}
 .mute-dl:hover{background:var(--red-dk)}
 .mute-nota{text-align:center;color:var(--muted);font-size:.85rem;margin:8px 0 18px}
@@ -702,7 +711,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
       <p>Portal de ventas 2026 · Elige una sección · <button class="perfil-btn" id="perfil-btn" title="Tu nombre y tu mensaje de WhatsApp"></button></p>
       <p class="truco" id="truco" title="Clic para ver otro truco"></p>
     </div>
-    <a class="mute-banner" href="#mute"><span class="mb-i">🎙️</span><span><b>MuteReal</b> · Comprueba si tu micrófono está realmente silenciado antes de hablar</span><span class="mb-b">Descargar gratis</span></a>
+    <a class="mute-banner" href="#descargas"><span class="mb-i">⬇️</span><span><b>Descargas</b> · GoExt, la extensión con la que ClaroGo! funciona mucho mejor, y MuteReal para tu micrófono</span><span class="mb-b">Ir a Descargas</span></a>
     <div class="tiles" id="tiles"></div>
     <div id="home-links"></div>
   </section>
@@ -931,12 +940,43 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     <div class="tut" id="t-grid"></div>
   </section>
 
-  <!-- MUTEREAL -->
-  <section id="v-mute" class="view" hidden>
+  <!-- DESCARGAS: GoExt y MuteReal -->
+  <section id="v-descargas" class="view" hidden>
+    <h1 class="h dl-titulo">Descargas</h1>
+    <p class="sub">Los programas que acompañan a ClaroGo!. Para PC con Windows, sin permisos de administrador.</p>
+
+    <div class="dl-bloque" id="dl-goext">
+      <div class="mute-hero">
+        <span class="mute-ico">🧩</span>
+        <div>
+          <h2 class="dl-h">GoExt <span class="dl-tag">Recomendado</span></h2>
+          <p class="sub"><b>ClaroGo! funciona mucho mejor con GoExt.</b> Es la extensión para Edge o Chrome que trae los datos de Genesys a tu planilla, revisa la deuda, usa el Rutificador, abre WhatsApp y llena los formularios.</p>
+        </div>
+      </div>
+      <a class="mute-dl" href="ext/instalar-clarogo.bat" download="instalar-clarogo.bat">⬇ Descargar instalador de GoExt</a>
+      <p class="mute-nota">Ábrelo con doble clic. Tarda unos segundos, se cierra solo y deja en tu escritorio el acceso <b>Actualizar GoExt</b>.</p>
+      <div class="mute-grid">
+        <div class="card mute-card"><h2>Instalar (solo la primera vez)</h2><ol>
+          <li>Abre el instalador con doble clic. Si Windows pregunta, elige <b>Más información</b> y luego <b>Ejecutar de todas formas</b>.</li>
+          <li>Escribe en la barra de direcciones y presiona Enter:
+            <div class="dl-copiar"><code>edge://extensions</code><button type="button" class="btn sm" data-copiar-txt="edge://extensions">Copiar</button></div>
+            <small>En Chrome: <code>chrome://extensions</code></small></li>
+          <li>Activa <b>Modo para desarrolladores</b>.</li>
+          <li>Presiona <b>Cargar desempaquetada</b>, pega esta carpeta y elige <b>Seleccionar carpeta</b>:
+            <div class="dl-copiar"><code>Documentos\ClaroGo\extension</code><button type="button" class="btn sm" data-copiar-txt="%USERPROFILE%\Documents\ClaroGo\extension">Copiar</button></div></li>
+        </ol></div>
+        <div class="card mute-card"><h2>Actualizar (siempre así)</h2><ol>
+          <li>Doble clic en <b>Actualizar GoExt</b> de tu escritorio.</li>
+          <li>Haz clic en el ícono rojo de <b>GoExt</b> del navegador y presiona <b>Activar versión nueva</b>.</li>
+        </ol><p class="dl-guia"><a href="ext/" target="_blank" rel="noopener">Ver la guía de instalación completa ↗</a></p></div>
+      </div>
+    </div>
+
+    <div class="dl-bloque" id="dl-mute">
     <div class="mute-hero">
       <span class="mute-ico">🎙️</span>
       <div>
-        <h1 class="h">MuteReal</h1>
+        <h2 class="dl-h">MuteReal</h2>
         <p class="sub">Programa para Windows que muestra en todo momento si tu micrófono está <b>de verdad</b> silenciado. Así evitas que el cliente escuche lo que no debe.</p>
       </div>
     </div>
@@ -953,6 +993,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
         <li>Si Windows avisa "Windows protegió su PC", presiona <b>Más información</b> y luego <b>Ejecutar de todas formas</b>.</li>
         <li>Arrastra el indicador donde te acomode. Con clic derecho ves sus opciones, por ejemplo iniciar con Windows.</li>
       </ol></div>
+    </div>
     </div>
   </section>
 </main>
@@ -1149,7 +1190,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.10.1';
+const APP_VERSION = '2.11.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -1227,6 +1268,7 @@ const GALERIA = [['01','HONOR 400 SMART 5G 256GB'],['02','HONOR MAGIC 8 LITE 5G 
 const TUTORIALES = [
  {title:'Permitir cámara en Android',desc:'Habilita el permiso de cámara en Chrome paso a paso, con guía visual interactiva. Necesario para escanear QR, videollamadas y validaciones biométricas.',cat:'Permisos',dur:'2 min',emoji:'📷',color:'#d4f7e8',file:'tutoriales/Permisos.html',phone:true},
  {title:'Borrar cookies en Chrome y Edge',desc:'Elimina cookies y datos de sitios en Chrome y Edge desde tu PC. Soluciona problemas de sesión, carga lenta y errores en plataformas. Tutorial interactivo con ambos navegadores.',cat:'Navegador',dur:'3 min',emoji:'🧹',color:'#e8f0fd',file:'tutoriales/Cookies.html'},
+ {title:'Instalar y actualizar GoExt',desc:'La extensión con la que ClaroGo! funciona mucho mejor. Descarga el instalador, cárgala en Edge o Chrome y actualízala con un doble clic. Sin permisos de administrador.',cat:'Plataforma',dur:'2 min',emoji:'🧩',color:'#fde8ea',file:'ext/'},
  {title:'Enviar WhatsApp sin guardar el número',desc:'Escribe a cualquier cliente por WhatsApp Web desde tu PC sin necesidad de agregar su número a los contactos. Método rápido con enlace wa.me.',cat:'Plataforma',dur:'3 min',emoji:'💬',color:'#dcf8e0',file:'tutoriales/WhatsAppSinContacto.html'}
 ];
 const MENU = [
@@ -1242,7 +1284,7 @@ const MENU = [
  {v:'faq',t:'Preguntas y Respuestas',badge:'Nuevo',i:'<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>'},
  {m:'dlg-exc',t:'Excepciones de Boletas',i:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/>'},
  {v:'tutoriales',t:'Tutoriales',badge:'Nuevo',i:'<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>'},
- {v:'mute',t:'MuteReal',badge:'Importante',i:'<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0014 0v-1"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/>'},
+ {v:'descargas',t:'Descargas',badge:'Importante',i:'<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>'},
  {m:'dlg-audios',t:'Audios',badge:'Próximamente',soon:true,i:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'}
 ];
 // Árbol de sugerencias que se envían por WhatsApp
@@ -1325,13 +1367,14 @@ const abrir = id => { const d = $('#' + id); if (!d.open) d.showModal(); };
 /* ════════════════════════════════════════════════════════════════
    NAVEGACIÓN
    ════════════════════════════════════════════════════════════════ */
-const VIEWS = ['inicio', 'stock', 'oferta', 'png', 'script', 'control', 'horario', 'venta', 'enlaces', 'galeria', 'faq', 'tutoriales', 'mute'];
+const VIEWS = ['inicio', 'stock', 'oferta', 'png', 'script', 'control', 'horario', 'venta', 'enlaces', 'galeria', 'faq', 'tutoriales', 'descargas'];
 const INIT = { horario: initHorario, control: initControl, faq: initFaq, stock: initStock, oferta: initOferta, png: initPng, script: initScript, venta: initVenta, enlaces: initEnlaces, galeria: initGaleria, tutoriales: initTutoriales };
 const listo = {};
 function route() {
   let v = location.hash.slice(1) || 'inicio', admin = false;
   // Entrada directa del administrador: .../clarogo/#admin (para guardar en favoritos)
   if (v === 'admin') { admin = true; v = 'stock'; history.replaceState(null, '', '#stock'); }
+  if (v === 'mute') { v = 'descargas'; history.replaceState(null, '', '#descargas'); }   // enlace antiguo de MuteReal
   if (!VIEWS.includes(v)) v = 'inicio';
   $$('.view').forEach(s => s.hidden = s.id !== 'v-' + v);
   document.body.dataset.view = v;
@@ -1350,7 +1393,7 @@ function initMenu() {
   medirMenu();
   $('#tiles').innerHTML = MENU.map(m => {
     const inner = `<span class="tile-i"><svg viewBox="0 0 24 24">${m.i}</svg></span><span class="tile-t">${m.t}</span>${m.badge ? `<span class="tile-b">${m.badge}</span>` : ''}`;
-    return m.v ? `<a class="tile${m.v === 'enlaces' ? ' tile-enl' : m.v === 'mute' ? ' tile-mute' : ''}" href="#${m.v}">${inner}</a>` : `<a class="tile${m.soon ? ' soon' : ''}" href="#" data-modal="${m.m}">${inner}</a>`;
+    return m.v ? `<a class="tile${m.v === 'enlaces' ? ' tile-enl' : m.v === 'descargas' ? ' tile-mute' : ''}" href="#${m.v}">${inner}</a>` : `<a class="tile${m.soon ? ' soon' : ''}" href="#" data-modal="${m.m}">${inner}</a>`;
   }).join('');
   $('#home-links').innerHTML = enlacesHTML();
   $('#nav').innerHTML = '<a href="#inicio" data-v="inicio">Inicio</a>' + MENU.filter(m => !m.soon && m.v !== 'enlaces').map(m => m.v ? `<a href="#${m.v}" data-v="${m.v}">${m.t}</a>` : `<button data-modal="${m.m}">${m.t}</button>`).join('');
@@ -3887,6 +3930,8 @@ async function limpiarCache() {
 /* ════════════════════════════════════════════════════════════════
    INICIO
    ════════════════════════════════════════════════════════════════ */
+// Descargas: botones que copian una dirección o una carpeta
+document.addEventListener('click', e => { const b = e.target.closest('[data-copiar-txt]'); if (!b) return; try { navigator.clipboard.writeText(b.dataset.copiarTxt).then(() => { const t = b.textContent; b.textContent = 'Copiado'; setTimeout(() => { b.textContent = t; }, 1600); }, () => toast('No se pudo copiar')); } catch (x) {} });
 $$('[data-app-ver]').forEach(e => { e.textContent = 'v' + APP_VERSION; }); initMenu(); initLineas(); initExcepciones(); initSugerencias(); iniciarRespaldo(); initWhatsApp(); initAgenda(); initPerfil(); initDeshacer(); initSonido(); mostrarTruco(); $('#truco').onclick = mostrarTruco; window.addEventListener('hashchange', () => { if ((location.hash || '#inicio') === '#inicio') mostrarTruco(); });
 try { if (sessionStorage.getItem('clarogo_limpio')) { sessionStorage.removeItem('clarogo_limpio'); setTimeout(() => toast('Caché limpiada. Tu planilla está a salvo.'), 400); } } catch (e) {}
 $('#cache-btn').onclick = limpiarCache;

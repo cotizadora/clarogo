@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 19-11-2026: ClaroGo! v2.11.0, sección Descargas
+
+- La sección de MuteReal pasa a ser **Descargas** (#descargas; el enlace antiguo #mute lleva ahí). Tiene dos bloques: **GoExt** (destacado: "ClaroGo! funciona mucho mejor con GoExt", botón del instalador, pasos para instalar con botones de copiar y cómo actualizar, enlace a la guía completa) y **MuteReal**.
+- La franja roja del inicio y el menú llevan a Descargas.
+- Tutoriales: tarjeta nueva "Instalar y actualizar GoExt" que abre la guía de instalación (ext/).
+
 ### 19-11-2026: ClaroGo! v2.10.1 y extensión 1.34.0, la extensión se llama GoExt
 
 - Nombres: **ClaroGo!** es la página y **GoExt** es la extensión (antes "ClaroGo! Genesys"). Cambiado en el manifiesto, la ventanita, el Historial, los avisos de deuda, Rutificador y formularios, la página de instalación, la guía antigua, la página de privacidad y los textos de ClaroGo!.
