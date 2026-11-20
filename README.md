@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 20-11-2026: ClaroGo! v2.15.1, volver a la planilla desde el Script
+
+- El aviso de arriba del Script trae siempre el botón rojo "← Volver a Mi Planilla". Sin cliente vinculado lleva a la planilla; con cliente vinculado abre su ficha (antes solo existía "Ver en la planilla" con cliente vinculado).
+
 ### 20-11-2026: ClaroGo! v2.15.0, comentarios con fecha y Script con módulos
 
 - **Comentarios con fecha y hora:** todo comentario nuevo lleva antes una línea "📅 DD-MM-AAAA HH:MM" con el momento en que se escribió: columna Notas (editor ampliado), Observaciones de la ficha, botones de observación rápida, "Oferta enviada por WhatsApp" y el comentario que llega desde GoExt. Si se corrige algo en medio de un comentario, se respeta tal cual.

@@ -1261,7 +1261,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.15.0';
+const APP_VERSION = '2.15.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2195,8 +2195,9 @@ function scPintaVinculo() {
   const el = $('#sc-vinc'); if (!el) return;
   const r = CT.find(x => x.id === SC_FILA && !x.borrado);
   el.className = 'note ' + (r ? 'green' : 'blue');
-  el.innerHTML = r ? `📋 Vinculado con <b>${esc(r.nombre || r.rut || 'cliente sin nombre')}</b> de Mi Planilla. Todo lo que completes aquí queda guardado en su fila. <button type="button" class="btn sm" data-sc="planilla">Ver en la planilla</button> <button type="button" class="btn sm" data-sc="desv">Desvincular</button>`
-    : '📋 Al escribir el RUT o el nombre, el cliente queda guardado solo en Mi Planilla, sea venta o no. También puedes abrirlo desde la planilla con el botón ▶.';
+  // El botón para volver a Mi Planilla está siempre: con cliente vinculado abre su ficha; sin cliente, la planilla
+  el.innerHTML = r ? `📋 Vinculado con <b>${esc(r.nombre || r.rut || 'cliente sin nombre')}</b> de Mi Planilla. Todo lo que completes aquí queda guardado en su fila. <button type="button" class="btn sm red" data-sc="planilla">← Volver a Mi Planilla</button> <button type="button" class="btn sm" data-sc="desv">Desvincular</button>`
+    : '📋 Al escribir el RUT o el nombre, el cliente queda guardado solo en Mi Planilla, sea venta o no. También puedes abrirlo desde la planilla con el botón ▶. <button type="button" class="btn sm red" data-sc="planilla">← Volver a Mi Planilla</button>';
 }
 let scCargando = false;
 function scCargar(r) {
