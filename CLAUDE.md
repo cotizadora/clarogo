@@ -2,6 +2,8 @@
 
 Este archivo es el punto de partida del proyecto. Léelo completo antes de hacer cualquier cambio.
 
+> **Computador nuevo o sesión nueva:** lee primero `MIGRACION.md` (en esta misma carpeta). Explica cómo instalar todo, cómo conectarse a GitHub, cómo se actualizan la página y la extensión GoExt, los accesos directos y las reglas aprendidas. Antes de confiar en ella, revisa con `git log` (fecha y hora) si hubo cambios posteriores y contrasta con el código.
+
 ## 1. Qué es el proyecto
 
 ClaroGo! es un portal de ventas de equipos Claro con portabilidad (traer el número a Claro y llevarse un equipo nuevo). Lo construyó Eduardo Pérez antes de tener Claude. Hoy está publicado en:

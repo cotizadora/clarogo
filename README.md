@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 20-11-2026: guía de migración a un computador nuevo
+
+- `MIGRACION.md`: cómo respaldar, instalar Git, conectarse a GitHub (código de dispositivo), poner al día el repo, instalar y actualizar GoExt, recuperar Mi Planilla, recrear accesos del escritorio, publicar cambios, reglas aprendidas, pendientes e historial con fechas. `CLAUDE.md` avisa leerla primero.
+- `herramientas/` suma `armar-zip.ps1`, `login-github.ps1` (sin rutas fijas del PC), `servidor-prueba.ps1`, `leer-formulario.ps1` e `imagen-goext.ps1`, que antes estaban solo en carpetas temporales.
+
 ### 19-11-2026: ClaroGo! v2.13.1, números a portar solo en Venta
 
 - Pedido de Eduardo: los números a portar no pueden estar en dos módulos. Ahora "📱 Números a portar" va solo dentro del módulo verde Venta (línea 1 con su plan y precio, adicionales con su plan de adicional). Cliente queda solo con el teléfono de contacto. Ya no hay rectángulo aparte.
