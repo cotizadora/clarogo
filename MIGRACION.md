@@ -6,7 +6,7 @@ Estado al escribir esta guía:
 
 | Pieza | Versión | Dónde |
 |---|---|---|
-| Página **ClaroGo!** | **v2.13.1** (`APP_VERSION` en `index.html`) | https://cotizadora.github.io/clarogo/ |
+| Página **ClaroGo!** | **v2.15.0** (`APP_VERSION` en `index.html`; actualizado 20-11-2026 10:55) | https://cotizadora.github.io/clarogo/ |
 | Extensión **GoExt** | **1.44.0** (`extension/manifest.json`) | https://cotizadora.github.io/clarogo/ext/ |
 | Último commit | `2cd4322` 20-11-2026 10:15 "Stock del 20-11-2026 (desde el escritorio)" | https://github.com/cotizadora/clarogo |
 
