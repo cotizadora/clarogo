@@ -651,7 +651,16 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 @media (min-width:900px){.fi-g{grid-template-columns:repeat(auto-fill,minmax(165px,1fr))}}
 .fi-g label{display:block;font-size:.72rem;font-weight:700;color:inherit;opacity:.85;margin:0 0 3px}
 #ct-tabla .fi-g input,#ct-tabla .fi-g select{height:34px;border:1px solid #d5dae2;border-radius:10px;background:#fff;padding:0 10px;width:100%;color:var(--text)}
-#ct-tabla .fi-g input:focus,#ct-tabla .fi-g select:focus{outline:2px solid currentColor;outline-offset:-1px}
+#sc-form .fi-g input,#sc-form .fi-g select{height:34px;border:1px solid #d5dae2;border-radius:10px;background:#fff;padding:0 10px;width:100%;color:var(--text)}
+#sc-form .fi-mods{margin-top:10px}
+#sc-form .fi-mod label{text-transform:none;letter-spacing:0}
+#sc-form .req{color:#d90429;font-weight:900}
+.sc-req-nota{margin:2px 0 8px;font-size:.8rem;color:var(--muted)}
+.sc-req-linea{margin:-4px 0 8px 34px;font-size:.72rem;font-weight:700;opacity:.85}
+.sc-agente{max-width:320px}
+.sc-agente label{font-size:.72rem;font-weight:700;color:var(--muted);margin:0 0 3px}
+.sc-opc{font-size:.68rem;font-weight:600;text-transform:none;letter-spacing:0;opacity:.75}
+#sc-form .fi-g input:focus,#sc-form .fi-g select:focus,#ct-tabla .fi-g input:focus,#ct-tabla .fi-g select:focus{outline:2px solid currentColor;outline-offset:-1px}
 #ct-tabla .fi-obs textarea{width:100%;min-height:72px;color:var(--text);border:1px solid #d5dae2;border-radius:10px;background:#fff;padding:6px 8px;font:inherit;font-size:.82rem;resize:vertical}
 .fi-chips{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 6px}
 .fi-chips button{border:1px solid #c9daf8;background:#fff;color:#1a56b8;border-radius:999px;font-size:.72rem;padding:3px 9px;cursor:pointer}
@@ -849,39 +858,42 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     <div class="note blue" id="sc-vinc" style="margin-bottom:12px"></div>
     <form id="sc-form" class="card sc" autocomplete="off">
       <h2><i>✎</i> Datos de la venta</h2>
-      <div class="lbl">Cliente</div>
-      <div class="form2">
-        <div><label for="sc-nombre">Nombre completo</label><input type="text" id="sc-nombre" placeholder="Nombre y apellidos"></div>
-        <div><label for="sc-rut">RUT <span id="sc-rut-ok"></span></label><input type="text" id="sc-rut" placeholder="12.345.678-9"></div>
-        <div><label for="sc-nac">Fecha de nacimiento</label><input type="text" id="sc-nac" placeholder="DD-MM-AAAA"></div>
-        <div><label for="sc-mail">Correo electrónico</label><input type="email" id="sc-mail" placeholder="correo@ejemplo.com"></div>
-        <div><label for="sc-fono">Número a portar</label><input type="text" id="sc-fono" placeholder="9XXXXXXXX (solo si aplica)"></div>
-        <div><label for="sc-contacto">Teléfono de contacto</label><input type="text" id="sc-contacto" placeholder="9XXXXXXXX"></div>
-      </div>
-      <div class="lbl" style="margin-top:14px">Venta</div>
-      <div class="form2">
-        <div><label for="sc-medio">Enlace de validación enviado por</label><select id="sc-medio"><option value="">Elegir medio</option><option>correo electrónico</option><option>WhatsApp</option><option>SMS</option></select></div>
-        <div><label for="sc-tipo">Tipo de venta</label><select id="sc-tipo"><option value="port">PortIn Post-Post</option><option value="portpre">PortIn Pre-Post</option><option value="migra">Migración</option><option value="ln">Línea nueva</option></select></div>
-        <div><label for="sc-plan">Plan</label><select id="sc-plan"></select></div>
-        <div style="grid-column:1/-1"><label>Líneas adicionales (la línea 1 es el número a portar)</label><input type="hidden" id="sc-adic"><div class="ln-ui" id="sc-adic-ui"></div></div>
-      </div>
-      <div class="lbl" style="margin-top:14px">Equipo (solo si aplica)</div>
-      <div class="form2">
-        <div><label for="sc-eq">Equipo</label><input type="text" id="sc-eq" placeholder="Ej: Samsung A17 5G 128GB"></div>
-        <div><label for="sc-eqtotal">Monto total</label><input type="text" id="sc-eqtotal" inputmode="numeric" placeholder="$0"></div>
-        <div><label for="sc-eqpie">Pago inicial</label><input type="text" id="sc-eqpie" inputmode="numeric" placeholder="$0"></div>
-        <div><label for="sc-eqforma">Forma de pago</label><input type="text" id="sc-eqforma" placeholder="Ej: 18 cuotas de $22.000 en la boleta"></div>
-      </div>
-      <div class="lbl" style="margin-top:14px">Despacho</div>
-      <div class="form2">
-        <div><label for="sc-calle">Calle o pasaje</label><input type="text" id="sc-calle" placeholder="Nombre de la calle"></div>
-        <div><label for="sc-num">Número</label><input type="text" id="sc-num" placeholder="Número"></div>
-        <div><label for="sc-int">N° interior (solo si aplica)</label><input type="text" id="sc-int" placeholder="Depto, block, casa"></div>
-        <div><label for="sc-comuna">Comuna</label><input type="text" id="sc-comuna" placeholder="Comuna"></div>
-        <div><label for="sc-region">Región</label><input type="text" id="sc-region" list="sc-regiones" placeholder="Región"></div>
-        <div><label for="sc-ref">Referencia o entrecalles</label><input type="text" id="sc-ref" placeholder="Referencia"></div>
-        <div><label for="sc-eta">Tiempo estimado de despacho</label><input type="text" id="sc-eta" list="sc-etas" placeholder="Según el Front de ventas"></div>
-        <div><label for="sc-agente">Tu nombre (ejecutivo)</label><input type="text" id="sc-agente" placeholder="Tu nombre"></div>
+      <p class="sc-req-nota"><b class="req">*</b> Dato crítico: anótalo antes de seguir con el guion. Igual puedes avanzar sin él.</p>
+      <div class="sc-agente"><label for="sc-agente">Tu nombre (ejecutivo) <b class="req">*</b></label><input type="text" id="sc-agente" placeholder="Tu nombre"></div>
+      <!-- Mismos módulos, orden y colores que la ficha de Mi Planilla -->
+      <div class="fi-mods sc-mods">
+        <section class="fi-mod fi-m-cliente"><div class="fi-t"><span data-ico="cliente"></span><span>Cliente</span></div><div class="fi-g">
+          <div style="grid-column:1/-1"><label for="sc-nombre">Nombre completo <b class="req">*</b></label><input type="text" id="sc-nombre" placeholder="Nombre y apellidos"></div>
+          <div><label for="sc-rut">RUT <b class="req">*</b> <span id="sc-rut-ok"></span></label><input type="text" id="sc-rut" placeholder="12.345.678-9"></div>
+          <div><label for="sc-nac">Fecha de nacimiento <b class="req">*</b></label><input type="text" id="sc-nac" placeholder="DD-MM-AAAA"></div>
+          <div><label for="sc-mail">Correo electrónico <b class="req">*</b></label><input type="email" id="sc-mail" placeholder="correo@ejemplo.com"></div>
+          <div><label for="sc-contacto">Teléfono de contacto <b class="req">*</b></label><input type="text" id="sc-contacto" placeholder="9XXXXXXXX"></div>
+        </div></section>
+        <section class="fi-mod fi-m-venta"><div class="fi-t"><span data-ico="venta"></span><span>Venta</span></div><div class="fi-g">
+          <div><label for="sc-medio">Validación enviada por <b class="req">*</b></label><select id="sc-medio"><option value="">Elegir medio</option><option>correo electrónico</option><option>WhatsApp</option><option>SMS</option></select></div>
+          <div><label for="sc-tipo">Tipo de venta <b class="req">*</b></label><select id="sc-tipo"><option value="port">PortIn Post-Post</option><option value="portpre">PortIn Pre-Post</option><option value="migra">Migración</option><option value="ln">Línea nueva</option></select></div>
+        </div>
+          <div class="fi-lineas"><div class="fl-t"><span>📱 Números a portar</span></div>
+            <div class="fl-fila"><span class="fl-n">1</span><input type="text" id="sc-fono" placeholder="9XXXXXXXX" inputmode="numeric" aria-label="Número a portar, línea principal (crítico)"><select id="sc-plan" aria-label="Plan de la línea principal (crítico)"></select><span class="fl-precio" id="sc-fl-precio"></span></div>
+            <p class="sc-req-linea">Número a portar y plan de la línea 1 <b class="req">*</b></p>
+            <input type="hidden" id="sc-adic"><div class="ln-ui ln-filas" id="sc-adic-ui"></div>
+          </div>
+        </section>
+        <section class="fi-mod fi-m-equipo"><div class="fi-t"><span data-ico="equipo"></span><span>Equipo</span><small class="sc-opc">solo si aplica</small></div><div class="fi-g">
+          <div style="grid-column:1/-1"><label for="sc-eq">Equipo</label><input type="text" id="sc-eq" placeholder="Ej: Samsung A17 5G 128GB"></div>
+          <div><label for="sc-eqtotal">Monto total</label><input type="text" id="sc-eqtotal" inputmode="numeric" placeholder="$0"></div>
+          <div><label for="sc-eqpie">Pago inicial</label><input type="text" id="sc-eqpie" inputmode="numeric" placeholder="$0"></div>
+          <div style="grid-column:1/-1"><label for="sc-eqforma">Forma de pago</label><input type="text" id="sc-eqforma" placeholder="Ej: 18 cuotas de $22.000 en la boleta"></div>
+        </div></section>
+        <section class="fi-mod fi-m-despacho"><div class="fi-t"><span data-ico="despacho"></span><span>Despacho</span></div><div class="fi-g">
+          <div><label for="sc-calle">Calle o pasaje <b class="req">*</b></label><input type="text" id="sc-calle" placeholder="Nombre de la calle"></div>
+          <div><label for="sc-num">Número <b class="req">*</b></label><input type="text" id="sc-num" placeholder="Número"></div>
+          <div><label for="sc-int">N° interior</label><input type="text" id="sc-int" placeholder="Depto, block, casa"></div>
+          <div><label for="sc-comuna">Comuna <b class="req">*</b></label><input type="text" id="sc-comuna" placeholder="Comuna"></div>
+          <div><label for="sc-region">Región <b class="req">*</b></label><input type="text" id="sc-region" list="sc-regiones" placeholder="Región"></div>
+          <div><label for="sc-ref">Referencia o entrecalles</label><input type="text" id="sc-ref" placeholder="Referencia"></div>
+          <div><label for="sc-eta">Tiempo de despacho <b class="req">*</b></label><input type="text" id="sc-eta" list="sc-etas" placeholder="Según el Front de ventas"></div>
+        </div></section>
       </div>
       <datalist id="sc-etas"><option value="hasta 3 días hábiles"><option value="despacho express"></datalist>
       <datalist id="sc-regiones"><option value="de Arica y Parinacota"><option value="de Tarapacá"><option value="de Antofagasta"><option value="de Atacama"><option value="de Coquimbo"><option value="de Valparaíso"><option value="Metropolitana"><option value="del Libertador General Bernardo O'Higgins"><option value="del Maule"><option value="de Ñuble"><option value="del Biobío"><option value="de La Araucanía"><option value="de Los Ríos"><option value="de Los Lagos"><option value="de Aysén"><option value="de Magallanes"></datalist>
@@ -1249,7 +1261,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.14.0';
+const APP_VERSION = '2.15.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2196,6 +2208,7 @@ function scCargar(r) {
   if (!r.fono && r.telefono) $('#sc-fono').value = r.telefono;
   const p = PLANES_VIGENTES.find(x => x.title === r.plan); if (p) $('#sc-plan').value = p.id;
   $('#sc-rut').dispatchEvent(new Event('input', { bubbles: true }));
+  { const pr = $('#sc-fl-precio'), pp = PLANES_VIGENTES.find(x => x.id === $('#sc-plan').value); if (pr) pr.textContent = pp ? ofertaLinea({ plan: pp.title }, 0) : ''; }
   if ($('#sc-adic')._lnPinta) $('#sc-adic')._lnPinta();
   scCargando = false;
 }
@@ -2230,7 +2243,13 @@ function scGuardarEnFila(e) {
   r.upd = Date.now(); scFirma = r.id + ':' + r.upd; ctGuardar(); ctRepintar();
 }
 function initScript() {
-  lineasUI($('#sc-adic-ui'), $('#sc-adic'));
+  // Módulos del Script iguales a la ficha: íconos, precio de la línea 1 y plan de adicional al lado de cada línea
+  $$('#sc-form [data-ico]').forEach(el => { el.outerHTML = ICO[el.dataset.ico] || ''; });
+  const scPlanTitulo = () => { const p = PLANES_VIGENTES.find(x => x.id === $('#sc-plan').value); return p ? p.title : ''; };
+  lineasUI($('#sc-adic-ui'), $('#sc-adic'), i => ofertaLinea({ plan: scPlanTitulo() }, i + 1) || 'Línea adicional');
+  const scPrecio = () => { $('#sc-fl-precio').textContent = ofertaLinea({ plan: scPlanTitulo() }, 0) || ''; if ($('#sc-adic')._lnPinta) $('#sc-adic')._lnPinta(); };
+  $('#sc-form').addEventListener('change', e => { if (e.target.id === 'sc-plan') scPrecio(); });
+  setTimeout(scPrecio, 0);
   const $v = id => $('#sc-' + id).value.trim(), rut = $('#sc-rut');
   const F = (val, ph) => val ? `<b class="fill">${esc(val)}</b>` : `<b class="fill empty">[${esc(ph)}]</b>`;
   const plata = s => { const n = String(s).replace(/[^\d]/g, ''); return n ? clp(+n) : ''; };
@@ -2778,7 +2797,7 @@ function respSync(motivo) {
       await w.write(JSON.stringify({ app: 'ClaroGo!', version: 1, guardado: new Date().toISOString(), registros: CT }));
       await w.close();
       RESP.estado = 'ok'; RESP.ultimo = Date.now(); RESP.error = '';
-      if (cambio) ctRepintar();
+      if (cambio) { notasRetroTodas(); ctRepintar(); }
       respPinta();
       return true;
     } catch (e) {
@@ -2916,6 +2935,32 @@ const FICHA = [
   ['Equipo', [['eq', 'Equipo', 'Ej: Samsung A17 5G 128GB'], ['eqsku', 'SKU', 'Ej: 70016839'], ['eqtotal', 'Monto total', '$0'], ['eqpie', 'Pago inicial', '$0'], ['eqforma', 'Forma de pago', 'Ej: 18 cuotas de $22.000']]],
   ['Despacho', [['direccion', 'Dirección', 'Ej: Las Zinnias 5790 Huechuraba, Región Metropolitana'], ['ref', 'Referencia o entrecalles', ''], ['eta', 'Tiempo de despacho', '']]]
 ];
+/* ── Comentarios con fecha y hora ──────────────────────────────────
+   Todo comentario nuevo lleva antes una línea "📅 DD-MM-AAAA HH:MM" con el momento en que se escribió.
+   Los comentarios antiguos sin fecha reciben la fecha y hora del registro del cliente (y la hora de cada
+   "Oferta enviada por WhatsApp ... a las HH:MM" si la tenía). */
+const NOTA_SELLO_RE = /^📅 \d{2}-\d{2}-\d{4} \d{2}:\d{2}$/m;
+const selloNota = (d = new Date()) => { const p = n => String(n).padStart(2, '0'); return `📅 ${p(d.getDate())}-${p(d.getMonth() + 1)}-${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`; };
+const selloDe = (fecha, hora) => { const [a, m, dd] = String(fecha || hoyISO()).split('-'); return `📅 ${dd}-${m}-${a} ${/^\d{1,2}:\d{2}$/.test(hora || '') ? String(hora).padStart(5, '0') : '00:00'}`; };
+// Texto anterior → texto nuevo: si se agregó algo al final (o es el primer comentario), se le pone su línea de fecha y hora
+function notaSellar(antes, ahora) {
+  const a = String(antes || '').replace(/\s+$/, ''), n = String(ahora || '');
+  if (!n.trim() || n.replace(/\s+$/, '') === a) return n.replace(/\s+$/, '');
+  if (!a) return NOTA_SELLO_RE.test(n.trim().split('\n')[0]) ? n.trim() : selloNota() + '\n' + n.trim();
+  if (n.startsWith(a)) { const extra = n.slice(a.length).replace(/^\s+/, ''); return extra && !NOTA_SELLO_RE.test(extra.split('\n')[0]) ? a + '\n' + selloNota() + '\n' + extra.trim() : n.replace(/\s+$/, ''); }
+  return n.replace(/\s+$/, '');   // se corrigió algo en medio: se respeta tal cual
+}
+// Agrega un comentario completo (botones de observación rápida, WhatsApp, GoExt)
+const notaAgregar = (r, texto) => { r.notas = (String(r.notas || '').trim() ? String(r.notas).replace(/\s+$/, '') + '\n' : '') + selloNota() + '\n' + String(texto).trim(); };
+// Retroactivo: comentarios guardados sin fecha
+function notaRetro(r) {
+  const t = String(r.notas || '').trim();
+  if (!t || NOTA_SELLO_RE.test(t)) return false;
+  const partes = t.split(/[.\s]*(?=Oferta enviada por WhatsApp)/).map(s => s.trim().replace(/\.$/, '')).filter(Boolean);
+  r.notas = partes.map(s => { const h = (s.match(/^Oferta enviada por WhatsApp.*? a las (\d{1,2}:\d{2})$/) || [])[1]; return selloDe(r.fecha, h || r.hora) + '\n' + (h ? s.replace(/ a las \d{1,2}:\d{2}$/, '') : s); }).join('\n');
+  return true;
+}
+function notasRetroTodas() { let n = 0; CT.forEach(r => { if (!r.borrado && notaRetro(r)) { r.upd = Date.now(); n++; } }); if (n) ctGuardar(); return n; }
 const OBS_RAPIDAS = ['Interesado, llamar más tarde', 'Pide la oferta por WhatsApp', 'Evaluación pendiente', 'Tiene deuda', 'Quiere equipo', 'Comparando con otra compañía', 'No contesta, reintentar'];
 let ctAbierto = '';
 /* ── ¿Tiene deuda? ──────────────────────────────────────────────────
@@ -3295,7 +3340,7 @@ function initWhatsApp() {
       if (!r.telefono && waNumero($('#wa-tel').value)) r.telefono = $('#wa-tel').value.trim();
       if (p) r.plan = p.title;
       const hora = new Date().toTimeString().slice(0, 5);
-      r.notas = (r.notas ? r.notas.trim().replace(/[.\s]*$/, '. ') : '') + `Oferta enviada por WhatsApp${p ? ' (' + p.title + ')' : ''} a las ${hora}`;
+      notaAgregar(r, `Oferta enviada por WhatsApp${p ? ' (' + p.title + ')' : ''}`);
       r.upd = Date.now(); ctGuardar(); ctRepintar();
     }
     $('#dlg-wa').close();
@@ -3451,7 +3496,7 @@ window.clarogoDesdeGenesys = (txt, extra = {}) => {
   const d = leerGenesys(txt || '');
   if (location.hash !== '#control') location.hash = 'control';
   if (extra && extra.plan && PLANES_WA().some(p => p.title === extra.plan)) d.plan = extra.plan;
-  if (extra && String(extra.notas || '').trim()) d.notas = String(extra.notas).trim().slice(0, 2000);
+  if (extra && String(extra.notas || '').trim()) d.notas = selloNota() + '\n' + String(extra.notas).trim().slice(0, 2000);
   if (extra && String(extra.historial || '').trim()) d.histTip = 'Tipificado antes: ' + String(extra.historial).trim().slice(0, 400);
   if (extra && /^[0-9.]{7,10}-?[0-9kK]$/.test(String(extra.rut || '').trim())) { const c = String(extra.rut).replace(/[^0-9kK]/g, '').toUpperCase(); d.rut = c.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '-' + c.slice(-1); }
   setTimeout(() => { ctAgregar(d); if (!d.telefono) toast('Llegaron los datos de Genesys, pero sin teléfono.'); }, 120);
@@ -3620,7 +3665,8 @@ function initNotaZoom() {
   ayuda.id = 'nota-zoom-ayuda'; ayuda.textContent = 'Notas · Enter o Esc para cerrar · Shift+Enter: otra línea';
   document.body.append(z, ayuda);
   let fila = '';
-  const cerrar = () => { if (!fila) return; z.classList.remove('on'); ayuda.classList.remove('on'); const id = fila; fila = ''; const inp = $(`#ct-body tr[data-id="${id}"]:not(.ficha) [data-k="notas"]`); if (inp) { const r = CT.find(x => x.id === id); inp.value = r ? r.notas || '' : inp.value; inp.title = inp.value; } };
+  // Al cerrar el editor, lo agregado lleva su línea de fecha y hora
+  const cerrar = () => { if (!fila) return; { const rr = CT.find(x => x.id === fila); if (rr) { const s = notaSellar(z.dataset.antes, rr.notas); if (s !== rr.notas) { rr.notas = s; rr.upd = Date.now(); ctGuardar(); } } } z.classList.remove('on'); ayuda.classList.remove('on'); const id = fila; fila = ''; const inp = $(`#ct-body tr[data-id="${id}"]:not(.ficha) [data-k="notas"]`); if (inp) { const r = CT.find(x => x.id === id); inp.value = r ? r.notas || '' : inp.value; inp.title = inp.value; } };
   $('#ct-body').addEventListener('focusin', e => {
     const el = e.target; if (!el.matches('tr:not(.ficha) [data-k="notas"]')) return;
     const r = CT.find(x => x.id === el.closest('tr').dataset.id); if (!r) return;
@@ -3629,7 +3675,7 @@ function initNotaZoom() {
     const izq = Math.max(12, Math.min(c.left, innerWidth - w - 12)), arriba = Math.min(c.top, innerHeight - 200);
     Object.assign(z.style, { left: izq + 'px', top: arriba + 'px', width: w + 'px' });
     Object.assign(ayuda.style, { left: izq + 'px', top: (arriba - 18) + 'px' });
-    z.value = r.notas || ''; z.classList.add('on'); ayuda.classList.add('on');
+    z.value = r.notas ? r.notas.replace(/\s+$/, '') + '\n' : ''; z.dataset.antes = r.notas || ''; z.classList.add('on'); ayuda.classList.add('on');
     z.focus(); z.setSelectionRange(z.value.length, z.value.length);
   });
   z.addEventListener('input', () => { const r = CT.find(x => x.id === fila); if (!r) return; r.notas = z.value; r.upd = Date.now(); ctGuardar(); });
@@ -3722,7 +3768,7 @@ function ctImportarTexto(txt) {
     if (!r) { CT.push(limpio); nuevos++; }
     else if ((limpio.upd || 0) > (r.upd || 0)) { Object.assign(r, limpio); actualizados++; }
   });
-  ctGuardar(); ctPinta();
+  notasRetroTodas(); ctGuardar(); ctPinta();
   toast(`Importación lista: ${nuevos} clientes nuevos y ${actualizados} actualizados.`);
 }
 function ctExcel() {
@@ -3769,7 +3815,7 @@ function initControl() {
     const nums = []; while (nums.length < 6) { const x = '9' + String(Math.floor(Math.random() * 1e8)).padStart(8, '0'); if (!nums.includes(x)) nums.push(x); }
     const r = ctAgregar({ rut: '11.111.111-1', nombre: 'PRUEBA NO ENVIAR', telefono: nums[0], fono: nums[0], contacto: nums[0], adic: nums.slice(1).join(', '),
       plan: 'Plan 500', tventa: 'port', sineq: true, origen: 'Entel', mail: 'prueba@ejemplo.cl', direccion: 'Calle Prueba 123, Santiago, Región Metropolitana',
-      notas: 'Cliente de prueba con 6 líneas: no enviar el formulario' });
+      notas: selloNota() + '\nCliente de prueba con 6 líneas: no enviar el formulario' });
     if (!r) return;
     ctAbierto = r.id; ctNuevo = r.id; ctGuardar(); ctPinta();
     setTimeout(() => { const t = $(`#ct-body tr.ficha[data-id="${r.id}"]`); if (t) t.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 100);
@@ -3778,6 +3824,15 @@ function initControl() {
   $('#ct-imp-file').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (!f) return; if (f.size > 20e6) return toast('El archivo es demasiado grande.'); f.text().then(ctImportarTexto).catch(() => toast('No pude leer el archivo.')); });
   $('#ct-body').addEventListener('click', e => { const x = e.target.closest('[data-exportar]'); if (!x) return; const r = CT.find(y => y.id === x.closest('tr').dataset.id); if (r) ctExportar([r], `clarogo-cliente-${(r.nombre || r.rut || 'sin-nombre').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase().slice(0, 40)}-${hoyISO()}.txt`); });
   initColumnas();
+  // Comentarios antiguos sin fecha: reciben la fecha y hora de su registro (una sola vez)
+  notasRetroTodas();
+  // Observaciones de la ficha: se recuerda el texto al entrar, para sellar solo lo que se agregue
+  $('#ct-body').addEventListener('focusin', e => {
+    const el = e.target.closest && e.target.closest('tr.ficha [data-k="notas"]'); if (!el) return;
+    const r = CT.find(x => x.id === el.closest('tr').dataset.id); if (!r) return;
+    el.dataset.antes = r.notas || '';
+    if (el.value.trim() && !/\n$/.test(el.value)) { el.value += '\n'; el.setSelectionRange(el.value.length, el.value.length); }
+  });
   initNotaZoom();
   $('#ct-body').addEventListener('click', e => { const s = e.target.closest('[data-subir]'); if (s) ventaAbrir(s.closest('tr').dataset.id, false); });
   $('#ct-body').addEventListener('click', e => { const b = e.target.closest('[data-deuda]'); if (!b) return; e.stopPropagation(); const tr = b.closest('tr'); if (b.dataset.deuda === '?') { const s = tr.querySelector('[data-k="origen"]'); if (s) { s.focus(); try { s.showPicker(); } catch (x) {} } return toast('Elige la compañía del cliente en la columna Compañía.'); } deudaRevisar(tr.dataset.id, b.dataset.deuda); });
@@ -3817,6 +3872,12 @@ function initControl() {
     if (el.dataset.k === 'tipo') { const tr = el.closest('tr'); tr.classList.toggle('t-venta', el.value === 'Venta'); tr.classList.remove('t-verde', 't-rojo', 't-amarillo'); if (tipoColor(el.value)) tr.classList.add(tipoColor(el.value)); }
     if (el.dataset.k === 'origen') { const td = $(`#ct-body tr[data-id="${r.id}"]:not(.ficha) td.c-deu`); if (td) td.innerHTML = deudaBoton(r); }
     if (el.dataset.k === 'rut' && e.type === 'change') rutifAuto(r);
+    // Observaciones de la ficha: al terminar de escribir, lo nuevo queda con su línea de fecha y hora
+    if (el.dataset.k === 'notas' && e.type === 'change') {
+      const s = notaSellar(el.dataset.antes, el.value);
+      r.notas = s; el.dataset.antes = s; r.upd = Date.now(); ctGuardar();
+      $$(`#ct-body [data-id="${r.id}"] [data-k="notas"]`).forEach(x => { x.value = s; x.title = s; });
+    }
     if (el.dataset.k === 'tipo' && e.type === 'change' && /volver a llamar/i.test(el.value) && !(r.agenda && !r.agendaHecho)) agDialogo(r);
   };
   body.addEventListener('input', actualizar);
@@ -3830,7 +3891,7 @@ function initControl() {
   body.addEventListener('click', e => {
     const pq = e.target.closest('[data-eqpegar]'); if (pq) return ctPegarEquipo(pq.closest('tr').dataset.id);
     const o = e.target.closest('[data-obs]');
-    if (o) { const r = CT.find(x => x.id === o.closest('tr').dataset.id); if (!r) return; r.notas = (r.notas ? r.notas.trim().replace(/[.\s]*$/, '. ') : '') + o.dataset.obs; r.upd = Date.now(); ctGuardar(); $$(`#ct-body [data-id="${r.id}"] [data-k="notas"]`).forEach(x => { x.value = r.notas; x.title = r.notas; }); return; }
+    if (o) { const r = CT.find(x => x.id === o.closest('tr').dataset.id); if (!r) return; notaAgregar(r, o.dataset.obs); r.upd = Date.now(); ctGuardar(); $$(`#ct-body [data-id="${r.id}"] [data-k="notas"]`).forEach(x => { x.value = r.notas; x.title = r.notas; }); return; }
     const b = e.target.closest('[data-ct]'); if (!b) return;
     const r = CT.find(x => x.id === b.closest('tr').dataset.id); if (!r) return;
     if (b.dataset.ct === 'fav') { r.fav = !r.fav; r.upd = Date.now(); ctGuardar(); ctPinta(); return toast(r.fav ? '★ Cliente marcado como favorito' : 'Cliente quitado de favoritos'); }

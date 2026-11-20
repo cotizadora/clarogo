@@ -68,6 +68,13 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 20-11-2026: ClaroGo! v2.15.0, comentarios con fecha y Script con módulos
+
+- **Comentarios con fecha y hora:** todo comentario nuevo lleva antes una línea "📅 DD-MM-AAAA HH:MM" con el momento en que se escribió: columna Notas (editor ampliado), Observaciones de la ficha, botones de observación rápida, "Oferta enviada por WhatsApp" y el comentario que llega desde GoExt. Si se corrige algo en medio de un comentario, se respeta tal cual.
+- **Retroactivo:** los comentarios guardados sin fecha reciben la fecha y hora del registro del cliente; cada "Oferta enviada por WhatsApp ... a las HH:MM" queda en su propia línea con esa hora. Se aplica al abrir la planilla, al importar y al combinar con el archivo.
+- **Script de Cierre:** "Datos de la venta" usa los mismos módulos, orden y colores que la ficha de Mi Planilla: Cliente (azul), Venta (verde, con "📱 Números a portar": línea 1 con su plan y precio, adicionales con su plan de adicional), Equipo (morado, solo si aplica) y Despacho (naranjo). Los campos internos no cambiaron, así que la sincronización con la planilla sigue igual.
+- Datos críticos del Script con asterisco rojo (*): nombre, RUT, fecha de nacimiento, correo, teléfono de contacto, validación enviada por, tipo de venta, número a portar y plan de la línea 1, calle, número, comuna, región, tiempo de despacho y nombre del ejecutivo. Son una guía: se puede avanzar sin ellos.
+
 ### 20-11-2026: ClaroGo! v2.14.0, Horario Ejecutivos en el teléfono
 
 - En el teléfono ya no se ocultan los días: la tabla muestra la semana completa, se desliza hacia el lado y el nombre del ejecutivo queda fijo a la izquierda.
