@@ -470,7 +470,29 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #hz-tabla td.inc{color:#8b93a7}
 #hz-tabla tbody tr:hover td{filter:brightness(.97)}
 @media (max-width:900px){#hz-tabla .h-dia{width:52px;font-size:.7rem}#hz-tabla .h-est{width:110px}}
-@media (max-width:640px){#hz-tabla .h-dia{display:none}#hz-tabla .h-est{width:120px}}
+/* Teléfono: se ven todos los días. La tabla se desliza hacia el lado y el ejecutivo queda fijo a la izquierda */
+#hz-zona{overflow-x:auto;-webkit-overflow-scrolling:touch}
+#hz-girar{display:none}
+@media (max-width:900px){
+  #hz-tabla{min-width:760px}
+  #hz-tabla .h-n{position:sticky;left:0;z-index:2}
+  #hz-tabla .h-nom{position:sticky;left:30px;z-index:2;width:130px;background:#fff;box-shadow:2px 0 0 #d4d7dc}
+  #hz-tabla th.h-nom{background:#f3f3f3}
+  #hz-tabla .h-dia{width:62px;font-size:.72rem}
+  #hz-tabla .h-est{width:118px}
+}
+/* Teléfono vertical: aviso para girar (en Android se gira solo al entrar) */
+@media (max-width:640px) and (orientation:portrait){
+  #hz-girar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px}
+}
+/* Teléfono horizontal: todo más compacto para que quepa la semana completa */
+@media (max-height:500px) and (orientation:landscape){
+  body[data-view="horario"] .top{position:static}
+  body[data-view="horario"] #sugg-btn,body[data-view="horario"] #ag-reloj{display:none!important}
+  #v-horario .h,#v-horario .sub,#v-horario > .note.blue{display:none}
+  #hz-tabla th,#hz-tabla td{height:24px;font-size:.7rem;padding:0 3px}
+  #hz-tabla{min-width:0}
+}
 /* Mi planilla de control *//* Estilo hoja de cálculo: una línea por registro, sin scroll horizontal */
 .ct-wrap{overflow:hidden;background:#fff;border:1px solid #c6c9cf;border-radius:4px;box-shadow:var(--shadow)}
 #ct-tabla{width:100%;table-layout:fixed;border-collapse:collapse;font-family:"Segoe UI",Calibri,Arial,sans-serif}
@@ -917,7 +939,8 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     </div>
     <div class="note" id="hz-aviso" hidden style="margin-bottom:10px"></div>
     <div class="chips" id="hz-resumen"></div>
-    <div class="ct-wrap"><table id="hz-tabla">
+    <div class="note blue" id="hz-girar"><span>📱↻ Gira el teléfono para ver la semana completa, o desliza la tabla hacia el lado.</span><button type="button" class="btn sm red" id="hz-horizontal">↻ Ver en horizontal</button></div>
+    <div class="ct-wrap" id="hz-zona"><table id="hz-tabla">
       <thead id="hz-head"></thead>
       <tbody id="hz-body"></tbody>
     </table></div>
@@ -1226,7 +1249,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.13.1';
+const APP_VERSION = '2.14.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -3987,6 +4010,22 @@ function initHorario() {
   $('#hz-semana').addEventListener('change', e => { hzSemana = e.target.value; hzPinta(); });
   $('#hz-colacion').addEventListener('change', e => { const v = parseFloat(String(e.target.value).replace(',', '.')); HZ.colacion = isNaN(v) || v < 0 ? 1 : v; hzGuardar(); hzPinta(); });
   $('#hz-q').addEventListener('input', hzPinta);
+  // Teléfono: vista apaisada. Pantalla completa + giro horizontal (Android con Chrome o Edge).
+  // En iPhone el navegador no deja girar la pantalla: queda el aviso y la tabla que se desliza.
+  const esTelVertical = () => matchMedia('(max-width:640px) and (orientation:portrait)').matches && matchMedia('(pointer:coarse)').matches;
+  const horizontal = async () => {
+    try {
+      if (!document.fullscreenElement && document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen({ navigationUI: 'hide' });
+      if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape');
+    } catch (e) { if (!esTelVertical()) return; toast('Tu teléfono no deja girar la pantalla desde la página: gíralo con la mano (y activa la rotación automática).'); }
+  };
+  $('#hz-horizontal').onclick = horizontal;
+  // Al entrar a Horario desde el menú (el toque cuenta como permiso) se gira solo; al salir vuelve a la normalidad
+  window.addEventListener('hashchange', () => {
+    if (location.hash === '#horario') { if (esTelVertical()) horizontal(); }
+    else if (document.fullscreenElement) { try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) {} document.exitFullscreen().catch(() => {}); }
+  });
+  if (location.hash === '#horario' && esTelVertical()) document.addEventListener('click', function una() { document.removeEventListener('click', una, true); horizontal(); }, true);
   $('#hz-borrar').onclick = () => { if (HZ.ejecutivos.length && confirm('¿Borrar el horario cargado en este navegador? Lo puedes volver a pegar desde la planilla.')) { HZ.ejecutivos = []; HZ.cargado = ''; hzGuardar(); hzPinta(); } };
   hzPinta();
 }

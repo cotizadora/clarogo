@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 20-11-2026: ClaroGo! v2.14.0, Horario Ejecutivos en el teléfono
+
+- En el teléfono ya no se ocultan los días: la tabla muestra la semana completa, se desliza hacia el lado y el nombre del ejecutivo queda fijo a la izquierda.
+- Teléfono vertical: al entrar a Horario se pone en pantalla completa y horizontal (Android con Chrome o Edge; usa `screen.orientation.lock`). En iPhone el navegador no lo permite: aparece el aviso "Gira el teléfono" con el botón "↻ Ver en horizontal". Al salir de Horario vuelve a la normalidad.
+- Teléfono horizontal: la semana completa cabe en pantalla; el menú rojo se va al deslizar y se esconden los botones flotantes solo en esta sección. En el computador no cambia nada.
+
 ### 20-11-2026: guía de migración a un computador nuevo
 
 - `MIGRACION.md`: cómo respaldar, instalar Git, conectarse a GitHub (código de dispositivo), poner al día el repo, instalar y actualizar GoExt, recuperar Mi Planilla, recrear accesos del escritorio, publicar cambios, reglas aprendidas, pendientes e historial con fechas. `CLAUDE.md` avisa leerla primero.
