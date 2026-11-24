@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: GoExt 1.55.0, revisión de deuda en WOM arreglada
+
+- Después de consultar, WOM lleva a otra página, pagofacilwom.cl (no es wom.cl), y GoExt no tenía permiso para leerla. Ahora sí. Probado con el RUT de prueba 11.111.111-1 (con autorización de Eduardo): WOM muestra "De este lado no tienes deudas" y GoExt lo lee como sin deuda.
+- El texto de WOM cuando sí hay deuda no se pudo ver (el RUT de prueba no tiene deuda). Si no lo lee, sale el aviso "GoExt no pudo leer el resultado".
+
 ### 24-11-2026: ClaroGo! 2.20.1 y GoExt 1.54.0, "sin deuda" también queda en Observación
 
 - Cada revisión de deuda queda anotada en Observación con su fecha y hora, también cuando no hay deuda ("✅ Deuda revisada en Entel: sin deuda").
