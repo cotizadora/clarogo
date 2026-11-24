@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: ClaroGo! v2.16.1, calce de tipificaciones con Genesys
+
+- Regla de Eduardo: **nunca se elimina ninguna tipificación**. Se mantienen las 12 de Mi Planilla y los 25 códigos de Genesys.
+- Calce aprobado (`TIPIF_EQUIV`): Venta → Venta Outbound; Volver a llamar → Volver a llamar (cliente no acepta, pero le interesa); Pendiente validación, volver a llamar → Agendado / Pre-Cierre; Buzón de voz y No contesta → Buzón de Voz; Mudo o corta llamada → Mudo / Sin Audio; No interesado → Rechazo/Conformidad con su compañía actual; No molestar → Cliente no desea que lo vuelvan a llamar (No Molestar); Ya es cliente Claro → YA ES CLIENTE; Rechazo de evaluación → No Venta / Deuda > $14.000; Número equivocado → Rechazo/No es el titular de la linea; Otro sin código.
+- En los menús, cada tipificación de la planilla muestra su código de Genesys al lado (se guarda la misma tipificación de siempre). Al filtrar por un código de Genesys también aparecen las filas con su equivalente de la planilla.
+
 ### 24-11-2026: GoExt 1.45.0, una sola pestaña del formulario de no venta
 
 - Caso: seguían abriéndose pestañas nuevas del registro de no venta. Con sesión de Google iniciada, el formulario queda en `docs.google.com/forms/u/0/d/e/...` (con /u/0/ o /u/1/) y GoExt solo buscaba `docs.google.com/forms/d/e/...`, así que no reconocía la pestaña ya abierta.

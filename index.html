@@ -1261,7 +1261,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.16.0';
+const APP_VERSION = '2.16.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2614,9 +2614,26 @@ function initFaq() {
 const TIPIFICACIONES = ['Venta', 'Volver a llamar', 'Pendiente validación, volver a llamar', 'Buzón de voz', 'No contesta', 'Mudo o corta llamada', 'No interesado', 'No molestar', 'Ya es cliente Claro', 'Rechazo de evaluación', 'Número equivocado', 'Otro'];
 // Códigos de conclusión de Genesys (los mismos de GoExt), tal como aparecen en Genesys (lista enviada por Eduardo el 24-11-2026)
 const TIPIF_GENESYS = ['Agendado / Pre-Cierre (llamar para cerrar venta)', 'Buzón de Voz', 'Cliente Corta Llamada en conversación', 'Cliente Corta Llamada en saludo', 'Cliente no desea que lo vuelvan a llamar (No Molestar)', 'FVC/Sin cobertura delivery (google)', 'Mudo / Sin Audio', 'No Venta / Deuda > $14.000 (según calculadora excel)', 'No Venta / No cumple el plazo 120 días', 'Rechazo/Cliente con deuda Claro', 'Rechazo/Cliente con deuda Operador Actual', 'Rechazo/Cliente con Serie No Vigente', 'Rechazo/Conformidad con su compañía actual', 'Rechazo/Desconfia de la llamada', 'Rechazo/Mala Experiencia Claro Cobertura (señal)', 'Rechazo/Mala Experiencia Claro Precio/postventa', 'Rechazo/Mejor oferta competencia $ precio', 'Rechazo/No aprueba validacion facial', 'Rechazo/No es el titular de la linea (pedir referido)', 'Rechazo/Tiene plan empresa (con rut empresa)', 'Venta + Equipo Outbound', 'Venta Outbound', 'Venta Referido Outbound', 'Volver a llamar (cliente no acepta, pero le interesa)', 'YA ES CLIENTE'];
-// Menú de tipificación: las de Mi Planilla y, aparte, los códigos de Genesys. Un valor antiguo que no esté se conserva.
+// Calce de cada tipificación de Mi Planilla con su código de Genesys más parecido (aprobado por Eduardo el 24-11-2026).
+// No reemplaza ni elimina nada: se guarda la tipificación elegida y el calce solo se muestra y sirve para filtrar.
+const TIPIF_EQUIV = {
+  'Venta': 'Venta Outbound',
+  'Volver a llamar': 'Volver a llamar (cliente no acepta, pero le interesa)',
+  'Pendiente validación, volver a llamar': 'Agendado / Pre-Cierre (llamar para cerrar venta)',
+  'Buzón de voz': 'Buzón de Voz',
+  'No contesta': 'Buzón de Voz',
+  'Mudo o corta llamada': 'Mudo / Sin Audio',
+  'No interesado': 'Rechazo/Conformidad con su compañía actual',
+  'No molestar': 'Cliente no desea que lo vuelvan a llamar (No Molestar)',
+  'Ya es cliente Claro': 'YA ES CLIENTE',
+  'Rechazo de evaluación': 'No Venta / Deuda > $14.000 (según calculadora excel)',
+  'Número equivocado': 'Rechazo/No es el titular de la linea (pedir referido)'
+};
+const tipoTitulo = t => !t ? 'Sin tipificar' : TIPIF_EQUIV[t] ? `${t} (en Genesys: ${TIPIF_EQUIV[t]})` : t;
+// Menú de tipificación: las de Mi Planilla (con su código de Genesys al lado) y, aparte, los códigos de Genesys.
+// Un valor antiguo que no esté en ninguna lista se conserva.
 const tipoOpciones = (sel, vacio = 'Sin tipificar') => `<option value="">${vacio}</option>`
-  + `<optgroup label="Mi Planilla">${TIPIFICACIONES.map(x => `<option${x === sel ? ' selected' : ''}>${esc(x)}</option>`).join('')}</optgroup>`
+  + `<optgroup label="Mi Planilla">${TIPIFICACIONES.map(x => `<option value="${esc(x)}"${x === sel ? ' selected' : ''}>${esc(x)}${TIPIF_EQUIV[x] ? ' → ' + esc(TIPIF_EQUIV[x]) : ''}</option>`).join('')}</optgroup>`
   + `<optgroup label="Códigos de Genesys">${TIPIF_GENESYS.map(x => `<option${x === sel ? ' selected' : ''}>${esc(x)}</option>`).join('')}</optgroup>`
   + (sel && !TIPIFICACIONES.includes(sel) && !TIPIF_GENESYS.includes(sel) ? `<option selected>${esc(sel)}</option>` : '');
 // Es venta: "Venta" de la planilla o los códigos de venta de Genesys (Venta Outbound, Venta + Equipo Outbound, Venta Referido Outbound)
@@ -3635,7 +3652,7 @@ function ctRango() {
 function ctFiltradas() {
   const [desde, hasta] = ctRango(), tipo = $('#ct-tipo').value, seg = $('#ct-seg').value, q = $('#ct-q').value.trim().toLowerCase(), verBorr = $('#ct-verborr').checked;
   return CT.filter(r => (verBorr ? r.borrado : !r.borrado) && (!desde || r.fecha >= desde) && (!hasta || r.fecha <= hasta)
-    && (!tipo || (tipo === '__fav' ? r.fav : tipo === 'Sin tipificar' ? !r.tipo : r.tipo === tipo)) && (!seg || ctSeg(r) === seg)
+    && (!tipo || (tipo === '__fav' ? r.fav : tipo === 'Sin tipificar' ? !r.tipo : (r.tipo === tipo || TIPIF_EQUIV[r.tipo] === tipo))) && (!seg || ctSeg(r) === seg)
     && (!q || [r.rut, r.nombre, r.telefono, r.notas, r.mail, r.contacto, r.fono, dirTexto(r), r.eq].join(' ').toLowerCase().includes(q)));
 }
 const nomAlto = t => { if (CSS.supports && CSS.supports('field-sizing', 'content')) return; t.style.height = 'auto'; t.style.height = (document.activeElement === t ? t.scrollHeight : Math.min(t.scrollHeight, 43)) + 'px'; };
@@ -3713,7 +3730,7 @@ function ctPinta() {
     <td class="c-tel"><div class="tel-nom">${esc(r.nombre || '')}</div><input data-k="telefono" value="${esc(r.telefono)}" placeholder="9XXXXXXXX" title="${esc(r.telefono)}"></td>
     <td class="c-orig"><select data-k="origen" title="Compañía de origen. Cámbiala para revisar la deuda en otra compañía.">${origenOpciones(r.origen)}</select></td>
     <td class="c-deu">${deudaBoton(r)}</td>
-    <td class="c-tipo"><select data-k="tipo" title="${esc(r.tipo || 'Sin tipificar')}">${tipoOpciones(r.tipo)}</select></td>
+    <td class="c-tipo"><select data-k="tipo" title="${esc(tipoTitulo(r.tipo))}">${tipoOpciones(r.tipo)}</select></td>
     <td class="c-plan"><div class="plan-ver${r.plan ? '' : ' vacio'}">${esc(r.plan ? r.plan.replace(/^Plan\s+/i, '') : 'Sin plan')}</div><select data-k="plan" class="plan-sel" title="${esc(r.plan || 'Elegir plan')}">${opt(PLANES_WA().map(p => p.title), r.plan, 'Sin plan')}</select></td>
     <td class="c-notas"><input data-k="notas" value="${esc(r.notas)}" placeholder="Notas" title="${esc(r.notas)}"></td>
     <td class="c-ag">${r.borrado ? '' : agBoton(r)}</td>
@@ -3795,8 +3812,8 @@ function ctExcel() {
 function initControl() {
   ctListo = true;
   $('#ct-tipo').innerHTML = '<option value="">Todas las tipificaciones</option><option value="__fav">★ Solo favoritos</option><option>Sin tipificar</option>'
-    + `<optgroup label="Mi Planilla">${TIPIFICACIONES.map(x => `<option>${esc(x)}</option>`).join('')}</optgroup>`
-    + `<optgroup label="Códigos de Genesys">${TIPIF_GENESYS.map(x => `<option>${esc(x)}</option>`).join('')}</optgroup>`;
+    + `<optgroup label="Mi Planilla">${TIPIFICACIONES.map(x => `<option value="${esc(x)}">${esc(x)}${TIPIF_EQUIV[x] ? ' → ' + esc(TIPIF_EQUIV[x]) : ''}</option>`).join('')}</optgroup>`
+    + `<optgroup label="Códigos de Genesys (incluye su equivalente de la planilla)">${TIPIF_GENESYS.map(x => `<option>${esc(x)}</option>`).join('')}</optgroup>`;
   $('#ct-desde').value = isoMenos(6); $('#ct-hasta').value = hoyISO();
   // Siempre parte sin filtros, aunque el navegador intente recordar los de la visita anterior
   const sinFiltros = () => { $('#ct-periodo').value = 'todo'; $('#ct-tipo').value = ''; $('#ct-seg').value = ''; $('#ct-q').value = ''; $('#ct-verborr').checked = false; $('#ct-rango').hidden = true; };
@@ -3882,7 +3899,7 @@ function initControl() {
       $$(`#ct-body tr.ficha[data-id="${r.id}"] .ln-filas`).forEach(c => { const o = c.previousElementSibling; if (o && o._lnPinta) o._lnPinta(); });
     }
     if (el.dataset.k === 'fono' || el.dataset.k === 'adic') { const n = lineasDe(r).length; $$(`#ct-body tr.ficha[data-id="${r.id}"] .fl-cuenta`).forEach(x => { x.textContent = n + (n === 1 ? ' línea' : ' líneas'); }); }
-    if (el.dataset.k === 'tipo') { const tr = el.closest('tr'); tr.classList.toggle('t-venta', esVentaTipo(el.value)); el.title = el.value || 'Sin tipificar'; tr.classList.remove('t-verde', 't-rojo', 't-amarillo'); if (tipoColor(el.value)) tr.classList.add(tipoColor(el.value)); }
+    if (el.dataset.k === 'tipo') { const tr = el.closest('tr'); tr.classList.toggle('t-venta', esVentaTipo(el.value)); el.title = tipoTitulo(el.value); tr.classList.remove('t-verde', 't-rojo', 't-amarillo'); if (tipoColor(el.value)) tr.classList.add(tipoColor(el.value)); }
     if (el.dataset.k === 'origen') { const td = $(`#ct-body tr[data-id="${r.id}"]:not(.ficha) td.c-deu`); if (td) td.innerHTML = deudaBoton(r); }
     if (el.dataset.k === 'rut' && e.type === 'change') rutifAuto(r);
     // Observaciones de la ficha: al terminar de escribir, lo nuevo queda con su línea de fecha y hora
