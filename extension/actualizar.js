@@ -10,6 +10,35 @@ setTimeout(abrir, 400);
 
 const inicio = Date.now();
 let listo = false;
+
+// ── Para quienes instalaron con el .zip ──
+// El actualizador del escritorio se intenta igual primero (así sigue funcionando para quienes usan el instalador).
+// Si en 10 segundos no llega nada, o si este PC ya se actualizó antes con el .zip, se muestra la guía del .zip.
+// El botón baja goext.zip a Descargas siempre con el mismo nombre y abre la carpeta con el archivo marcado.
+const ZIP = 'https://cotizadora.github.io/clarogo/ext/clarogo-genesys-extension.zip';
+let usoZip = false;
+const verZip = () => { $('#zip').hidden = false; };
+try { chrome.storage.local.get('modo_zip').then(o => { if (o.modo_zip) verZip(); }); } catch (e) {}
+setTimeout(() => { if (!listo) verZip(); }, 10000);
+$('#zip-bajar').onclick = async () => {
+  const b = $('#zip-bajar'); b.disabled = true; b.textContent = 'Descargando…'; $('#zip-ok').textContent = '';
+  try {
+    const id = await chrome.downloads.download({ url: ZIP + '?v=' + Date.now(), filename: 'goext.zip', conflictAction: 'overwrite', saveAs: false });
+    usoZip = true;
+    const fin = await new Promise(res => {
+      const f = d => { if (d.id === id && d.state && d.state.current !== 'in_progress') { chrome.downloads.onChanged.removeListener(f); res(d.state.current); } };
+      chrome.downloads.onChanged.addListener(f);
+      setTimeout(() => res('tarde'), 60000);
+    });
+    if (fin === 'complete') { $('#zip-ok').textContent = '✅ Descargado'; chrome.downloads.show(id); }
+    else $('#zip-ok').textContent = 'No se pudo descargar. Revisa tu internet y vuelve a intentarlo.';
+  } catch (e) {
+    // Sin el permiso de descargas (versión antigua): se baja con un enlace normal
+    const a = document.createElement('a'); a.href = ZIP; a.download = 'goext.zip'; document.body.appendChild(a); a.click(); a.remove();
+    usoZip = true; $('#zip-ok').textContent = '✅ Revisa tu carpeta Descargas';
+  }
+  b.disabled = false; b.textContent = '⬇ Descargar GoExt otra vez';
+};
 const revisar = async () => {
   if (listo) return;
   try {
@@ -19,7 +48,8 @@ const revisar = async () => {
       $('#giro').classList.add('ok');
       $('#estado').textContent = '✅ Versión ' + m.version + ' descargada';
       $('#detalle').textContent = 'Activándola… esta pestaña se cierra sola.';
-      $('#otra').hidden = true; $('#nota').hidden = true;
+      $('#otra').hidden = true; $('#nota').hidden = true; $('#zip').hidden = true;
+      if (usoZip) { try { await chrome.storage.local.set({ modo_zip: true }); } catch (e) {} }
       setTimeout(() => chrome.runtime.reload(), 1200);
       return;
     }
@@ -27,10 +57,9 @@ const revisar = async () => {
   const seg = (Date.now() - inicio) / 1000;
   if (seg > 25 && !$('#nota').dataset.mano) {
     $('#nota').dataset.mano = '1';
-    $('#nota').innerHTML = 'Si no pasó nada, haz doble clic en <b>Actualizar GoExt</b> de tu escritorio (o en el instalador). Desde esa vez el botón de GoExt actualiza solo. Esta pestaña sigue esperando y activa la versión nueva apenas llegue.'
-      + '<br><br><b>Si tu computador bloquea el instalador</b> (Control inteligente de aplicaciones): <a href="https://cotizadora.github.io/clarogo/ext/clarogo-genesys-extension.zip" download="goext.zip">descarga GoExt en .zip</a>, haz <b>Extraer todo</b> en la misma carpeta donde la tienes y acepta <b>Reemplazar</b>. Esta pestaña la activa sola.';
+    $('#nota').innerHTML = 'Si usas el instalador y no pasó nada, haz doble clic en <b>Actualizar GoExt</b> de tu escritorio. Esta pestaña sigue esperando y activa la versión nueva apenas llegue.';
   }
-  if (seg < 180) setTimeout(revisar, 2000);
+  if (seg < 900) setTimeout(revisar, 2000);   // 15 minutos: da tiempo para extraer el .zip con calma
   else { $('#giro').hidden = true; $('#estado').textContent = 'No llegó una versión nueva'; $('#detalle').textContent = 'Revisa tu internet y vuelve a intentarlo.'; }
 };
 setTimeout(revisar, 2000);

@@ -68,6 +68,14 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: GoExt 1.52.0 y ClaroGo! 2.19.1, actualización guiada para quienes usan el .zip
+
+- La página de actualización sigue intentando primero el actualizador del escritorio (instalador .bat), igual que antes. Si en 10 segundos no responde, o si ese PC ya se actualizó antes con el .zip, muestra una guía: el botón "Descargar GoExt" baja goext.zip a Descargas (siempre con el mismo nombre, reemplazando el anterior) y abre la carpeta con el archivo marcado; luego Extraer todo → Extraer → Reemplazar. La página espera hasta 15 minutos y activa la versión nueva sola.
+- GoExt pide el permiso "downloads" para eso.
+- Se probó que una extensión no puede reemplazar sus propios archivos: Edge marca como peligrosos los .js descargados por una extensión. Por eso la extracción del .zip la sigue haciendo el ejecutivo.
+- Sección Descargas: nuevo texto de "Para actualizar" del .zip.
+- Quienes tengan una versión anterior a la 1.52.0 instalada con el .zip deben actualizar esta vez a mano.
+
 ### 24-11-2026: ClaroGo! 2.19.0 y GoExt 1.51.0, deuda anotada en Observación y arreglo de Claro y WOM
 
 - Cuando GoExt detecta deuda, Mi Planilla agrega al tiro en Observación una línea con la fecha y hora de la revisión, por ejemplo "⚠️ Deuda revisada en WOM: tiene deuda de $25.990". Una sola vez por revisión. Sin deuda no se anota nada.

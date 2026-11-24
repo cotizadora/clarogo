@@ -17,6 +17,13 @@ h1 b{color:var(--rojo)}
 .giro.ok{border-color:var(--ok);animation:none}
 @keyframes g{to{transform:rotate(360deg)}}
 button{border:0;border-radius:12px;padding:13px 20px;background:var(--rojo);color:#fff;font:inherit;font-weight:800;cursor:pointer}
+.zip{margin-top:18px;padding:16px 18px;border:2px solid #1a56b8;border-radius:14px;background:#f2f6ff;text-align:left;font-size:.95rem}
+.zip-t{margin:0 0 8px;font-weight:800;color:#1a56b8}
+.zip ol{margin:0;padding-left:22px}
+.zip li{margin:8px 0}
+.zip button{background:#1a56b8;padding:10px 16px}
+#zip-ok{margin-left:10px;font-weight:700;color:var(--ok)}
+.zip-n{margin:10px 0 0;font-size:.82rem;color:var(--suave)}
 .nota{margin-top:18px;padding:12px 14px;border-radius:12px;background:#fff8e1;color:#6b4e00;font-size:.92rem;text-align:left}
 </style>
 </head>
@@ -28,6 +35,17 @@ button{border:0;border-radius:12px;padding:13px 20px;background:var(--rojo);colo
   <p id="detalle">Se abre el actualizador de tu escritorio. Tarda unos segundos.</p>
   <button type="button" id="otra">Abrir el actualizador</button>
   <p class="nota" id="nota">La primera vez el navegador pregunta si quieres abrir el actualizador: marca <b>Permitir siempre</b> y presiona <b>Abrir</b>. Las próximas veces será automático.</p>
+  <!-- Para quienes instalaron GoExt con el .zip (sin el actualizador del escritorio) -->
+  <div class="zip" id="zip" hidden>
+    <p class="zip-t">¿Instalaste GoExt con el archivo .zip? Actualiza así:</p>
+    <ol>
+      <li><button type="button" id="zip-bajar">⬇ Descargar GoExt</button><span id="zip-ok"></span></li>
+      <li>Se abre tu carpeta <b>Descargas</b> con <b>goext.zip</b> marcado. Haz clic derecho sobre él y elige <b>Extraer todo</b>.</li>
+      <li>Presiona <b>Extraer</b>. Cuando Windows pregunte, elige <b>Reemplazar los archivos en el destino</b>.</li>
+      <li>Listo. Esta página activa la versión nueva sola.</li>
+    </ol>
+    <p class="zip-n">Si tu GoExt está en otra carpeta (no en Descargas\goext), en <b>Extraer todo</b> presiona <b>Examinar</b> y elige esa carpeta.</p>
+  </div>
 </div>
 <script src="actualizar.js"></script>
 </body>
