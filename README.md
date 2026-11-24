@@ -68,6 +68,15 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: ClaroGo! 2.24.0, la guía cubre todo ClaroGo! (menos Horario)
+
+- Cuatro capítulos nuevos, con capturas reales tomadas hoy:
+  - 6. Ofertas: Planes Libres, Copiar lámina y texto, los 3 planes en una imagen, la calculadora multilínea, Persona Mayor y PNG con la validación en el SII.
+  - 7. Mi Planilla, agenda y WhatsApp: los botones de la planilla, dónde guardarla, los botones de cada fila, favoritos, tipificación, agendar, la lista de llamadas agendadas y el aviso, y el envío por WhatsApp.
+  - 8. Script de Cierre e Ingreso de Venta: el script vinculado a la fila, el guion que se arma solo y el formulario lleno desde la planilla.
+  - 9. Preguntas y Respuestas, y Excepciones de Boletas.
+- La guía queda en 97 pasos y 9 capítulos. Se usó una fila de prueba con el número 912345678, sin datos de clientes.
+
 ### 24-11-2026: ClaroGo! 2.23.0, la guía suma el Stock y control de velocidad
 
 - Nuevo capítulo "5. Stock de Equipos" (23 pasos con capturas reales del stock publicado hoy):

@@ -73,6 +73,10 @@ html,body{margin:0;height:100%;background:var(--fondo);color:var(--texto);font:1
     <li>Nombre, dirección y deuda que se llenan solos</li>
     <li>La ficha del cliente y cómo seguir la venta</li>
     <li>Stock de Equipos: búsqueda, filtros, botones y trucos</li>
+    <li>Ofertas: Personas, multilínea, Persona Mayor y PNG</li>
+    <li>Mi Planilla, agendado y WhatsApp</li>
+    <li>Script de Cierre e Ingreso de Venta</li>
+    <li>Preguntas y Respuestas y Excepciones de Boletas</li>
   </ol>
   <p class="nota">Llamada simulada con un número de prueba. Los datos reales del cliente aparecen difuminados por privacidad.</p>
   <button id="empezar">▶ Comenzar la guía</button>
@@ -186,8 +190,78 @@ const GUIA = [
     { cam: P(700, 296, 481, 396), mouse: [1099, 654], clic: true, aro: P(1035, 634, 128, 40), voz: 'Y presiona Agregar equipo.' }
   ] },
   { cap: '5. Stock de Equipos', img: '31-equipo.jpg', pasos: [
-    { cam: P(139, 400, 796, 200), mouse: [300, 503], aro: P(141, 413, 792, 178), voz: 'Listo: el equipo, el SKU, el monto total, el pie y la forma de pago quedan llenos en la ficha, sin escribir nada.' },
-    { cam: null, mouse: [948, 600], voz: 'Eso es todo. Recuerda: escribe el RUT y GoExt hace el resto. Y en el Stock, ofrece solo los equipos en verde.' }
+    { cam: P(139, 400, 796, 200), mouse: [300, 503], aro: P(141, 413, 792, 178), voz: 'Listo: el equipo, el SKU, el monto total, el pie y la forma de pago quedan llenos en la ficha, sin escribir nada.' }
+  ] },
+  { cap: '6. Ofertas', img: '40-oferta.jpg', pasos: [
+    { cam: null, mouse: [667, 30], clic: true, aro: P(618, 6, 98, 46), voz: 'En Oferta Personas están los Planes Libres vigentes. Arriba se indica la fuente y la fecha de los precios.' },
+    { cam: P(361, 255, 1160, 480), mouse: [550, 450], aro: P(361, 264, 377, 465), voz: 'Cada plan tiene su lámina, lista para mandarla al cliente.' },
+    { cam: P(361, 630, 380, 100), mouse: [460, 696], clic: true, aro: P(374, 676, 351, 40), voz: 'Con Copiar lámina copias la imagen, y con Copiar texto, el mensaje para WhatsApp. En Ver el texto que se copia puedes revisarlo antes.' },
+    { cam: P(361, 720, 700, 90), mouse: [500, 765], clic: true, aro: P(361, 745, 281, 40), voz: 'Y con Capturar los 3 planes en una imagen, mandas los tres juntos.' }
+  ] },
+  { cap: '6. Ofertas', img: '41-multilinea.jpg', pasos: [
+    { cam: P(752, 100, 770, 340), mouse: [950, 236], aro: P(768, 114, 360, 320), voz: 'La Calculadora multilínea arma la cotización línea por línea. Elige el plan de cada línea, y con Agregar línea sumas líneas adicionales.' },
+    { cam: P(1140, 110, 370, 800), mouse: [1324, 620], aro: P(1157, 127, 334, 796), voz: 'A la derecha se arma sola la lámina, con el total de los primeros seis meses y desde el mes siete. Abajo la copias como imagen o como texto.' }
+  ] },
+  { cap: '6. Ofertas', img: '42-mayor.jpg', pasos: [
+    { cam: P(361, 500, 1160, 400), mouse: [540, 700], aro: P(361, 513, 1160, 379), voz: 'El Plan Persona Mayor es solo para portabilidad de pospago a pospago. Tiene su gráfica y su texto listos.' },
+    { cam: P(361, 500, 1160, 400), mouse: [926, 857], clic: true, aro: P(736, 837, 770, 40), voz: 'Cópialos con estos botones. Y para mostrar la gráfica más grande, presiona Ver en grande.' }
+  ] },
+  { cap: '6. Ofertas', img: '43-png.jpg', pasos: [
+    { cam: null, mouse: [768, 30], clic: true, aro: P(719, 6, 98, 46), voz: 'Oferta PNG es para Persona Natural con Giro: el RUT de una persona que tiene actividad empresarial.' },
+    { cam: P(361, 190, 1160, 75), mouse: [1278, 227], clic: true, aro: P(1238, 211, 81, 32), voz: 'Antes de ofrecerla, valida al cliente en el SII con este botón: inicio de actividades de más de tres meses y documentos autorizados.' },
+    { cam: P(361, 260, 1160, 720), mouse: [940, 953], aro: P(362, 267, 1158, 706), voz: 'Aquí está la tabla de precios de monolínea y multilínea. Con Copiar tabla de precios la mandas como imagen.' }
+  ] },
+  { cap: '7. Mi Planilla, agenda y WhatsApp', img: '60-planilla.jpg', pasos: [
+    { cam: P(128, 340, 1640, 130), mouse: [233, 379], clic: true, aro: P(141, 359, 185, 40), voz: 'En Mi Planilla, si no usas GoExt, copia el cliente en Genesys con Control A y Control C, y presiona Pegar desde Genesys.' },
+    { cam: P(128, 340, 1640, 130), mouse: [500, 379], aro: P(334, 359, 712, 40), voz: 'También puedes crear una fila vacía, exportar a Excel, exportar o importar clientes para llevarlos a otro computador, y crear un cliente de prueba.' },
+    { cam: P(128, 340, 1640, 130), mouse: [430, 429], aro: P(141, 407, 1614, 43), voz: 'Con el buscador encuentras a cualquier cliente por RUT, nombre, teléfono u observación. Con los filtros ves solo un período, una tipificación o un segmento.' },
+    { cam: P(128, 225, 1640, 115), mouse: [208, 307], aro: P(128, 233, 1640, 101), voz: 'Importante: elige una sola vez dónde guardar tu planilla, con Crear archivo nuevo. Desde ahí se guarda sola, y además hay copias automáticas cada hora.' },
+    { cam: P(1290, 540, 480, 80), mouse: [1406, 579], aro: P(1387, 559, 380, 40), voz: 'En cada fila tienes WhatsApp, traer el teléfono desde Genesys, copiar los datos, abrir la ficha, el Rutificador, pasar al Script y borrar. Lo borrado se recupera con Ver borrados.' },
+    { cam: P(128, 540, 400, 80), mouse: [154, 579], clic: true, aro: P(141, 563, 26, 32), voz: 'Con la estrella marcas a tus clientes favoritos.' },
+    { cam: P(800, 540, 400, 80), mouse: [990, 568], aro: P(917, 555, 150, 48), voz: 'En Tipificación eliges cómo terminó la llamada. Si eliges Volver a llamar, se abre solo el agendado.' },
+    { cam: P(1200, 540, 400, 80), mouse: [1346, 579], clic: true, aro: P(1307, 555, 80, 48), voz: 'Para agendar una llamada, presiona Agendar en la fila.' }
+  ] },
+  { cap: '7. Mi Planilla, agenda y WhatsApp', img: '61-agenda.jpg', pasos: [
+    { cam: P(708, 246, 480, 497), mouse: [921, 356], clic: true, aro: P(726, 342, 444, 60), voz: 'Elige un horario rápido, como en treinta minutos, hoy a las seis o mañana a las diez. O escoge el día y la hora.' },
+    { cam: P(708, 246, 480, 497), mouse: [900, 560], aro: P(726, 530, 444, 90), voz: 'Escribe una observación para acordarte de lo que hablaron.' },
+    { cam: P(708, 246, 480, 497), mouse: [1130, 651], clic: true, aro: P(1090, 631, 80, 40), voz: 'Y presiona Guardar.' }
+  ] },
+  { cap: '7. Mi Planilla, agenda y WhatsApp', img: '62-agendada.jpg', pasos: [
+    { cam: P(128, 470, 1640, 120), mouse: [500, 540], aro: P(128, 475, 1640, 106), voz: 'Arriba aparece la lista de Llamadas agendadas, ordenada por hora.' },
+    { cam: P(1200, 470, 568, 120), mouse: [1712, 543], aro: P(1461, 527, 292, 32), voz: 'Desde aquí vas a la fila, la postergas quince minutos, cambias la hora o la marcas como Ya llamé.' },
+    { cam: P(0, 840, 520, 148), mouse: [77, 904], aro: P(16, 882, 122, 44), voz: 'A la hora agendada suena un aviso suave, y este reloj rojo parpadea en todas las secciones de ClaroGo!.' }
+  ] },
+  { cap: '7. Mi Planilla, agenda y WhatsApp', img: '63-whatsapp.jpg', pasos: [
+    { cam: P(668, 119, 560, 751), mouse: [814, 251], aro: P(686, 205, 524, 145), voz: 'Con el botón verde de WhatsApp de la fila se abre este cuadro. Elige el plan, y revisa el teléfono y el trato del cliente.' },
+    { cam: P(668, 119, 560, 751), mouse: [940, 500], aro: P(686, 404, 524, 298), voz: 'El mensaje se arma solo con tu nombre y el plan, y puedes editarlo antes de enviarlo. El saludo cambia solo según la hora.' },
+    { cam: P(668, 119, 560, 751), mouse: [1128, 796], clic: true, aro: P(686, 722, 524, 95), voz: 'Marca Adjuntar la lámina si quieres mandar la imagen del plan, y presiona Abrir WhatsApp Web. Con GoExt se usa la pestaña de WhatsApp que ya tienes abierta.' }
+  ] },
+  { cap: '8. Script de Cierre e Ingreso de Venta', img: '50-script.jpg', pasos: [
+    { cam: P(361, 225, 1160, 70), mouse: [1088, 260], aro: P(361, 233, 1160, 54), voz: 'El Script de Cierre se abre con el botón Ir al Script de la planilla, y queda vinculado al cliente: todo lo que completes aquí queda guardado en su fila.' },
+    { cam: P(361, 340, 1160, 430), mouse: [650, 549], aro: P(378, 387, 1126, 372), voz: 'Completa los datos de la venta. Los marcados con asterisco rojo son críticos. El teléfono y el plan ya vienen desde la planilla.' },
+    { cam: P(361, 760, 1160, 228), mouse: [650, 861], aro: P(378, 772, 1126, 214), voz: 'Si la venta lleva equipo, anótalo aquí, y completa la dirección de despacho.' }
+  ] },
+  { cap: '8. Script de Cierre e Ingreso de Venta', img: '51-guion.jpg', pasos: [
+    { cam: P(361, 300, 1160, 620), mouse: [620, 616], aro: P(362, 510, 1158, 400), voz: 'Más abajo, el guion se arma solo con los datos. Lo que falta aparece en amarillo, para que lo confirmes con el cliente.' }
+  ] },
+  { cap: '8. Script de Cierre e Ingreso de Venta', img: '52-guion2.jpg', pasos: [
+    { cam: P(361, 140, 1160, 210), mouse: [900, 221], aro: P(362, 140, 1158, 205), voz: 'El plan contratado, los precios y las bolsas de roaming se llenan solos según el plan elegido. Solo tienes que leerlo.' },
+    { cam: P(361, 740, 1160, 248), mouse: [806, 903], aro: P(362, 745, 1158, 195), voz: 'Y la despedida ya lleva tu nombre.' }
+  ] },
+  { cap: '8. Script de Cierre e Ingreso de Venta', img: '53-venta.jpg', pasos: [
+    { cam: null, mouse: [970, 30], clic: true, aro: P(922, 6, 98, 46), voz: 'En Ingreso de Venta está el formulario de ventas de Google.' },
+    { cam: P(361, 175, 1160, 125), mouse: [770, 240], aro: P(374, 220, 798, 39), voz: 'Elige al cliente de Mi Planilla en esta lista. Aparecen los que ya tienen nombre o RUT.' },
+    { cam: P(361, 175, 1160, 125), mouse: [1280, 240], clic: true, aro: P(1178, 224, 330, 32), voz: 'Presiona Abrir lleno en pestaña nueva, o Llenar aquí abajo. El formulario se abre con los datos escritos. Quedan para ti el RAC, el número de TRX, el tipo de delivery y el origen de la venta. Revisa todo antes de enviar.' }
+  ] },
+  { cap: '9. Preguntas y Excepciones', img: '70-preguntas.jpg', pasos: [
+    { cam: null, mouse: [1376, 30], clic: true, aro: P(1327, 6, 98, 46), voz: 'En Preguntas y Respuestas resuelves dudas al tiro.' },
+    { cam: P(361, 170, 1160, 140), mouse: [600, 202], aro: P(361, 180, 1160, 124), voz: 'Escribe una palabra, por ejemplo deuda, o elige un tema en los botones.' },
+    { cam: P(361, 720, 1160, 170), mouse: [540, 766], aro: P(361, 742, 1160, 135), voz: 'Cada respuesta indica su fuente. Por ejemplo: si el cliente tiene una deuda vencida con Claro mayor a cincuenta mil pesos, debe pagarla antes de contratar.' }
+  ] },
+  { cap: '9. Preguntas y Excepciones', img: '71-excepciones.jpg', pasos: [
+    { cam: P(688, 253, 520, 483), mouse: [1081, 411], aro: P(707, 342, 482, 322), voz: 'En Excepciones de Boletas ves la deuda máxima según las líneas portadas: con una línea, hasta dieciocho mil pesos. Sube nueve mil por cada línea, hasta sesenta y tres mil con seis o más.' },
+    { cam: P(688, 253, 520, 483), mouse: [1118, 697], aro: P(918, 677, 272, 40), voz: 'Puedes copiarla o descargarla como imagen para mandarla.' },
+    { cam: null, mouse: [948, 500], voz: 'Eso es todo. Recuerda: escribe el RUT y GoExt hace el resto. En el Stock ofrece solo los equipos en verde. Y vuelve a esta guía cuando la necesites.' }
   ] }
 ];
 
