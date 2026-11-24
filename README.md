@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: ClaroGo! v2.16.0, códigos de Genesys en la planilla
+
+- El menú de tipificación de Mi Planilla (y el filtro de arriba) suma el grupo "Códigos de Genesys" con los 25 códigos de conclusión tal como aparecen en Genesys (lista enviada por Eduardo). Se mantienen las 12 tipificaciones propias de la planilla; los valores ya guardados no cambian. GoExt ya tenía los 25 códigos.
+- Los códigos de venta de Genesys (Venta Outbound, Venta + Equipo Outbound, Venta Referido Outbound) cuentan como venta (fila verde, primeros en Ingreso de Venta). "Rechazo/…", "No Venta/…", "No Molestar" y "YA ES CLIENTE" van en rojo. "Agendado / Pre-Cierre" y "Volver a llamar (…)" abren la agenda, como "Volver a llamar".
+
 ### 20-11-2026: ClaroGo! v2.15.1, volver a la planilla desde el Script
 
 - El aviso de arriba del Script trae siempre el botón rojo "← Volver a Mi Planilla". Sin cliente vinculado lleva a la planilla; con cliente vinculado abre su ficha (antes solo existía "Ver en la planilla" con cliente vinculado).
