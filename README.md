@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: ClaroGo! 2.18.1, botones de la planilla otra vez en una sola fila
+
+- Los botones de cada fila (WhatsApp, Genesys, Copiar, Ficha, RUTIFICADOR, Script y Borrar) vuelven a ir en una sola fila con su texto, como antes. En dos filas no se entendía qué hacía cada uno.
+- Dirección y Observación se reparten en partes iguales el espacio que queda.
+
 ### 24-11-2026: ClaroGo! 2.18.0, Mi Planilla ordenada en dos líneas
 
 - Cada fila usa dos líneas para que todo calce sin apretarse: Fecha con Hora abajo, Nombre con los nombres arriba y los apellidos abajo, Dirección en dos líneas, Teléfono con Compañía abajo y Tipificación con Plan abajo. Los títulos de la tabla muestran las dos etiquetas.

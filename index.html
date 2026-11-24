@@ -565,17 +565,12 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla .acc button:hover{background:#eef2f7}
 #ct-tabla .acc .go{color:#fff;background:var(--red);font-size:.7rem}
 #ct-tabla .acc .go:hover{background:var(--red-dk)}
-/* Botones de cada fila en dos filas: WhatsApp, Genesys, Copiar y Ficha arriba; Rutificador, Script y Borrar abajo */
-@media (min-width:721px){
-  #ct-tabla .acc{display:grid;grid-template-columns:30px 1fr 30px 1fr;grid-auto-rows:20px;gap:3px;height:auto;padding:3px 4px}
-  #ct-tabla .acc button{min-width:0;padding:0 4px;font-size:.74rem}
-  #ct-tabla .acc .gen,#ct-tabla .acc .fic{justify-content:center}
-  #ct-tabla .acc .rutif{grid-column:span 2}
-}
-.c-n{width:42px}.c-fecha{width:80px}.c-rut{width:90px}.c-tel{width:96px}.c-deu{width:76px}.c-tipo{width:170px}.c-ag{width:80px}.c-acc{width:216px}
-.c-nombre{width:170px}.c-dir{width:220px}.c-notas{width:auto}
-@media (max-width:1500px){.c-nombre{width:134px} .c-dir{width:150px} .c-tipo{width:150px} .c-rut{width:86px} .c-deu{width:72px} .c-ag{width:76px} .c-acc{width:206px}}
-@media (max-width:1100px){.plan-caja{display:none} .c-acc{width:200px} .c-dir{width:110px}}
+/* Botones de cada fila en una sola fila, con su texto. Dirección y Observación se reparten en partes iguales el espacio que queda */
+#ct-tabla td.c-acc{vertical-align:middle}
+.c-n{width:42px}.c-fecha{width:80px}.c-rut{width:90px}.c-tel{width:96px}.c-deu{width:76px}.c-tipo{width:150px}.c-ag{width:80px}.c-acc{width:380px}
+.c-nombre{width:150px}.c-dir{width:auto}.c-notas{width:auto}
+@media (max-width:1500px){.c-nombre{width:134px} .c-tipo{width:140px} .c-rut{width:86px} .c-deu{width:72px} .c-ag{width:76px}}
+@media (max-width:1100px){.plan-caja{display:none} .c-acc{width:320px} #ct-tabla .acc .gen-t{display:none} .c-dir{width:110px}}
 @media (max-width:720px){#ct-tabla .tel-nom{display:block;font-size:.66rem;font-weight:700;line-height:1.2;padding:3px 4px 0;white-space:normal;word-break:break-word;color:var(--text)} #ct-tabla td.c-tel{white-space:normal;height:auto}.c-fecha,.c-notas,.c-rut,.c-nombre,.c-dir{display:none}.c-tel{width:auto}.c-tipo{width:80px}.c-n{width:36px}.c-acc{width:140px} #ct-tabla .acc .fic{padding:0 6px} #ct-tabla .acc .fic .fic-t{display:none} #ct-tabla .acc .gen-t{display:none} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
 #ct-resumen .chip b{margin-left:4px}
 .resp{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:.84rem}
@@ -1277,7 +1272,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.18.0';
+const APP_VERSION = '2.18.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
