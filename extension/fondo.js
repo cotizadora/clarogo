@@ -355,7 +355,7 @@ chrome.storage.onChanged.addListener((c, area) => {
       const t = (await chrome.tabs.query({ url: VENTA })).filter(x => String(x.url || '').includes(ID_VENTA)).sort((a, b) => (b.active - a.active) || ((b.lastAccessed || 0) - (a.lastAccessed || 0)))[0];
       if (t) await chrome.scripting.executeScript({ target: { tabId: t.id }, func: avisoCentro, args: [quedan ? `Faltan ${quedan} ${quedan === 1 ? 'línea' : 'líneas'} por subir` : 'Venta registrada', '¡Formulario de venta enviado!'] });
     } catch (e) {}
-    if (quedan) setTimeout(volverAClaroGo, 4400);
+    if (quedan) setTimeout(volverAClaroGo, 2200);
   }, 1500);
 });
 
@@ -371,7 +371,7 @@ chrome.storage.onChanged.addListener((c, area) => {
     });
   }
   // Después de la animación se vuelve a Genesys y el botón Enviar queda en neón (el ejecutivo lo presiona)
-  if (Date.now() - ultimoGenesys > 10000) { ultimoGenesys = Date.now(); setTimeout(volverAGenesys, env.aviso ? 4400 : 1500); }
+  if (Date.now() - ultimoGenesys > 10000) { ultimoGenesys = Date.now(); setTimeout(volverAGenesys, env.aviso ? 2200 : 1500); }
   if (!env.aviso || Date.now() - ultimoAviso < 10000) return;   // un solo aviso por envío
   ultimoAviso = Date.now();
   // Aviso al centro del formulario, con los colores del formulario. Se intenta dos veces (mientras Google cambia de página)
@@ -387,7 +387,7 @@ chrome.storage.onChanged.addListener((c, area) => {
   function notificar() { try {
     const id = 'cg-enviado-' + env.ts;
     chrome.notifications.create(id, { type: 'basic', iconUrl: 'icono-128.png', title: '✅ Tipificación enviada', message: env.texto || 'El registro de no venta se envió correctamente.', priority: 1 });
-    setTimeout(() => chrome.notifications.clear(id), 6000);
+    setTimeout(() => chrome.notifications.clear(id), 3000);
   } catch (e) {} }
 });
 
@@ -408,8 +408,8 @@ function avisoCentro(texto, tituloTxt) {
   document.documentElement.appendChild(fondo);
   requestAnimationFrame(() => { tarjeta.style.transform = 'scale(1)'; });
   fondo.onclick = () => fondo.remove();
-  setTimeout(() => { fondo.style.opacity = '0'; }, 3200);
-  setTimeout(() => fondo.remove(), 4200);
+  setTimeout(() => { fondo.style.opacity = '0'; }, 1600);
+  setTimeout(() => fondo.remove(), 2100);
 }
 
 // Formularios de ventas y no venta: en la segunda hoja Google carga la página de una forma en que Edge

@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: GoExt 1.50.0, aviso de tipificación más corto
+
+- El aviso "¡Tipificado por GoExt correctamente!" dura la mitad (antes unos 3 segundos antes de desvanecerse, ahora 1,6) y la vuelta a Genesys ocurre a la mitad del tiempo (2,2 segundos en vez de 4,4). Lo mismo para el aviso de venta enviada y la notificación de respaldo.
+
 ### 24-11-2026: GoExt 1.49.0, no venta siempre con "NO" marcado
 
 - En el formulario de no venta, GoExt hace clic directamente en "No" de "CLIENTE EVALUADO" (primera hoja) y en "NO" de "CLIENTE NO EVALUADO" (segunda hoja) cuando están sin marcar. Antes dependía solo de la dirección del formulario y Google a veces no lo aplicaba en la segunda hoja.
