@@ -264,6 +264,9 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 #ct-tabla .deu-b:hover{border-color:var(--red);background:#fff5f5}
 #ct-tabla .deu-b.ok{border-color:#14804a;color:#fff;background:#14804a}
 #ct-tabla .deu-b.mal{border-color:#c00000;color:#fff;background:#c00000}
+#ct-tabla .deu-b.espera{border-color:#1a56b8;color:#1a56b8;background:#eef4ff;animation:deuEspera 1.2s ease-in-out infinite}
+@keyframes deuEspera{50%{background:#d6e4ff}}
+@media (prefers-reduced-motion:reduce){#ct-tabla .deu-b.espera{animation:none}}
 #ct-tabla .deu-b span{display:inline}
 #ct-tabla .deu-b .lk-logo{width:16px;height:16px;border-radius:4px}
 #ct-tabla .deu-b .lk-wom{display:grid;place-items:center;width:16px;height:16px;border-radius:4px;background:#3d0f6b;color:#fff;font-size:.38rem;font-weight:900}
@@ -680,7 +683,8 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .sc-agente label{font-size:.72rem;font-weight:700;color:var(--muted);margin:0 0 3px}
 .sc-opc{font-size:.68rem;font-weight:600;text-transform:none;letter-spacing:0;opacity:.75}
 #sc-form .fi-g input:focus,#sc-form .fi-g select:focus,#ct-tabla .fi-g input:focus,#ct-tabla .fi-g select:focus{outline:2px solid currentColor;outline-offset:-1px}
-#ct-tabla .fi-obs textarea{width:100%;min-height:72px;color:var(--text);border:1px solid #d5dae2;border-radius:10px;background:#fff;padding:6px 8px;font:inherit;font-size:.82rem;resize:vertical}
+#ct-tabla .fi-obs textarea{width:100%;min-height:120px;max-height:max(320px,65vh);overflow-y:auto;field-sizing:content;color:var(--text);border:1px solid #d5dae2;border-radius:10px;background:#fff;padding:8px 10px;font:inherit;font-size:.86rem;line-height:1.45;resize:vertical;white-space:pre-wrap}
+#ct-tabla .fi-obs-ayuda{display:block;margin-top:4px;font-size:.72rem;color:var(--muted)}
 .fi-chips{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 6px}
 .fi-chips button{border:1px solid #c9daf8;background:#fff;color:#1a56b8;border-radius:999px;font-size:.72rem;padding:3px 9px;cursor:pointer}
 .fi-chips button:hover{background:#eef4ff}
@@ -1280,7 +1284,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.20.1';
+const APP_VERSION = '2.21.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2199,6 +2203,12 @@ function rutValido(rut) {
   for (let i = cuerpo.length - 1; i >= 0; i--) { sum += parseInt(cuerpo[i]) * mul; mul = mul === 7 ? 2 : mul + 1; }
   const e = 11 - (sum % 11); return dv === (e === 11 ? '0' : e === 10 ? 'k' : String(e));
 }
+// RUT escrito en Mi Planilla: se quitan los puntos y espacios. El guion queda solo si el ejecutivo lo escribió.
+function rutPlanilla(v) {
+  const s = String(v || '').toUpperCase().replace(/[^0-9K-]/g, '');
+  const c = s.replace(/-/g, '').replace(/^0+/, '');
+  return s.includes('-') && c.length > 1 ? c.slice(0, -1) + '-' + c.slice(-1) : c;
+}
 function rutFormato(v) {
   const c = v.replace(/[^0-9kK]/g, '').replace(/^0+/, ''); if (c.length <= 1) return c;
   return c.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '-' + c.slice(-1).toUpperCase();
@@ -2257,7 +2267,8 @@ function scGuardarEnFila(e) {
   }
   if (id === 'plan') { const p = PLANES_VIGENTES.find(x => x.id === e.target.value); if (p) r.plan = p.title; }
   else r[scClave(id)] = e.target.value.trim();
-  if (id === 'rut' && e.type === 'change') rutifAuto(r);
+  if (id === 'contacto' && r.contacto !== r.telefono) delete r.contactoAuto;   // otro número de contacto escrito en el Script
+  if (id === 'rut' && e.type === 'change') { rutifAuto(r); deudaAuto(r); }
   if (['calle', 'num', 'int', 'comuna', 'region'].includes(id)) { ['calle', 'num', 'int', 'comuna', 'region'].forEach(k => { const el = $('#sc-' + k); if (el) r[k] = el.value.trim(); }); r.direccion = dirArmar(r); }
   if (!r.telefono && (r.contacto || r.fono)) r.telefono = r.contacto || r.fono;
   r.upd = Date.now(); scFirma = r.id + ':' + r.upd; ctGuardar(); ctRepintar();
@@ -2685,7 +2696,14 @@ let ctExtTimer = 0;
 const ctAvisarExt = () => { if (!document.documentElement.dataset.clarogoExt) return; clearTimeout(ctExtTimer); ctExtTimer = setTimeout(() => window.postMessage({ tipo: 'clarogo-ct' }, location.origin), 600); };
 const ctGuardarLocal = () => { try { const antes = JSON.stringify(CT); CT = ctMezclar(CT, ctLeerLocal()); localStorage.setItem(CT_KEY, JSON.stringify(CT)); ctAvisarExt(); if (JSON.stringify(CT) !== antes) ctRepintar(); } catch (e) { if (!ctAviso) { ctAviso = true; toast('El navegador no dejó guardar la copia local. Revisa que el archivo de respaldo esté activo.'); } } };
 // Cada cambio: copia local inmediata y guardado en el archivo a los pocos segundos
-function ctGuardar() { undoRegistrar(); ctGuardarLocal(); gMarcarGuardado(); clearTimeout(ctTimer); ctTimer = setTimeout(() => respSync('edición'), AUTO_EDIT_SEG * 1000); }
+// Teléfono de contacto: por defecto es el mismo número por el que se llegó al cliente (el de la fila).
+// Sigue a ese número mientras el ejecutivo no escriba otro en la ficha.
+const contactoDefecto = () => CT.forEach(r => {
+  if (!r || r.borrado || !r.telefono) return;
+  if (!r.contacto) { r.contacto = r.telefono; r.contactoAuto = 1; }
+  else if (r.contactoAuto && r.contacto !== r.telefono) r.contacto = r.telefono;
+});
+function ctGuardar() { contactoDefecto(); undoRegistrar(); ctGuardarLocal(); gMarcarGuardado(); clearTimeout(ctTimer); ctTimer = setTimeout(() => respSync('edición'), AUTO_EDIT_SEG * 1000); }
 
 /* ── Deshacer y Guardar ─────────────────────────────────────────────
    Antes de cada grupo de cambios (los cambios seguidos con menos de 1,2 segundos entre sí cuentan como uno)
@@ -3029,12 +3047,44 @@ const origenOpciones = o => { const v = origenNorm(o), lista = v && !ORIGENES.in
 const deudaBoton = r => {
   const c = deudaComp(r), port = DEUDA_PORTALES.find(x => x[0] === c), est = /tiene deuda/i.test(r.deuda || '') ? ' mal' : r.deuda && c && r.deuda.toLowerCase().startsWith(c) ? ' ok' : '';
   if (!port) return `<button type="button" class="deu-b" data-deuda="?" title="Elige la compañía del cliente para revisar su deuda"><span>Elegir</span><span>compañía</span></button>`;
+  if (deudaFondo.has(r.id)) return `<button type="button" class="deu-b espera" data-deuda="${c}" title="Revisando la deuda en ${port[1]} en segundo plano">${icoEnlace(port[2])}<span>Revisando…</span></button>`;
   return `<button type="button" class="deu-b${est}" data-deuda="${c}" title="${esc(r.deuda ? 'Última revisión: ' + r.deuda : `Revisar la deuda de este RUT en ${port[1]}`)}">${icoEnlace(port[2])}<span>${est === ' mal' ? 'Con deuda' : est ? 'Sin deuda' : 'Revisar'}</span></button>`;
-};function deudaRevisar(id, comp) {
+};
+/* Deuda automática: apenas se escribe un RUT válido (y la fila tiene compañía), GoExt revisa la deuda en una pestaña de atrás.
+   El ejecutivo no sale de la planilla: el botón de la fila dice "Revisando…" y el resultado llega solo a la fila y a Observación. */
+const deudaFondo = new Map();
+function deudaEsperaMarca(id, on) {
+  if (!on) { clearTimeout(deudaFondo.get(id)); deudaFondo.delete(id); }
+  const b = $(`#ct-body tr[data-id="${id}"]:not(.ficha) td.c-deu .deu-b`); if (!b) return;
+  b.classList.toggle('espera', on); if (on) b.lastElementChild.textContent = 'Revisando…';
+}
+function deudaAuto(r) {
+  if (!r || !document.documentElement.dataset.clarogoDeudaFondo || /prueba/i.test(r.nombre || '') || !rutValido(r.rut || '')) return false;
+  const comp = deudaComp(r);
+  if (!comp) { setTimeout(() => toast('Para revisar la deuda sola, elige la compañía del cliente en la columna Teléfono.'), 2500); return false; }
+  const clave = String(r.rut).replace(/[^0-9kK]/g, '').toUpperCase() + '@' + comp;
+  if (r.deudaAuto === clave) return false;
+  r.deudaAuto = clave;   // una sola revisión automática por RUT y compañía
+  deudaRevisar(r.id, comp, true);
+  return true;
+}
+function deudaRevisar(id, comp, fondo) {
   const r = CT.find(x => x.id === id), port = DEUDA_PORTALES.find(x => x[0] === comp); if (!r || !port) return;
   const rut = String(r.rut || '').replace(/[^0-9kK]/g, '').toUpperCase();
   if (rut.length < 7) { const inp = $(`#ct-body tr[data-id="${id}"]:not(.ficha) [data-k="rut"]`); if (inp) inp.focus(); return toast('Primero escribe el RUT del cliente: pregúntaselo y anótalo en la columna RUT.'); }
   const rutG = rut.slice(0, -1) + '-' + rut.slice(-1);
+  if (fondo) {
+    window.postMessage({ tipo: 'clarogo-deuda', comp, rut: rutG, id, fondo: true }, location.origin);
+    clearTimeout(deudaFondo.get(id));
+    deudaFondo.set(id, setTimeout(() => {
+      if (!deudaFondo.has(id)) return;
+      deudaEsperaMarca(id, false); const rr = CT.find(x => x.id === id), td = $(`#ct-body tr[data-id="${id}"]:not(.ficha) td.c-deu`); if (rr && td) td.innerHTML = deudaBoton(rr);
+      toast(`No se pudo revisar la deuda en ${port[1]} en segundo plano. Presiona "Revisar" en la fila para hacerlo a la vista.`);
+    }, 120000));
+    deudaEsperaMarca(id, true);
+    toast(RUTIF_ESPERA.has(id) ? `⏳ Buscando nombre, dirección y deuda en ${port[1]}… Se llenan solos en esta fila. Puedes seguir trabajando.` : `⏳ Revisando la deuda en ${port[1]} en segundo plano. Puedes seguir trabajando.`);
+    return;
+  }
   if (document.documentElement.dataset.clarogoExt) window.postMessage({ tipo: 'clarogo-deuda', comp, rut: rutG, id }, location.origin);
   try { navigator.clipboard.writeText(rutG).catch(() => {}); } catch (e) {}
   // Siempre la misma pestaña para los portales de pago: no se juntan pestañas
@@ -3080,7 +3130,7 @@ function rutifAuto(r) {
 // RUT pegado en la columna RUT de la planilla: se formatea y se busca al tiro, sin esperar a salir del cuadro
 document.addEventListener('paste', e => {
   const el = e.target.closest && e.target.closest('#ct-body [data-k="rut"]'); if (!el) return;
-  setTimeout(() => { el.value = rutFormato(el.value); el.dispatchEvent(new Event('change', { bubbles: true })); }, 0);
+  setTimeout(() => { el.value = rutPlanilla(el.value); el.dispatchEvent(new Event('change', { bubbles: true })); }, 0);
 });
 window.addEventListener('message', e => {
   if (e.source !== window || !e.data || e.data.tipo !== 'clarogo-rutif-res') return;
@@ -3142,6 +3192,17 @@ window.addEventListener('message', e => {
     r.deudaNota = e.data.ts;
   }
   r.upd = Date.now(); ctGuardar();
+  // Revisión en segundo plano: el ejecutivo sigue en la planilla. Se actualiza solo esa fila (sin mover la pantalla ni borrar lo que está escribiendo)
+  if (deudaFondo.has(r.id)) {
+    deudaEsperaMarca(r.id, false);
+    const tr = $(`#ct-body tr[data-id="${r.id}"]:not(.ficha)`);
+    if (tr) {
+      const td = tr.querySelector('td.c-deu'); if (td) td.innerHTML = deudaBoton(r);
+      $$(`#ct-body [data-id="${r.id}"] [data-k="notas"]`).forEach(x => { if (x !== document.activeElement) notaPoner(x, r.notas); });
+      $$(`#ct-body tr.ficha[data-id="${r.id}"] .fi-deuda`).forEach(x => { x.outerHTML = deudaBarra(r); });
+      ctNeon = r.id; tr.classList.add('neon'); ctNeonApagarAlClic();
+    }
+  } else
   // GoExt vuelve a esta pestaña después del aviso: la fila revisada queda en neón para no perderla de vista
   agVerFila(r.id);
   toast((e.data.deuda ? '⚠️ ' : '✅ ') + (r.nombre ? r.nombre + ': ' : '') + e.data.texto);
@@ -3153,7 +3214,7 @@ function ctFichaHTML(r) {
     else if (ph === 'GENERO') { const auto = generoPorNombre(r.nombre); inp = `<select data-k="${k}"><option value="">Automático${auto ? ` (${auto === 'F' ? 'estimada' : 'estimado'})` : r.nombre ? ' (solo el nombre)' : ''}</option><option value="F"${r[k] === 'F' ? ' selected' : ''}>Mujer: estimada</option><option value="M"${r[k] === 'M' ? ' selected' : ''}>Hombre: estimado</option><option value="N"${r[k] === 'N' ? ' selected' : ''}>Sin estimado(a), solo el nombre</option></select>`; }
     else if (ph === 'TVENTA') inp = `<select data-k="${k}"><option value="">Elegir</option>${TVENTA.map(([v, t]) => `<option value="${v}"${r[k] === v ? ' selected' : ''}>${t}</option>`).join('')}</select>`;
     else if (k === 'adic') inp = `<input type="hidden" data-k="adic" value="${esc(r.adic || '')}"><div class="ln-ui"></div>`;
-    else inp = `<input data-k="${k}" value="${esc(k === 'direccion' ? dirTexto(r) : (r[k] || ''))}" placeholder="${esc(ph)}"${k === 'region' ? ' list="sc-regiones"' : k === 'eta' ? ' list="sc-etas"' : ''}>`;
+    else inp = `<input data-k="${k}" value="${esc(k === 'direccion' ? dirTexto(r) : k === 'contacto' ? (r.contacto || r.telefono || '') : (r[k] || ''))}" placeholder="${esc(ph)}"${k === 'region' ? ' list="sc-regiones"' : k === 'eta' ? ' list="sc-etas"' : ''}>`;
     return `<div${k === 'direccion' || k === 'adic' ? ' style="grid-column:1/-1"' : ''}><label>${k === 'adic' ? 'Líneas adicionales (la línea 1 es el número a portar)' : l}</label>${inp}</div>`;
   };
   const MOD = { Cliente: ['cliente', ICO.cliente], Venta: ['venta', ICO.venta], Equipo: ['equipo', ICO.equipo], Despacho: ['despacho', ICO.despacho] };
@@ -3161,10 +3222,10 @@ function ctFichaHTML(r) {
       ? `<section class="fi-mod fi-m-${c}"><div class="fi-t">${ico}<span>Equipo</span><label class="fi-sin"><input type="checkbox" data-k="sineq"${r.sineq ? ' checked' : ''}> Sin equipo</label><button type="button" class="btn sm" data-eqpegar${r.sineq ? ' disabled' : ''}>Pegar equipo del Stock</button></div><div class="fi-g${r.sineq ? ' fi-off' : ''}">${cs.map(campo).join('')}</div></section>`
       : `<section class="fi-mod fi-m-${c}"><div class="fi-t">${ico}<span>${t}</span></div><div class="fi-g">${cs.map(campo).join('')}</div>${t === 'Venta' ? fichaLineasHTML(r) : ''}</section>`; };
   return `<tr class="ficha" data-id="${r.id}"><td colspan="13">
-    <div class="fi-top"><div class="fi-acc"><button type="button" class="btn sm red" data-ct="script">▶ Pasar al Script de Cierre</button><button type="button" class="btn sm" data-subir title="Abre el formulario de ventas con los datos de este cliente ya escritos">📤 Subir venta</button><button type="button" class="btn sm" data-ct="copiar">📋 Copiar para WhatsApp</button><button type="button" class="btn sm" data-exportar title="Archivo con todos los datos de este cliente, para WhatsApp o para otro computador">💾 Exportar cliente</button><button type="button" class="btn sm dark" data-ct="ficha">Cerrar ficha ▴</button></div>${deudaBarra(r)}</div>
+    <div class="fi-top"><div class="fi-acc"><button type="button" class="btn sm red" data-ct="script" title="Abre el Script de Cierre con los datos de este cliente ya cargados">▶ Ir al Script de Cierre con este cliente</button><button type="button" class="btn sm" data-subir title="Abre el formulario de ventas con los datos de este cliente ya escritos">📤 Subir la venta al formulario</button><button type="button" class="btn sm" data-ct="copiar" title="Copia los datos del cliente para pegarlos en WhatsApp (por ejemplo, para la supervisora)">📋 Copiar datos del cliente para WhatsApp</button><button type="button" class="btn sm" data-exportar title="Archivo con todos los datos de este cliente, para WhatsApp o para otro computador">💾 Guardar cliente en un archivo</button><button type="button" class="btn sm dark" data-ct="ficha" title="Cierra la ficha. Todo queda guardado.">▴ Cerrar esta ficha</button></div>${deudaBarra(r)}</div>
     ${r.histTip ? `<div class="fi-hist">🔁 <b>Contactado antes:</b> ${esc(r.histTip)}</div>` : ''}
     <div class="fi-mods">${FICHA.map(modulo).join('')}
-    <section class="fi-mod fi-m-obs"><div class="fi-t">${ICO.obs}<span>Observaciones</span></div><div class="fi-obs"><div class="fi-chips">${OBS_RAPIDAS.map(o => `<button type="button" data-obs="${esc(o)}">+ ${esc(o)}</button>`).join('')}</div><textarea data-k="notas" rows="3" placeholder="Pega o escribe aquí todo lo que conversaste con el cliente">${esc(r.notas || '')}</textarea></div></section></div>
+    <section class="fi-mod fi-m-obs"><div class="fi-t">${ICO.obs}<span>Observaciones</span></div><div class="fi-obs"><div class="fi-chips">${OBS_RAPIDAS.map(o => `<button type="button" data-obs="${esc(o)}">+ ${esc(o)}</button>`).join('')}</div><textarea data-k="notas" class="fi-obs-txt" rows="5" placeholder="Pega o escribe aquí todo lo que conversaste con el cliente">${esc(r.notas || '')}</textarea><small class="fi-obs-ayuda">Se ven todos los comentarios. Si son muchos, desliza con la rueda del mouse dentro del cuadro o arrastra la esquina de abajo a la derecha para agrandarlo.</small></div></section></div>
     <div class="fi-nota">Todo se guarda solo, sea venta o no.</div></td></tr>`;
 }
 // Completa una fila con lo leído de Genesys: solo llena lo vacío, nunca borra lo que ya escribiste
@@ -3697,7 +3758,7 @@ function ctAgregar(datos, silencioso) {
   }
   CT.unshift(fila); ctGuardar();
   // RUT que llega pegado (Genesys, Script): el Rutificador busca solo en segundo plano
-  if (fila.rut) setTimeout(() => rutifAuto(fila), 400);
+  if (fila.rut) setTimeout(() => { rutifAuto(fila); deudaAuto(fila); }, 400);
   if (silencioso) { ctRepintar(); return fila; }
   ctNuevo = fila.id; ctPinta();
   if (!datos || (!datos.rut && !datos.telefono)) toast(datos && Object.keys(datos).length === 0 ? 'Fila vacía agregada' : 'No encontré datos de Genesys. Agregué una fila vacía para completar a mano.');
@@ -3942,8 +4003,10 @@ function initControl() {
   const actualizar = e => {
     const el = e.target.closest('[data-k]'); if (!el) return;
     const r = CT.find(x => x.id === el.closest('tr').dataset.id); if (!r) return;
-    if (el.dataset.k === 'rut' && e.type === 'change') el.value = rutFormato(el.value);
+    // RUT de la planilla: sin puntos ni espacios (el guion solo si el ejecutivo lo escribe)
+    if (el.dataset.k === 'rut') { const v = e.type === 'change' ? rutPlanilla(el.value) : el.value.replace(/[.\s]/g, ''); if (v !== el.value) el.value = v; }
     if (el.dataset.k === 'mail' && el.value !== correoLimpio(el.value)) el.value = correoLimpio(el.value);
+    if (el.dataset.k === 'contacto') delete r.contactoAuto;   // el ejecutivo escribió otro número de contacto
     if (TEL_CAMPOS.includes(el.dataset.k) && el.value !== telLimpio(el.value)) el.value = telLimpio(el.value);
     if (e.type === 'change' && el.dataset.k === 'ref') el.value = tituloCalle(el.value);
     if (e.type === 'change' && el.dataset.k === 'direccion') el.value = dirFormato(el.value);
@@ -3963,7 +4026,11 @@ function initControl() {
     if (el.dataset.k === 'fono' || el.dataset.k === 'adic') { const n = lineasDe(r).length; $$(`#ct-body tr.ficha[data-id="${r.id}"] .fl-cuenta`).forEach(x => { x.textContent = n + (n === 1 ? ' línea' : ' líneas'); }); }
     if (el.dataset.k === 'tipo') { const tr = el.closest('tr'); tr.classList.toggle('t-venta', esVentaTipo(el.value)); el.title = tipoTitulo(el.value); tr.classList.remove('t-verde', 't-rojo', 't-amarillo'); if (tipoColor(el.value)) tr.classList.add(tipoColor(el.value)); }
     if (el.dataset.k === 'origen') { const td = $(`#ct-body tr[data-id="${r.id}"]:not(.ficha) td.c-deu`); if (td) td.innerHTML = deudaBoton(r); }
-    if (el.dataset.k === 'rut' && e.type === 'change') rutifAuto(r);
+    // RUT listo (Enter, clic afuera o cambio de celda): nombre, dirección y deuda se buscan solos en segundo plano
+    if (el.dataset.k === 'rut' && e.type === 'change') { rutifAuto(r); deudaAuto(r); }
+    if (el.dataset.k === 'origen' && e.type === 'change') deudaAuto(r);
+    // Teléfono de la fila cambiado: si la ficha está abierta, su teléfono de contacto lo sigue (salvo que se haya escrito otro)
+    if (el.dataset.k === 'telefono') $$(`#ct-body tr.ficha[data-id="${r.id}"] [data-k="contacto"]`).forEach(x => { if (x !== document.activeElement) x.value = r.contacto || ''; });
     // Observaciones de la ficha: al terminar de escribir, lo nuevo queda con su línea de fecha y hora
     if (el.dataset.k === 'notas' && e.type === 'change') {
       const s = notaSellar(el.dataset.antes, el.value);
@@ -3979,6 +4046,7 @@ function initControl() {
   body.addEventListener('click', e => { if (e.target.tagName === 'TD' && e.target.closest('tr:not(.ficha)')) tocaFicha(e.target.closest('tr')); });
   // Doble clic en un cuadro vacío o en el número de la fila; en un cuadro con texto, el doble clic sigue seleccionando la palabra
   body.addEventListener('dblclick', e => { if (e.target.closest('button, select, .ficha')) return; if (/^(INPUT|TEXTAREA)$/.test(e.target.tagName) && e.target.value.trim()) return; tocaFicha(e.target.closest('tr')); });
+  body.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches('[data-k="rut"]')) { e.preventDefault(); e.target.blur(); } });
   body.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches('textarea.nom')) e.preventDefault(); });
   body.addEventListener('click', e => {
     const pq = e.target.closest('[data-eqpegar]'); if (pq) return ctPegarEquipo(pq.closest('tr').dataset.id);

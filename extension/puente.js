@@ -7,10 +7,17 @@ document.documentElement.dataset.clarogoExt = '1';
 document.documentElement.dataset.clarogoRutifAbre = '1';   // esta versión abre (o reutiliza) el Rutificador por su cuenta
 document.documentElement.dataset.clarogoRutifOk = '1';     // y confirma cada pedido con 'clarogo-rutif-ok'
 document.documentElement.dataset.clarogoRutifFondo = '1';  // y puede buscar en segundo plano, sin cambiar de pestaña
+document.documentElement.dataset.clarogoDeudaFondo = '1';  // la deuda también se revisa en segundo plano al escribir el RUT
 window.addEventListener('message', e => {
   if (e.source !== window || !e.data) return;
   if (e.data.tipo === 'clarogo-wa' && /^https:\/\/web\.whatsapp\.com\/send\?/.test(String(e.data.url || ''))) chrome.runtime.sendMessage({ tipo: 'wa', url: e.data.url, img: /^data:image\/(png|jpeg);base64,/.test(String(e.data.img || '')) ? e.data.img : '' });
-  if (e.data.tipo === 'clarogo-deuda' && /^(claro|entel|movistar|wom)$/.test(String(e.data.comp)) && /^[0-9kK.\-]{3,12}$/.test(String(e.data.rut || ''))) chrome.storage.local.set({ deuda_pedido: { rut: String(e.data.rut), comp: e.data.comp, id: String(e.data.id || '').slice(0, 40), ts: Date.now() } });
+  // Con fondo: el portal se abre en una pestaña de atrás y el ejecutivo sigue en la planilla
+  if (e.data.tipo === 'clarogo-deuda' && /^(claro|entel|movistar|wom)$/.test(String(e.data.comp)) && /^[0-9kK.\-]{3,12}$/.test(String(e.data.rut || ''))) {
+    const fondo = !!e.data.fondo;
+    chrome.storage.local.set({ deuda_pedido: { rut: String(e.data.rut), comp: e.data.comp, id: String(e.data.id || '').slice(0, 40), ts: Date.now(), fondo } }).then(() => {
+      if (fondo) { try { chrome.runtime.sendMessage({ tipo: 'deuda-fondo', comp: e.data.comp }); } catch (err) {} }
+    });
+  }
   // El fondo guarda el pedido junto con esta pestaña, para volver exactamente a ella después del Rutificador
   // Si la extensión recibió el pedido se avisa a la página; si no responde, la página abre el Rutificador por su cuenta
   if (e.data.tipo === 'clarogo-rutif' && /^[0-9kK.\-]{3,12}$/.test(String(e.data.rut || ''))) {

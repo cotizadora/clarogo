@@ -101,7 +101,8 @@
     await chrome.storage.local.set({ deuda_res: { id: p.id || '', comp: COMP, deuda: r.deuda, monto: r.monto || '', texto: r.texto, ts: Date.now() } });
     await chrome.storage.local.remove('deuda_pedido');
     // Después del aviso vuelve a Mi Planilla, donde la fila revisada queda en neón
-    setTimeout(() => { try { chrome.runtime.sendMessage({ tipo: 'volver-clarogo' }); } catch (e) {} }, r.deuda ? 3000 : 2000);
+    // Si se revisó en segundo plano, el ejecutivo nunca salió de la planilla: no se cambia de pestaña
+    if (!p.fondo) setTimeout(() => { try { chrome.runtime.sendMessage({ tipo: 'volver-clarogo' }); } catch (e) {} }, r.deuda ? 3000 : 2000);
   };
   let listo = false;
   const revisar = () => { if (listo) return; const r = leerResultado(); if (r) { listo = true; fin(r); } };

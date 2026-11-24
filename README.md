@@ -68,6 +68,14 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: ClaroGo! 2.21.0 y GoExt 1.57.0, deuda en segundo plano al escribir el RUT
+
+- RUT en Mi Planilla: se borran los puntos y espacios al escribir. El guion queda solo si el ejecutivo lo pone. Basta con presionar Enter, hacer clic afuera o pasar a otra celda.
+- Con el RUT listo, nombre, dirección y deuda se buscan solos en segundo plano. La deuda se revisa en una pestaña de atrás (GoExt 1.57.0) y el ejecutivo no sale de la planilla. El botón de la fila dice "Revisando…" y el resultado queda en la fila y en Observación, con la fila en neón. Si la fila no tiene compañía, se pide elegirla y al elegirla se revisa sola. Si en 2 minutos no hay resultado, se avisa que se use el botón "Revisar".
+- Ficha: el teléfono de contacto es por defecto el mismo número de la fila (el número por el que se llegó al cliente). Si el ejecutivo escribe otro, se respeta.
+- Ficha: Observaciones crece para mostrar todos los comentarios. Si son muchos, se desliza dentro del cuadro o se agranda arrastrando la esquina.
+- Ficha: botones con nombres más claros ("Ir al Script de Cierre con este cliente", "Subir la venta al formulario", "Copiar datos del cliente para WhatsApp", "Guardar cliente en un archivo", "Cerrar esta ficha").
+
 ### 24-11-2026: GoExt 1.56.0, la deuda se lee desde "Total a pagar"
 
 - Probado en WOM con un RUT con deuda que dio Eduardo: WOM muestra una tabla con cada cuenta y "Total a pagar", y GoExt lo lee como "tiene deuda".

@@ -258,6 +258,20 @@ chrome.runtime.onMessage.addListener((msg, _de, responder) => {
     });
     return;
   }
+  // Deuda en segundo plano: el portal de pago se abre atrás (o se reutiliza su pestaña) y la planilla sigue a la vista
+  if (msg && msg.tipo === 'deuda-fondo') {
+    const url = { claro: 'https://sucursalvirtual.clarochile.cl/PagoExpress', entel: 'https://miperfil.entel.cl/PagoUnificado/Home', movistar: 'https://pagos.movistar.cl/publico/', wom: 'https://www.wom.cl/paga-aqui/' }[msg.comp];
+    if (!url) return;
+    const origen = _de && _de.tab ? _de.tab : null;
+    chrome.storage.local.get('deuda_tab').then(async o => {
+      let t = null;
+      try { if (o.deuda_tab) t = await chrome.tabs.get(o.deuda_tab); } catch (e) { t = null; }
+      if (t) await chrome.tabs.update(t.id, { url, active: false });
+      else t = await chrome.tabs.create(origen ? { url, active: false, index: origen.index + 1, windowId: origen.windowId } : { url, active: false });
+      chrome.storage.local.set({ deuda_tab: t.id });
+    }).catch(() => {});
+    return;
+  }
   // Después del Rutificador se vuelve a la misma pestaña de Mi Planilla desde donde se pidió
   if (msg && msg.tipo === 'volver-planilla') {
     chrome.storage.local.get('rutif_tab').then(async o => {
