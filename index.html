@@ -1280,7 +1280,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.20.0';
+const APP_VERSION = '2.20.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -3135,10 +3135,10 @@ window.addEventListener('message', e => {
   const r = CT.find(x => x.id === e.data.id); if (!r) return;
   const h = new Date(e.data.ts || Date.now());
   r.deuda = `${String(e.data.texto || '').slice(0, 80)} (${String(h.getDate()).padStart(2, '0')}-${String(h.getMonth() + 1).padStart(2, '0')} ${String(h.getHours()).padStart(2, '0')}:${String(h.getMinutes()).padStart(2, '0')})`;
-  // Con deuda: queda anotado al tiro en Observación, con la fecha y hora de la revisión (una sola vez por revisión)
-  if (e.data.deuda && r.deudaNota !== e.data.ts) {
+  // Resultado de la revisión (con o sin deuda): queda anotado al tiro en Observación, con la fecha y hora (una sola vez por revisión)
+  if (r.deudaNota !== e.data.ts) {
     const comp = { claro: 'Claro', entel: 'Entel', movistar: 'Movistar', wom: 'WOM' }[e.data.comp] || 'la compañía';
-    notaAgregar(r, `⚠️ Deuda revisada en ${comp}: tiene deuda${e.data.monto ? ' de ' + String(e.data.monto).slice(0, 20) : ''}`);
+    notaAgregar(r, e.data.deuda ? `⚠️ Deuda revisada en ${comp}: tiene deuda${e.data.monto ? ' de ' + String(e.data.monto).slice(0, 20) : ''}` : `✅ Deuda revisada en ${comp}: sin deuda`);
     r.deudaNota = e.data.ts;
   }
   r.upd = Date.now(); ctGuardar();

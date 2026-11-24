@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: ClaroGo! 2.20.1 y GoExt 1.54.0, "sin deuda" también queda en Observación
+
+- Cada revisión de deuda queda anotada en Observación con su fecha y hora, también cuando no hay deuda ("✅ Deuda revisada en Entel: sin deuda").
+- Si GoExt ya salió del formulario del portal y en 30 segundos no logra leer el resultado, muestra un aviso: "GoExt no pudo leer el resultado de… Revísalo en pantalla", en vez de quedar en silencio.
+- Según Eduardo, la revisión funciona en Entel, Claro y Movistar. WOM sigue pendiente: falta saber a qué página lleva WOM después de consultar.
+
 ### 24-11-2026: ClaroGo! 2.20.0 y GoExt 1.53.0, fila en neón y estrella de favorito con destellos
 
 - Después de revisar la deuda, GoExt muestra el aviso y vuelve sola a la pestaña de ClaroGo! (3 segundos si hay deuda, 2 si no). Mi Planilla lleva a la fila revisada y la deja en neón celeste hasta el primer clic (o 30 segundos).

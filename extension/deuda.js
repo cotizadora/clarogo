@@ -102,6 +102,13 @@
   const obs = new MutationObserver(() => revisar());
   obs.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
   const reloj = setInterval(revisar, 1500);
+  // Si ya salió del formulario y en 30 segundos no se pudo leer el resultado, se avisa en vez de quedar en silencio
+  setTimeout(() => {
+    if (listo) return;
+    const c = document.querySelector(SITIO.campo);
+    if (c && c.offsetParent) return;   // todavía en el formulario (por ejemplo, esperando la verificación)
+    aviso(`GoExt no pudo leer el resultado de ${NOMBRE}.\nRevísalo en pantalla.`, '#8a6100', true);
+  }, 30000);
   setTimeout(() => { if (!listo) { obs.disconnect(); clearInterval(reloj); } }, 5 * 60000);
   revisar();
 })();
