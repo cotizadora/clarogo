@@ -68,6 +68,13 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: ClaroGo! 2.18.0, Mi Planilla ordenada en dos líneas
+
+- Cada fila usa dos líneas para que todo calce sin apretarse: Fecha con Hora abajo, Nombre con los nombres arriba y los apellidos abajo, Dirección en dos líneas, Teléfono con Compañía abajo y Tipificación con Plan abajo. Los títulos de la tabla muestran las dos etiquetas.
+- Los botones de cada fila van en dos filas (WhatsApp, Genesys, Copiar y Ficha arriba; RUTIFICADOR, Script y Borrar abajo), sin quitar ningún texto.
+- La columna "Notas" ahora se llama "Observación" y se ve en dos líneas con el espacio que quedó libre.
+- Los anchos de columna que se habían arrastrado con el diseño anterior se reinician (se guardan con otro nombre).
+
 ### 24-11-2026: ClaroGo! 2.17.1, hora debajo de la fecha en Mi Planilla
 
 - La hora va en la segunda línea de la celda Fecha (se puede editar ahí mismo) y la columna Hora ya no se muestra. Su espacio queda para Notas en todos los tamaños de pantalla.
