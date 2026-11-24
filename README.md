@@ -68,6 +68,17 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: ClaroGo! 2.23.0, la guía suma el Stock y control de velocidad
+
+- Nuevo capítulo "5. Stock de Equipos" (23 pasos con capturas reales del stock publicado hoy):
+  - La fecha de actualización y la regla de más de 60 unidades (verde y rojo).
+  - La búsqueda, los filtros de marca, pie y "Solo con stock".
+  - Filtro rápido, Limpiar, copiar el SKU con un clic y ordenar por columna.
+  - Copiar lista filtrada, el botón Copiar de cada equipo y Mostrar todos.
+  - Cómo pegar el equipo en la ficha con "Pegar equipo del Stock".
+- La guía queda en 55 pasos y 5 capítulos.
+- Selector de velocidad: 0,75×, 1×, 1,25×, 1,5×, 1,75× y 2×. Acelera la voz, el zoom, el mouse y las pausas. Se recuerda en el navegador.
+
 ### 24-11-2026: ClaroGo! 2.22.1, la guía pasa a Tutoriales
 
 - La guía animada ya no es una pestaña aparte: es la primera tarjeta de Tutoriales ("Guía completa: ClaroGo! y GoExt paso a paso") y se abre en pantalla completa.

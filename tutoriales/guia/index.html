@@ -9,15 +9,15 @@
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--fondo);color:var(--texto);font:16px/1.45 "Segoe UI",system-ui,sans-serif;overflow:hidden}
 #escena{position:fixed;inset:0 0 86px 0;overflow:hidden;background:#000}
-#mundo{position:absolute;left:0;top:0;width:1896px;height:988px;transform-origin:0 0;transition:transform 1.5s cubic-bezier(.65,0,.35,1);will-change:transform}
-#mundo img.base{position:absolute;left:0;top:0;width:1896px;height:988px;display:block;transition:filter .8s}
+#mundo{position:absolute;left:0;top:0;width:1896px;height:988px;transform-origin:0 0;transition:transform calc(1.5s*var(--k,1)) cubic-bezier(.65,0,.35,1);will-change:transform}
+#mundo img.base{position:absolute;left:0;top:0;width:1896px;height:988px;display:block;transition:filter calc(.8s*var(--k,1))}
 #mundo.con-capa img.base{filter:brightness(.55) blur(1px)}
-#capa{position:absolute;left:1086px;top:6px;width:794px;height:576px;border-radius:10px;box-shadow:0 18px 60px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.25);opacity:0;transform:translateY(-14px) scale(.97);transition:opacity .6s,transform .6s;pointer-events:none}
+#capa{position:absolute;left:1086px;top:6px;width:794px;height:576px;border-radius:10px;box-shadow:0 18px 60px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.25);opacity:0;transform:translateY(-14px) scale(.97);transition:opacity calc(.6s*var(--k,1)),transform calc(.6s*var(--k,1));pointer-events:none}
 #capa.on{opacity:1;transform:none}
-#aro{position:absolute;border-radius:12px;border:calc(4px*var(--inv,1)) solid #ffd400;box-shadow:0 0 0 9999px rgba(0,0,0,.42),0 0 calc(24px*var(--inv,1)) rgba(255,212,0,.85);opacity:0;transition:all .9s cubic-bezier(.65,0,.35,1);pointer-events:none}
+#aro{position:absolute;border-radius:12px;border:calc(4px*var(--inv,1)) solid #ffd400;box-shadow:0 0 0 9999px rgba(0,0,0,.42),0 0 calc(24px*var(--inv,1)) rgba(255,212,0,.85);opacity:0;transition:all calc(.9s*var(--k,1)) cubic-bezier(.65,0,.35,1);pointer-events:none}
 #aro.on{opacity:1}
-#cursor{position:absolute;left:0;top:0;width:34px;height:34px;transform-origin:0 0;transform:scale(var(--inv,1));transition:left 1.1s cubic-bezier(.65,0,.35,1),top 1.1s cubic-bezier(.65,0,.35,1),transform 1.5s;pointer-events:none;filter:drop-shadow(0 3px 4px rgba(0,0,0,.45));z-index:5}
-.onda{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;border:calc(3px*var(--inv,1)) solid #ffd400;animation:onda .7s ease-out forwards;pointer-events:none;z-index:4}
+#cursor{position:absolute;left:0;top:0;width:34px;height:34px;transform-origin:0 0;transform:scale(var(--inv,1));transition:left calc(1.1s*var(--k,1)) cubic-bezier(.65,0,.35,1),top calc(1.1s*var(--k,1)) cubic-bezier(.65,0,.35,1),transform calc(1.5s*var(--k,1));pointer-events:none;filter:drop-shadow(0 3px 4px rgba(0,0,0,.45));z-index:5}
+.onda{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;border:calc(3px*var(--inv,1)) solid #ffd400;animation:onda calc(.7s*var(--k,1)) ease-out forwards;pointer-events:none;z-index:4}
 @keyframes onda{from{transform:scale(calc(.4*var(--inv,1)));opacity:1}to{transform:scale(calc(3.2*var(--inv,1)));opacity:0}}
 #sub{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);max-width:min(1100px,92vw);padding:12px 20px;border-radius:14px;background:rgba(10,12,16,.86);color:#fff;font-size:clamp(16px,1.55vw,24px);font-weight:600;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.4);transition:opacity .4s}
 #sub:empty{opacity:0}
@@ -43,7 +43,7 @@ html,body{margin:0;height:100%;background:var(--fondo);color:var(--texto);font:1
 #fin.on{display:flex}
 #fin h2{font-size:clamp(26px,3.2vw,44px);margin:0 0 10px}
 #fin button{margin:8px;padding:12px 22px;border:0;border-radius:12px;background:var(--rojo);color:#fff;font:700 17px "Segoe UI",sans-serif;cursor:pointer}
-@media (max-width:700px){#barra{gap:6px;padding:0 8px}#paso,#cap{display:none}#barra select{max-width:110px}}
+@media (max-width:700px){#barra{gap:6px;padding:0 8px;overflow-x:auto}#barra>*{flex-shrink:0}#prog{min-width:60px}#paso,#cap{display:none}#barra select{max-width:110px}}
 @media (prefers-reduced-motion:reduce){#mundo,#cursor,#aro{transition-duration:.01s}}
 </style>
 </head>
@@ -59,6 +59,7 @@ html,body{margin:0;height:100%;background:var(--fondo);color:var(--texto);font:1
   <select id="caps" title="Ir a un capítulo"></select>
   <div id="prog" title="Clic para ir a esa parte"><i></i></div>
   <span id="paso"></span>
+  <select id="vel" title="Velocidad de reproducción"><option value="0.75">0,75×</option><option value="1" selected>1×</option><option value="1.25">1,25×</option><option value="1.5">1,5×</option><option value="1.75">1,75×</option><option value="2">2×</option></select>
   <button id="voz" title="Activar o silenciar la voz">🔊 Voz</button>
   <button id="pant" title="Pantalla completa">⛶</button>
   <button id="salir" title="Cerrar la guía">✕ Cerrar</button>
@@ -71,6 +72,7 @@ html,body{margin:0;height:100%;background:var(--fondo);color:var(--texto);font:1
     <li>Atender una llamada: del RUT a la planilla</li>
     <li>Nombre, dirección y deuda que se llenan solos</li>
     <li>La ficha del cliente y cómo seguir la venta</li>
+    <li>Stock de Equipos: búsqueda, filtros, botones y trucos</li>
   </ol>
   <p class="nota">Llamada simulada con un número de prueba. Los datos reales del cliente aparecen difuminados por privacidad.</p>
   <button id="empezar">▶ Comenzar la guía</button>
@@ -137,15 +139,70 @@ const GUIA = [
     { cam: P(139, 170, 900, 110), mouse: [570, 245], aro: P(152, 223, 703, 44), voz: 'Arriba está el resultado de la deuda, y los botones para revisarla en otra compañía: Claro, Entel, Movistar o WOM.' },
     { cam: P(139, 280, 796, 280), mouse: [634, 380], aro: P(542, 361, 184, 34), voz: 'El teléfono de contacto ya viene con el mismo número por el que llamaste al cliente.' },
     { cam: P(139, 680, 1604, 308), mouse: [400, 805], aro: P(141, 759, 1600, 226), voz: 'En Observaciones está todo lo que pasó con el cliente, completo y con fecha y hora.' },
-    { cam: P(139, 170, 1100, 60), mouse: [270, 199], clic: true, aro: P(150, 181, 1065, 36), voz: 'Y con estos botones sigues la venta: ir al Script de Cierre con este cliente, subir la venta al formulario, copiar sus datos para WhatsApp, guardarlo en un archivo o cerrar la ficha.' },
-    { cam: null, mouse: [948, 600], voz: 'Eso es todo. Recuerda: escribe el RUT y GoExt hace el resto.' }
+    { cam: P(139, 170, 1100, 60), mouse: [270, 199], clic: true, aro: P(150, 181, 1065, 36), voz: 'Y con estos botones sigues la venta: ir al Script de Cierre con este cliente, subir la venta al formulario, copiar sus datos para WhatsApp, guardarlo en un archivo o cerrar la ficha.' }
+  ] },
+  { cap: '5. Stock de Equipos', img: '20-stock.jpg', pasos: [
+    { cam: null, mouse: [564, 35], clic: true, aro: P(515, 6, 98, 46), voz: 'Ahora el Stock de Equipos. Entra a la pestaña Stock de Equipos: ahí está todo el catálogo, con precios y unidades disponibles.' },
+    { cam: P(361, 245, 1160, 92), mouse: [540, 290], aro: P(361, 252, 1160, 79), voz: 'Primero mira esta fecha: te dice cuándo se actualizó el stock. En verde, es de hoy. Si dice que es de hace varios días, pide el archivo nuevo antes de confirmar stock.' },
+    { cam: P(361, 172, 1160, 78), mouse: [912, 201], aro: P(361, 180, 1160, 62), voz: 'Importante: en el Front solo pasan los equipos con más de sesenta unidades. En verde, los que pasan. En rojo, los de sesenta o menos: esos no los ofrezcas.' },
+    { cam: P(361, 480, 1160, 110), mouse: [1377, 554], aro: P(362, 491, 1158, 89), voz: 'Cada fila trae el modelo, el SKU, la marca, el pie inicial, las dieciocho cuotas, el precio total y las unidades en stock.' }
+  ] },
+  { cap: '5. Stock de Equipos', img: '21-buscar.jpg', pasos: [
+    { cam: P(361, 110, 1160, 250), mouse: [600, 148], clic: true, aro: P(374, 126, 482, 43), voz: 'Para buscar, escribe en este cuadro el modelo, la marca o el SKU. La lista se filtra mientras escribes. Aquí buscamos Samsung.' },
+    { cam: P(361, 110, 1160, 250), mouse: [985, 148], aro: P(864, 126, 490, 43), voz: 'También puedes filtrar por marca y por pie inicial: pie cero, hasta quince mil pesos, y otros rangos.' },
+    { cam: P(361, 110, 1160, 250), mouse: [1386, 147], clic: true, aro: P(1362, 126, 146, 43), voz: 'Y con Solo con stock ocultas los equipos que no tienen unidades.' }
+  ] },
+  { cap: '5. Stock de Equipos', img: '22-rapido.jpg', pasos: [
+    { cam: P(361, 110, 1160, 250), mouse: [465, 193], clic: true, aro: P(374, 177, 183, 32), voz: 'El truco más usado: Filtro rápido. Con un clic deja solo los equipos con pie cero y con stock, ordenados desde la cuota más barata.' },
+    { cam: P(361, 110, 1160, 250), mouse: [430, 244], aro: P(363, 232, 145, 23), voz: 'Aquí ves cuántos equipos quedan con los filtros que elegiste.' },
+    { cam: P(361, 110, 1160, 250), mouse: [597, 193], aro: P(565, 177, 64, 32), voz: 'Y con Limpiar vuelves a ver todo el catálogo.' }
+  ] },
+  { cap: '5. Stock de Equipos', img: '23-sku.jpg', pasos: [
+    { cam: P(600, 280, 520, 100), mouse: [812, 325], clic: true, aro: P(783, 315, 59, 19), voz: 'Toca cualquier SKU y se copia al tiro, listo para pegarlo en el Front.' },
+    { cam: P(640, 850, 600, 90), mouse: [940, 903], aro: P(882, 882, 117, 42), voz: 'Abajo te confirma: SKU copiado.' }
+  ] },
+  { cap: '5. Stock de Equipos', img: '24-ordenar.jpg', pasos: [
+    { cam: P(361, 250, 1160, 200), mouse: [1262, 280], clic: true, aro: P(1203, 261, 133, 38), voz: 'Para ordenar, haz clic en el título de una columna. Por ejemplo, Precio total: el más barato queda primero. Con otro clic se invierte el orden.' }
+  ] },
+  { cap: '5. Stock de Equipos', img: '25-lista.jpg', pasos: [
+    { cam: P(361, 110, 1160, 150), mouse: [700, 193], clic: true, aro: P(637, 177, 129, 32), voz: 'Copiar lista filtrada copia todos los equipos de la lista que tienen más de sesenta unidades, listos para mandar por WhatsApp.' },
+    { cam: P(560, 850, 760, 90), mouse: [940, 903], aro: P(620, 882, 642, 42), voz: 'Los de sesenta o menos no se copian, porque no pasan por el Front.' }
+  ] },
+  { cap: '5. Stock de Equipos', img: '26-copiado.jpg', pasos: [
+    { cam: P(1000, 280, 520, 110), mouse: [1449, 324], clic: true, aro: P(1415, 308, 69, 32), voz: 'El botón Copiar de cada fila copia ese equipo con el SKU, la marca, el modelo, el pie, las cuotas, el total y el stock, en formato para WhatsApp.' },
+    { cam: P(361, 280, 1160, 90), mouse: [1449, 324], aro: P(362, 299, 1158, 51), voz: 'Queda marcado como Copiado, para que sepas cuáles ya enviaste. Limpiar borra esas marcas.' }
+  ] },
+  { cap: '5. Stock de Equipos', img: '27-rojos.jpg', pasos: [
+    { cam: P(361, 100, 1160, 700), mouse: [1377, 166], aro: P(1350, 142, 54, 650), voz: 'Los equipos sin stock, o con sesenta unidades o menos, salen en rojo y quedan al final de la lista.' },
+    { cam: P(361, 780, 1160, 130), mouse: [1024, 848], clic: true, aro: P(973, 832, 103, 32), voz: 'Para que la página cargue rápido se muestran los primeros doscientos. Con Mostrar todos ves el catálogo completo.' }
+  ] },
+  { cap: '5. Stock de Equipos', img: '28-ficha-equipo.jpg', pasos: [
+    { cam: P(139, 400, 796, 200), mouse: [842, 440], clic: true, aro: P(766, 424, 152, 32), voz: 'Un truco para la venta: con el equipo copiado, abre la ficha del cliente en Mi Planilla y presiona Pegar equipo del Stock. Si el navegador pregunta, permite que ClaroGo! vea lo copiado.' }
+  ] },
+  { cap: '5. Stock de Equipos', img: '29-pegar.jpg', pasos: [
+    { cam: P(700, 296, 481, 396), mouse: [940, 520], clic: true, aro: P(719, 417, 444, 206), voz: 'Si el navegador no lo permite, se abre este cuadro. Haz clic en él y presiona Control V.' }
+  ] },
+  { cap: '5. Stock de Equipos', img: '30-pegado.jpg', pasos: [
+    { cam: P(700, 296, 481, 396), mouse: [1099, 654], clic: true, aro: P(1035, 634, 128, 40), voz: 'Y presiona Agregar equipo.' }
+  ] },
+  { cap: '5. Stock de Equipos', img: '31-equipo.jpg', pasos: [
+    { cam: P(139, 400, 796, 200), mouse: [300, 503], aro: P(141, 413, 792, 178), voz: 'Listo: el equipo, el SKU, el monto total, el pie y la forma de pago quedan llenos en la ficha, sin escribir nada.' },
+    { cam: null, mouse: [948, 600], voz: 'Eso es todo. Recuerda: escribe el RUT y GoExt hace el resto. Y en el Stock, ofrece solo los equipos en verde.' }
   ] }
 ];
 
 const $ = s => document.querySelector(s);
 const PASOS = []; GUIA.forEach((e, ie) => e.pasos.forEach((p, ip) => PASOS.push({ e, ie, ip, p })));
 const W = 1896, H = 988;
-let i = 0, jugando = false, vozOn = true, reloj = 0, vozES = null, gen = 0;
+let i = 0, jugando = false, vozOn = true, reloj = 0, vozES = null, gen = 0, VEL = 1;
+// Velocidad de reproducción: acelera la voz, los movimientos y las pausas (se recuerda en este navegador)
+function ponerVel(v) {
+  VEL = [0.75, 1, 1.25, 1.5, 1.75, 2].includes(+v) ? +v : 1;
+  document.documentElement.style.setProperty("--k", (1 / VEL).toFixed(3));
+  const s = document.querySelector("#vel"); if (s) s.value = String(VEL);
+  try { localStorage.setItem("guia_vel", String(VEL)); } catch (e) {}
+}
+try { ponerVel(localStorage.getItem("guia_vel") || 1); } catch (e) { ponerVel(1); }
 // Precarga de todas las capturas
 [...new Set(GUIA.flatMap(e => [e.img, e.capa].filter(Boolean)))].forEach(f => { const im = new Image(); im.src = f; });
 
@@ -161,16 +218,16 @@ function elegirVoz() {
 if (window.speechSynthesis) { elegirVoz(); speechSynthesis.onvoiceschanged = elegirVoz; }
 
 function hablar(texto, listo) {
-  const minimo = Math.max(3200, texto.length * 62);
+  const minimo = Math.max(3200, texto.length * 62) / VEL;
   if (!vozOn || !window.speechSynthesis || !vozES) { reloj = setTimeout(listo, minimo); return; }
   speechSynthesis.cancel();
   // Pronunciación: se dice "Claro Gou" y "GouEx" (los subtítulos quedan escritos normal)
   const dicho = texto.replace(/ClaroGo!?/g, 'Claro Gou').replace(/goext/gi, 'GouEx');
   const u = new SpeechSynthesisUtterance(dicho);
-  u.voice = vozES; u.lang = vozES.lang; u.rate = 1.02; u.pitch = 1;
-  let hecho = false; const fin = () => { if (hecho) return; hecho = true; clearTimeout(reloj); reloj = setTimeout(listo, 650); };
+  u.voice = vozES; u.lang = vozES.lang; u.rate = Math.min(2, 1.02 * VEL); u.pitch = 1;
+  let hecho = false; const fin = () => { if (hecho) return; hecho = true; clearTimeout(reloj); reloj = setTimeout(listo, 650 / VEL); };
   u.onend = fin; u.onerror = fin;
-  reloj = setTimeout(fin, texto.length * 110 + 4000);   // por si el navegador no avisa que terminó
+  reloj = setTimeout(fin, (texto.length * 110 + 4000) / VEL);   // por si el navegador no avisa que terminó
   speechSynthesis.speak(u);
 }
 
@@ -223,8 +280,8 @@ function mostrar(n, auto) {
   aro(null);
   camara(p.cam);
   // Primero la cámara, luego el mouse, el clic y el aro
-  setTimeout(() => { if (g !== gen) return; const c = $('#cursor'); c.style.left = p.mouse[0] + 'px'; c.style.top = p.mouse[1] + 'px'; }, 500);
-  setTimeout(() => { if (g !== gen) return; aro(p.aro); if (p.clic) clic(p.mouse[0], p.mouse[1]); }, 1650);
+  setTimeout(() => { if (g !== gen) return; const c = $('#cursor'); c.style.left = p.mouse[0] + 'px'; c.style.top = p.mouse[1] + 'px'; }, 500 / VEL);
+  setTimeout(() => { if (g !== gen) return; aro(p.aro); if (p.clic) clic(p.mouse[0], p.mouse[1]); }, 1650 / VEL);
   if (jugando) hablar(p.voz, () => { if (g !== gen || !jugando) return; if (i < PASOS.length - 1) mostrar(i + 1, true); else terminar(); });
 }
 function terminar() { jugando = false; $('#play').textContent = '▶'; $('#fin').classList.add('on'); }
@@ -245,6 +302,7 @@ $('#caps').innerHTML = GUIA.map((e, ie) => `<option value="${ie}"${caps.some(c =
 caps.slice(1).forEach(c => { const b = document.createElement('b'); b.style.left = (c.n / PASOS.length * 100) + '%'; $('#prog').appendChild(b); });
 $('#caps').onchange = () => { const ie = +$('#caps').value; const n = PASOS.findIndex(x => x.ie === ie); mostrar(n); };
 $('#prog').onclick = ev => { const r = $('#prog').getBoundingClientRect(); mostrar(Math.floor((ev.clientX - r.left) / r.width * PASOS.length)); };
+$('#vel').onchange = () => { ponerVel($('#vel').value); if (jugando) mostrar(i); };
 $('#ant').onclick = () => mostrar(i - 1);
 $('#sig').onclick = () => mostrar(i + 1);
 $('#play').onclick = () => play(!jugando);
