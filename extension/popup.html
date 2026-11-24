@@ -66,6 +66,20 @@
   p.nota { font-size: .72rem; color: var(--muted); margin: 10px 0 0; }
   .auto-abrir { margin: 0; padding: 8px 14px 10px; border-top: 1px solid #e3e6eb; font-size: .78rem; color: var(--muted); }
   .auto-abrir label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
+  #obligatorio { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 14px; background: rgba(255,255,255,.86); backdrop-filter: blur(3px); }
+  #obligatorio[hidden] { display: none; }
+  .ob-caja { width: 100%; max-width: 330px; padding: 20px 18px 16px; border-radius: 18px; background: #fff; border: 1px solid var(--border); box-shadow: 0 14px 40px rgba(0,0,0,.18); text-align: center; animation: obEntra .35s ease-out; }
+  @keyframes obEntra { from { opacity: 0; transform: translateY(8px) scale(.97); } to { opacity: 1; transform: none; } }
+  .ob-ico { display: grid; place-items: center; width: 54px; height: 54px; margin: 0 auto 10px; border-radius: 50%; background: var(--red); color: #fff; font-weight: 900; font-size: 1.2rem; box-shadow: 0 0 0 4px #ffe1e1; }
+  .ob-caja h2 { margin: 0 0 6px; font-size: 1.05rem; color: var(--text); }
+  .ob-caja p { margin: 0; font-size: .84rem; color: var(--muted); line-height: 1.4; }
+  .ob-flecha { margin: 10px 0 4px; font-size: 1.7rem; line-height: 1; color: #e0a800; animation: obFlecha 1.1s ease-in-out infinite; }
+  @keyframes obFlecha { 0%, 100% { transform: translateY(0); opacity: .75; } 50% { transform: translateY(7px); opacity: 1; } }
+  #ob-actualizar { width: 100%; margin: 0; padding: 12px; border: 0; border-radius: 12px; background: #ffd400; color: #1f2430; font-weight: 900; font-size: .95rem; box-shadow: 0 6px 16px rgba(224,168,0,.35); cursor: pointer; }
+  #ob-actualizar:hover { filter: brightness(1.04); }
+  #ob-luego { width: auto; margin: 10px auto 0; padding: 4px 8px; border: 0; background: none; color: var(--muted); font-size: .76rem; text-decoration: underline; cursor: pointer; }
+  #ob-luego[hidden] { display: none; }
+  #ob-quedan { display: block; margin-top: 6px; font-size: .7rem; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -100,6 +114,18 @@
   </div>
 </main>
 <p class="auto-abrir"><label title="Si el cliente corta, aparece al centro una alerta roja 'LLAMADA CORTADA' y GoExt se abre con el motivo Corte de llamado."><input type="checkbox" id="aviso-corte" checked> 📵 Avisar si el cliente corta la llamada</label></p>
+<!-- Actualización obligatoria: tapa la ventanita hasta actualizar (se puede postergar 10 minutos, solo 2 veces por versión) -->
+<div id="obligatorio" hidden>
+  <div class="ob-caja">
+    <div class="ob-ico">G!</div>
+    <h2>Hay una versión nueva de GoExt</h2>
+    <p id="ob-txt">Actualiza para seguir usando GoExt. Tarda unos segundos.</p>
+    <div class="ob-flecha" aria-hidden="true">⬇</div>
+    <button type="button" id="ob-actualizar">Actualizar ahora</button>
+    <button type="button" id="ob-luego">Más tarde (10 minutos)</button>
+    <small id="ob-quedan"></small>
+  </div>
+</div>
 <script src="popup.js"></script>
 </body>
 </html>

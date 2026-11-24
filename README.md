@@ -68,6 +68,13 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: GoExt 1.48.0, actualización obligatoria con aviso elegante
+
+- Caso: algunos ejecutivos no actualizaban con el botón amarillo.
+- Si hay una versión nueva (descargada o en internet), al abrir la ventanita aparece un aviso al centro que la tapa: ícono G!, "Hay una versión nueva de GoExt", flecha amarilla animada y el botón amarillo "Actualizar ahora".
+- Se puede postergar 10 minutos, solo 2 veces por versión (para no trabar una llamada en curso). Después ya no se puede seguir sin actualizar.
+- Voz suave y corta (voz natural en español de Windows/Edge, de preferencia de Chile, volumen 70 %): "Hay una nueva versión de GoExt. Actualízala con el botón amarillo." Suena como máximo una vez cada 2 horas por versión.
+
 ### 24-11-2026: GoExt 1.47.0, el neón va en el botón "Listo" de Genesys
 
 - Captura de Eduardo: en "Códigos de conclusión" de Genesys el botón para terminar se llama **"Listo"**, no "Enviar". GoExt solo buscaba "Enviar" y por eso el neón no aparecía. Ahora reconoce "Listo" (y también "Enviar", "Done" y "Submit").

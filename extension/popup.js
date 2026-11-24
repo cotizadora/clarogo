@@ -431,16 +431,65 @@ $('#historial').addEventListener('click', () => { chrome.tabs.create({ url: chro
 // Versión nueva descargada (con "Actualizar GoExt"): los archivos de la carpeta ya cambiaron pero la extensión sigue
 // usando la anterior. El botón la recarga desde la carpeta, sin pasar por la página de extensiones.
 const verMayor = (a, b) => { const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number); for (let i = 0; i < 3; i++) { if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0); } return false; };
+/* Actualización obligatoria: si hay versión nueva, un aviso tapa la ventanita hasta actualizar.
+   Se puede postergar 10 minutos, solo 2 veces por versión (para no trabar una llamada en curso).
+   Una voz suave lo recuerda, como máximo una vez cada 2 horas. */
+const POSTERGAR_MAX = 2;
+function vozAviso(version) {
+  try {
+    if (!('speechSynthesis' in window)) return;
+    chrome.storage.local.get('voz_aviso').then(o => {
+      const v = o.voz_aviso || {};
+      if (v.version === version && Date.now() - v.ts < 2 * 3600000) return;
+      chrome.storage.local.set({ voz_aviso: { version, ts: Date.now() } });
+      const hablar = () => {
+        const voces = speechSynthesis.getVoices().filter(x => /^es/i.test(x.lang));
+        // Voz natural en español, de preferencia de Chile
+        const voz = voces.find(x => /natural/i.test(x.name) && /CL/i.test(x.lang)) || voces.find(x => /natural/i.test(x.name)) || voces.find(x => /CL/i.test(x.lang)) || voces[0];
+        const u = new SpeechSynthesisUtterance('Hay una nueva versión de GoExt. Actualízala con el botón amarillo.');
+        if (voz) { u.voice = voz; u.lang = voz.lang; } else u.lang = 'es-CL';
+        u.rate = 1; u.pitch = 1; u.volume = 0.7;
+        speechSynthesis.cancel(); speechSynthesis.speak(u);
+      };
+      if (speechSynthesis.getVoices().length) hablar();
+      else { let hecho = false; speechSynthesis.onvoiceschanged = () => { if (!hecho) { hecho = true; hablar(); } }; setTimeout(() => { if (!hecho) { hecho = true; hablar(); } }, 800); }
+    });
+  } catch (e) {}
+}
+async function exigirActualizacion(version, texto, accion) {
+  let p = {}; try { p = (await chrome.storage.local.get('postergar')).postergar || {}; } catch (e) {}
+  if (p.version !== version) p = { version, veces: 0, hasta: 0 };
+  if (Date.now() < p.hasta) return;   // está dentro de los 10 minutos postergados: solo queda el botón amarillo
+  const quedan = POSTERGAR_MAX - p.veces;
+  $('#ob-txt').textContent = texto;
+  $('#ob-actualizar').onclick = accion;
+  $('#ob-luego').hidden = quedan <= 0;
+  $('#ob-quedan').textContent = quedan > 0 ? `Puedes postergarla ${quedan === 1 ? '1 vez más' : quedan + ' veces'}.` : 'Ya no se puede postergar: actualiza para seguir.';
+  $('#ob-luego').onclick = () => {
+    p.veces++; p.hasta = Date.now() + 10 * 60000;
+    try { chrome.storage.local.set({ postergar: p }); } catch (e) {}
+    $('#obligatorio').hidden = true;
+  };
+  $('#obligatorio').hidden = false;
+  vozAviso(version);
+}
 fetch(chrome.runtime.getURL('manifest.json') + '?v=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(m => {
   const b = $('#activar'), usada = chrome.runtime.getManifest().version;
-  if (m.version && m.version !== usada) { b.textContent = '⟳ Activar versión ' + m.version; b.hidden = false; b.onclick = () => { try { chrome.runtime.sendMessage({ tipo: 'recargar' }); } catch (e) {} window.close(); }; return; }
+  if (m.version && m.version !== usada) {
+    const activar = () => { try { chrome.runtime.sendMessage({ tipo: 'recargar' }); } catch (e) {} window.close(); };
+    b.textContent = '⟳ Activar versión ' + m.version; b.hidden = false; b.onclick = activar;
+    exigirActualizacion(m.version, `La versión ${m.version} ya está descargada. Actívala con un clic.`, activar);
+    return;
+  }
   // Si no hay nada descargado, se revisa si en internet hay una versión más nueva
   fetch('https://cotizadora.github.io/clarogo/extension/manifest.json?v=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(w => {
     if (!verMayor(w.version, usada)) return;
     b.textContent = '⬇ Actualizar a ' + w.version; b.hidden = false; b.style.animation = 'none';
     b.title = 'Descarga y activa la versión nueva con un clic';
     // Con un clic: se abre la página de actualización de GoExt, que ejecuta el actualizador del escritorio y se reactiva sola
-    b.onclick = () => { chrome.tabs.create({ url: chrome.runtime.getURL('actualizar.html'), active: true }); window.close(); };
+    const bajar = () => { chrome.tabs.create({ url: chrome.runtime.getURL('actualizar.html'), active: true }); window.close(); };
+    b.onclick = bajar;
+    exigirActualizacion(w.version, `Actualiza a la versión ${w.version} para seguir usando GoExt. Se descarga y se activa sola en unos segundos.`, bajar);
   }).catch(() => {});
 }).catch(() => {});
 iniciar();
