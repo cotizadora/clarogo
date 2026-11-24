@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: ClaroGo! 2.17.0, notas siempre a la vista en Mi Planilla
+
+- La columna Notas ya no se oculta en pantallas de hasta 1500 px (por ejemplo 1366 px). Para darle espacio, Dirección quedó en 70 px y se achicaron un poco Nombre, Fecha, RUT, Teléfono, Compañía, Tipificación, Plan y Agendar. En pantallas grandes, Dirección pasó de 260 a 170 px.
+- La celda de Notas muestra solo el texto de los comentarios, separados por " · ". Las líneas de fecha y hora siguen guardadas y se ven al pasar el mouse o al abrir el editor.
+
 ### 24-11-2026: GoExt 1.50.0, aviso de tipificación más corto
 
 - El aviso "¡Tipificado por GoExt correctamente!" dura la mitad (antes unos 3 segundos antes de desvanecerse, ahora 1,6) y la vuelta a Genesys ocurre a la mitad del tiempo (2,2 segundos en vez de 4,4). Lo mismo para el aviso de venta enviada y la notificación de respaldo.

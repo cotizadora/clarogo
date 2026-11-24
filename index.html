@@ -557,8 +557,8 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla .acc .go{color:#fff;background:var(--red);font-size:.7rem}
 #ct-tabla .acc .go:hover{background:var(--red-dk)}
 .c-n{width:46px}.c-fecha{width:86px}.c-hora{width:50px}.c-rut{width:96px}.c-tel{width:94px}.c-orig{width:96px}.c-deu{width:78px}.c-tipo{width:128px}.c-plan{width:86px}.c-ag{width:84px}.c-acc{width:390px}
-.c-nombre{width:150px}.c-dir{width:260px}.c-notas{width:auto}
-@media (max-width:1500px){.c-notas,.c-hora{display:none} .c-nombre{width:140px} .c-dir{width:114px} .c-fecha{width:80px} .c-rut{width:88px} .c-tel{width:90px} .c-deu{width:72px} .c-tipo{width:112px} .c-ag{width:78px} .c-acc{width:322px} .c-orig{width:80px} #ct-tabla .acc{gap:3px;padding:0 2px} #ct-tabla .acc .gen-t{display:none}}
+.c-nombre{width:150px}.c-dir{width:170px}.c-notas{width:auto}
+@media (max-width:1500px){.c-hora{display:none} .c-nombre{width:120px} .c-dir{width:70px} .c-fecha{width:72px} .c-rut{width:82px} .c-tel{width:84px} .c-deu{width:72px} .c-tipo{width:100px} .c-plan{width:76px} .c-ag{width:70px} .c-acc{width:322px} .c-orig{width:70px} #ct-tabla .acc{gap:3px;padding:0 2px} #ct-tabla .acc .gen-t{display:none}}
 @media (max-width:1100px){.c-hora,.c-plan{display:none} #ct-tabla .acc .gen-t{display:none} .c-acc{width:320px}}
 @media (max-width:720px){#ct-tabla .tel-nom{display:block;font-size:.66rem;font-weight:700;line-height:1.2;padding:3px 4px 0;white-space:normal;word-break:break-word;color:var(--text)} #ct-tabla td.c-tel{white-space:normal;height:auto}.c-fecha,.c-notas,.c-rut,.c-nombre,.c-dir{display:none}.c-tel{width:auto}.c-orig{width:60px}.c-tipo{width:80px}.c-n{width:36px}.c-acc{width:140px} #ct-tabla .acc .fic{padding:0 6px} #ct-tabla .acc .fic .fic-t{display:none} #ct-tabla .acc .gen-t{display:none} #ct-tabla .acc .rutif{display:none} #ct-tabla th,#ct-tabla td,#ct-tabla td input,#ct-tabla td select{font-size:.72rem} #ct-tabla td input{padding:0 4px}}
 #ct-resumen .chip b{margin-left:4px}
@@ -1261,7 +1261,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.16.1';
+const APP_VERSION = '2.17.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2968,6 +2968,9 @@ const FICHA = [
    Los comentarios antiguos sin fecha reciben la fecha y hora del registro del cliente (y la hora de cada
    "Oferta enviada por WhatsApp ... a las HH:MM" si la tenía). */
 const NOTA_SELLO_RE = /^📅 \d{2}-\d{2}-\d{4} \d{2}:\d{2}$/m;
+// En la celda de la planilla se ven solo los comentarios, sin las líneas de fecha y hora (siguen guardadas y se ven al abrir el editor o al pasar el mouse)
+const notaVista = n => String(n || '').split('\n').map(l => l.trim()).filter(l => l && !NOTA_SELLO_RE.test(l)).join(' · ');
+const notaPoner = (x, s) => { x.value = x.tagName === 'INPUT' ? notaVista(s) : s; x.title = s || ''; };
 const selloNota = (d = new Date()) => { const p = n => String(n).padStart(2, '0'); return `📅 ${p(d.getDate())}-${p(d.getMonth() + 1)}-${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`; };
 const selloDe = (fecha, hora) => { const [a, m, dd] = String(fecha || hoyISO()).split('-'); return `📅 ${dd}-${m}-${a} ${/^\d{1,2}:\d{2}$/.test(hora || '') ? String(hora).padStart(5, '0') : '00:00'}`; };
 // Texto anterior → texto nuevo: si se agregó algo al final (o es el primer comentario), se le pone su línea de fecha y hora
@@ -3694,7 +3697,7 @@ function initNotaZoom() {
   document.body.append(z, ayuda);
   let fila = '';
   // Al cerrar el editor, lo agregado lleva su línea de fecha y hora
-  const cerrar = () => { if (!fila) return; { const rr = CT.find(x => x.id === fila); if (rr) { const s = notaSellar(z.dataset.antes, rr.notas); if (s !== rr.notas) { rr.notas = s; rr.upd = Date.now(); ctGuardar(); } } } z.classList.remove('on'); ayuda.classList.remove('on'); const id = fila; fila = ''; const inp = $(`#ct-body tr[data-id="${id}"]:not(.ficha) [data-k="notas"]`); if (inp) { const r = CT.find(x => x.id === id); inp.value = r ? r.notas || '' : inp.value; inp.title = inp.value; } };
+  const cerrar = () => { if (!fila) return; { const rr = CT.find(x => x.id === fila); if (rr) { const s = notaSellar(z.dataset.antes, rr.notas); if (s !== rr.notas) { rr.notas = s; rr.upd = Date.now(); ctGuardar(); } } } z.classList.remove('on'); ayuda.classList.remove('on'); const id = fila; fila = ''; const inp = $(`#ct-body tr[data-id="${id}"]:not(.ficha) [data-k="notas"]`); if (inp) { const r = CT.find(x => x.id === id); if (r) notaPoner(inp, r.notas); } };
   $('#ct-body').addEventListener('focusin', e => {
     const el = e.target; if (!el.matches('tr:not(.ficha) [data-k="notas"]')) return;
     const r = CT.find(x => x.id === el.closest('tr').dataset.id); if (!r) return;
@@ -3732,7 +3735,7 @@ function ctPinta() {
     <td class="c-deu">${deudaBoton(r)}</td>
     <td class="c-tipo"><select data-k="tipo" title="${esc(tipoTitulo(r.tipo))}">${tipoOpciones(r.tipo)}</select></td>
     <td class="c-plan"><div class="plan-ver${r.plan ? '' : ' vacio'}">${esc(r.plan ? r.plan.replace(/^Plan\s+/i, '') : 'Sin plan')}</div><select data-k="plan" class="plan-sel" title="${esc(r.plan || 'Elegir plan')}">${opt(PLANES_WA().map(p => p.title), r.plan, 'Sin plan')}</select></td>
-    <td class="c-notas"><input data-k="notas" value="${esc(r.notas)}" placeholder="Notas" title="${esc(r.notas)}"></td>
+    <td class="c-notas"><input data-k="notas" readonly value="${esc(notaVista(r.notas))}" placeholder="Notas" title="${esc(r.notas)}"></td>
     <td class="c-ag">${r.borrado ? '' : agBoton(r)}</td>
     <td class="c-acc"><div class="acc">${r.borrado
       ? `<button data-ct="restaurar" class="go" title="Recuperar registro">↺</button>`
@@ -3906,7 +3909,7 @@ function initControl() {
     if (el.dataset.k === 'notas' && e.type === 'change') {
       const s = notaSellar(el.dataset.antes, el.value);
       r.notas = s; el.dataset.antes = s; r.upd = Date.now(); ctGuardar();
-      $$(`#ct-body [data-id="${r.id}"] [data-k="notas"]`).forEach(x => { x.value = s; x.title = s; });
+      $$(`#ct-body [data-id="${r.id}"] [data-k="notas"]`).forEach(x => notaPoner(x, s));
     }
     if (el.dataset.k === 'tipo' && e.type === 'change' && /volver a llamar|^agendado/i.test(el.value) && !(r.agenda && !r.agendaHecho)) agDialogo(r);
   };
@@ -3921,7 +3924,7 @@ function initControl() {
   body.addEventListener('click', e => {
     const pq = e.target.closest('[data-eqpegar]'); if (pq) return ctPegarEquipo(pq.closest('tr').dataset.id);
     const o = e.target.closest('[data-obs]');
-    if (o) { const r = CT.find(x => x.id === o.closest('tr').dataset.id); if (!r) return; notaAgregar(r, o.dataset.obs); r.upd = Date.now(); ctGuardar(); $$(`#ct-body [data-id="${r.id}"] [data-k="notas"]`).forEach(x => { x.value = r.notas; x.title = r.notas; }); return; }
+    if (o) { const r = CT.find(x => x.id === o.closest('tr').dataset.id); if (!r) return; notaAgregar(r, o.dataset.obs); r.upd = Date.now(); ctGuardar(); $$(`#ct-body [data-id="${r.id}"] [data-k="notas"]`).forEach(x => notaPoner(x, r.notas)); return; }
     const b = e.target.closest('[data-ct]'); if (!b) return;
     const r = CT.find(x => x.id === b.closest('tr').dataset.id); if (!r) return;
     if (b.dataset.ct === 'fav') { r.fav = !r.fav; r.upd = Date.now(); ctGuardar(); ctPinta(); return toast(r.fav ? '★ Cliente marcado como favorito' : 'Cliente quitado de favoritos'); }
