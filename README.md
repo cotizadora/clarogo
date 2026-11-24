@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: ClaroGo! 2.19.0 y GoExt 1.51.0, deuda anotada en Observación y arreglo de Claro y WOM
+
+- Cuando GoExt detecta deuda, Mi Planilla agrega al tiro en Observación una línea con la fecha y hora de la revisión, por ejemplo "⚠️ Deuda revisada en WOM: tiene deuda de $25.990". Una sola vez por revisión. Sin deuda no se anota nada.
+- Claro (Cloudflare) y WOM (reCAPTCHA) tienen una verificación de seguridad que habilita el botón sola. GoExt antes forzaba el botón antes de que terminara y el portal rechazaba la consulta. Ahora escribe el RUT, espera hasta 3 minutos a que el portal habilite el botón (si aparece una casilla, la marca el ejecutivo) y recién ahí lo presiona. Entel y Movistar siguen igual.
+
 ### 24-11-2026: ClaroGo! 2.18.1, botones de la planilla otra vez en una sola fila
 
 - Los botones de cada fila (WhatsApp, Genesys, Copiar, Ficha, RUTIFICADOR, Script y Borrar) vuelven a ir en una sola fila con su texto, como antes. En dos filas no se entendía qué hacía cada uno.
