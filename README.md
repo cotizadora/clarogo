@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: ClaroGo! 2.22.1, la guía pasa a Tutoriales
+
+- La guía animada ya no es una pestaña aparte: es la primera tarjeta de Tutoriales ("Guía completa: ClaroGo! y GoExt paso a paso") y se abre en pantalla completa.
+- La voz dice "Claro Gou" y "GouEx". Los subtítulos siguen escritos como ClaroGo! y GoExt.
+- Enlace directo: https://cotizadora.github.io/clarogo/tutoriales/guia/
+
 ### 24-11-2026: ClaroGo! 2.22.0, pestaña Tutorial con guía animada
 
 - Nueva pestaña "Tutorial": se abre en pantalla completa con una guía de 32 pasos. Tiene capturas reales, zoom, mouse animado, subtítulos y voz en español. En Edge usa la voz natural de Chile.

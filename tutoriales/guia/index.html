@@ -164,7 +164,9 @@ function hablar(texto, listo) {
   const minimo = Math.max(3200, texto.length * 62);
   if (!vozOn || !window.speechSynthesis || !vozES) { reloj = setTimeout(listo, minimo); return; }
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(texto);
+  // Pronunciación: se dice "Claro Gou" y "GouEx" (los subtítulos quedan escritos normal)
+  const dicho = texto.replace(/ClaroGo!?/g, 'Claro Gou').replace(/goext/gi, 'GouEx');
+  const u = new SpeechSynthesisUtterance(dicho);
   u.voice = vozES; u.lang = vozES.lang; u.rate = 1.02; u.pitch = 1;
   let hecho = false; const fin = () => { if (hecho) return; hecho = true; clearTimeout(reloj); reloj = setTimeout(listo, 650); };
   u.onend = fin; u.onerror = fin;

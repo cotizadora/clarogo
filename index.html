@@ -1284,7 +1284,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.22.0';
+const APP_VERSION = '2.22.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -1362,6 +1362,8 @@ const ENLACES = [
 ];
 const GALERIA = [['01','HONOR 400 SMART 5G 256GB'],['02','HONOR MAGIC 8 LITE 5G 256GB'],['03','HONOR X6B 5G 256GB'],['04','SAMSUNG GALAXY A06 5G 128GB'],['05','XIAOMI REDMI 15C 128GB'],['06','XIAOMI REDMI 15C 256GB'],['07','MOTOROLA G56 5G 256GB'],['08','ZTE BLADE V70 MAX 256GB'],['09','ZTE NUBIA NEO 3 GT 5G 256GB'],['10','Redmi Note 15 Pro 5G 512GB Titanio Buds 6 Play'],['11','S25 FE 5G 128GB Black']];
 const TUTORIALES = [
+ // Guía animada (voz, zoom y capturas reales): se abre en pantalla completa encima de ClaroGo!
+ {title:'Guía completa: ClaroGo! y GoExt paso a paso',desc:'Video guiado con voz, zoom y capturas reales. Instala GoExt, atiende una llamada y mira cómo el nombre, la dirección y la deuda se llenan solos en tu planilla.',cat:'Plataforma',dur:'6 min',emoji:'🎬',color:'#ffe3e5',file:'tutoriales/guia/',guia:true},
  {title:'Permitir cámara en Android',desc:'Habilita el permiso de cámara en Chrome paso a paso, con guía visual interactiva. Necesario para escanear QR, videollamadas y validaciones biométricas.',cat:'Permisos',dur:'2 min',emoji:'📷',color:'#d4f7e8',file:'tutoriales/Permisos.html',phone:true},
  {title:'Borrar cookies en Chrome y Edge',desc:'Elimina cookies y datos de sitios en Chrome y Edge desde tu PC. Soluciona problemas de sesión, carga lenta y errores en plataformas. Tutorial interactivo con ambos navegadores.',cat:'Navegador',dur:'3 min',emoji:'🧹',color:'#e8f0fd',file:'tutoriales/Cookies.html'},
  {title:'Instalar y actualizar GoExt',desc:'La extensión con la que ClaroGo! funciona mucho mejor. Descarga el instalador, cárgala en Edge o Chrome y actualízala con un doble clic. Sin permisos de administrador.',cat:'Plataforma',dur:'2 min',emoji:'🧩',color:'#fde8ea',file:'ext/'},
@@ -1379,7 +1381,6 @@ const MENU = [
  {v:'horario',t:'Horario Ejecutivos',badge:'Nuevo',i:'<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/>'},
  {v:'faq',t:'Preguntas y Respuestas',badge:'Nuevo',i:'<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>'},
  {m:'dlg-exc',t:'Excepciones de Boletas',i:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/>'},
- {m:'guia',t:'Tutorial',badge:'Nuevo',i:'<rect x="2" y="4" width="20" height="14" rx="2"/><polygon points="10 8 15 11 10 14 10 8"/><line x1="8" y1="21" x2="16" y2="21"/>'},
  {v:'tutoriales',t:'Tutoriales',badge:'Nuevo',i:'<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>'},
  {v:'descargas',t:'Descargas',badge:'Importante',i:'<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>'},
  {m:'dlg-audios',t:'Audios',badge:'Próximamente',soon:true,i:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'}
@@ -2535,7 +2536,7 @@ function initTutoriales() {
   $('#t-chips').addEventListener('click', e => { const b = e.target.closest('[data-cat]'); if (b) { filtro = b.dataset.cat; pinta(); } });
   $('#t-grid').addEventListener('click', e => {
     const b = e.target.closest('[data-tut]'); if (!b) return; const t = TUTORIALES[+b.dataset.tut];
-    if (t.phone) { $('#ph-frame').src = t.file; abrir('dlg-phone'); } else window.open(t.file, '_blank', 'noopener');
+    if (t.guia) guiaAbrir(); else if (t.phone) { $('#ph-frame').src = t.file; abrir('dlg-phone'); } else window.open(t.file, '_blank', 'noopener');
   });
   $('#dlg-phone').addEventListener('close', () => $('#ph-frame').src = 'about:blank');
   pinta();
