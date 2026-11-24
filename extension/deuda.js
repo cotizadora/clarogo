@@ -82,6 +82,12 @@
     const txt = document.body ? document.body.innerText : '';
     if (SIN.test(txt)) return { deuda: false, texto: `${NOMBRE}: sin deuda` };
     const lineas = txt.split('\n').map(s => s.trim()).filter(Boolean);
+    // Primero el total (si el cliente tiene varias cuentas, la primera fila no es el total)
+    for (let i = 0; i < lineas.length; i++) {
+      if (!/total\s+(a\s+pagar|deuda|adeudado)|deuda\s+total/i.test(lineas[i])) continue;
+      const m = (lineas[i] + ' ' + (lineas[i + 1] || '')).match(MONTO);
+      if (m) return { deuda: true, monto: m[0].replace(/\s/g, ''), texto: `${NOMBRE}: tiene deuda ${m[0].replace(/\s/g, '')}` };
+    }
     for (let i = 0; i < lineas.length; i++) {
       if (!CLAVE.test(lineas[i])) continue;
       const m = (lineas[i] + ' ' + (lineas[i + 1] || '') + ' ' + (lineas[i + 2] || '')).match(MONTO);

@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: GoExt 1.56.0, la deuda se lee desde "Total a pagar"
+
+- Probado en WOM con un RUT con deuda que dio Eduardo: WOM muestra una tabla con cada cuenta y "Total a pagar", y GoExt lo lee como "tiene deuda".
+- Si la página tiene una línea de total ("Total a pagar", "Total deuda", "Deuda total"), GoExt toma ese monto primero. Antes tomaba el primer monto de la tabla, que con varias cuentas no es el total. Vale para todas las compañías.
+
 ### 24-11-2026: GoExt 1.55.0, revisión de deuda en WOM arreglada
 
 - Después de consultar, WOM lleva a otra página, pagofacilwom.cl (no es wom.cl), y GoExt no tenía permiso para leerla. Ahora sí. Probado con el RUT de prueba 11.111.111-1 (con autorización de Eduardo): WOM muestra "De este lado no tienes deudas" y GoExt lo lee como sin deuda.
