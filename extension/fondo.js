@@ -239,6 +239,7 @@ chrome.runtime.onMessage.addListener((msg, _de, responder) => {
   if (msg && msg.tipo === 'llamada' && /^\d{9}$/.test(String(msg.tel || ''))) { abrirPorLlamada(msg); setTimeout(() => revisarVersion(false), 5000); return; }
   if (msg && msg.tipo === 'corte-ejecutivo') { chrome.storage.local.set({ corte_ejecutivo: Date.now() }); return; }
   if (msg && msg.tipo === 'fin-llamada') { finDeLlamada(); return; }
+  if (msg && msg.tipo === 'volver-clarogo') { volverAClaroGo(); return; }
   // Al cerrarse la alerta de llamada cortada ya no se abre nada solo: el ejecutivo abre GoExt con el ícono
   if (msg && msg.tipo === 'abrir-tipificacion') return;
   // "Activar versión nueva": se recarga desde el fondo, con la ventana ya cerrada (recargar desde la ventana puede dejarla trabada)

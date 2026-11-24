@@ -94,6 +94,8 @@
     aviso(r.deuda ? `⚠️ TIENE DEUDA en ${NOMBRE}\n${r.monto}\n` + 'Revisa el detalle en pantalla.' : `✅ SIN DEUDA en ${NOMBRE}`, r.deuda ? '#c00000' : '#14804a', true);
     await chrome.storage.local.set({ deuda_res: { id: p.id || '', comp: COMP, deuda: r.deuda, monto: r.monto || '', texto: r.texto, ts: Date.now() } });
     await chrome.storage.local.remove('deuda_pedido');
+    // Después del aviso vuelve a Mi Planilla, donde la fila revisada queda en neón
+    setTimeout(() => { try { chrome.runtime.sendMessage({ tipo: 'volver-clarogo' }); } catch (e) {} }, r.deuda ? 3000 : 2000);
   };
   let listo = false;
   const revisar = () => { if (listo) return; const r = leerResultado(); if (r) { listo = true; fin(r); } };

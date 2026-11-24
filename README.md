@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: ClaroGo! 2.20.0 y GoExt 1.53.0, fila en neón y estrella de favorito con destellos
+
+- Después de revisar la deuda, GoExt muestra el aviso y vuelve sola a la pestaña de ClaroGo! (3 segundos si hay deuda, 2 si no). Mi Planilla lleva a la fila revisada y la deja en neón celeste hasta el primer clic (o 30 segundos).
+- "Ver fila" de un agendado también deja la fila en neón y la centra en la pantalla.
+- La estrella de favorito es más grande y más fácil de presionar. Al marcar un cliente como favorito salen estrellas doradas destellando por toda la pantalla (no se muestran si Windows tiene las animaciones reducidas).
+
 ### 24-11-2026: GoExt 1.52.0 y ClaroGo! 2.19.1, actualización guiada para quienes usan el .zip
 
 - La página de actualización sigue intentando primero el actualizador del escritorio (instalador .bat), igual que antes. Si en 10 segundos no responde, o si ese PC ya se actualizó antes con el .zip, muestra una guía: el botón "Descargar GoExt" baja goext.zip a Descargas (siempre con el mismo nombre, reemplazando el anterior) y abre la carpeta con el archivo marcado; luego Extraer todo → Extraer → Reemplazar. La página espera hasta 15 minutos y activa la versión nueva sola.
