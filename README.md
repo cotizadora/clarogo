@@ -68,6 +68,14 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: ClaroGo! 2.22.0, pestaña Tutorial con guía animada
+
+- Nueva pestaña "Tutorial": se abre en pantalla completa con una guía de 32 pasos. Tiene capturas reales, zoom, mouse animado, subtítulos y voz en español. En Edge usa la voz natural de Chile.
+- Capítulos: instalar GoExt (instalador o .zip, en Edge o Chrome), atender una llamada con GoExt, nombre, dirección y deuda que se llenan solos, y la ficha del cliente.
+- Las capturas se tomaron de ClaroGo!, GoExt 1.57.0, la página de instalación, las extensiones de Edge y el portal de pago de WOM. La llamada es simulada con un número de prueba. El RUT, la cuenta y los datos del cliente aparecen difuminados. El RUT no está guardado en ningún archivo.
+- Falta una captura real del Rutificador: bloquea al navegador automático, así que esa parte se explica sobre la planilla.
+- Archivos: `tutoriales/guia/index.html` y sus capturas en `tutoriales/guia/`.
+
 ### 24-11-2026: ClaroGo! 2.21.1, formulario de no venta en Enlaces
 
 - En Enlaces, Gestión Operativa, se agregó "Formulario No Venta", para los ejecutivos que tipifican sin la extensión GoExt.
