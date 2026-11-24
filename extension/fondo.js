@@ -299,35 +299,45 @@ async function volverAClaroGo() {
 }
 
 // Corre dentro de cada marco de Genesys. Actúa solo en el recuadro de conclusión (acw-gadgets-wrap-up):
-// busca el botón "Enviar" (también dentro de componentes con shadow DOM) y lo hace brillar hasta que se presiona.
+// busca el botón "Enviar" (también dentro de componentes con shadow DOM) y lo hace brillar sin parar hasta que el ejecutivo lo presiona.
 async function neonEnviarGenesys() {
   if (!/acw-gadgets-wrap-up/.test(location.pathname)) return null;
+  if (window.__cgNeon) return 'ya';   // ya está encendido en este recuadro
   const norm = s => String(s || '').replace(/\s+/g, ' ').trim().toLowerCase();
   const visible = e => !!(e.getClientRects && e.getClientRects().length);
   const todos = () => { const out = []; const walk = r => r.querySelectorAll('*').forEach(e => { out.push(e); if (e.shadowRoot) walk(e.shadowRoot); }); walk(document); return out; };
   const buscar = () => todos().filter(e => visible(e) && /^(button|gux-button)$/i.test(e.tagName) || (visible(e) && e.getAttribute && e.getAttribute('role') === 'button'))
     .filter(e => ['enviar', 'submit'].includes(norm(e.textContent)))
     .sort((a, b) => (/gux-button/i.test(b.tagName) ? 1 : 0) - (/gux-button/i.test(a.tagName) ? 1 : 0))[0];
-  let b = null;
-  for (let i = 0; i < 40 && !b; i++) { b = buscar(); if (!b) await new Promise(r => setTimeout(r, 500)); }   // hasta 20 segundos
-  if (!b) return 'no';
   if (!document.getElementById('cg-neon-estilo')) {
     const st = document.createElement('style'); st.id = 'cg-neon-estilo';
     st.textContent = '@keyframes cgNeonGen{0%,100%{box-shadow:0 0 6px 2px #39ff14,0 0 18px 6px rgba(57,255,20,.75);transform:scale(1)}50%{box-shadow:0 0 14px 5px #39ff14,0 0 34px 14px rgba(57,255,20,.55);transform:scale(1.07)}}';
     (document.head || document.documentElement).appendChild(st);
   }
-  const antes = b.getAttribute('style') || '';
-  b.style.setProperty('animation', 'cgNeonGen 0.9s ease-in-out infinite', 'important');
-  b.style.setProperty('outline', '3px solid #39ff14', 'important');
-  b.style.setProperty('outline-offset', '3px');
-  b.style.setProperty('border-radius', '8px');
-  b.style.setProperty('position', 'relative');
-  b.style.setProperty('z-index', '10');
-  try { b.scrollIntoView({ block: 'center' }); } catch (e) {}
-  // Se apaga al presionarlo o a los 2 minutos
-  const apagar = () => { if (antes) b.setAttribute('style', antes); else b.removeAttribute('style'); };
-  b.addEventListener('click', apagar, { once: true, capture: true });
-  setTimeout(apagar, 120000);
+  // Pone el brillo en el botón (si Genesys lo vuelve a dibujar, se le pone de nuevo en la siguiente vuelta)
+  const pintar = el => {
+    if (el.dataset.cgNeon) return;
+    el.dataset.cgNeon = '1'; el.dataset.cgNeonAntes = el.getAttribute('style') || '';
+    el.style.setProperty('animation', 'cgNeonGen 0.9s ease-in-out infinite', 'important');
+    el.style.setProperty('outline', '3px solid #39ff14', 'important');
+    el.style.setProperty('outline-offset', '3px');
+    el.style.setProperty('border-radius', '8px');
+    el.style.setProperty('position', 'relative');
+    el.style.setProperty('z-index', '10');
+  };
+  const limpiar = () => todos().filter(e => e.dataset && e.dataset.cgNeon).forEach(e => { const a = e.dataset.cgNeonAntes; if (a) e.setAttribute('style', a); else e.removeAttribute('style'); delete e.dataset.cgNeon; delete e.dataset.cgNeonAntes; });
+  let encontrado = false, primera = true, vueltas = 0, sinBoton = 0;
+  const fin = () => { clearInterval(window.__cgNeon); window.__cgNeon = null; document.removeEventListener('click', alClic, true); limpiar(); };
+  // Se apaga solo cuando el ejecutivo presiona Enviar
+  const alClic = e => { const ruta = e.composedPath ? e.composedPath() : [e.target]; if (ruta.some(n => n && n.dataset && n.dataset.cgNeon)) fin(); };
+  document.addEventListener('click', alClic, true);
+  window.__cgNeon = setInterval(() => {
+    vueltas++;
+    const b = window.innerWidth > 0 ? buscar() : null;
+    if (b) { pintar(b); encontrado = true; sinBoton = 0; if (primera) { primera = false; try { b.scrollIntoView({ block: 'center' }); } catch (e) {} } }
+    else if (encontrado) { if (++sinBoton > 8) fin(); }   // el recuadro se cerró: Genesys ya registró el envío
+    else if (vueltas > 360) fin();                         // 3 minutos sin que aparezca el botón
+  }, 500);
   return 'ok';
 }
 // Formulario de venta enviado (trámite administrativo, después de cerrar y tipificar en Genesys):

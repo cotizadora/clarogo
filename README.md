@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: GoExt 1.46.0, neón en Enviar de Genesys hasta que lo presionen
+
+- Al volver a Genesys después del registro de no venta, el neón del botón Enviar ya no se apaga a los 2 minutos: queda encendido hasta que el ejecutivo presiona Enviar. Cada medio segundo GoExt revisa el botón y, si Genesys lo redibujó, le vuelve a poner el brillo. También se apaga si el recuadro de tipificación se cierra (Genesys ya registró el envío) o si el botón no aparece en 3 minutos.
+
 ### 24-11-2026: ClaroGo! v2.16.1, calce de tipificaciones con Genesys
 
 - Regla de Eduardo: **nunca se elimina ninguna tipificación**. Se mantienen las 12 de Mi Planilla y los 25 códigos de Genesys.
