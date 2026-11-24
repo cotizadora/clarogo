@@ -63,8 +63,20 @@
   const boton = txt => [...document.querySelectorAll('[role="button"]')].find(b => b.innerText.trim() === txt);
   const paso = t => { let p = document.getElementById('cg-paso'); if (!p) { p = document.createElement('div'); p.id = 'cg-paso'; document.documentElement.appendChild(p); } p.textContent = t; return p; };
 
+  // Respuestas fijas del registro de no venta: "CLIENTE EVALUADO" = No (primera hoja) y "CLIENTE NO EVALUADO" = NO (segunda hoja).
+  // Google a veces no aplica lo que viene en la dirección: si la pregunta está sin marcar, se hace clic en la opción.
+  const marcarFijas = () => {
+    if (!esNV) return;
+    [...document.querySelectorAll('[role="listitem"]')].forEach(q => {
+      const t = ((q.querySelector('[role="heading"]') || q).innerText || '').trim().toUpperCase();
+      const opcion = /^CLIENTE NO EVALUADO/.test(t) ? 'NO' : /^CLIENTE EVALUADO/.test(t) ? 'No' : '';
+      if (!opcion || q.querySelector('[role="radio"][aria-checked="true"]')) return;
+      const r = q.querySelector(`[role="radio"][data-value="${opcion}"]`); if (r) r.click();
+    });
+  };
   // Paso 1: primera hoja del registro de no venta → Siguiente
   for (let i = 0; i < 40 && !boton('Siguiente') && !boton('Enviar'); i++) await esperar(250);
+  marcarFijas();
   if (esNV && boton('Siguiente') && !boton('Enviar') && !pedido.avanzo) {
     paso('GoExt: "Cliente evaluado: No" listo. Pasando a la hoja del motivo…');
     pedido.avanzo = true; await chrome.storage.local.set({ nv_pedido: pedido });
@@ -114,6 +126,7 @@
   };
 
   const reloj = setInterval(() => {
+    marcarFijas();
     const e = boton('Enviar');
     if (e) {
       if (!e.classList.contains('cg-enviar')) e.classList.add('cg-enviar');   // parpadea siempre, aunque Google vuelva a dibujar el botón

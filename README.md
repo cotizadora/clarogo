@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: GoExt 1.49.0, no venta siempre con "NO" marcado
+
+- En el formulario de no venta, GoExt hace clic directamente en "No" de "CLIENTE EVALUADO" (primera hoja) y en "NO" de "CLIENTE NO EVALUADO" (segunda hoja) cuando están sin marcar. Antes dependía solo de la dirección del formulario y Google a veces no lo aplicaba en la segunda hoja.
+
 ### 24-11-2026: GoExt 1.48.0, actualización obligatoria con aviso elegante
 
 - Caso: algunos ejecutivos no actualizaban con el botón amarillo.
