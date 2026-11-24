@@ -46,13 +46,16 @@
     return datos;
   };
   const tel9 = s => { let d = String(s || '').replace(/\D/g, ''); if (d.length === 11 && d.startsWith('56')) d = d.slice(2); return d.length === 9 ? d : ''; };
-  let ultimo = '', vuelta = 0;
+  let ultimo = '', vuelta = 0, ultimaLectura = 0, pendiente = 0;
   const revisar = () => {
     if (!document.body) return;
+    const ahora = Date.now();
+    if (ahora - ultimaLectura < 600) return;   // como máximo una lectura cada 0,6 segundos
     // Revisión rápida: el marco tiene el guion de la llamada (textos tipo FONO_CONTACTO:).
-    // Si el guion estuviera dentro de componentes encapsulados, la lectura completa se hace solo cada 10 segundos.
+    // Si el guion estuviera dentro de componentes encapsulados, la lectura completa se hace en una vuelta por medio.
     vuelta++;
-    if (!/FONO_CONTACTO|Fono1|LEGACY_ID|RUT_PERSONA/.test(document.body.textContent || '') && vuelta % 4) return;
+    if (!/FONO_CONTACTO|Fono1|LEGACY_ID|RUT_PERSONA/.test(document.body.textContent || '') && vuelta % 2) return;
+    ultimaLectura = ahora;
     const d = leer();
     const tel = tel9(d.FONO_CONTACTO || d.Fono1 || d.Fono2 || d.LEGACY_ID);
     if (!tel) { ultimo = ''; return; }
@@ -61,6 +64,13 @@
     ultimo = clave;
     try { chrome.runtime.sendMessage({ tipo: 'llamada', tel, clave }); } catch (e) {}
   };
-  setInterval(revisar, 2500);
-  setTimeout(revisar, 1500);
+  // Apenas Genesys cambia la pantalla (entra la llamada) se revisa al tiro; además, una revisión cada 0,7 segundos
+  // (Edge hace más lentos los relojes de las pestañas que no están al frente; el cambio de pantalla avisa sin esperar un reloj)
+  const pronto = () => {
+    if (Date.now() - ultimaLectura >= 600) { revisar(); return; }
+    if (!pendiente) pendiente = setTimeout(() => { pendiente = 0; revisar(); }, 650);
+  };
+  try { new MutationObserver(pronto).observe(document.documentElement, { childList: true, subtree: true, characterData: true }); } catch (e) {}
+  setInterval(revisar, 700);
+  setTimeout(revisar, 300);
 })();

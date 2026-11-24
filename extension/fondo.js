@@ -199,8 +199,8 @@ async function abrirPorLlamada(msg, tabOrigen) {
   // Genesys tiene varios marcos: la misma llamada puede avisar más de una vez
   if (msg.clave === ultimaLlamadaClave && Date.now() - ultimaLlamadaTs < 60000) return;
   ultimaLlamadaClave = msg.clave; ultimaLlamadaTs = Date.now();
+  traerGenesys(tabOrigen, true);   // primero Genesys al frente, sin esperar nada más
   try { await chrome.storage.local.set({ ultima_llamada: { ts: Date.now(), clave: msg.clave } }); } catch (e) {}
-  traerGenesys(tabOrigen, true);
 }
 // Pone la pestaña de Genesys al frente: activa la pestaña, restaura y maximiza la ventana y le da el foco.
 // Si el ejecutivo estaba en otro programa, Windows puede impedir que el navegador se ponga encima:
@@ -218,12 +218,12 @@ async function traerGenesys(tabOrigen, avisar) {
     const win = await chrome.windows.get(t.windowId);
     if (win.state === 'minimized') await chrome.windows.update(t.windowId, { state: 'normal' });
     await chrome.windows.update(t.windowId, { state: 'maximized', focused: true, drawAttention: true });
-    try { await chrome.scripting.executeScript({ target: { tabId: t.id }, func: avisoLlamada }); } catch (e) {}
     if (avisar && !enNavegador) {
       const id = 'cg-llamada-' + Date.now();
       chrome.notifications.create(id, { type: 'basic', iconUrl: 'icono-128.png', priority: 2, requireInteraction: true, title: '📞 ENTRÓ UNA LLAMADA', message: 'Haz clic aquí para ir a Genesys.' });
       setTimeout(() => chrome.notifications.clear(id), 90000);
     }
+    chrome.scripting.executeScript({ target: { tabId: t.id }, func: avisoLlamada }).catch(() => {});
   } catch (e) {}
 }
 // Dentro de Genesys: recuadro verde "LLAMADA ENTRANTE" arriba al centro. Se va al mover el mouse o a los 6 segundos.

@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: GoExt 1.59.0 y ClaroGo! 2.24.2, la llamada entrante se detecta al tiro
+
+- Antes GoExt revisaba Genesys cada 2,5 segundos, y si los datos de la llamada venían dentro de componentes encapsulados, solo cada 10 segundos. Ahora reacciona apenas cambia la pantalla de Genesys y además revisa cada 0,7 segundos.
+- Medido en el navegador de prueba: Genesys pasa al frente en menos de 1 segundo (0,6 s con los datos a la vista y 0,8 s con los datos encapsulados).
+- Al detectar la llamada, primero se trae Genesys al frente y después se guarda el resto.
+
 ### 24-11-2026: GoExt 1.58.0 y ClaroGo! 2.24.1, la llamada entrante lleva a Genesys
 
 - Cuando entra una llamada, GoExt pone al frente la pestaña de Genesys, restaura la ventana si estaba minimizada y la maximiza. Dentro de Genesys aparece un aviso verde "LLAMADA ENTRANTE".
