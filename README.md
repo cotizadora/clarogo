@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: ClaroGo! 2.21.1, formulario de no venta en Enlaces
+
+- En Enlaces, Gestión Operativa, se agregó "Formulario No Venta", para los ejecutivos que tipifican sin la extensión GoExt.
+
 ### 24-11-2026: ClaroGo! 2.21.0 y GoExt 1.57.0, deuda en segundo plano al escribir el RUT
 
 - RUT en Mi Planilla: se borran los puntos y espacios al escribir. El guion queda solo si el ejecutivo lo pone. Basta con presionar Enter, hacer clic afuera o pasar a otra celda.
