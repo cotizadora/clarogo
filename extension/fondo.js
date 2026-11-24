@@ -299,7 +299,7 @@ async function volverAClaroGo() {
 }
 
 // Corre dentro de cada marco de Genesys. Actúa solo en el recuadro de conclusión (acw-gadgets-wrap-up):
-// busca el botón "Enviar" (también dentro de componentes con shadow DOM) y lo hace brillar sin parar hasta que el ejecutivo lo presiona.
+// busca el botón "Listo" (o "Enviar"; también dentro de componentes con shadow DOM) y lo hace brillar sin parar hasta que el ejecutivo lo presiona.
 async function neonEnviarGenesys() {
   if (!/acw-gadgets-wrap-up/.test(location.pathname)) return null;
   if (window.__cgNeon) return 'ya';   // ya está encendido en este recuadro
@@ -307,7 +307,7 @@ async function neonEnviarGenesys() {
   const visible = e => !!(e.getClientRects && e.getClientRects().length);
   const todos = () => { const out = []; const walk = r => r.querySelectorAll('*').forEach(e => { out.push(e); if (e.shadowRoot) walk(e.shadowRoot); }); walk(document); return out; };
   const buscar = () => todos().filter(e => visible(e) && /^(button|gux-button)$/i.test(e.tagName) || (visible(e) && e.getAttribute && e.getAttribute('role') === 'button'))
-    .filter(e => ['enviar', 'submit'].includes(norm(e.textContent)))
+    .filter(e => ['listo', 'enviar', 'done', 'submit'].includes(norm(e.textContent)))   // en Genesys el botón se llama "Listo"
     .sort((a, b) => (/gux-button/i.test(b.tagName) ? 1 : 0) - (/gux-button/i.test(a.tagName) ? 1 : 0))[0];
   if (!document.getElementById('cg-neon-estilo')) {
     const st = document.createElement('style'); st.id = 'cg-neon-estilo';

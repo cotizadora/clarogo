@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: GoExt 1.47.0, el neón va en el botón "Listo" de Genesys
+
+- Captura de Eduardo: en "Códigos de conclusión" de Genesys el botón para terminar se llama **"Listo"**, no "Enviar". GoExt solo buscaba "Enviar" y por eso el neón no aparecía. Ahora reconoce "Listo" (y también "Enviar", "Done" y "Submit").
+
 ### 24-11-2026: GoExt 1.46.0, neón en Enviar de Genesys hasta que lo presionen
 
 - Al volver a Genesys después del registro de no venta, el neón del botón Enviar ya no se apaga a los 2 minutos: queda encendido hasta que el ejecutivo presiona Enviar. Cada medio segundo GoExt revisa el botón y, si Genesys lo redibujó, le vuelve a poner el brillo. También se apaga si el recuadro de tipificación se cierra (Genesys ya registró el envío) o si el botón no aparece en 3 minutos.
