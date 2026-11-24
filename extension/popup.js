@@ -317,7 +317,8 @@ function initNoVenta() {
     }
     // Si el formulario ya está abierto en una pestaña, se reutiliza (no se juntan pestañas); si no, se abre una nueva
     let tabNV = null;
-    try { tabNV = (await chrome.tabs.query({ url: 'https://docs.google.com/forms/d/e/1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ/*' })).sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0))[0] || null; } catch (e) {}
+    // Se busca por el código del formulario en cualquier forma de la dirección (con o sin /u/0/ de la cuenta de Google)
+    try { tabNV = (await chrome.tabs.query({ url: 'https://docs.google.com/forms/*' })).filter(t => String(t.url || t.pendingUrl || '').includes('1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ')).sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0))[0] || null; } catch (e) {}
     if (tabNV) { await chrome.tabs.update(tabNV.id, { url: nvURL(), active: true }); try { await chrome.windows.update(tabNV.windowId, { focused: true }); } catch (e) {} }
     else await chrome.tabs.create({ url: nvURL(), active: true });
     window.close();

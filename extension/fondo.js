@@ -337,12 +337,12 @@ chrome.storage.onChanged.addListener((c, area) => {
   const v = area === 'local' && c.venta_enviada && c.venta_enviada.newValue;
   if (!v || Date.now() - ultimaVenta < 5000) return;
   ultimaVenta = Date.now();
-  const VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/*';
+  const VENTA = 'https://docs.google.com/forms/*', ID_VENTA = '1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw';
   setTimeout(async () => {
     let vl = null; try { vl = (await chrome.storage.local.get('venta_lineas')).venta_lineas; } catch (e) {}
     const quedan = vl && vl.quedan > 0 && Date.now() - vl.ts < 30 * 60000 ? vl.quedan : 0;
     try {
-      const t = (await chrome.tabs.query({ url: VENTA })).sort((a, b) => (b.active - a.active) || ((b.lastAccessed || 0) - (a.lastAccessed || 0)))[0];
+      const t = (await chrome.tabs.query({ url: VENTA })).filter(x => String(x.url || '').includes(ID_VENTA)).sort((a, b) => (b.active - a.active) || ((b.lastAccessed || 0) - (a.lastAccessed || 0)))[0];
       if (t) await chrome.scripting.executeScript({ target: { tabId: t.id }, func: avisoCentro, args: [quedan ? `Faltan ${quedan} ${quedan === 1 ? 'línea' : 'líneas'} por subir` : 'Venta registrada', '¡Formulario de venta enviado!'] });
     } catch (e) {}
     if (quedan) setTimeout(volverAClaroGo, 4400);
@@ -368,7 +368,7 @@ chrome.storage.onChanged.addListener((c, area) => {
   // La pestaña del formulario se busca cada vez (el fondo de la extensión puede haberse dormido y olvidado cuál era)
   const intentar = async (n) => {
     let id = ultimaPestanaForm;
-    try { const t = (await chrome.tabs.query({ url: 'https://docs.google.com/forms/d/e/1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ/*' })).sort((a, b) => (b.active - a.active) || ((b.lastAccessed || 0) - (a.lastAccessed || 0))); if (t.length) id = t[0].id; } catch (e) {}
+    try { const t = (await chrome.tabs.query({ url: 'https://docs.google.com/forms/*' })).filter(x => String(x.url || '').includes('1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ')).sort((a, b) => (b.active - a.active) || ((b.lastAccessed || 0) - (a.lastAccessed || 0))); if (t.length) id = t[0].id; } catch (e) {}
     if (!id) return notificar();
     chrome.scripting.executeScript({ target: { tabId: id }, func: avisoCentro, args: [env.texto || ''] })
       .catch(() => { if (n < 3) setTimeout(() => intentar(n + 1), 1500); else notificar(); });
@@ -404,7 +404,7 @@ function avisoCentro(texto, tituloTxt) {
 
 // Formularios de ventas y no venta: en la segunda hoja Google carga la página de una forma en que Edge
 // no vuelve a activar formas.js. Aquí se vigila la pestaña y se inyecta el script cada vez que la hoja cambia.
-const FORMAS = /^https:\/\/docs\.google\.com\/forms\/d\/e\/(1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ|1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw)\//;
+const FORMAS = /^https:\/\/docs\.google\.com\/forms\/(?:u\/\d+\/)?d\/e\/(1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ|1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw)\//;
 chrome.tabs.onUpdated.addListener((tabId, cambio, tab) => {
   const url = cambio.url || (tab && tab.url) || '';
   if (!FORMAS.test(url) || (cambio.status !== 'complete' && !cambio.url)) return;

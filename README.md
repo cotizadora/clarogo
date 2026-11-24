@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: GoExt 1.45.0, una sola pestaña del formulario de no venta
+
+- Caso: seguían abriéndose pestañas nuevas del registro de no venta. Con sesión de Google iniciada, el formulario queda en `docs.google.com/forms/u/0/d/e/...` (con /u/0/ o /u/1/) y GoExt solo buscaba `docs.google.com/forms/d/e/...`, así que no reconocía la pestaña ya abierta.
+- Ahora GoExt busca la pestaña por el código del formulario en cualquier forma de la dirección y la reutiliza. Lo mismo para el formulario de venta, el aviso al enviar y el script que trabaja dentro del formulario (manifiesto con los patrones `/forms/u/*/d/e/...`).
+
 ### 24-11-2026: ClaroGo! v2.16.0, códigos de Genesys en la planilla
 
 - El menú de tipificación de Mi Planilla (y el filtro de arriba) suma el grupo "Códigos de Genesys" con los 25 códigos de conclusión tal como aparecen en Genesys (lista enviada por Eduardo). Se mantienen las 12 tipificaciones propias de la planilla; los valores ya guardados no cambian. GoExt ya tenía los 25 códigos.

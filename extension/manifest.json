@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "GoExt",
   "short_name": "GoExt",
-  "version": "1.44.0",
+  "version": "1.45.0",
   "description": "GoExt: lee los datos del cliente en la llamada de Genesys y los copia o los envía a Mi Planilla de ClaroGo!. Herramienta no oficial.",
   "action": {
     "default_title": "GoExt: tomar datos de Genesys (Alt+Shift+G)",
@@ -19,7 +19,7 @@
     { "matches": ["https://*.pure.cloud/*", "https://*.mypurecloud.com/*", "https://*.genesys.cloud/*"], "js": ["llamada.js"], "run_at": "document_idle", "all_frames": true, "match_about_blank": true },
     { "matches": ["https://*.clarochile.cl/*", "https://*.entel.cl/*", "https://*.movistar.cl/*", "https://*.wom.cl/*", "https://wom.cl/*"], "js": ["deuda.js"], "run_at": "document_idle" },
     { "matches": ["https://www.nombrerutyfirma.com/*", "https://nombrerutyfirma.com/*"], "js": ["rutif.js"], "run_at": "document_idle" },
-    { "matches": ["https://docs.google.com/forms/d/e/1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ/*", "https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/*"], "js": ["formas.js"], "run_at": "document_idle", "all_frames": true }
+    { "matches": ["https://docs.google.com/forms/d/e/1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ/*", "https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/*", "https://docs.google.com/forms/u/*/d/e/1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ/*", "https://docs.google.com/forms/u/*/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/*"], "js": ["formas.js"], "run_at": "document_idle", "all_frames": true }
   ],
   "permissions": ["activeTab", "scripting", "clipboardWrite", "storage", "unlimitedStorage", "notifications"],
   "host_permissions": [
