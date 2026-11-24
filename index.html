@@ -515,6 +515,9 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 #ct-tabla td input:focus,#ct-tabla td select:focus{outline:2px solid #217346;outline-offset:-2px;background:#fff}
 #ct-tabla td input::placeholder{color:#b3b7be}
 #ct-tabla td.c-notas input{cursor:pointer}
+/* Hora en la segunda línea de la celda Fecha (la columna Hora ya no se muestra: su espacio queda para Notas) */
+.c-hora{display:none}
+#ct-tabla td.c-fecha{height:auto} #ct-tabla td.c-fecha input{height:19px;padding:2px 3px 0} #ct-tabla td.c-fecha input.hora-2{display:block;height:17px;padding:0 3px 2px;font-size:.72rem;color:var(--muted)}
 /* Plan: el nombre se ve completo (hasta dos líneas) y el selector queda invisible encima para elegir */
 #ct-tabla td.c-plan{position:relative;white-space:normal;height:auto}
 #ct-tabla td.c-plan .plan-ver{padding:5px 18px 4px 6px;font-size:.8rem;line-height:1.25;word-break:break-word;pointer-events:none}
@@ -1261,7 +1264,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.17.0';
+const APP_VERSION = '2.17.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -3725,7 +3728,7 @@ function ctPinta() {
   const fmtF = iso => { const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/); return m ? `${m[3]}-${m[2]}-${m[1]}` : iso; };
   $('#ct-body').innerHTML = lista.map((r, i) => `<tr data-id="${r.id}" class="${r.id === ctNuevo ? 'nuevo ' : ''}${esVentaTipo(r.tipo) ? 't-venta ' : ''}${tipoColor(r.tipo)} ${r.fav ? 'fav ' : ''}${r.borrado ? 'borrado ' : ''}${r.id === ctAbierto ? 'abierta' : ''}">
     <td class="c-n"><button class="estrella" data-ct="fav" title="${r.fav ? 'Quitar de favoritos' : 'Marcar como cliente favorito'}">${r.fav ? '★' : '☆'}</button><span data-ct="ficha" title="${esc(ctSeg(r))} · ${ctExtras(r)} datos en la ficha. Clic para abrir la ficha.">${i + 1}</span>${r.histTip ? `<span class="hist-m" title="${esc('Contactado antes. ' + r.histTip)}">🔁</span>` : ''}</td>
-    <td class="c-fecha"><input data-k="fecha" value="${esc(fmtF(r.fecha))}" placeholder="DD-MM-AAAA" title="${esc(fmtF(r.fecha))}"></td>
+    <td class="c-fecha"><input data-k="fecha" value="${esc(fmtF(r.fecha))}" placeholder="DD-MM-AAAA" title="${esc(fmtF(r.fecha))}"><input data-k="hora" class="hora-2" value="${esc(r.hora)}" placeholder="HH:MM" title="Hora"></td>
     <td class="c-hora"><input data-k="hora" value="${esc(r.hora)}" placeholder="HH:MM"></td>
     <td class="c-rut"><input data-k="rut" value="${esc(r.rut)}" placeholder="RUT" title="${esc(r.rut)}"></td>
     <td class="c-nombre${RUTIF_ESPERA.has(r.id) ? ' rutif-espera' : ''}"><textarea data-k="nombre" class="nom" rows="1" placeholder="Pegar nombre" title="${esc(r.nombre)}">${esc(r.nombre)}</textarea></td>

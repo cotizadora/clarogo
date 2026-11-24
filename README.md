@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: ClaroGo! 2.17.1, hora debajo de la fecha en Mi Planilla
+
+- La hora va en la segunda línea de la celda Fecha (se puede editar ahí mismo) y la columna Hora ya no se muestra. Su espacio queda para Notas en todos los tamaños de pantalla.
+
 ### 24-11-2026: ClaroGo! 2.17.0, notas siempre a la vista en Mi Planilla
 
 - La columna Notas ya no se oculta en pantallas de hasta 1500 px (por ejemplo 1366 px). Para darle espacio, Dirección quedó en 70 px y se achicaron un poco Nombre, Fecha, RUT, Teléfono, Compañía, Tipificación, Plan y Agendar. En pantallas grandes, Dirección pasó de 260 a 170 px.
