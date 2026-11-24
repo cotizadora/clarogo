@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 24-11-2026: GoExt 1.58.0 y ClaroGo! 2.24.1, la llamada entrante lleva a Genesys
+
+- Cuando entra una llamada, GoExt pone al frente la pestaña de Genesys, restaura la ventana si estaba minimizada y la maximiza. Dentro de Genesys aparece un aviso verde "LLAMADA ENTRANTE".
+- Si el ejecutivo estaba en otro programa, Windows a veces no deja que el navegador se ponga encima. Por eso aparece además un aviso de Windows, "📞 ENTRÓ UNA LLAMADA", que no se va solo; al hacerle clic, Genesys queda al frente y maximizado. Si estaba en el mismo navegador, solo cambia a Genesys, sin el aviso de Windows.
+- GoExt no abre ventanas nuevas: usa la pestaña de Genesys que ya está abierta.
+
 ### 24-11-2026: ClaroGo! 2.24.0, la guía cubre todo ClaroGo! (menos Horario)
 
 - Cuatro capítulos nuevos, con capturas reales tomadas hoy:

@@ -191,10 +191,53 @@ async function conectarGenesys() {
 }
 chrome.runtime.onStartup.addListener(() => setTimeout(conectarGenesys, 5000));
 
-// Llamada nueva en Genesys (llamada.js): solo se anota la hora de la llamada (sirve para saber si el cliente cortó
-// apenas contestó). GoExt NO se abre sola: el ejecutivo la abre con el ícono o con Alt+Shift+G, como siempre.
-async function abrirPorLlamada(msg) {
+// Llamada nueva en Genesys (llamada.js): se anota la hora de la llamada (sirve para saber si el cliente cortó
+// apenas contestó) y Genesys pasa al frente, maximizado: la llamada es la prioridad.
+// GoExt no abre ventanas nuevas ni su ventanita: solo trae al frente la pestaña de Genesys que ya está abierta.
+let ultimaLlamadaClave = '', ultimaLlamadaTs = 0;
+async function abrirPorLlamada(msg, tabOrigen) {
+  // Genesys tiene varios marcos: la misma llamada puede avisar más de una vez
+  if (msg.clave === ultimaLlamadaClave && Date.now() - ultimaLlamadaTs < 60000) return;
+  ultimaLlamadaClave = msg.clave; ultimaLlamadaTs = Date.now();
   try { await chrome.storage.local.set({ ultima_llamada: { ts: Date.now(), clave: msg.clave } }); } catch (e) {}
+  traerGenesys(tabOrigen, true);
+}
+// Pone la pestaña de Genesys al frente: activa la pestaña, restaura y maximiza la ventana y le da el foco.
+// Si el ejecutivo estaba en otro programa, Windows puede impedir que el navegador se ponga encima:
+// por eso además queda un aviso de Windows que no se va solo hasta hacerle clic.
+async function traerGenesys(tabOrigen, avisar) {
+  try {
+    let t = null;
+    if (tabOrigen && tabOrigen.id) { try { t = await chrome.tabs.get(tabOrigen.id); } catch (e) { t = null; } }
+    if (!t) t = (await chrome.tabs.query({ url: ['https://*.pure.cloud/*', 'https://*.mypurecloud.com/*', 'https://*.genesys.cloud/*'] })).sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0))[0];
+    if (!t) return;
+    // ¿El ejecutivo ya estaba mirando el navegador? Si no, el aviso de Windows es necesario
+    let enNavegador = false;
+    try { const w = await chrome.windows.getLastFocused(); enNavegador = !!(w && w.focused && w.state !== 'minimized'); } catch (e) {}
+    await chrome.tabs.update(t.id, { active: true });
+    const win = await chrome.windows.get(t.windowId);
+    if (win.state === 'minimized') await chrome.windows.update(t.windowId, { state: 'normal' });
+    await chrome.windows.update(t.windowId, { state: 'maximized', focused: true, drawAttention: true });
+    try { await chrome.scripting.executeScript({ target: { tabId: t.id }, func: avisoLlamada }); } catch (e) {}
+    if (avisar && !enNavegador) {
+      const id = 'cg-llamada-' + Date.now();
+      chrome.notifications.create(id, { type: 'basic', iconUrl: 'icono-128.png', priority: 2, requireInteraction: true, title: '📞 ENTRÓ UNA LLAMADA', message: 'Haz clic aquí para ir a Genesys.' });
+      setTimeout(() => chrome.notifications.clear(id), 90000);
+    }
+  } catch (e) {}
+}
+// Dentro de Genesys: recuadro verde "LLAMADA ENTRANTE" arriba al centro. Se va al mover el mouse o a los 6 segundos.
+function avisoLlamada() {
+  if (document.getElementById('goext-entrante')) return;
+  const caja = document.createElement('div');
+  caja.id = 'goext-entrante';
+  caja.style.cssText = 'position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:2147483647;padding:16px 30px;border-radius:18px;background:#14804a;color:#fff;text-align:center;font:800 28px/1.3 "Segoe UI",system-ui,sans-serif;white-space:nowrap;box-shadow:0 18px 50px rgba(0,0,0,.45);border:4px solid rgba(255,255,255,.9);transition:opacity .6s;pointer-events:none';
+  caja.textContent = '📞 LLAMADA ENTRANTE';
+  document.documentElement.appendChild(caja);
+  let listo = false;
+  const cerrar = () => { if (listo) return; listo = true; caja.style.opacity = '0'; setTimeout(() => caja.remove(), 650); ['mousemove', 'mousedown', 'keydown'].forEach(t => window.removeEventListener(t, cerrar, true)); };
+  setTimeout(() => ['mousemove', 'mousedown', 'keydown'].forEach(t => window.addEventListener(t, cerrar, true)), 1200);
+  setTimeout(cerrar, 6000);
 }
 // Llamada cortada: Genesys muestra la tipificación al terminar la llamada. Si el ejecutivo no presionó Desconectar
 // en los últimos segundos, fue el cliente quien cortó: alerta roja al centro, encima de cualquier pestaña.
@@ -236,7 +279,7 @@ async function finDeLlamada() {
   }
 }
 chrome.runtime.onMessage.addListener((msg, _de, responder) => {
-  if (msg && msg.tipo === 'llamada' && /^\d{9}$/.test(String(msg.tel || ''))) { abrirPorLlamada(msg); setTimeout(() => revisarVersion(false), 5000); return; }
+  if (msg && msg.tipo === 'llamada' && /^\d{9}$/.test(String(msg.tel || ''))) { abrirPorLlamada(msg, _de && _de.tab); setTimeout(() => revisarVersion(false), 5000); return; }
   if (msg && msg.tipo === 'corte-ejecutivo') { chrome.storage.local.set({ corte_ejecutivo: Date.now() }); return; }
   if (msg && msg.tipo === 'fin-llamada') { finDeLlamada(); return; }
   if (msg && msg.tipo === 'volver-clarogo') { volverAClaroGo(); return; }
@@ -466,6 +509,8 @@ async function revisarVersion(forzar) {
   } catch (e) {}
 }
 chrome.notifications.onClicked.addListener(id => {
+  // Aviso de llamada entrante: al hacerle clic, Genesys queda al frente y maximizado
+  if (String(id).startsWith('cg-llamada-')) { chrome.notifications.clear(id); traerGenesys(null, false); return; }
   if (!String(id).startsWith('cg-ver-')) return;
   chrome.notifications.clear(id);
   if (id.startsWith('cg-ver-activar')) chrome.runtime.reload();
