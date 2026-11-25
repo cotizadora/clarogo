@@ -1212,7 +1212,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   </div>
 </dialog>
 <dialog id="dlg-bfaviso" style="max-width:min(600px,96vw)">
-  <div class="d-head"><div><h2>Avisar al equipo</h2><p>Gráfica y enlace directo a la sección Black Friday</p></div><button class="d-x" data-close>✕</button></div>
+  <div class="d-head"><div><h2>Avisar al equipo</h2><p>Gráfica para el grupo. El enlace va aparte, en el mensaje, para que se pueda abrir con un clic</p></div><button class="d-x" data-close>✕</button></div>
   <div class="d-body">
     <canvas id="bfa-canvas" width="1080" height="1080" style="display:block;width:100%;aspect-ratio:1;border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.3);background:#050505"></canvas>
     <div class="fv-fila" style="margin-top:10px"><input id="bfa-link" readonly style="flex:1"><button class="btn sm" id="bfa-copiar-link">🔗 Copiar enlace</button></div>
@@ -1398,7 +1398,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.27.0';
+const APP_VERSION = '2.27.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2213,12 +2213,12 @@ function bfAviso(c, t, ims) {
     x.fillStyle = '#fff'; bfAjustar(x, txt, 700, 30, 520); x.fillText(txt, 126, y);
     x.restore();
   });
-  // Enlace
+  // Dónde encontrarla (sin enlace: en una imagen no se puede hacer clic; el enlace va en el mensaje)
   p = back(tr(.72, .95)); x.globalAlpha = cl(p);
   x.save(); x.translate(W / 2, 870); x.scale(.9 + .1 * cl(p), .9 + .1 * cl(p));
   x.fillStyle = 'rgba(255,255,255,.07)'; x.strokeStyle = bfOro(x, -60, 60); x.lineWidth = 3; x.beginPath(); x.roundRect(-470, -62, 940, 124, 28); x.fill(); x.stroke();
-  x.textAlign = 'center'; x.fillStyle = '#bdb49f'; x.font = `700 24px ${BF_F}`; x.fillText('ENTRA AQUÍ', 0, -20);
-  const link = BF_LINK.replace(/^https:\/\//, ''); x.fillStyle = '#fff'; bfAjustar(x, link, 800, 40, 880); x.fillText(link, 0, 30);
+  x.textAlign = 'center'; x.fillStyle = '#bdb49f'; x.font = `700 24px ${BF_F}`; x.fillText('ENTRA A ClaroGo! Y BUSCA LA PESTAÑA', 0, -20);
+  x.fillStyle = bfOro(x, -5, 40); x.font = `900 46px ${BF_F}`; x.fillText('BLACK FRIDAY', 0, 34);
   x.restore();
   p = eo(tr(.85, 1)); x.globalAlpha = p; x.textAlign = 'center';
   x.fillStyle = 'rgba(255,255,255,.55)'; x.font = `500 20px ${BF_F}`; x.fillText('Precios sujetos a evaluación comercial y stock disponible · ClaroGo! herramienta no oficial', W / 2, 1040);

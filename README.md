@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: ClaroGo! 2.27.1, la gráfica de aviso no lleva enlace
+
+- Pedido de Eduardo: en una imagen no se puede hacer clic, así que la gráfica "Avisar al equipo" ya no muestra el enlace. Ahora dice "Entra a ClaroGo! y busca la pestaña BLACK FRIDAY".
+- El enlace va solo en el mensaje ("💬 Copiar mensaje con enlace" o "🔗 Copiar enlace"), que se pega junto a la imagen en el grupo.
+
 ### 25-11-2026: ClaroGo! 2.27.0, sección Black Friday con enlace directo y aviso para el equipo
 
 - **Sección propia:** el enlace directo es https://cotizadora.github.io/clarogo/#blackfriday.
