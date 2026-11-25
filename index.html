@@ -884,6 +884,25 @@ body[data-view="inicio"] footer .sig{color:#fff}
 body[data-view="inicio"] .pf-alerta{background:linear-gradient(90deg,#ffd84d,#ffb800);border:0;color:#2a1d00;box-shadow:0 8px 22px rgba(255,184,0,.25)}
 body[data-view="inicio"] .pf-alerta b{color:#8a0008}
 body[data-view="inicio"] .perfil-btn:not(.falta){border-color:rgba(255,255,255,.35)}
+/* Modo claro del Inicio (botón ☀️/🌙): fondo gris perla con brillo rojo suave, tarjetas blancas con borde y sombra marcados y textos oscuros */
+body[data-view="inicio"].tema-claro{background:radial-gradient(900px 520px at 88% -8%,rgba(227,0,15,.16),transparent 62%),radial-gradient(760px 480px at -6% 108%,rgba(227,0,15,.10),transparent 60%),linear-gradient(165deg,#e9ecf3 0%,#dde2ec 55%,#ecdfe2 100%);background-attachment:fixed}
+body[data-view="inicio"].tema-claro .hero{color:#0d1020}
+body[data-view="inicio"].tema-claro .hero h1{text-shadow:0 6px 24px rgba(20,25,60,.12)}
+body[data-view="inicio"].tema-claro .hero p{color:#3b4260}
+body[data-view="inicio"].tema-claro .hero p.truco{color:#7a4b00}
+body[data-view="inicio"].tema-claro .tag{color:#b3000c;border-color:rgba(179,0,12,.35);background:rgba(255,255,255,.7)}
+body[data-view="inicio"].tema-claro .tile{background:linear-gradient(170deg,#ffffff,#f6f7fb);border:1px solid #c9cfdc;border-top:1px solid #d8dde8;box-shadow:0 8px 20px rgba(20,25,60,.12),0 1px 0 rgba(255,255,255,.9) inset;-webkit-backdrop-filter:none;backdrop-filter:none}
+body[data-view="inicio"].tema-claro .tile:hover{border-color:#e3000f;background:#fff;box-shadow:0 14px 30px rgba(227,0,15,.18),0 0 0 1px rgba(227,0,15,.25)}
+body[data-view="inicio"].tema-claro .tile-t,body[data-view="inicio"].tema-claro .tile:hover .tile-t{color:#0d1020}
+body[data-view="inicio"].tema-claro #home-links>div{background:rgba(255,255,255,.75);border:1px solid #c9cfdc;box-shadow:0 6px 16px rgba(20,25,60,.08)}
+body[data-view="inicio"].tema-claro #home-links .lbl{color:#b3000c;opacity:1}
+body[data-view="inicio"].tema-claro #home-links .link{background:#fff;border:1px solid #d3d8e3;border-left:3px solid #e3000f;box-shadow:0 2px 6px rgba(20,25,60,.08)}
+body[data-view="inicio"].tema-claro footer{background:#fff;border-top:1px solid #c9cfdc;color:#4a5170;box-shadow:0 -2px 10px rgba(20,25,50,.08)}
+body[data-view="inicio"].tema-claro footer .sig{color:#0d1020}
+body[data-view="inicio"].tema-claro .perfil-btn:not(.falta){border-color:#9aa3ba;color:#1d2240}
+body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,184,0,.3)}
+.tema-btn{margin-left:2px}
+@media (max-width:640px){.tema-btn .tb-t{display:none}.tema-btn{padding:1px 7px}}
 .plan-h{position:relative}
 .plan-badge{display:block;font-size:.66rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;opacity:.9;margin-top:2px}
 .redes{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 12px;padding:6px 0 2px}
@@ -907,7 +926,7 @@ body[data-view="inicio"] .perfil-btn:not(.falta){border-color:rgba(255,255,255,.
     <div class="hero">
       <div class="tag" id="hoy">Portal de ventas</div>
       <h1>Claro<em>Go!</em> <span class="ver" data-app-ver title="Versión de ClaroGo!"></span></h1>
-      <p>Portal de ventas 2026 · Elige una sección · <button class="perfil-btn" id="perfil-btn" title="Tu nombre y tu mensaje de WhatsApp"></button></p>
+      <p>Portal de ventas 2026 · Elige una sección · <button class="perfil-btn" id="perfil-btn" title="Tu nombre y tu mensaje de WhatsApp"></button> · <button class="perfil-btn tema-btn" id="tema-btn" title="Cambiar entre modo oscuro y modo claro"></button></p>
       <p class="truco" id="truco" title="Clic para ver otro truco"></p>
     </div>
     <button type="button" class="pf-alerta" id="pf-alerta" hidden><span class="pf-mano">👆</span><span class="pf-txt"><b>Falta poner TU nombre y TU teléfono.</b><span class="pf-extra"> Tus mensajes de WhatsApp salen con los datos de otra persona. Cámbialos y aprieta 💾 Guardar.</span></span><span class="pf-ir">Cambiar ahora</span></button>
@@ -1470,7 +1489,7 @@ body[data-view="inicio"] .perfil-btn:not(.falta){border-color:rgba(255,255,255,.
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.30.0';
+const APP_VERSION = '2.31.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -4118,6 +4137,13 @@ function perfilVozInicio() {
   if (Date.now() - perfilVozUltima < 120000) return;   // como máximo una vez cada 2 minutos
   perfilVozUltima = Date.now(); perfilHablar('inicio');
 }
+/* Modo oscuro o claro del Inicio: se recuerda en cada navegador. Por defecto, oscuro. */
+function initTema() {
+  const leer = () => { try { return localStorage.getItem('clarogo_tema') === 'claro' ? 'claro' : 'oscuro'; } catch (e) { return 'oscuro'; } };
+  const pinta = () => { const claro = leer() === 'claro'; document.body.classList.toggle('tema-claro', claro); $('#tema-btn').innerHTML = claro ? '🌙<span class="tb-t"> Modo oscuro</span>' : '☀️<span class="tb-t"> Modo claro</span>'; };
+  $('#tema-btn').onclick = () => { try { localStorage.setItem('clarogo_tema', leer() === 'claro' ? 'oscuro' : 'claro'); } catch (e) {} pinta(); };
+  pinta();
+}
 function initPerfil() {
   perfilPintaBoton();
   const vista = () => { const p = $('#pf-plantilla').value.trim() || PLANTILLA_DEFECTO, n = $('#pf-nombre').value.trim() || NOMBRE_DEFECTO, t = $('#pf-telefono').value.trim() || TELEFONO_DEFECTO, fi = $('#pf-firma').value.trim() || FIRMA_DEFECTO; $('#pf-vista').textContent = 'Desde la planilla, con el nombre del cliente:\n' + presentacion(p, n, { nombre: 'MARÍA SOTO' }) + '\n' + presentacion(p, n, { nombre: 'JUAN PÉREZ' }) + '\n\nSin nombre (siempre en la extensión):\n' + presentacion(p, n) + '\n\n[detalle del plan elegido]\n\n' + firmaTexto(fi, n, t); };
@@ -5038,7 +5064,7 @@ async function limpiarCache() {
 document.addEventListener('click', e => { const b = e.target.closest('[data-copiar-txt]'); if (!b) return; try { navigator.clipboard.writeText(b.dataset.copiarTxt).then(() => { const t = b.textContent; b.textContent = 'Copiado'; setTimeout(() => { b.textContent = t; }, 1600); }, () => toast('No se pudo copiar')); } catch (x) {} });
 // En Chrome la página de extensiones es chrome://extensions (edge://extensions no abre en Chrome)
 if (!/Edg\//.test(navigator.userAgent)) $$('[data-copiar-txt="edge://extensions"]').forEach(b => { b.dataset.copiarTxt = 'chrome://extensions'; const c = b.previousElementSibling; if (c) c.textContent = 'chrome://extensions'; const s = b.closest('li') && b.closest('li').querySelector('small'); if (s) s.innerHTML = 'En Edge: <code>edge://extensions</code>'; });
-$$('[data-app-ver]').forEach(e => { e.textContent = 'v' + APP_VERSION; }); initMenu(); initLineas(); initExcepciones(); initSugerencias(); iniciarRespaldo(); initWhatsApp(); initAgenda(); initPerfil(); initDeshacer(); initSonido(); initBlackFriday(); mostrarTruco(); $('#truco').onclick = mostrarTruco; window.addEventListener('hashchange', () => { if ((location.hash || '#inicio') === '#inicio') mostrarTruco(); });
+$$('[data-app-ver]').forEach(e => { e.textContent = 'v' + APP_VERSION; }); initMenu(); initLineas(); initExcepciones(); initSugerencias(); iniciarRespaldo(); initWhatsApp(); initAgenda(); initPerfil(); initTema(); initDeshacer(); initSonido(); initBlackFriday(); mostrarTruco(); $('#truco').onclick = mostrarTruco; window.addEventListener('hashchange', () => { if ((location.hash || '#inicio') === '#inicio') mostrarTruco(); });
 try { if (sessionStorage.getItem('clarogo_limpio')) { sessionStorage.removeItem('clarogo_limpio'); setTimeout(() => toast('Caché limpiada. Tu planilla está a salvo.'), 400); } } catch (e) {}
 $('#cache-btn').onclick = limpiarCache;
 window.addEventListener('hashchange', route);

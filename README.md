@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: ClaroGo! 2.31.0, modo oscuro y modo claro en el Inicio
+
+- Nuevo botón en el Inicio (al lado de "Mi mensaje") para elegir entre modo oscuro (el de siempre, por defecto) y modo claro. Cada navegador recuerda lo que eligió. En celular el botón se ve solo con el ícono ☀️ o 🌙.
+- El modo claro ahora tiene más contraste que la portada blanca anterior: fondo gris perla con brillo rojo suave, botones blancos con borde y sombra marcados, íconos rojos, textos oscuros y títulos en rojo.
+
 ### 25-11-2026: ClaroGo! 2.30.0, Inicio premium y aviso solo por el nombre
 
 - El Inicio en PC deja de ser blanco: fondo oscuro con brillo rojo, botones tipo vidrio con íconos rojos, textos blancos de alto contraste, enlaces de abajo en recuadros oscuros y pie oscuro. En celular se usa el mismo estilo.
