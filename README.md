@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: ClaroGo! 2.30.0, Inicio premium y aviso solo por el nombre
+
+- El Inicio en PC deja de ser blanco: fondo oscuro con brillo rojo, botones tipo vidrio con íconos rojos, textos blancos de alto contraste, enlaces de abajo en recuadros oscuros y pie oscuro. En celular se usa el mismo estilo.
+- El aviso con el dedito ahora depende solo del nombre: apenas el ejecutivo cambia su nombre y guarda, el aviso no vuelve a aparecer (aunque no cambie el teléfono).
+
 ### 25-11-2026: ClaroGo! 2.29.2 y GoExt 1.60.1, RUT sin ceros a la izquierda
 
 - Arreglo: en las bases que traen RUT, Genesys lo entrega con dos ceros a la izquierda (0012345678-9) y GoExt lo pasaba así a Mi Planilla. Ahora los ceros a la izquierda se quitan siempre: al llegar desde GoExt, al crear cualquier fila y en la ventana de GoExt.

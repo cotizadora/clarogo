@@ -859,17 +859,31 @@ body.pf-falta .mute-banner{display:none!important}
   #home-links .link b{font-size:.82rem;white-space:normal;line-height:1.15}
   .tile-enl,.tile-mute{display:none}
 }
-/* Portada clara en PC */@media (min-width:900px){
-  body[data-view="inicio"]{background:var(--bg)}
-  body[data-view="inicio"] .hero{color:var(--text)}
-  body[data-view="inicio"] .hero h1 em{color:var(--red)}
-  body[data-view="inicio"] .hero p{color:var(--muted)}
-  body[data-view="inicio"] .tag{color:var(--red);border-color:rgba(230,0,0,.3)}
-  body[data-view="inicio"] .ver{background:var(--red);color:#fff}
-  body[data-view="inicio"] .tile{background:#fff;border:1px solid var(--border);border-top:3px solid var(--border);box-shadow:var(--shadow)}
-  body[data-view="inicio"] .tile:hover{border-top-color:var(--red)}
-  body[data-view="inicio"] .tile-t{color:var(--muted)}
-}
+/* Portada premium: fondo oscuro con brillo rojo, tarjetas de vidrio y textos de alto contraste (PC y celular) */
+body[data-view="inicio"]{background:radial-gradient(900px 520px at 88% -8%,rgba(227,0,15,.42),transparent 62%),radial-gradient(760px 480px at -6% 108%,rgba(227,0,15,.22),transparent 60%),radial-gradient(600px 300px at 50% 0%,rgba(255,196,0,.07),transparent 70%),linear-gradient(165deg,#070912 0%,#10142a 52%,#24070d 100%);background-attachment:fixed}
+body[data-view="inicio"] .hero{color:#fff}
+body[data-view="inicio"] .hero h1{letter-spacing:-.02em;text-shadow:0 6px 30px rgba(0,0,0,.45)}
+body[data-view="inicio"] .hero h1 em{background:linear-gradient(180deg,#ff5a5a,#e3000f);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 18px rgba(227,0,15,.45))}
+body[data-view="inicio"] .hero p{color:rgba(255,255,255,.78)}
+body[data-view="inicio"] .hero p.truco{color:rgba(255,226,150,.9)}
+body[data-view="inicio"] .tag{color:#ffd76a;border-color:rgba(255,215,106,.45);background:rgba(255,215,106,.06)}
+body[data-view="inicio"] .ver{background:linear-gradient(180deg,#ff2a2a,#c8000d);color:#fff;box-shadow:0 4px 14px rgba(227,0,15,.45)}
+body[data-view="inicio"] .tile{background:linear-gradient(160deg,rgba(255,255,255,.10),rgba(255,255,255,.035));border:1px solid rgba(255,255,255,.12);border-top:1px solid rgba(255,255,255,.22);box-shadow:0 10px 26px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.06);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+body[data-view="inicio"] .tile:hover{border-color:rgba(255,77,77,.55);background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(227,0,15,.10));box-shadow:0 14px 34px rgba(227,0,15,.28),0 0 0 1px rgba(255,77,77,.25)}
+body[data-view="inicio"] .tile-t,body[data-view="inicio"] .tile:hover .tile-t{color:#fff;font-weight:700}
+body[data-view="inicio"] .tile-i{background:linear-gradient(150deg,#ff3b3b,#b3000c);border:0;color:#fff;box-shadow:0 6px 16px rgba(227,0,15,.4),inset 0 1px 0 rgba(255,255,255,.25)}
+body[data-view="inicio"] .tile.soon{opacity:.55}
+body[data-view="inicio"] .tile-b{box-shadow:0 2px 8px rgba(0,0,0,.35)}
+body[data-view="inicio"] #home-links>div{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);box-shadow:0 8px 22px rgba(0,0,0,.25)}
+body[data-view="inicio"] #home-links .lbl{color:#ffd76a;opacity:.85}
+body[data-view="inicio"] #home-links .link{background:rgba(255,255,255,.94);border:0;border-left:3px solid #e3000f;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,.25)}
+body[data-view="inicio"] #home-links .link:hover{background:#fff;transform:translateY(-1px)}
+body[data-view="inicio"] #home-links .link b{color:#14172b}
+body[data-view="inicio"] footer{background:rgba(7,9,18,.92);border-top:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.6);box-shadow:none}
+body[data-view="inicio"] footer .sig{color:#fff}
+body[data-view="inicio"] .pf-alerta{background:linear-gradient(90deg,#ffd84d,#ffb800);border:0;color:#2a1d00;box-shadow:0 8px 22px rgba(255,184,0,.25)}
+body[data-view="inicio"] .pf-alerta b{color:#8a0008}
+body[data-view="inicio"] .perfil-btn:not(.falta){border-color:rgba(255,255,255,.35)}
 .plan-h{position:relative}
 .plan-badge{display:block;font-size:.66rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;opacity:.9;margin-top:2px}
 .redes{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 12px;padding:6px 0 2px}
@@ -1456,7 +1470,7 @@ body.pf-falta .mute-banner{display:none!important}
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.29.2';
+const APP_VERSION = '2.30.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -4008,8 +4022,8 @@ function laminaDataURL(id) {
 const dataABlob = d => { const [cab, b64] = String(d).split(','), tipo = (cab.match(/data:([^;]+)/) || [])[1] || 'image/png', bin = atob(b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new Blob([u], { type: tipo }); };
 // El portapapeles solo acepta PNG: si la lámina es JPG (Persona Mayor) se convierte
 const pngDeData = d => new Promise(res => { if (/^data:image\/png/.test(d)) return res(dataABlob(d)); const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = i.naturalWidth; c.height = i.naturalHeight; c.getContext('2d').drawImage(i, 0, 0); c.toBlob(res, 'image/png'); }; i.onerror = () => res(null); i.src = d; });
-// Ejecutivo que todavía tiene el nombre o el teléfono de ejemplo: se le muestra el aviso con el dedito (nunca en el equipo administrador)
-const perfilFalta = () => { if (esAdmin()) return false; try { const n = (localStorage.getItem('agentName') || '').trim(), t = (localStorage.getItem('clarogo_telefono') || '').trim(); return !n || n === NOMBRE_DEFECTO || !t || t === TELEFONO_DEFECTO; } catch (e) { return false; } };
+// Ejecutivo que todavía tiene el nombre de ejemplo: se le muestra el aviso con el dedito (nunca en el equipo administrador)
+const perfilFalta = () => { if (esAdmin()) return false; try { const n = (localStorage.getItem('agentName') || '').trim(); return !n || n === NOMBRE_DEFECTO; } catch (e) { return false; } };   // basta con que cambie su nombre para que el aviso no vuelva
 const perfilPintaBoton = () => { const b = $('#perfil-btn'), falta = perfilFalta(); if (b) { b.textContent = falta ? '👉 Pon aquí TU nombre y TU teléfono' : '👤 ' + agenteNombre() + ' · Mi mensaje'; b.classList.toggle('falta', falta); } const a = $('#pf-alerta'); if (a) a.hidden = !falta; document.body.classList.toggle('pf-falta', falta); };
 /* ── Sonido al pasar el mouse ───────────────────────────────────────
    Un "tic" muy corto y suave cuando el mouse entra a algo que se puede presionar. Se puede apagar en el pie de página. */
@@ -4080,7 +4094,7 @@ const perfilVozFrases = {
   ventana: 'Escribe tu nombre y tu teléfono. Cuando termines, aprieta el botón rojo Guardar, abajo a la derecha. Si no lo aprietas, no queda guardado.',
   sinGuardar: 'Ojo. Cerraste sin guardar. Tus datos no quedaron guardados. Vuelve a abrir y aprieta Guardar.',
   listo: 'Listo. Tus datos quedaron guardados.',
-  aunFalta: 'Guardaste, pero todavía falta tu nombre o tu teléfono. Escribe los tuyos, no los del ejemplo.'
+  aunFalta: 'Guardaste, pero todavía aparece el nombre del ejemplo. Escribe tu propio nombre y aprieta Guardar.'
 };
 function perfilHablar(clave) {
   try {
@@ -4116,7 +4130,7 @@ function initPerfil() {
   $('#pf-guardar').onclick = () => {
     perfilGuardar($('#pf-nombre').value || NOMBRE_DEFECTO, $('#pf-plantilla').value, $('#pf-telefono').value, $('#pf-firma').value);
     guardado = true; $('#dlg-perfil').close();
-    if (perfilFalta()) { perfilHablar('aunFalta'); toast('Guardado, pero todavía falta TU nombre o TU teléfono'); }
+    if (perfilFalta()) { perfilHablar('aunFalta'); toast('Guardado, pero todavía falta poner TU nombre'); }
     else { if (faltabaAlAbrir) perfilHablar('listo'); toast('Listo. Tu mensaje quedó guardado.'); }
   };
   // Voz: al abrir la ventana sin datos, al cerrarla sin guardar, y en Inicio con la primera interacción
