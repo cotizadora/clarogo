@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: ClaroGo! 2.31.1, el aviso de nombre ya no le sale al autor
+
+- El nombre del ejemplo es el de Eduardo Pérez, por eso el aviso le salía a él. Ahora, si alguien guarda "Mi mensaje" con ese nombre, ClaroGo! pregunta "¿Tú eres Eduardo Pérez?". Si acepta, ese navegador no vuelve a mostrar el aviso ni la voz.
+- La voz del aviso en Inicio ahora suena una sola vez por sesión del navegador (antes, cada 2 minutos).
+
 ### 25-11-2026: ClaroGo! 2.31.0, modo oscuro y modo claro en el Inicio
 
 - Nuevo botón en el Inicio (al lado de "Mi mensaje") para elegir entre modo oscuro (el de siempre, por defecto) y modo claro. Cada navegador recuerda lo que eligió. En celular el botón se ve solo con el ícono ☀️ o 🌙.

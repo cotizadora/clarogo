@@ -1489,7 +1489,7 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.31.0';
+const APP_VERSION = '2.31.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -4042,7 +4042,7 @@ const dataABlob = d => { const [cab, b64] = String(d).split(','), tipo = (cab.ma
 // El portapapeles solo acepta PNG: si la lámina es JPG (Persona Mayor) se convierte
 const pngDeData = d => new Promise(res => { if (/^data:image\/png/.test(d)) return res(dataABlob(d)); const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = i.naturalWidth; c.height = i.naturalHeight; c.getContext('2d').drawImage(i, 0, 0); c.toBlob(res, 'image/png'); }; i.onerror = () => res(null); i.src = d; });
 // Ejecutivo que todavía tiene el nombre de ejemplo: se le muestra el aviso con el dedito (nunca en el equipo administrador)
-const perfilFalta = () => { if (esAdmin()) return false; try { const n = (localStorage.getItem('agentName') || '').trim(); return !n || n === NOMBRE_DEFECTO; } catch (e) { return false; } };   // basta con que cambie su nombre para que el aviso no vuelva
+const perfilFalta = () => { if (esAdmin()) return false; try { if (localStorage.getItem('clarogo_soy_autor') === '1') return false; const n = (localStorage.getItem('agentName') || '').trim(); return !n || n === NOMBRE_DEFECTO; } catch (e) { return false; } };   // basta con que cambie su nombre para que el aviso no vuelva
 const perfilPintaBoton = () => { const b = $('#perfil-btn'), falta = perfilFalta(); if (b) { b.textContent = falta ? '👉 Pon aquí TU nombre y TU teléfono' : '👤 ' + agenteNombre() + ' · Mi mensaje'; b.classList.toggle('falta', falta); } const a = $('#pf-alerta'); if (a) a.hidden = !falta; document.body.classList.toggle('pf-falta', falta); };
 /* ── Sonido al pasar el mouse ───────────────────────────────────────
    Un "tic" muy corto y suave cuando el mouse entra a algo que se puede presionar. Se puede apagar en el pie de página. */
@@ -4134,7 +4134,7 @@ function perfilHablar(clave) {
 let perfilVozUltima = 0;
 function perfilVozInicio() {
   if (!perfilFalta() || (location.hash || '#inicio') !== '#inicio' || $('dialog[open]')) return;
-  if (Date.now() - perfilVozUltima < 120000) return;   // como máximo una vez cada 2 minutos
+  try { if (sessionStorage.getItem('pf_voz') === '1') return; sessionStorage.setItem('pf_voz', '1'); } catch (e) { if (perfilVozUltima) return; }   // una sola vez por sesión del navegador
   perfilVozUltima = Date.now(); perfilHablar('inicio');
 }
 /* Modo oscuro o claro del Inicio: se recuerda en cada navegador. Por defecto, oscuro. */
@@ -4154,6 +4154,9 @@ function initPerfil() {
   $('#pf-defecto').onclick = () => { $('#pf-plantilla').value = PLANTILLA_DEFECTO; $('#pf-firma').value = FIRMA_DEFECTO; vista(); dedo(); };
   let guardado = false, faltabaAlAbrir = false;
   $('#pf-guardar').onclick = () => {
+    const nom = ($('#pf-nombre').value || '').trim();
+    // El nombre del ejemplo es el del autor: si es él quien guarda, el aviso no le vuelve a salir
+    if ((!nom || nom === NOMBRE_DEFECTO) && !esAdmin() && confirm('¿Tú eres ' + NOMBRE_DEFECTO + '?\n\nAcepta solo si de verdad eres ' + NOMBRE_DEFECTO + '. Si no, aprieta Cancelar y escribe tu propio nombre.')) { try { localStorage.setItem('clarogo_soy_autor', '1'); } catch (e) {} }
     perfilGuardar($('#pf-nombre').value || NOMBRE_DEFECTO, $('#pf-plantilla').value, $('#pf-telefono').value, $('#pf-firma').value);
     guardado = true; $('#dlg-perfil').close();
     if (perfilFalta()) { perfilHablar('aunFalta'); toast('Guardado, pero todavía falta poner TU nombre'); }
