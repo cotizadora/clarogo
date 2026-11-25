@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: ClaroGo! 2.28.1, los filtros de Black Friday a la vista apenas se entra
+
+- Arreglo: en la sección Black Friday, el título negro se corría hacia abajo y tapaba los filtros. Ahora el título queda fijo en su lugar y los filtros se ven apenas se entra.
+- Los filtros quedan ordenados como en el Stock: el buscador grande, los menús de marca, pie y orden, y "Solo con stock" en una fila. Abajo van "Filtro rápido (Pie $0 + stock)" y "Limpiar".
+
 ### 25-11-2026: ClaroGo! 2.28.0, invitación a Black Friday en el Inicio
 
 - Al entrar al Inicio aparece una ventana negra y dorada con tres equipos, "NUEVO EN ClaroGo!", BLACK FRIDAY y lo que trae la sección. Tiene dos botones: "Ver las ofertas ›", que lleva a la sección, y "Ahora no".

@@ -340,12 +340,16 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 .bf-vacio{padding:40px;text-align:center;color:#9d947f}
 .bf-gal button{background:#070707;border-color:#26211b}.bf-gal span{color:#f1ede4;background:#0d0b09}
 .bf-gal canvas{width:100%;aspect-ratio:4/5;display:block}
-@media (min-width:760px){.bf-filtros{grid-template-columns:minmax(180px,2fr) repeat(3,minmax(165px,1fr)) auto auto auto}.bf-filtros #bf-q{grid-column:auto}}
+/* Igual que el Stock: buscador grande, menús y "Solo con stock" en una fila; los botones abajo */
+.bf-f-acc{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
+@media (min-width:760px){.bf-filtros{grid-template-columns:minmax(260px,2.2fr) repeat(3,minmax(150px,1fr)) auto}.bf-filtros #bf-q{grid-column:auto}}
 @media (max-width:520px){.bf-head{flex-wrap:wrap}.bf-grid{grid-template-columns:1fr 1fr;gap:10px;padding:6px 12px 20px}.bf-foto{height:170px}.bf-foto img{max-height:150px}.bf-cuota b{font-size:1.15rem}.bf-acc{flex-direction:column}}
 @media (prefers-reduced-motion:reduce){.bf-banner::after,.bf-card{animation:none}}
 /* Sección propia: el mismo catálogo de la ventana, a página completa */
-.bf-seccion #bf-panel{margin:-4px 0 0;border:1px solid #2c2620;border-radius:20px;background:#070707;color:#f1ede4;overflow:hidden;box-shadow:0 14px 40px rgba(0,0,0,.18)}
-.bf-seccion .bf-head{top:var(--top-h,0px)}
+.bf-seccion #bf-panel{margin:-4px 0 0;border:1px solid #2c2620;border-radius:20px;background:#070707;color:#f1ede4;overflow:clip;box-shadow:0 14px 40px rgba(0,0,0,.18)}
+/* En la sección, el título no se queda pegado arriba: así nunca tapa los filtros, que quedan a la vista apenas se entra */
+.bf-seccion .bf-head{position:static}
+.bf-seccion .bf-filtros{padding-top:18px}
 .bf-seccion .bf-x{display:none}
 .bf-fin{padding:40px;text-align:center;border-radius:20px;background:#070707;color:#d9d2c2;font-weight:700}
 #nav a[data-v=blackfriday]{background:#0b0b0b;color:#e8b955;border-radius:10px}
@@ -1227,8 +1231,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     <select id="bf-pie"><option value="">Cualquier pie</option><option value="0-0">Pie $0</option><option value="1-50000">Hasta $50.000</option><option value="50001-300000">$50.001 a $300.000</option><option value="300001-9999999">$300.001 o más</option></select>
     <select id="bf-orden"><option value="ahorro">Mayor ahorro</option><option value="cuota">Menor cuota</option><option value="pie">Menor pie</option><option value="total">Menor precio total</option><option value="marca">Marca</option></select>
     <label class="bf-chk"><input type="checkbox" id="bf-solo"> Solo con stock</label>
-    <button class="bf-btn rojo" id="bf-rapido">Filtro rápido (Pie $0 + stock)</button>
-    <button class="bf-btn" id="bf-limpiar">Limpiar</button>
+    <div class="bf-f-acc"><button class="bf-btn rojo" id="bf-rapido">Filtro rápido (Pie $0 + stock)</button><button class="bf-btn" id="bf-limpiar">Limpiar</button></div>
   </div>
   <div class="bf-meta"><span id="bf-count"></span><span>Portabilidad · pie + 18 cuotas · precios del Excel de la campaña</span></div>
   <div class="bf-grid" id="bf-grid"></div>
@@ -1431,7 +1434,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.28.0';
+const APP_VERSION = '2.28.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
