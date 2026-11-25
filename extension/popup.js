@@ -180,6 +180,7 @@ async function pintarLlamada(d, anterior) {
   $('#enviar').disabled = false;
   if (tel) prepararWhatsApp(tel, nombre);
   TEL_NV = (tel || '').replace(/\D/g, '');
+  ORIGEN_NV = String(d.Segment_of_Origin || '');
   await mostrarHistorial(TEL_NV);
   // Se guarda la llamada actual (si es la misma de antes, se conserva si ya fue tipificada)
   if (!anterior) {
@@ -196,7 +197,7 @@ async function pintarLlamada(d, anterior) {
 const NV_FORM = 'https://docs.google.com/forms/d/e/1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ/viewform';
 const NV_MOTIVOS = ['CLIENTE EMPRESA', 'CLIENTE OFENSIVO', 'CLIENTE PIDE NO SER CONTACTADO', 'CLIENTE CONFORME CON COMPAÑIA ACTUAL', 'CORTE DE LLAMADO', 'LLAMADA MUDA', 'MALA EXPERIENCIA CON CLARO', 'PORTABILIDAD MENOS DE 120 DIAS', 'NO ES TITULAR', 'NO HAY STOCK DE EQUIPO SOLICITADO', 'PAGA MENOS EN LA COMPAÑIA ACTUAL', 'SE ENVIA INFO POR WSP', 'SIN COBERTURA CLARO', 'EXTRANJERO SIN DOCUMENTACION', 'C.I VENCIDO', 'NUMERO NO ACTIVO'];
 const NV_COMPANIAS = ['WOM', 'ENTEL', 'MOVISTAR', 'MUNDO PACIFICO', 'Otros'];
-let TEL_NV = '';
+let TEL_NV = '', ORIGEN_NV = '';
 // Grupos de motivos con su color: seguimiento (verde), rechazo del cliente (rojo), requisitos (naranjo), llamada (gris)
 const NV_GRUPOS = [
   ['seg', 'Seguimiento', ['SE ENVIA INFO POR WSP']],
@@ -212,7 +213,7 @@ let NV_USO = {}, NV_ORDEN = 'grupo';
 const nvPuntaje = m => (NV_USO[m] || []).reduce((s, t) => s + Math.pow(.5, (Date.now() - t) / (14 * 864e5)), 0);
 function nvPintarChips() {
   const todos = [...NV_MOTIVOS, '__otro'], cont = $('#nv-chips'), sel = $('#nv-motivo').value;
-  const chip = m => `<button type="button" class="g-${m === '__otro' ? 'otro' : nvGrupo(m)}${m === sel ? ' on' : ''}" data-m="${m}" title="${m === '__otro' ? 'Escribir otro motivo' : m}">${nvTexto(m)}</button>`;
+  const chip = m => `<button type="button" class="g-${m === '__otro' ? 'otro' : nvGrupo(m)}${m === sel ? ' on' : ''}" data-m="${m}" title="${m === '__otro' ? 'Escribir otro motivo' : m + (GC_SUGERIDO[m] ? ' → Genesys: ' + GC_SUGERIDO[m] : '')}">${nvTexto(m)}</button>`;
   if (NV_ORDEN === 'grupo') cont.innerHTML = NV_GRUPOS.map(([g, t, ms]) => `<div class="g-t">${t}</div>` + ms.map(chip).join('')).join('') + `<div class="g-t">Otro</div>` + chip('__otro');
   else {
     const lista = NV_MOTIVOS.slice().sort(NV_ORDEN === 'az' ? (a, b) => nvTexto(a).localeCompare(nvTexto(b), 'es') : (a, b) => (nvPuntaje(b) - nvPuntaje(a)) || nvTexto(a).localeCompare(nvTexto(b), 'es'));
@@ -222,11 +223,12 @@ function nvPintarChips() {
 }
 function nvPintar() {
   const m = $('#nv-motivo').value;
+  // Solo "Otro" necesita escribir y confirmar con su botón; los demás motivos tipifican con un clic
   $('#nv-otro').hidden = m !== '__otro';
-  $('#nv-comp').hidden = !/CONFORME CON COMPA|PAGA MENOS/.test(m);
-  $('#nv-abrir').textContent = m ? '📝 Tipificar en formulario: ' + nvTexto(m) : '📝 Tipificar en formulario';
+  $('#nv-abrir').hidden = m !== '__otro';
   nvPintarChips();
-}function nvURL() {
+}
+function nvURL() {
   const m = $('#nv-motivo').value, otro = ($('#nv-otro').value || '').trim(), comp = $('#nv-comp').value, obs = ($('#comentario').value || '').trim();
   const p = [['entry.1000912384', 'No'], ['entry.1655228490', 'NO']];
   if (TEL_NV) p.push(['entry.1534465510', TEL_NV.slice(-9)]);
@@ -255,7 +257,9 @@ const GC_SUGERIDO = {
   'PAGA MENOS EN LA COMPAÑIA ACTUAL': 'Rechazo/Mejor oferta competencia $ precio',
   'SE ENVIA INFO POR WSP': 'Volver a llamar (cliente no acepta, pero le interesa)',
   'SIN COBERTURA CLARO': 'Rechazo/Mala Experiencia Claro Cobertura (señal)',
-  'C.I VENCIDO': 'Rechazo/Cliente con Serie No Vigente'
+  'C.I VENCIDO': 'Rechazo/Cliente con Serie No Vigente',
+  'EXTRANJERO SIN DOCUMENTACION': 'Rechazo/Cliente con Serie No Vigente',
+  'NUMERO NO ACTIVO': 'Rechazo/No es el titular de la linea (pedir referido)'
 };
 // Corre dentro de cada marco de Genesys: solo actúa en el recuadro "Códigos de conclusión" y solo marca (no envía)
 async function elegirConclusion(codigo) {
@@ -293,38 +297,65 @@ async function marcarEnGenesys(codigo) {
   } catch (e) {}
   return 'no';
 }
+/* Un clic en el motivo tipifica: llena el formulario de no venta y marca en Genesys el código que calza.
+   Además el código queda pedido en segundo plano (gc_pendiente): conclusion.js lo vuelve a marcar si el recuadro
+   de códigos de conclusión aparece después o se limpia, así la llamada se cierra con el código aunque se acabe el tiempo. */
+let GC_FORZADO = '';   // solo para el corte de llamada temprano ("Cliente Corta Llamada en saludo")
+const nvCompDe = s => { const t = String(s || '').toUpperCase(); return NV_COMPANIAS.find(c => c !== 'Otros' && t.includes(c)) || ''; };
+async function gcPedir(codigo) {
+  if (!codigo) return;
+  try { await chrome.storage.local.set({ gc_pendiente: { codigo, tel: TEL_NV.slice(-9), ts: Date.now() } }); } catch (e) {}
+}
+async function nvLanzar() {
+  const m = $('#nv-motivo').value;
+  if (!m) { mostrar('Elige el motivo de no venta.', 'mal'); return; }
+  if (m === '__otro' && !($('#nv-otro').value || '').trim()) { mostrar('Escribe el motivo en el cuadro "Otro".', 'mal'); $('#nv-otro').focus(); return; }
+  // Se guarda el uso para ordenar por "Más usados" (máximo 60 fechas por motivo)
+  try { NV_USO[m] = [...(NV_USO[m] || []), Date.now()].slice(-60); await chrome.storage.local.set({ nvUso: NV_USO }); } catch (e) {}
+  // Aviso para formas.js: pasa a la segunda página, recorre lo llenado y deja listo el botón Enviar
+  const resumen = (m === '__otro' ? ($('#nv-otro').value || '').trim() : nvTexto(m)) + (TEL_NV ? ' · ' + TEL_NV.slice(-9) : '');
+  try { await chrome.storage.local.remove('nv_enviado'); } catch (e) {}   // un registro nuevo nunca hereda el envío anterior
+  try { await chrome.storage.local.set({ nv_pedido: { ts: Date.now(), auto: $('#nv-auto').checked, aviso: $('#nv-aviso').checked, resumen, tel: TEL_NV.slice(-9), motivo: m === '__otro' ? ($('#nv-otro').value || '').trim() : nvTexto(m) } }); } catch (e) {}
+  marcarTipificada();
+  // Segunda tipificación, automática: el código de Genesys que calza con el motivo
+  const codigo = GC_FORZADO || GC_SUGERIDO[m] || '';
+  if (codigo) {
+    await gcPedir(codigo);
+    $('#gc-info').textContent = 'Marcando en Genesys: ' + codigo + '…'; $('#gc-info').className = 'gc-info ok';
+    await marcarEnGenesys(codigo);   // si el recuadro todavía no está, queda marcado en segundo plano apenas aparezca
+  }
+  // Si el formulario ya está abierto en una pestaña, se reutiliza (no se juntan pestañas); si no, se abre una nueva
+  let tabNV = null;
+  try { tabNV = (await chrome.tabs.query({ url: 'https://docs.google.com/forms/*' })).filter(t => String(t.url || t.pendingUrl || '').includes('1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ')).sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0))[0] || null; } catch (e) {}
+  if (tabNV) { await chrome.tabs.update(tabNV.id, { url: nvURL(), active: true }); try { await chrome.windows.update(tabNV.windowId, { focused: true }); } catch (e) {} }
+  else await chrome.tabs.create({ url: nvURL(), active: true });
+  window.close();
+}
+// Compañía actual (solo "Conforme con su compañía" y "Paga menos"): se toma de la llamada; si no viene, se elige con un botón
+function nvPedirCompania() {
+  const c = $('#nv-comps');
+  c.innerHTML = '<b>¿Cuál es su compañía actual? Tócala para tipificar:</b>' + NV_COMPANIAS.map(x => `<button type="button" data-comp="${x}">${x}</button>`).join('');
+  c.hidden = false;
+}
 function initNoVenta() {
-  $('#gc-codigo').innerHTML = '<option value="">No marcar en Genesys</option>' + GC_CODIGOS.map(() => '<option></option>').join('');
-  [...$('#gc-codigo').options].forEach((o, i) => { if (i > 0) { o.value = GC_CODIGOS[i - 1]; o.textContent = GC_CODIGOS[i - 1]; } });
-  $('#nv-comp').innerHTML = '<option value="">Compañía actual del cliente</option>' + NV_COMPANIAS.map(x => `<option>${x}</option>`).join('');
-  $('#nv-chips').addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (!b) return; $('#nv-motivo').value = b.dataset.m; $('#gc-codigo').value = GC_SUGERIDO[b.dataset.m] || ''; nvPintar(); if (b.dataset.m === '__otro') $('#nv-otro').focus(); });
-  $('#nv-orden').addEventListener('click', e => { const b = e.target.closest('[data-orden]'); if (!b) return; NV_ORDEN = b.dataset.orden; try { chrome.storage.local.set({ nvOrden: NV_ORDEN }); } catch (x) {} nvPintarChips(); });
-  $('#nv-abrir').addEventListener('click', async () => {
-    const m = $('#nv-motivo').value;
-    if (!m) { mostrar('Elige el motivo de no venta.', 'mal'); return; }
-    if (m === '__otro' && !($('#nv-otro').value || '').trim()) { mostrar('Escribe el motivo en el cuadro "Otro".', 'mal'); $('#nv-otro').focus(); return; }
-    // Se guarda el uso para ordenar por "Más usados" (máximo 60 fechas por motivo)
-    try { NV_USO[m] = [...(NV_USO[m] || []), Date.now()].slice(-60); await chrome.storage.local.set({ nvUso: NV_USO }); } catch (e) {}
-    // Aviso para formas.js: pasa a la segunda página, recorre lo llenado y deja listo el botón Enviar
-    const resumen = (m === '__otro' ? ($('#nv-otro').value || '').trim() : nvTexto(m)) + (TEL_NV ? ' · ' + TEL_NV.slice(-9) : '');
-    try { await chrome.storage.local.remove('nv_enviado'); } catch (e) {}   // un registro nuevo nunca hereda el envío anterior
-    try { await chrome.storage.local.set({ nv_pedido: { ts: Date.now(), auto: $('#nv-auto').checked, aviso: $('#nv-aviso').checked, resumen, tel: TEL_NV.slice(-9), motivo: m === '__otro' ? ($('#nv-otro').value || '').trim() : nvTexto(m) } }); } catch (e) {}
-    marcarTipificada();
-    // Segunda tipificación: marca el código de conclusión en Genesys (sin enviarlo). Si no se pudo, se avisa
-    const codigo = $('#gc-codigo').value;
-    if (codigo) {
-      mostrar('Marcando el código en Genesys…', 'ok');
-      const r = await marcarEnGenesys(codigo);
-      if (r !== 'ok') { try { chrome.notifications.create('cg-gc-' + Date.now(), { type: 'basic', iconUrl: 'icono-128.png', title: 'Genesys: marca el código a mano', message: 'No encontré el recuadro de códigos de conclusión abierto. Código: ' + codigo, priority: 1 }); } catch (e) {} }
-    }
-    // Si el formulario ya está abierto en una pestaña, se reutiliza (no se juntan pestañas); si no, se abre una nueva
-    let tabNV = null;
-    // Se busca por el código del formulario en cualquier forma de la dirección (con o sin /u/0/ de la cuenta de Google)
-    try { tabNV = (await chrome.tabs.query({ url: 'https://docs.google.com/forms/*' })).filter(t => String(t.url || t.pendingUrl || '').includes('1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ')).sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0))[0] || null; } catch (e) {}
-    if (tabNV) { await chrome.tabs.update(tabNV.id, { url: nvURL(), active: true }); try { await chrome.windows.update(tabNV.windowId, { focused: true }); } catch (e) {} }
-    else await chrome.tabs.create({ url: nvURL(), active: true });
-    window.close();
+  $('#nv-comp').innerHTML = '<option value=""></option>' + NV_COMPANIAS.map(x => `<option>${x}</option>`).join('');
+  $('#nv-chips').addEventListener('click', e => {
+    const b = e.target.closest('[data-m]'); if (!b) return;
+    const m = b.dataset.m;
+    $('#nv-motivo').value = m; $('#nv-comps').hidden = true; nvPintar();
+    if (m !== 'CORTE DE LLAMADO') GC_FORZADO = '';
+    if (m === '__otro') { $('#nv-otro').focus(); return; }
+    if (/CONFORME CON COMPA|PAGA MENOS/.test(m)) {
+      const comp = nvCompDe(ORIGEN_NV);
+      if (!comp) { nvPedirCompania(); return; }
+      $('#nv-comp').value = comp;
+    } else $('#nv-comp').value = '';
+    nvLanzar();
   });
+  $('#nv-comps').addEventListener('click', e => { const b = e.target.closest('[data-comp]'); if (!b) return; $('#nv-comp').value = b.dataset.comp; nvLanzar(); });
+  $('#nv-otro').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); nvLanzar(); } });
+  $('#nv-abrir').addEventListener('click', nvLanzar);
+  $('#nv-orden').addEventListener('click', e => { const b = e.target.closest('[data-orden]'); if (!b) return; NV_ORDEN = b.dataset.orden; try { chrome.storage.local.set({ nvOrden: NV_ORDEN }); } catch (x) {} nvPintarChips(); });
   nvPintar();
   // Preferencias de cada ejecutivo: envío automático y aviso al enviar
   ['nv-auto', 'nv-aviso'].forEach(id => $('#' + id).addEventListener('change', e => { try { chrome.storage.local.set({ [id]: e.target.checked }); } catch (x) {} }));
@@ -507,10 +538,15 @@ try {
     const c = o.corte; if (!c || Date.now() - c.ts > 120000) return;
     chrome.storage.local.remove('corte');
     setTimeout(() => {
-      const b = document.querySelector('#nv-chips [data-m="CORTE DE LLAMADO"]'); if (b) b.click();
-      if (c.temprano && $('#gc-codigo')) $('#gc-codigo').value = 'Cliente Corta Llamada en saludo';
+      // Solo queda marcado (no abre el formulario solo): el ejecutivo toca el botón para tipificar
+      $('#nv-motivo').value = 'CORTE DE LLAMADO'; nvPintar();
+      GC_FORZADO = c.temprano ? 'Cliente Corta Llamada en saludo' : '';
+      // El código de Genesys sí se deja marcado de inmediato en segundo plano
+      const codigo = GC_FORZADO || GC_SUGERIDO['CORTE DE LLAMADO'];
+      gcPedir(codigo).then(() => marcarEnGenesys(codigo));
+      $('#gc-info').textContent = 'En Genesys ya queda marcado: ' + codigo; $('#gc-info').className = 'gc-info ok';
       const nv = $('#nv'); if (nv && nv.scrollIntoView) nv.scrollIntoView({ block: 'center' });
-      mostrar('📵 El cliente cortó: "Corte de llamado" listo. Revisa y presiona "Abrir el registro de no venta".', 'mal');
+      mostrar('📵 El cliente cortó. Toca "Corte de llamado" para llenar el formulario.', 'mal');
     }, 900);
   });
 } catch (e) {}

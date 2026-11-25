@@ -270,7 +270,10 @@ async function finDeLlamada() {
   }
 }
 chrome.runtime.onMessage.addListener((msg, _de, responder) => {
-  if (msg && msg.tipo === 'llamada' && /^\d{9}$/.test(String(msg.tel || ''))) { abrirPorLlamada(msg, _de && _de.tab); setTimeout(() => revisarVersion(false), 5000); return; }
+  if (msg && msg.tipo === 'llamada' && /^\d{9}$/.test(String(msg.tel || ''))) {
+    // Entra otra llamada: el código de Genesys pedido para la anterior deja de valer
+    chrome.storage.local.get('gc_pendiente').then(o => { const p = o.gc_pendiente; if (p && (p.tel ? p.tel !== msg.tel && Date.now() - p.ts > 5000 : Date.now() - p.ts > 60000)) chrome.storage.local.remove('gc_pendiente'); }).catch(() => {});
+    abrirPorLlamada(msg, _de && _de.tab); setTimeout(() => revisarVersion(false), 5000); return; }
   if (msg && msg.tipo === 'corte-ejecutivo') { chrome.storage.local.set({ corte_ejecutivo: Date.now() }); return; }
   if (msg && msg.tipo === 'fin-llamada') { finDeLlamada(); return; }
   if (msg && msg.tipo === 'volver-clarogo') { volverAClaroGo(); return; }

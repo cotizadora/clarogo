@@ -68,6 +68,14 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: GoExt 1.62.0 (ClaroGo! 2.33.0), tipificar con un solo clic
+
+- En GoExt, tocar el botón del motivo tipifica de inmediato: llena el formulario de no venta y marca en Genesys el código de conclusión que calza con ese motivo. Se quitaron el menú desplegable de Genesys y el botón rojo de abajo. Solo "Otro" pide escribir el motivo y confirmar; "Conforme con su compañía" y "Paga menos" toman la compañía de la llamada y, si no viene, la piden con botones.
+- Segundo plano (archivo nuevo conclusion.js): el código pedido queda guardado y GoExt lo vuelve a marcar si el recuadro "Códigos de conclusión" aparece después o queda sin código, así la llamada se cierra con ese código aunque se acabe el tiempo. Nunca presiona "Listo" ni envía nada, y si el ejecutivo cambia el código a mano, se respeta. El pedido deja de valer al entrar otra llamada o a los 30 minutos.
+- Calce nuevo para dos motivos que no tenían código: "Extranjero sin documentación" → Rechazo/Cliente con Serie No Vigente y "Número no activo" → Rechazo/No es el titular de la linea (pedir referido). "Otro" no marca código en Genesys.
+- Más contraste en la ventana de GoExt: marco oscuro, fondo gris, paneles blancos con sombra y botones de motivo con borde y sombra.
+- Pendiente: la guía en video todavía muestra el botón antiguo "Abrir el registro de no venta".
+
 ### 25-11-2026: ClaroGo! 2.32.1, tarjetas de Black Friday que se distinguen del fondo
 
 - Las tarjetas de cada equipo en Black Friday (sección y ventana de Stock) eran casi del mismo negro que el fondo y se perdían. Ahora tienen un fondo más claro, borde dorado, sombra y la zona de la foto más iluminada.

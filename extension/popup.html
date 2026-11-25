@@ -80,6 +80,25 @@
   #ob-luego { width: auto; margin: 10px auto 0; padding: 4px 8px; border: 0; background: none; color: var(--muted); font-size: .76rem; text-decoration: underline; cursor: pointer; }
   #ob-luego[hidden] { display: none; }
   #ob-quedan { display: block; margin-top: 6px; font-size: .7rem; color: var(--muted); }
+  /* Más contraste sobre Genesys y la web de Claro, que son blancas: marco oscuro, fondo gris y paneles blancos con sombra */
+  html { border: 3px solid #4b5262; box-shadow: inset 0 0 0 1px #fff, inset 0 0 26px rgba(0,0,0,.30); }
+  body { background: #e9ecf2; }
+  header { box-shadow: 0 3px 10px rgba(120,0,0,.35); position: relative; z-index: 2; }
+  #datos, .nv, .wa { background: #fff; border: 1px solid #c3c9d4; border-radius: 12px; box-shadow: 0 6px 16px rgba(15,20,40,.16), 0 1px 3px rgba(15,20,40,.12); }
+  #datos { border-collapse: separate; border-spacing: 0; padding: 4px 10px; }
+  #rut-cli, #comentario { border-color: #b3bac7; box-shadow: 0 2px 6px rgba(15,20,40,.10); background: #fff; }
+  button.rojo, button.verde { box-shadow: 0 4px 10px rgba(0,0,0,.22); }
+  .nv-chips { gap: 5px; }
+  .nv-chips button { min-height: 30px; font-size: .7rem; border-width: 2px; box-shadow: 0 2px 6px rgba(15,20,40,.18); transition: transform .12s, box-shadow .12s; }
+  .nv-chips button:hover { transform: translateY(-1px); box-shadow: 0 5px 12px rgba(15,20,40,.25); }
+  .nv-chips button:active { transform: translateY(1px); box-shadow: 0 1px 3px rgba(15,20,40,.2); }
+  .nv-chips button .gc { display: block; font-size: .56rem; font-weight: 600; opacity: .75; margin-top: 1px; }
+  .nv-comps { display: flex; flex-wrap: wrap; gap: 5px; margin: 2px 0 6px; }
+  .nv-comps b { flex-basis: 100%; font-size: .72rem; color: #7a4205; }
+  .nv-comps button { width: auto; margin: 0; padding: 5px 10px; font-size: .74rem; border-radius: 999px; background: #1f2430; color: #fff; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+  .gc-info { margin: 2px 0 4px; font-size: .68rem; color: #4b5262; }
+  .gc-info.ok { color: #14532d; font-weight: 700; }
+  .gc-info.mal { color: #8a1010; font-weight: 700; }
 </style>
 </head>
 <body>
@@ -106,9 +125,10 @@
     <div class="nv-chips" id="nv-chips"></div>
     <input id="nv-otro" placeholder="Escribe el motivo" hidden>
     <select id="nv-comp" hidden></select>
-    <label class="gc-l" title="Código de conclusión que se marca en Genesys (no se envía: lo envías tú en Genesys)">Genesys: <select id="gc-codigo"></select></label>
+    <div class="nv-comps" id="nv-comps" hidden></div>
+    <p class="gc-info" id="gc-info">Toca el motivo: se llena el formulario y en Genesys queda marcado el código que corresponde.</p>
     <div class="nv-op"><label><input type="checkbox" id="nv-auto" checked> Enviar automáticamente</label><label><input type="checkbox" id="nv-aviso" checked> Avisar cuando se envíe</label></div>
-    <button class="rojo" id="nv-abrir" title="Abre el formulario de tipificación lleno con este motivo">📝 Abrir el registro de no venta</button>
+    <button class="rojo" id="nv-abrir" hidden title="Tipifica con el motivo escrito">📝 Tipificar con este motivo</button>
 
   </div>
   </div>
