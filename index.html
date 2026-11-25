@@ -317,10 +317,10 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 .bf-chk{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #2f2a23;border-radius:10px;background:#121010;font-size:.9rem;color:#f1ede4;margin:0}
 .bf-meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;padding:8px 20px;font-size:.78rem;color:#9d947f}
 .bf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;padding:6px 20px 24px}
-.bf-card{position:relative;display:flex;flex-direction:column;border:1px solid #26211b;border-radius:18px;background:linear-gradient(180deg,#121010,#0a0908);overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s;animation:bfEntra .5s ease both}
-.bf-card:hover{transform:translateY(-4px);border-color:#6b5a3c;box-shadow:0 18px 40px rgba(0,0,0,.5),0 0 0 1px rgba(217,164,65,.25)}
+.bf-card{position:relative;display:flex;flex-direction:column;border:1px solid #5a4a30;border-radius:18px;background:linear-gradient(180deg,#2b2620 0%,#1c1914 55%,#15120e 100%);box-shadow:0 12px 30px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,226,160,.18);overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s;animation:bfEntra .5s ease both}
+.bf-card:hover{transform:translateY(-4px);border-color:#d9a441;box-shadow:0 18px 40px rgba(0,0,0,.5),0 0 0 1px rgba(217,164,65,.25)}
 @keyframes bfEntra{from{opacity:0;transform:translateY(12px)}}
-.bf-foto{position:relative;height:230px;display:flex;align-items:center;justify-content:center;background:radial-gradient(160px 120px at 50% 62%,rgba(217,164,65,.22),transparent 70%),radial-gradient(220px 160px at 50% 110%,rgba(196,0,15,.35),transparent 70%)}
+.bf-foto{position:relative;height:230px;display:flex;align-items:center;justify-content:center;background:radial-gradient(160px 120px at 50% 62%,rgba(217,164,65,.22),transparent 70%),radial-gradient(220px 160px at 50% 110%,rgba(196,0,15,.40),transparent 70%),linear-gradient(180deg,#3a332a,#221e18);border-bottom:1px solid rgba(217,164,65,.25)}
 .bf-foto img{max-height:210px;max-width:88%;object-fit:contain;filter:drop-shadow(0 16px 18px rgba(0,0,0,.6))}
 .bf-sinfoto{width:96px;height:180px;border-radius:18px;border:2px solid #3a342b;display:flex;align-items:center;justify-content:center;color:#6b6252;font-size:.72rem;text-align:center;padding:6px}
 .bf-ahorro{position:absolute;top:12px;left:12px;padding:6px 10px;border-radius:10px;background:linear-gradient(180deg,#ffe08a,#c9922e);color:#1a1205;font-weight:900;font-size:.78rem;line-height:1.1;box-shadow:0 6px 14px rgba(0,0,0,.4)}
@@ -1489,7 +1489,7 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.32.0';
+const APP_VERSION = '2.32.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 

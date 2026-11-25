@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: ClaroGo! 2.32.1, tarjetas de Black Friday que se distinguen del fondo
+
+- Las tarjetas de cada equipo en Black Friday (sección y ventana de Stock) eran casi del mismo negro que el fondo y se perdían. Ahora tienen un fondo más claro, borde dorado, sombra y la zona de la foto más iluminada.
+
 ### 25-11-2026: ClaroGo! 2.32.0 y GoExt 1.61.0, códigos de conclusión al día con Genesys
 
 - Fuente: lista de códigos de conclusión de Genesys enviada por Eduardo el 25-11-2026 (26 códigos).
