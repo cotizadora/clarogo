@@ -343,6 +343,13 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 @media (min-width:760px){.bf-filtros{grid-template-columns:minmax(180px,2fr) repeat(3,minmax(165px,1fr)) auto auto auto}.bf-filtros #bf-q{grid-column:auto}}
 @media (max-width:520px){.bf-head{flex-wrap:wrap}.bf-grid{grid-template-columns:1fr 1fr;gap:10px;padding:6px 12px 20px}.bf-foto{height:170px}.bf-foto img{max-height:150px}.bf-cuota b{font-size:1.15rem}.bf-acc{flex-direction:column}}
 @media (prefers-reduced-motion:reduce){.bf-banner::after,.bf-card{animation:none}}
+/* Sección propia: el mismo catálogo de la ventana, a página completa */
+.bf-seccion #bf-panel{margin:-4px 0 0;border:1px solid #2c2620;border-radius:20px;background:#070707;color:#f1ede4;overflow:hidden;box-shadow:0 14px 40px rgba(0,0,0,.18)}
+.bf-seccion .bf-head{top:var(--top-h,0px)}
+.bf-seccion .bf-x{display:none}
+.bf-fin{padding:40px;text-align:center;border-radius:20px;background:#070707;color:#d9d2c2;font-weight:700}
+#nav a[data-v=blackfriday]{background:#0b0b0b;color:#e8b955;border-radius:10px}
+#nav a[data-v=blackfriday].on{box-shadow:inset 0 -3px 0 #e8b955}
 .gal button{padding:0;overflow:hidden;text-align:center}
 .gal img{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:#eef0f4}
 .gal span{display:block;padding:8px;font-size:.78rem;font-weight:700}
@@ -845,6 +852,9 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     <div id="home-links"></div>
   </section>
 
+  <!-- BLACK FRIDAY: sección propia durante la campaña (el catálogo se trae desde la ventana) -->
+  <section id="v-blackfriday" class="view bf-seccion" hidden><div class="bf-fin" id="bf-fin" hidden>La campaña Black Friday ya terminó.</div></section>
+
   <!-- STOCK -->
   <section id="v-stock" class="view" hidden>
     <h1 class="h">Stock de Equipos</h1>
@@ -1181,9 +1191,11 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 </dialog>
 
 <dialog id="dlg-bf" class="bf-dlg">
+  <!-- El mismo catálogo se muestra en esta ventana (al entrar a Stock) y en la sección Black Friday (#blackfriday) -->
+  <div id="bf-panel">
   <div class="bf-head">
     <div class="bf-tit"><span class="bf-logo"><b>BLACK</b> <i>FRIDAY</i></span><small id="bf-vig"></small></div>
-    <div class="bf-head-acc"><button class="bf-btn oro" id="bf-grafica" title="Gráfica cuadrada con las ofertas más destacadas, para WhatsApp">📲 Gráfica para WhatsApp</button><button class="bf-x" data-close title="Cerrar">✕</button></div>
+    <div class="bf-head-acc"><button class="bf-btn" id="bf-aviso" title="Gráfica y mensaje con el enlace, para contarle al equipo">📣 Avisar al equipo</button><button class="bf-btn oro" id="bf-grafica" title="Gráfica cuadrada con las ofertas más destacadas, para WhatsApp">📲 Gráfica para WhatsApp</button><button class="bf-x" data-close title="Cerrar">✕</button></div>
   </div>
   <div class="bf-filtros">
     <input type="search" id="bf-q" placeholder="Buscar modelo o marca" autocomplete="off">
@@ -1197,6 +1209,15 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <div class="bf-meta"><span id="bf-count"></span><span>Portabilidad · pie + 18 cuotas · precios del Excel de la campaña</span></div>
   <div class="bf-grid" id="bf-grid"></div>
   <div class="bf-vacio" id="bf-vacio" hidden>No hay ofertas con esos filtros.</div>
+  </div>
+</dialog>
+<dialog id="dlg-bfaviso" style="max-width:min(600px,96vw)">
+  <div class="d-head"><div><h2>Avisar al equipo</h2><p>Gráfica y enlace directo a la sección Black Friday</p></div><button class="d-x" data-close>✕</button></div>
+  <div class="d-body">
+    <canvas id="bfa-canvas" width="1080" height="1080" style="display:block;width:100%;aspect-ratio:1;border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.3);background:#050505"></canvas>
+    <div class="fv-fila" style="margin-top:10px"><input id="bfa-link" readonly style="flex:1"><button class="btn sm" id="bfa-copiar-link">🔗 Copiar enlace</button></div>
+    <div class="d-foot"><button class="btn" id="bfa-msg">💬 Copiar mensaje con enlace</button><button class="btn" id="bfa-bajar">⬇ Descargar</button><button class="btn red" id="bfa-copiar">📋 Copiar imagen</button></div>
+  </div>
 </dialog>
 <dialog id="dlg-bflam" style="max-width:min(560px,96vw)">
   <div class="d-head"><div><h2 id="bfl-tit">Lámina Black Friday</h2><p>Imagen para enviar al cliente por WhatsApp</p></div><button class="d-x" data-close>✕</button></div>
@@ -1377,7 +1398,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.26.0';
+const APP_VERSION = '2.27.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -1463,6 +1484,8 @@ const TUTORIALES = [
  {title:'Enviar WhatsApp sin guardar el número',desc:'Escribe a cualquier cliente por WhatsApp Web desde tu PC sin necesidad de agregar su número a los contactos. Método rápido con enlace wa.me.',cat:'Plataforma',dur:'3 min',emoji:'💬',color:'#dcf8e0',file:'tutoriales/WhatsAppSinContacto.html'}
 ];
 const MENU = [
+ // Black Friday: pestaña propia solo durante la campaña (23 al 30 de noviembre de 2026)
+ ...((d => d >= '2026-11-23' && d <= '2026-11-30')(new Date().toLocaleDateString('sv')) ? [{v:'blackfriday',t:'Black Friday',badge:'Hasta el 30-11',i:'<path d="M20.6 13.4l-7.2 7.2a2 2 0 01-2.8 0L3 13V3h10l7.6 7.6a2 2 0 010 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>'}] : []),
  {v:'stock',t:'Stock de Equipos',i:'<path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>'},
  {v:'oferta',t:'Oferta Personas',i:'<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>'},
  {v:'png',t:'Oferta PNG',i:'<path d="M6 6h12v10a2 2 0 01-2 2H8a2 2 0 01-2-2V6z"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/><line x1="6" y1="11" x2="18" y2="11"/>'},
@@ -1558,7 +1581,7 @@ const abrir = id => { const d = $('#' + id); if (!d.open) d.showModal(); };
 /* ════════════════════════════════════════════════════════════════
    NAVEGACIÓN
    ════════════════════════════════════════════════════════════════ */
-const VIEWS = ['inicio', 'stock', 'oferta', 'png', 'script', 'control', 'horario', 'venta', 'enlaces', 'galeria', 'faq', 'tutoriales', 'descargas'];
+const VIEWS = ['inicio', 'blackfriday', 'stock', 'oferta', 'png', 'script', 'control', 'horario', 'venta', 'enlaces', 'galeria', 'faq', 'tutoriales', 'descargas'];
 const INIT = { horario: initHorario, control: initControl, faq: initFaq, stock: initStock, oferta: initOferta, png: initPng, script: initScript, venta: initVenta, enlaces: initEnlaces, galeria: initGaleria, tutoriales: initTutoriales };
 const listo = {};
 function route() {
@@ -2140,11 +2163,75 @@ function bfPintar() {
   }).join('');
 }
 const bfTexto = o => `*🖤 BLACK FRIDAY* · ${bfFechas().toLowerCase()}\n\n*${bfNombre(o)}*\n💳 *Pie:* ${clp(o.pie)}\n📆 *18 cuotas de:* ${clp(o.cuota)}\n💰 *Total:* ${clp(o.total)}${o.ahorro ? ` (antes ${clp(o.antes)})\n🔥 *Ahorras:* ${clp(o.ahorro)}` : ''}\n\n_Portabilidad. Sujeto a evaluación comercial y stock disponible._`;
-function bfAbrir() {
-  if (!$('#bf-marca').options.length || $('#bf-marca').options.length < 2) $('#bf-marca').innerHTML = '<option value="">Todas las marcas</option>' + [...new Set(BF.map(o => o.marca))].sort().map(m => `<option>${esc(m)}</option>`).join('');
+function bfPreparar() {
+  if ($('#bf-marca').options.length < 2) $('#bf-marca').innerHTML = '<option value="">Todas las marcas</option>' + [...new Set(BF.map(o => o.marca))].sort().map(m => `<option>${esc(m)}</option>`).join('');
   $('#bf-vig').textContent = `${bfFechas()} · Portabilidad con equipo · ${BF.length} ofertas`;
-  bfPintar(); abrir('dlg-bf');
+  bfPintar();
 }
+// El catálogo es uno solo: se lleva a la ventana o a la sección según desde dónde se abra
+function bfAbrir() { $('#dlg-bf').appendChild($('#bf-panel')); bfPreparar(); abrir('dlg-bf'); }
+function bfSeccion() {
+  if ($('#dlg-bf').open) $('#dlg-bf').close();
+  $('#v-blackfriday').appendChild($('#bf-panel')); bfPreparar();
+  // Entrando directo por el enlace, el stock todavía no está cargado: se carga para cruzar las unidades
+  if (!EQ.length && !window.__bfCargando) { window.__bfCargando = true; cargarStock().then(() => { if (location.hash === '#blackfriday') bfPintar(); }); }
+}
+/* ── Aviso para el equipo: gráfica cuadrada con el enlace directo a la sección ── */
+const BF_LINK = 'https://cotizadora.github.io/clarogo/#blackfriday';
+const bfAvisoTexto = () => `🖤 *BLACK FRIDAY ya está en ClaroGo!*\n\n${bfFechas()}, ${BF.length} equipos con precio especial en portabilidad.\n\n✅ Catálogo con filtros, igual que el Stock\n✅ Láminas listas para enviar al cliente por WhatsApp\n✅ Stock real: en verde pasa por el Front, en rojo no\n\n👉 Entra aquí: ${BF_LINK}`;
+let bfaAnim = 0;
+function bfAviso(c, t, ims) {
+  const x = c.getContext('2d'), W = 1080, cl = v => Math.max(0, Math.min(1, v)), tr = (a, b) => cl((t - a) / (b - a)), eo = p => 1 - Math.pow(1 - p, 3);
+  const back = p => { const s = 1.6; p -= 1; return p * p * ((s + 1) * p + s) + 1; };
+  x.setTransform(c.width / W, 0, 0, c.width / W, 0, 0); bfFondo(x, W, W);
+  // Tres equipos en abanico a la derecha
+  const pos = [[700, 530, -.2, 450, 1], [975, 530, .2, 450, 2], [840, 480, 0, 540, 0]];
+  pos.forEach(([cx, cy, rot, h, k], n) => {
+    const im = ims[k]; if (!im) return; const p = back(tr(.1 + n * .1, .55 + n * .1)); if (p <= 0) return;
+    const w = h * im.width / im.height;
+    x.save(); x.globalAlpha = cl(p); x.translate(cx, cy + (1 - p) * 300); x.rotate(rot);
+    x.shadowColor = n === 2 ? 'rgba(217,164,65,.55)' : 'rgba(0,0,0,.7)'; x.shadowBlur = n === 2 ? 70 : 40; x.shadowOffsetY = 20;
+    x.drawImage(im, -w / 2, -h / 2, w, h); x.restore();
+  });
+  const g = x.createLinearGradient(0, 0, W, 0); g.addColorStop(0, 'rgba(5,5,5,.92)'); g.addColorStop(.5, 'rgba(5,5,5,.55)'); g.addColorStop(.62, 'rgba(5,5,5,0)'); x.fillStyle = g; x.fillRect(0, 0, W, 800);
+  x.textAlign = 'left'; x.textBaseline = 'alphabetic';
+  // Etiqueta "Nuevo en ClaroGo!"
+  let p = eo(tr(0, .3)); x.globalAlpha = p;
+  x.font = `800 26px ${BF_F}`; const et = 'NUEVO EN ClaroGo!', ew = x.measureText(et).width + 48;
+  x.fillStyle = bfOro(x, 60, 110); x.beginPath(); x.roundRect(70, 62, ew, 50, 25); x.fill(); x.fillStyle = '#1a1205'; x.fillText(et, 94, 96);
+  // Titular
+  p = eo(tr(.08, .45)); x.globalAlpha = p;
+  x.fillStyle = '#fff'; x.font = `900 140px ${BF_F}`; x.fillText('BLACK', 66 - (1 - p) * 60, 250);
+  x.fillStyle = bfOro(x, 260, 390); x.fillText('FRIDAY', 66 - (1 - p) * 60, 382);
+  p = eo(tr(.22, .55)); x.globalAlpha = p; x.fillStyle = '#f3e2b4'; x.font = `700 34px ${BF_F}`; x.fillText('Ya está disponible la sección', 72, 444);
+  // Lo que trae la sección
+  ['Ofertas en ' + BF.length + ' equipos, ' + bfFechas().toLowerCase(), 'Filtros igual que en el Stock', 'Láminas listas para WhatsApp', 'Stock real: verde pasa por el Front'].forEach((txt, k) => {
+    const pk = eo(tr(.4 + k * .08, .65 + k * .08)); if (!pk) return; const y = 512 + k * 64;
+    x.globalAlpha = pk; x.save(); x.translate(-(1 - pk) * 50, 0);
+    x.fillStyle = bfOro(x, y - 22, y + 22); x.beginPath(); x.arc(92, y - 10, 20, 0, 7); x.fill();
+    x.strokeStyle = '#1a1205'; x.lineWidth = 5; x.lineCap = 'round'; x.lineJoin = 'round'; x.beginPath(); x.moveTo(83, y - 10); x.lineTo(90, y - 3); x.lineTo(102, y - 18); x.stroke();
+    x.fillStyle = '#fff'; bfAjustar(x, txt, 700, 30, 520); x.fillText(txt, 126, y);
+    x.restore();
+  });
+  // Enlace
+  p = back(tr(.72, .95)); x.globalAlpha = cl(p);
+  x.save(); x.translate(W / 2, 870); x.scale(.9 + .1 * cl(p), .9 + .1 * cl(p));
+  x.fillStyle = 'rgba(255,255,255,.07)'; x.strokeStyle = bfOro(x, -60, 60); x.lineWidth = 3; x.beginPath(); x.roundRect(-470, -62, 940, 124, 28); x.fill(); x.stroke();
+  x.textAlign = 'center'; x.fillStyle = '#bdb49f'; x.font = `700 24px ${BF_F}`; x.fillText('ENTRA AQUÍ', 0, -20);
+  const link = BF_LINK.replace(/^https:\/\//, ''); x.fillStyle = '#fff'; bfAjustar(x, link, 800, 40, 880); x.fillText(link, 0, 30);
+  x.restore();
+  p = eo(tr(.85, 1)); x.globalAlpha = p; x.textAlign = 'center';
+  x.fillStyle = 'rgba(255,255,255,.55)'; x.font = `500 20px ${BF_F}`; x.fillText('Precios sujetos a evaluación comercial y stock disponible · ClaroGo! herramienta no oficial', W / 2, 1040);
+  x.globalAlpha = 1; x.setTransform(1, 0, 0, 1, 0, 0);
+}
+const bfAvisoFotos = () => Promise.all(['iphone-18-pro', 'samsung-s26-fe', 'xiaomi-17t-pro'].map(bfFoto));
+async function bfAvisoAnimar() {
+  const c = $('#bfa-canvas'), ims = await bfAvisoFotos(); cancelAnimationFrame(bfaAnim);
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return bfAviso(c, 1, ims);
+  const ini = performance.now(), paso = a => { const t = Math.min(1, (a - ini) / 2600); bfAviso(c, t, ims); if (t < 1) bfaAnim = requestAnimationFrame(paso); };
+  bfaAnim = requestAnimationFrame(paso);
+}
+async function bfAvisoImagen() { const c = document.createElement('canvas'); c.width = c.height = 1080; bfAviso(c, 1, await bfAvisoFotos()); return c; }
 /* ── Dibujo común: fondo premium negro con brillos dorados y rojos ── */
 function bfFondo(x, W, H) {
   x.fillStyle = '#050505'; x.fillRect(0, 0, W, H);
@@ -2268,7 +2355,14 @@ async function bfGaleria() {
   for (const b of grid.children) { const o = BF.find(x => x.i === +b.dataset.bflam); bfLamina(b.querySelector('canvas'), o, await bfFoto(o.foto)); }
 }
 function initBlackFriday() {
-  if (!bfActivo()) return;
+  // Terminada la campaña, el enlace muestra solo un aviso (el resto no se muestra)
+  if (!bfActivo()) { $('#bf-fin').hidden = false; return; }
+  $('#bf-aviso').onclick = () => { $('#bfa-link').value = BF_LINK; abrir('dlg-bfaviso'); bfAvisoAnimar(); };
+  $('#bfa-copiar-link').onclick = () => copyText(BF_LINK, 'Enlace copiado');
+  $('#bfa-msg').onclick = () => copyText(bfAvisoTexto(), 'Mensaje con el enlace copiado. Pégalo en el grupo de WhatsApp.');
+  $('#bfa-copiar').onclick = async () => copyCanvas(await bfAvisoImagen(), 'black-friday-en-clarogo.png', 'Imagen copiada. Pégala en el grupo con Ctrl+V.');
+  $('#bfa-bajar').onclick = async () => downloadBlob(await canvasBlob(await bfAvisoImagen()), 'black-friday-en-clarogo.png');
+  $('#dlg-bfaviso').addEventListener('close', () => cancelAnimationFrame(bfaAnim));
   $('#bf-banner').hidden = false; $('#bf-banner-d').textContent = `${bfFechas()} · ${BF.length} equipos con precio especial en portabilidad`;
   $('#bf-banner').onclick = bfAbrir;
   ['#bf-q'].forEach(s => $(s).addEventListener('input', bfPintar));
@@ -2290,6 +2384,7 @@ function initBlackFriday() {
   // Ventana al entrar a Stock: una vez por sesión del navegador
   const alEntrar = () => {
     if (location.hash === '#galeria') bfGaleria();
+    if (location.hash === '#blackfriday') return bfSeccion();
     if (location.hash !== '#stock') return;
     let visto = false; try { visto = sessionStorage.getItem('bf_visto') === '1'; sessionStorage.setItem('bf_visto', '1'); } catch (e) {}
     if (!visto && !/[?&]stocklisto\b/.test(location.search)) setTimeout(() => { if (EQ.length) bfAbrir(); else { const r = setInterval(() => { if (EQ.length) { clearInterval(r); bfAbrir(); } }, 300); setTimeout(() => clearInterval(r), 15000); } }, 350);

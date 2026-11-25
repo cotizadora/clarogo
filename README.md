@@ -68,6 +68,14 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: ClaroGo! 2.27.0, sección Black Friday con enlace directo y aviso para el equipo
+
+- **Sección propia:** el enlace directo es https://cotizadora.github.io/clarogo/#blackfriday.
+  - Tiene pestaña en el menú y en el inicio solo del 23 al 30 de noviembre.
+  - Muestra el mismo catálogo de la ventana de Stock (un solo catálogo que se muestra en ambos lugares) y carga el stock sola si se entra directo por el enlace.
+  - Terminada la campaña, el enlace muestra "La campaña Black Friday ya terminó".
+- **"📣 Avisar al equipo":** gráfica cuadrada de 1080 × 1080, animada, con "NUEVO EN ClaroGo!", tres equipos de fondo, lo que trae la sección y el enlace. Botones para copiar la imagen, copiar un mensaje con el enlace para el grupo de WhatsApp, copiar solo el enlace y descargar.
+
 ### 25-11-2026: ClaroGo! 2.26.0, Black Friday (23 al 30 de noviembre de 2026)
 
 - **Fuente de precios:** "Oferta Black Friday 2026.xlsx" (hoja Resumen), entregado por Eduardo el 25-11-2026. Son 41 ofertas, vigentes del 23-11-2026 al 30-11-2026.
