@@ -199,30 +199,21 @@ async function abrirPorLlamada(msg, tabOrigen) {
   // Genesys tiene varios marcos: la misma llamada puede avisar más de una vez
   if (msg.clave === ultimaLlamadaClave && Date.now() - ultimaLlamadaTs < 60000) return;
   ultimaLlamadaClave = msg.clave; ultimaLlamadaTs = Date.now();
-  traerGenesys(tabOrigen, true);   // primero Genesys al frente, sin esperar nada más
+  traerGenesys(tabOrigen);   // primero Genesys al frente, sin esperar nada más
   try { await chrome.storage.local.set({ ultima_llamada: { ts: Date.now(), clave: msg.clave } }); } catch (e) {}
 }
 // Pone la pestaña de Genesys al frente: activa la pestaña, restaura y maximiza la ventana y le da el foco.
-// Si el ejecutivo estaba en otro programa, Windows puede impedir que el navegador se ponga encima:
-// por eso además queda un aviso de Windows que no se va solo hasta hacerle clic.
-async function traerGenesys(tabOrigen, avisar) {
+// Solo el aviso verde dentro de Genesys: sin aviso de Windows (Eduardo lo pidió así, el verde basta).
+async function traerGenesys(tabOrigen) {
   try {
     let t = null;
     if (tabOrigen && tabOrigen.id) { try { t = await chrome.tabs.get(tabOrigen.id); } catch (e) { t = null; } }
     if (!t) t = (await chrome.tabs.query({ url: ['https://*.pure.cloud/*', 'https://*.mypurecloud.com/*', 'https://*.genesys.cloud/*'] })).sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0))[0];
     if (!t) return;
-    // ¿El ejecutivo ya estaba mirando el navegador? Si no, el aviso de Windows es necesario
-    let enNavegador = false;
-    try { const w = await chrome.windows.getLastFocused(); enNavegador = !!(w && w.focused && w.state !== 'minimized'); } catch (e) {}
     await chrome.tabs.update(t.id, { active: true });
     const win = await chrome.windows.get(t.windowId);
     if (win.state === 'minimized') await chrome.windows.update(t.windowId, { state: 'normal' });
     await chrome.windows.update(t.windowId, { state: 'maximized', focused: true, drawAttention: true });
-    if (avisar && !enNavegador) {
-      const id = 'cg-llamada-' + Date.now();
-      chrome.notifications.create(id, { type: 'basic', iconUrl: 'icono-128.png', priority: 2, requireInteraction: true, title: '📞 ENTRÓ UNA LLAMADA', message: 'Haz clic aquí para ir a Genesys.' });
-      setTimeout(() => chrome.notifications.clear(id), 90000);
-    }
     chrome.scripting.executeScript({ target: { tabId: t.id }, func: avisoLlamada }).catch(() => {});
   } catch (e) {}
 }
@@ -509,8 +500,6 @@ async function revisarVersion(forzar) {
   } catch (e) {}
 }
 chrome.notifications.onClicked.addListener(id => {
-  // Aviso de llamada entrante: al hacerle clic, Genesys queda al frente y maximizado
-  if (String(id).startsWith('cg-llamada-')) { chrome.notifications.clear(id); traerGenesys(null, false); return; }
   if (!String(id).startsWith('cg-ver-')) return;
   chrome.notifications.clear(id);
   if (id.startsWith('cg-ver-activar')) chrome.runtime.reload();

@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: GoExt 1.60.0 y ClaroGo! 2.24.3, sin el aviso de Windows de llamada entrante
+
+- Se quitó el aviso de Windows "📞 ENTRÓ UNA LLAMADA". Eduardo lo encontró innecesario: el aviso verde "LLAMADA ENTRANTE" y el salto inmediato a Genesys bastan.
+- Todo lo demás sigue igual: al entrar la llamada, Genesys pasa al frente maximizado en menos de 1 segundo.
+
 ### 24-11-2026: GoExt 1.59.0 y ClaroGo! 2.24.2, la llamada entrante se detecta al tiro
 
 - Antes GoExt revisaba Genesys cada 2,5 segundos, y si los datos de la llamada venían dentro de componentes encapsulados, solo cada 10 segundos. Ahora reacciona apenas cambia la pantalla de Genesys y además revisa cada 0,7 segundos.
