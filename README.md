@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: ClaroGo! 2.27.2, arreglo visual en la gráfica de aviso
+
+- Se quitó una línea que cruzaba el fondo a la altura del recuadro de abajo. El degradado oscuro ahora cubre toda la imagen.
+
 ### 25-11-2026: ClaroGo! 2.27.1, la gráfica de aviso no lleva enlace
 
 - Pedido de Eduardo: en una imagen no se puede hacer clic, así que la gráfica "Avisar al equipo" ya no muestra el enlace. Ahora dice "Entra a ClaroGo! y busca la pestaña BLACK FRIDAY".

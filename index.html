@@ -1398,7 +1398,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.27.1';
+const APP_VERSION = '2.27.2';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2193,7 +2193,7 @@ function bfAviso(c, t, ims) {
     x.shadowColor = n === 2 ? 'rgba(217,164,65,.55)' : 'rgba(0,0,0,.7)'; x.shadowBlur = n === 2 ? 70 : 40; x.shadowOffsetY = 20;
     x.drawImage(im, -w / 2, -h / 2, w, h); x.restore();
   });
-  const g = x.createLinearGradient(0, 0, W, 0); g.addColorStop(0, 'rgba(5,5,5,.92)'); g.addColorStop(.5, 'rgba(5,5,5,.55)'); g.addColorStop(.62, 'rgba(5,5,5,0)'); x.fillStyle = g; x.fillRect(0, 0, W, 800);
+  const g = x.createLinearGradient(0, 0, W, 0); g.addColorStop(0, 'rgba(5,5,5,.92)'); g.addColorStop(.5, 'rgba(5,5,5,.55)'); g.addColorStop(.62, 'rgba(5,5,5,0)'); x.fillStyle = g; x.fillRect(0, 0, W, W);
   x.textAlign = 'left'; x.textBaseline = 'alphabetic';
   // Etiqueta "Nuevo en ClaroGo!"
   let p = eo(tr(0, .3)); x.globalAlpha = p;
