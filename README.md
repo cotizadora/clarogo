@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: ClaroGo! 2.29.1, Inicio sin botones cortados
+
+- Arreglo: desde que se agregó Black Friday había 13 botones y en pantallas bajas de PC se armaba una cuarta fila que aplastaba los botones y cortaba sus nombres (por ejemplo "Black Friday"). En PC ahora van 5 columnas y, en pantallas bajas, el ícono va al lado del nombre. En celular los íconos son un poco más chicos para que los nombres de dos líneas se lean completos.
+- El aviso de nombre y teléfono ahora es amarillo, del mismo alto que la barra de Descargas y va en su lugar (Descargas vuelve cuando el ejecutivo guarda sus datos). En celular es más corto y se esconde la línea del truco mientras está el aviso.
+
 ### 25-11-2026: ClaroGo! 2.29.0, aviso para que cada ejecutivo ponga su nombre y su teléfono
 
 - En Inicio aparece un aviso rojo con un dedito si el ejecutivo todavía tiene el nombre o el teléfono de ejemplo. El botón de arriba cambia a "👉 Pon aquí TU nombre y TU teléfono" en amarillo y late. No se muestra en el equipo administrador.

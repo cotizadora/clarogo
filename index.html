@@ -525,12 +525,14 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 @keyframes dedoY{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 @keyframes pfLatido{0%,100%{box-shadow:0 0 0 0 rgba(255,214,0,.9)}50%{box-shadow:0 0 0 7px rgba(255,214,0,0)}}
 .perfil-btn.falta{background:#ffd600;color:#111;border-color:#ffd600;font-weight:800;animation:pfLatido 1.2s ease-in-out infinite}
-.pf-alerta{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:12px 14px;border-radius:14px;background:#fff4f4;border:2px solid #e3000f;color:#5a0008;cursor:pointer;text-align:left;width:100%;font:inherit;animation:pfLatido 1.6s ease-in-out infinite}
+.pf-alerta{display:flex;align-items:center;gap:10px;width:100%;max-width:980px;margin:0 auto clamp(6px,1.2vh,12px);padding:7px 10px 7px 12px;border-radius:14px;background:#fff8d6;border:2px solid #ffc400;color:#3a2a00;cursor:pointer;text-align:left;font:inherit;font-size:.9rem;line-height:1.25;flex-shrink:0;animation:pfLatido 1.6s ease-in-out infinite}
 .pf-alerta[hidden]{display:none}
-.pf-alerta .pf-mano{font-size:2.2rem;line-height:1;animation:dedoY .9s ease-in-out infinite;flex-shrink:0}
-.pf-alerta b{display:block;font-size:1rem;color:#c00010}
-.pf-alerta span{font-size:.84rem}
-.pf-alerta .pf-ir{margin-left:auto;flex-shrink:0;background:#e3000f;color:#fff;border-radius:999px;padding:7px 14px;font-weight:800;font-size:.85rem}
+.pf-alerta .pf-mano{font-size:1.5rem;line-height:1;animation:dedoY .9s ease-in-out infinite;flex-shrink:0}
+.pf-alerta b{color:#b00010}
+.pf-alerta .pf-txt{min-width:0}
+.pf-alerta .pf-ir{margin-left:auto;flex-shrink:0;background:#e3000f;color:#fff;border-radius:999px;padding:6px 14px;font-weight:800;font-size:.82rem;white-space:nowrap}
+body.pf-falta .mute-banner{display:none!important}
+@media (max-width:640px){#tiles .tile{gap:4px}#tiles .tile-i{width:clamp(26px,5.2vh,46px);height:clamp(26px,5.2vh,46px)}#tiles .tile-t{line-height:1.1}.pf-alerta .pf-extra{display:none}.pf-alerta{padding:4px 6px 4px 8px;font-size:.8rem;gap:6px;margin-bottom:6px}.pf-alerta .pf-mano{font-size:1.15rem}.pf-alerta .pf-ir{padding:4px 10px;font-size:.74rem}body.pf-falta .truco{display:none}}
 .hero p.truco{font-style:italic;font-size:clamp(.68rem,1.6vh,.84rem);opacity:.9;cursor:pointer;margin-top:clamp(2px,.8vh,8px);max-width:760px;margin-left:auto;margin-right:auto;animation:trucoEntra .6s ease-out}
 .hero p.truco b{font-style:normal}
 @keyframes trucoEntra{from{opacity:0;transform:translateY(-4px)}to{opacity:.9;transform:none}}
@@ -543,6 +545,9 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .tile-t{font-size:clamp(.7rem,1.9vh,1rem);color:var(--text);line-height:1.15}
 .tile-b{top:5px;right:5px;font-size:.5rem;padding:2px 6px}
 @media (min-width:640px){.tiles{grid-template-columns:repeat(4,1fr)}}
+/* En PC: 5 columnas para que los 13 botones quepan en 3 filas sin cortar los nombres */
+@media (min-width:900px) and (min-height:521px){.tiles{grid-template-columns:repeat(5,1fr)}}
+@media (min-width:900px) and (min-height:521px) and (max-height:820px){.tile{flex-direction:row;justify-content:flex-start;gap:12px;padding:4px 14px;text-align:left}.tile-i{width:clamp(30px,6vh,46px);height:clamp(30px,6vh,46px)}.tile-t{font-size:clamp(.8rem,2vh,.98rem)}}
 @media (max-height:520px) and (min-width:560px){.tiles{grid-template-columns:repeat(6,1fr)} .hero p,.tag{display:none}}
 /* Celulares de pantalla baja: todo el menú sin scroll ni textos cortados */
 @media (max-width:640px) and (max-height:700px){
@@ -891,7 +896,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
       <p>Portal de ventas 2026 · Elige una sección · <button class="perfil-btn" id="perfil-btn" title="Tu nombre y tu mensaje de WhatsApp"></button></p>
       <p class="truco" id="truco" title="Clic para ver otro truco"></p>
     </div>
-    <button type="button" class="pf-alerta" id="pf-alerta" hidden><span class="pf-mano">👆</span><span><b>¡Falta poner TU nombre y TU teléfono!</b><span>Tus mensajes de WhatsApp están saliendo con el nombre y el teléfono de otra persona. Cámbialos ahora y aprieta <b style="display:inline;color:inherit">💾 Guardar</b>.</span></span><span class="pf-ir">Cambiar ahora</span></button>
+    <button type="button" class="pf-alerta" id="pf-alerta" hidden><span class="pf-mano">👆</span><span class="pf-txt"><b>Falta poner TU nombre y TU teléfono.</b><span class="pf-extra"> Tus mensajes de WhatsApp salen con los datos de otra persona. Cámbialos y aprieta 💾 Guardar.</span></span><span class="pf-ir">Cambiar ahora</span></button>
     <a class="mute-banner" href="#descargas"><span class="mb-i">⬇️</span><span><b>Descargas</b> · GoExt, la extensión con la que ClaroGo! funciona mucho mejor, y MuteReal para tu micrófono</span><span class="mb-b">Ir a Descargas</span></a>
     <div class="tiles" id="tiles"></div>
     <div id="home-links"></div>
@@ -1451,7 +1456,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.29.0';
+const APP_VERSION = '2.29.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -4001,7 +4006,7 @@ const dataABlob = d => { const [cab, b64] = String(d).split(','), tipo = (cab.ma
 const pngDeData = d => new Promise(res => { if (/^data:image\/png/.test(d)) return res(dataABlob(d)); const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = i.naturalWidth; c.height = i.naturalHeight; c.getContext('2d').drawImage(i, 0, 0); c.toBlob(res, 'image/png'); }; i.onerror = () => res(null); i.src = d; });
 // Ejecutivo que todavía tiene el nombre o el teléfono de ejemplo: se le muestra el aviso con el dedito (nunca en el equipo administrador)
 const perfilFalta = () => { if (esAdmin()) return false; try { const n = (localStorage.getItem('agentName') || '').trim(), t = (localStorage.getItem('clarogo_telefono') || '').trim(); return !n || n === NOMBRE_DEFECTO || !t || t === TELEFONO_DEFECTO; } catch (e) { return false; } };
-const perfilPintaBoton = () => { const b = $('#perfil-btn'), falta = perfilFalta(); if (b) { b.textContent = falta ? '👉 Pon aquí TU nombre y TU teléfono' : '👤 ' + agenteNombre() + ' · Mi mensaje'; b.classList.toggle('falta', falta); } const a = $('#pf-alerta'); if (a) a.hidden = !falta; };
+const perfilPintaBoton = () => { const b = $('#perfil-btn'), falta = perfilFalta(); if (b) { b.textContent = falta ? '👉 Pon aquí TU nombre y TU teléfono' : '👤 ' + agenteNombre() + ' · Mi mensaje'; b.classList.toggle('falta', falta); } const a = $('#pf-alerta'); if (a) a.hidden = !falta; document.body.classList.toggle('pf-falta', falta); };
 /* ── Sonido al pasar el mouse ───────────────────────────────────────
    Un "tic" muy corto y suave cuando el mouse entra a algo que se puede presionar. Se puede apagar en el pie de página. */
 const SONIDO_KEY = 'clarogo_sonido';
