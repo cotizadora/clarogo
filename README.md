@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: ClaroGo! 2.31.3, el Inicio parte en modo claro
+
+- El modo claro (el de más contraste) queda por defecto. Quien haya elegido el modo oscuro con el botón 🌙 lo mantiene.
+
 ### 25-11-2026: ClaroGo! 2.31.2, Limpiar caché ya no borra el nombre del ejecutivo
 
 - Arreglo: "Limpiar caché" borraba el nombre, el teléfono, el mensaje y la firma de cada ejecutivo, y por eso el aviso de nombre volvía a salir. Ahora se conservan, junto con la planilla, la clave de GitHub, el modo administrador, el modo oscuro o claro y los sonidos. Probado en el navegador: lo demás se sigue borrando.

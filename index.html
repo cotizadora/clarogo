@@ -1489,7 +1489,7 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.31.2';
+const APP_VERSION = '2.31.3';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -4138,9 +4138,9 @@ function perfilVozInicio() {
   try { if (sessionStorage.getItem('pf_voz') === '1') return; sessionStorage.setItem('pf_voz', '1'); } catch (e) { if (perfilVozUltima) return; }   // una sola vez por sesión del navegador
   perfilVozUltima = Date.now(); perfilHablar('inicio');
 }
-/* Modo oscuro o claro del Inicio: se recuerda en cada navegador. Por defecto, oscuro. */
+/* Modo claro u oscuro del Inicio: se recuerda en cada navegador. Por defecto, claro. */
 function initTema() {
-  const leer = () => { try { return localStorage.getItem('clarogo_tema') === 'claro' ? 'claro' : 'oscuro'; } catch (e) { return 'oscuro'; } };
+  const leer = () => { try { return localStorage.getItem('clarogo_tema') === 'oscuro' ? 'oscuro' : 'claro'; } catch (e) { return 'claro'; } };
   const pinta = () => { const claro = leer() === 'claro'; document.body.classList.toggle('tema-claro', claro); $('#tema-btn').innerHTML = claro ? '🌙<span class="tb-t"> Modo oscuro</span>' : '☀️<span class="tb-t"> Modo claro</span>'; };
   $('#tema-btn').onclick = () => { try { localStorage.setItem('clarogo_tema', leer() === 'claro' ? 'oscuro' : 'claro'); } catch (e) {} pinta(); };
   pinta();
