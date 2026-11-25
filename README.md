@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: ClaroGo! 2.29.2 y GoExt 1.60.1, RUT sin ceros a la izquierda
+
+- Arreglo: en las bases que traen RUT, Genesys lo entrega con dos ceros a la izquierda (0012345678-9) y GoExt lo pasaba así a Mi Planilla. Ahora los ceros a la izquierda se quitan siempre: al llegar desde GoExt, al crear cualquier fila y en la ventana de GoExt.
+- Las filas que ya habían quedado con ceros se limpian solas al abrir ClaroGo!.
+
 ### 25-11-2026: ClaroGo! 2.29.1, Inicio sin botones cortados
 
 - Arreglo: desde que se agregó Black Friday había 13 botones y en pantallas bajas de PC se armaba una cuarta fila que aplastaba los botones y cortaba sus nombres (por ejemplo "Black Friday"). En PC ahora van 5 columnas y, en pantallas bajas, el ícono va al lado del nombre. En celular los íconos son un poco más chicos para que los nombres de dos líneas se lean completos.

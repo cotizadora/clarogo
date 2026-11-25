@@ -1456,7 +1456,7 @@ body.pf-falta .mute-banner{display:none!important}
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.29.1';
+const APP_VERSION = '2.29.2';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2869,6 +2869,8 @@ function rutValido(rut) {
   const e = 11 - (sum % 11); return dv === (e === 11 ? '0' : e === 10 ? 'k' : String(e));
 }
 // RUT escrito en Mi Planilla: se quitan los puntos y espacios. El guion queda solo si el ejecutivo lo escribió.
+// RUT sin ceros a la izquierda: algunas bases de Genesys lo traen como 0012345678-9 (o 0.012.345.678-9)
+const rutSinCeros = v => String(v || '').replace(/^[\s0.]+(?=[1-9])/, '');
 function rutPlanilla(v) {
   const s = String(v || '').toUpperCase().replace(/[^0-9K-]/g, '');
   const c = s.replace(/-/g, '').replace(/^0+/, '');
@@ -3591,6 +3593,8 @@ function iniciarPestanas() {
 async function iniciarRespaldo() {
   CT = ctLeerLocal();
   // Limpia los teléfonos con espacios de registros antiguos (una sola vez por registro)
+  // Filas que ya quedaron con ceros a la izquierda en el RUT: se limpian una vez al abrir
+  { let cambio = false; CT.forEach(r => { if (r.rut && r.rut !== rutSinCeros(r.rut)) { r.rut = rutSinCeros(r.rut); r.upd = Date.now(); cambio = true; } }); if (cambio) ctGuardarLocal(); }
   { let cambio = false; CT.forEach(r => { TEL_CAMPOS.forEach(k => { if (r[k] && r[k] !== telLimpio(r[k])) { r[k] = telLimpio(r[k]); r.upd = Date.now(); cambio = true; } }); }); if (cambio) ctGuardarLocal(); }
   iniciarPestanas();
   if (soportaArchivo) {
@@ -4365,7 +4369,7 @@ window.clarogoDesdeGenesys = (txt, extra = {}) => {
   if (extra && extra.plan && PLANES_WA().some(p => p.title === extra.plan)) d.plan = extra.plan;
   if (extra && String(extra.notas || '').trim()) d.notas = selloNota() + '\n' + String(extra.notas).trim().slice(0, 2000);
   if (extra && String(extra.historial || '').trim()) d.histTip = 'Tipificado antes: ' + String(extra.historial).trim().slice(0, 400);
-  if (extra && /^[0-9.]{7,10}-?[0-9kK]$/.test(String(extra.rut || '').trim())) { const c = String(extra.rut).replace(/[^0-9kK]/g, '').toUpperCase(); d.rut = c.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '-' + c.slice(-1); }
+  if (extra && /^[0-9.]{7,14}-?[0-9kK]$/.test(String(extra.rut || '').trim())) { const c = String(extra.rut).replace(/[^0-9kK]/g, '').replace(/^0+/, '').toUpperCase(); d.rut = c.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '-' + c.slice(-1); }
   setTimeout(() => { ctAgregar(d); if (!d.telefono) toast('Llegaron los datos de Genesys, pero sin teléfono.'); }, 120);
   return d.telefono ? 'ok' : 'sin-telefono';
 };
@@ -4457,6 +4461,7 @@ const ctExtras = r => FICHA.reduce((n, [, cs]) => n + cs.filter(([k]) => k === '
 function ctAgregar(datos, silencioso) {
   const d = new Date(), p = n => String(n).padStart(2, '0');
   const fila = Object.assign({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), fecha: hoyISO(), hora: `${p(d.getHours())}:${p(d.getMinutes())}`, campana: '', cola: '', rut: '', nombre: '', telefono: '', tipo: '', plan: '', notas: '' }, datos, { upd: Date.now() });
+  if (fila.rut) fila.rut = rutSinCeros(fila.rut);
   const dup = silencioso && fila.rut && CT.find(x => !x.borrado && x.rut === fila.rut && x.fecha === fila.fecha);
   if (dup) { if (!silencioso) { ctNuevo = dup.id; ctPinta(); toast('Este cliente ya está en la planilla de hoy'); } return dup; }
   // Cruce: si el teléfono ya estuvo en la planilla, se anota cuándo se llamó y cómo se tipificó

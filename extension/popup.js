@@ -59,7 +59,7 @@ const conLimite = (p, ms) => Promise.race([p, esperar(ms).then(() => { throw new
 function extraEnvio() {
   let plan = '';
   try { const m = (typeof MENSAJES !== 'undefined' && MENSAJES[+document.querySelector('#wa-plan').value]) || null; if (m && m.id) plan = m.titulo; } catch (e) {}
-  return { plan, notas: (document.querySelector('#comentario').value || '').trim(), rut: (document.querySelector('#rut-cli').value || '').trim(), historial: HIST_TXT };
+  return { plan, notas: (document.querySelector('#comentario').value || '').trim(), rut: (document.querySelector('#rut-cli').value || '').trim().replace(/^[0.]+(?=[1-9])/, ''), historial: HIST_TXT };
 }
 // Llama a Mi Planilla dentro de la pestaña. Devuelve false si la página no la reconoce.
 async function entregar(tabId) {
@@ -161,6 +161,8 @@ function marcarTipificada() {
   try { chrome.storage.local.get('ultima_llamada').then(o => { const u = o.ultima_llamada; if (u && TEL_NV && String(u.tel || '') === TEL_NV) { u.tipificada = true; chrome.storage.local.set({ ultima_llamada: u }); } }); } catch (e) {}
 }
 async function pintarLlamada(d, anterior) {
+  // Algunas bases traen el RUT con ceros a la izquierda (0012345678-9): siempre se quitan
+  if (d.RUT_PERSONA) d = Object.assign({}, d, { RUT_PERSONA: String(d.RUT_PERSONA).trim().replace(/^[0.]+(?=[1-9])/, '') });
   // Mismo formato que Ctrl+A en Genesys: CLAVE: y el valor en la línea siguiente
   TEXTO = Object.entries(d).map(([k, v]) => `${k}:\n${v || k}`).join('\n');
   const tel = telFormato(d.FONO_CONTACTO) || telFormato(d.Fono1) || telFormato(d.Fono2) || telFormato(d.LEGACY_ID);
