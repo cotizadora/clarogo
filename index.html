@@ -1489,7 +1489,7 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.31.1';
+const APP_VERSION = '2.31.2';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -4042,7 +4042,8 @@ const dataABlob = d => { const [cab, b64] = String(d).split(','), tipo = (cab.ma
 // El portapapeles solo acepta PNG: si la lámina es JPG (Persona Mayor) se convierte
 const pngDeData = d => new Promise(res => { if (/^data:image\/png/.test(d)) return res(dataABlob(d)); const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = i.naturalWidth; c.height = i.naturalHeight; c.getContext('2d').drawImage(i, 0, 0); c.toBlob(res, 'image/png'); }; i.onerror = () => res(null); i.src = d; });
 // Ejecutivo que todavía tiene el nombre de ejemplo: se le muestra el aviso con el dedito (nunca en el equipo administrador)
-const perfilFalta = () => { if (esAdmin()) return false; try { if (localStorage.getItem('clarogo_soy_autor') === '1') return false; const n = (localStorage.getItem('agentName') || '').trim(); return !n || n === NOMBRE_DEFECTO; } catch (e) { return false; } };   // basta con que cambie su nombre para que el aviso no vuelva
+const perfilFalta = () => { if (esAdmin()) return false; try { if (localStorage.getItem('clarogo_soy_autor') === '1' || localStorage.getItem(GH.key)) return false;   // el autor: lo marcó al guardar o publica el stock desde este navegador
+    const n = (localStorage.getItem('agentName') || '').trim(); return !n || n === NOMBRE_DEFECTO; } catch (e) { return false; } };   // basta con que cambie su nombre para que el aviso no vuelva
 const perfilPintaBoton = () => { const b = $('#perfil-btn'), falta = perfilFalta(); if (b) { b.textContent = falta ? '👉 Pon aquí TU nombre y TU teléfono' : '👤 ' + agenteNombre() + ' · Mi mensaje'; b.classList.toggle('falta', falta); } const a = $('#pf-alerta'); if (a) a.hidden = !falta; document.body.classList.toggle('pf-falta', falta); };
 /* ── Sonido al pasar el mouse ───────────────────────────────────────
    Un "tic" muy corto y suave cuando el mouse entra a algo que se puede presionar. Se puede apagar en el pie de página. */
@@ -5045,14 +5046,16 @@ async function limpiarCache() {
   // Sin preguntas: primero guarda la planilla y luego limpia. La planilla y el archivo elegido nunca se borran.
   toast('Guardando tu planilla y limpiando la caché…');
   try { await respSync('limpieza'); } catch (e) {}
-  let planilla = null, clave = null, admin = null; try { planilla = localStorage.getItem(CT_KEY); clave = localStorage.getItem(GH.key); admin = localStorage.getItem(ADMIN.key); } catch (e) {}
+  // Se conservan la planilla, la clave de GitHub, el modo administrador y los datos personales del ejecutivo (nombre, teléfono, mensaje, firma y preferencias)
+  const CONSERVAR = [CT_KEY, GH.key, ADMIN.key, 'agentName', 'clarogo_telefono', 'clarogo_plantilla', 'clarogo_firma', 'clarogo_soy_autor', 'clarogo_tema', SONIDO_KEY];
+  const guardados = {}; try { CONSERVAR.forEach(k => { const v = localStorage.getItem(k); if (v !== null) guardados[k] = v; }); } catch (e) {}
   try {
     document.cookie.split(';').forEach(c => {
       const name = c.split('=')[0].trim(); if (!name) return;
       [location.hostname, '.' + location.hostname, ''].forEach(dom => { document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/' + (dom ? ';domain=' + dom : ''); });
     });
   } catch (e) {}
-  try { localStorage.clear(); if (planilla) localStorage.setItem(CT_KEY, planilla); if (clave) localStorage.setItem(GH.key, clave); if (admin) localStorage.setItem(ADMIN.key, admin); } catch (e) {}
+  try { localStorage.clear(); Object.entries(guardados).forEach(([k, v]) => localStorage.setItem(k, v)); } catch (e) {}
   try { sessionStorage.clear(); sessionStorage.setItem('clarogo_limpio', '1'); } catch (e) {}
   try { if (window.caches) await Promise.all((await caches.keys()).map(k => caches.delete(k))); } catch (e) {}
   try { if ('serviceWorker' in navigator) await Promise.all((await navigator.serviceWorker.getRegistrations()).map(r => r.unregister())); } catch (e) {}

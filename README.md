@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: ClaroGo! 2.31.2, Limpiar caché ya no borra el nombre del ejecutivo
+
+- Arreglo: "Limpiar caché" borraba el nombre, el teléfono, el mensaje y la firma de cada ejecutivo, y por eso el aviso de nombre volvía a salir. Ahora se conservan, junto con la planilla, la clave de GitHub, el modo administrador, el modo oscuro o claro y los sonidos. Probado en el navegador: lo demás se sigue borrando.
+- El navegador donde se publica el stock (tiene guardada la clave de GitHub) se reconoce como el del autor y no muestra el aviso.
+
 ### 25-11-2026: ClaroGo! 2.31.1, el aviso de nombre ya no le sale al autor
 
 - El nombre del ejemplo es el de Eduardo Pérez, por eso el aviso le salía a él. Ahora, si alguien guarda "Mi mensaje" con ese nombre, ClaroGo! pregunta "¿Tú eres Eduardo Pérez?". Si acepta, ese navegador no vuelve a mostrar el aviso ni la voz.
