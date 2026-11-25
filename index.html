@@ -307,7 +307,7 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 .bf-tit small{display:block;margin-top:4px;font-size:.8rem;color:#bdb49f}
 .bf-head-acc{display:flex;gap:8px;align-items:center}
 .bf-x{width:40px;height:40px;border-radius:50%;border:1px solid #3a342b;background:#14110e;color:#fff;font-size:1rem;cursor:pointer}
-.bf-btn{padding:9px 14px;border:1px solid #3a342b;border-radius:10px;background:#15120f;color:#f1ede4;font:600 .85rem/1.1 inherit;cursor:pointer}
+.bf-btn{padding:9px 14px;border:1px solid #3a342b;border-radius:10px;background:#15120f;color:#f1ede4;font-family:inherit;font-weight:600;font-size:.85rem;line-height:1.1;cursor:pointer}
 .bf-btn:hover{border-color:#6b5a3c}
 .bf-btn.oro{background:linear-gradient(180deg,#ffe08a,#c9922e);border-color:#c9922e;color:#1a1205;font-weight:800}
 .bf-btn.rojo{background:#c4000f;border-color:#c4000f;color:#fff;font-weight:700}
@@ -350,6 +350,30 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 .bf-fin{padding:40px;text-align:center;border-radius:20px;background:#070707;color:#d9d2c2;font-weight:700}
 #nav a[data-v=blackfriday]{background:#0b0b0b;color:#e8b955;border-radius:10px}
 #nav a[data-v=blackfriday].on{box-shadow:inset 0 -3px 0 #e8b955}
+/* Invitación en el Inicio */
+.bfi{width:min(460px,94vw);padding:0 26px 26px;border:1px solid #3a3226;border-radius:24px;background:radial-gradient(420px 240px at 50% 0%,#4a0d16,transparent 70%),radial-gradient(380px 200px at 50% 115%,rgba(217,164,65,.25),transparent 70%),#070707;color:#f1ede4;text-align:center;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.bfi[open]{animation:bfiEntra .6s cubic-bezier(.2,.9,.25,1.15)}
+@keyframes bfiEntra{from{opacity:0;transform:translateY(30px) scale(.92)}}
+.bfi::backdrop{background:rgba(0,0,0,.65);backdrop-filter:blur(3px)}
+.bfi-x{position:absolute;top:12px;right:12px;z-index:2;width:36px;height:36px;border-radius:50%;border:1px solid #3a342b;background:#14110e;color:#fff;cursor:pointer}
+.bfi-fotos{position:relative;height:210px;margin:0 -26px 4px}
+.bfi-fotos img{position:absolute;bottom:0;left:50%;height:190px;filter:drop-shadow(0 14px 16px rgba(0,0,0,.7));animation:bfiSube .8s cubic-bezier(.2,.9,.25,1.15) both}
+.bfi-f0{height:210px!important;transform:translateX(-50%);animation-delay:.25s!important}
+.bfi-f1{transform:translateX(-118%) rotate(-12deg);animation-delay:.1s!important;opacity:.85}
+.bfi-f2{transform:translateX(18%) rotate(12deg);animation-delay:.18s!important;opacity:.85}
+@keyframes bfiSube{from{opacity:0;translate:0 60px}}
+.bfi-nuevo{display:inline-block;padding:5px 14px;border-radius:999px;background:linear-gradient(180deg,#ffe08a,#c9922e);color:#1a1205;font-weight:900;font-size:.72rem;letter-spacing:.08em}
+.bfi-tit{margin:8px 0 6px;font-size:2.6rem;font-weight:900;letter-spacing:.05em;line-height:1}
+.bfi-tit i{font-style:normal;background:linear-gradient(180deg,#ffe8a6,#d9a441 55%,#a8741d);-webkit-background-clip:text;background-clip:text;color:transparent}
+.bfi-txt{margin:0 0 10px;color:#e9e3d6;font-size:.98rem}
+.bfi-lista{list-style:none;margin:0 auto 18px;padding:0;display:inline-block;text-align:left;font-size:.9rem;color:#d9d2c2}
+.bfi-lista li{margin:5px 0;padding-left:26px;position:relative}
+.bfi-lista li::before{content:"✓";position:absolute;left:0;top:-1px;width:19px;height:19px;border-radius:50%;background:linear-gradient(180deg,#ffe08a,#c9922e);color:#1a1205;font-size:.72rem;font-weight:900;display:flex;align-items:center;justify-content:center}
+.bfi-acc{display:flex;flex-direction:column;gap:8px}
+.bfi-ir{padding:14px;border:0;border-radius:14px;background:linear-gradient(180deg,#ffe08a,#c9922e);color:#1a1205;font-family:inherit;font-weight:900;font-size:1.05rem;line-height:1;cursor:pointer;box-shadow:0 10px 26px rgba(201,146,46,.35);position:relative;overflow:hidden}
+.bfi-ir::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.55) 45%,transparent 60%);transform:translateX(-100%);animation:bfBrillo 2.8s ease-in-out infinite}
+.bfi-no{padding:8px;border:0;background:none;color:#9d947f;font:inherit;cursor:pointer;text-decoration:underline}
+@media (prefers-reduced-motion:reduce){.bfi[open],.bfi-fotos img,.bfi-ir::after{animation:none}}
 .gal button{padding:0;overflow:hidden;text-align:center}
 .gal img{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:#eef0f4}
 .gal span{display:block;padding:8px;font-size:.78rem;font-weight:700}
@@ -1195,7 +1219,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <div id="bf-panel">
   <div class="bf-head">
     <div class="bf-tit"><span class="bf-logo"><b>BLACK</b> <i>FRIDAY</i></span><small id="bf-vig"></small></div>
-    <div class="bf-head-acc"><button class="bf-btn" id="bf-aviso" title="Gráfica y mensaje con el enlace, para contarle al equipo">📣 Avisar al equipo</button><button class="bf-btn oro" id="bf-grafica" title="Gráfica cuadrada con las ofertas más destacadas, para WhatsApp">📲 Gráfica para WhatsApp</button><button class="bf-x" data-close title="Cerrar">✕</button></div>
+    <div class="bf-head-acc"><button class="bf-btn" id="bf-aviso" hidden title="Gráfica y mensaje con el enlace, para contarle al equipo">📣 Avisar al equipo</button><button class="bf-btn oro" id="bf-grafica" title="Gráfica cuadrada con las ofertas más destacadas, para WhatsApp">📲 Gráfica para WhatsApp</button><button class="bf-x" data-close title="Cerrar">✕</button></div>
   </div>
   <div class="bf-filtros">
     <input type="search" id="bf-q" placeholder="Buscar modelo o marca" autocomplete="off">
@@ -1210,6 +1234,15 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <div class="bf-grid" id="bf-grid"></div>
   <div class="bf-vacio" id="bf-vacio" hidden>No hay ofertas con esos filtros.</div>
   </div>
+</dialog>
+<dialog id="dlg-bfinvita" class="bfi">
+  <button class="bfi-x" data-close title="Cerrar">✕</button>
+  <div class="bfi-fotos"><img src="ofertas/bf/samsung-s26-fe.webp" alt="" class="bfi-f1"><img src="ofertas/bf/xiaomi-17t-pro.webp" alt="" class="bfi-f2"><img src="ofertas/bf/iphone-18-pro.webp" alt="" class="bfi-f0"></div>
+  <span class="bfi-nuevo">NUEVO EN ClaroGo!</span>
+  <h2 class="bfi-tit"><b>BLACK</b> <i>FRIDAY</i></h2>
+  <p class="bfi-txt" id="bfi-txt"></p>
+  <ul class="bfi-lista"><li>Catálogo con filtros, igual que el Stock</li><li>Láminas listas para enviar al cliente</li><li>Stock real: verde pasa por el Front</li></ul>
+  <div class="bfi-acc"><button class="bfi-ir" id="bfi-ir">Ver las ofertas ›</button><button class="bfi-no" data-close>Ahora no</button></div>
 </dialog>
 <dialog id="dlg-bfaviso" style="max-width:min(600px,96vw)">
   <div class="d-head"><div><h2>Avisar al equipo</h2><p>Gráfica para el grupo. El enlace va aparte, en el mensaje, para que se pueda abrir con un clic</p></div><button class="d-x" data-close>✕</button></div>
@@ -1398,7 +1431,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.27.2';
+const APP_VERSION = '2.28.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -1859,7 +1892,7 @@ function stockDesdeExcel(hojas, archivo) {
    lo que de verdad protege la publicación es la clave de GitHub, que nunca está en el código. */
 const ADMIN = { key: 'clarogo_admin', huella: 'b3f10cf09560d00327dda6afe98ea19ceae17609aff10f97174d68d0c8231f3e' };
 const esAdmin = () => { try { return localStorage.getItem(ADMIN.key) === '1'; } catch (e) { return false; } };
-const adminPinta = () => { $('#s-actualizar').hidden = !esAdmin(); $('#s-grafica').hidden = !esAdmin(); };
+const adminPinta = () => { $('#s-actualizar').hidden = !esAdmin(); $('#s-grafica').hidden = !esAdmin(); $('#bf-aviso').hidden = !esAdmin(); };   // solo en el equipo administrador
 async function huellaDe(s) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
 function adminEntrar() {
   if (esAdmin()) return $('#s-actualizar').click();
@@ -2357,6 +2390,7 @@ async function bfGaleria() {
 function initBlackFriday() {
   // Terminada la campaña, el enlace muestra solo un aviso (el resto no se muestra)
   if (!bfActivo()) { $('#bf-fin').hidden = false; return; }
+  $('#bf-aviso').hidden = !esAdmin();   // "Avisar al equipo" solo lo ve el administrador (Eduardo)
   $('#bf-aviso').onclick = () => { $('#bfa-link').value = BF_LINK; abrir('dlg-bfaviso'); bfAvisoAnimar(); };
   $('#bfa-copiar-link').onclick = () => copyText(BF_LINK, 'Enlace copiado');
   $('#bfa-msg').onclick = () => copyText(bfAvisoTexto(), 'Mensaje con el enlace copiado. Pégalo en el grupo de WhatsApp.');
@@ -2382,7 +2416,16 @@ function initBlackFriday() {
   $('#bfg-bajar').onclick = async () => downloadBlob(await canvasBlob(await bfGraficaImagen()), 'black-friday.png');
   $('#dlg-bfgraf').addEventListener('close', () => cancelAnimationFrame(bfgAnim));
   // Ventana al entrar a Stock: una vez por sesión del navegador
+  // Invitación en el Inicio: una vez por sesión del navegador, para llevar al equipo a la sección
+  $('#bfi-txt').textContent = `${bfFechas()}: ${BF.length} equipos con precio especial en portabilidad.`;
+  $('#bfi-ir').onclick = () => { $('#dlg-bfinvita').close(); location.hash = 'blackfriday'; };
+  const invitar = () => {
+    if ((location.hash || '#inicio') !== '#inicio' || $('dialog[open]')) return;
+    let vista = false; try { vista = sessionStorage.getItem('bf_invita') === '1'; sessionStorage.setItem('bf_invita', '1'); } catch (e) {}
+    if (!vista) setTimeout(() => { if ((location.hash || '#inicio') === '#inicio' && !$('dialog[open]')) abrir('dlg-bfinvita'); }, 700);
+  };
   const alEntrar = () => {
+    invitar();
     if (location.hash === '#galeria') bfGaleria();
     if (location.hash === '#blackfriday') return bfSeccion();
     if (location.hash !== '#stock') return;

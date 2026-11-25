@@ -68,6 +68,13 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: ClaroGo! 2.28.0, invitación a Black Friday en el Inicio
+
+- Al entrar al Inicio aparece una ventana negra y dorada con tres equipos, "NUEVO EN ClaroGo!", BLACK FRIDAY y lo que trae la sección. Tiene dos botones: "Ver las ofertas ›", que lleva a la sección, y "Ahora no".
+- Sale una vez por sesión del navegador y solo durante la campaña (23 al 30 de noviembre). No aparece si ya hay otra ventana abierta.
+- "📣 Avisar al equipo" ahora solo se ve en el equipo administrador (el de Eduardo), igual que "Actualizar stock".
+- Arreglo: la letra de los botones de Black Friday no tomaba el grosor indicado (la regla de fuente estaba mal escrita).
+
 ### 25-11-2026: ClaroGo! 2.27.2, arreglo visual en la gráfica de aviso
 
 - Se quitó una línea que cruzaba el fondo a la altura del recuadro de abajo. El degradado oscuro ahora cubre toda la imagen.
