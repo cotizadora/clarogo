@@ -57,3 +57,23 @@ window.addEventListener('message', e => { if (e.source === window && e.data && e
 window.postMessage({ tipo: 'clarogo-ext-hola' }, location.origin);
 window.addEventListener('storage', e => { if (e.key === 'clarogo_control_v1') copiarPlanilla(); });
 copiarPlanilla();
+// 7. Ofertas enviadas por WhatsApp desde GoExt: la cola (ofertas_pend) se entrega a Mi Planilla apenas ClaroGo! está abierto.
+//    Se reintenta cada 4 segundos hasta que la página confirma; si hay varias pestañas de ClaroGo!, solo una entrega a la vez.
+const PESTANA = Math.random().toString(36).slice(2);
+let ofEnvio = 0;
+async function entregarOfertas() {
+  let o = {}; try { o = await chrome.storage.local.get(['ofertas_pend', 'ofertas_lock']); } catch (e) { return; }
+  const lista = (o.ofertas_pend || []).filter(x => x && x.id && Date.now() - (x.ts || 0) < 30 * 864e5);
+  if (!lista.length) { clearInterval(ofEnvio); ofEnvio = 0; return; }
+  const l = o.ofertas_lock; if (l && l.p !== PESTANA && Date.now() - l.ts < 8000) return;   // otra pestaña está entregando
+  try { await chrome.storage.local.set({ ofertas_lock: { p: PESTANA, ts: Date.now() } }); } catch (e) {}
+  window.postMessage({ tipo: 'clarogo-ofertas', lista }, location.origin);
+  if (!ofEnvio) ofEnvio = setInterval(entregarOfertas, 4000);
+}
+window.addEventListener('message', async e => {
+  if (e.source !== window || !e.data || e.data.tipo !== 'clarogo-ofertas-ok' || !Array.isArray(e.data.ids)) return;
+  const ok = new Set(e.data.ids);
+  try { const o = await chrome.storage.local.get('ofertas_pend'); await chrome.storage.local.set({ ofertas_pend: (o.ofertas_pend || []).filter(x => !ok.has(x.id)) }); } catch (x) {}
+});
+chrome.storage.onChanged.addListener((c, area) => { if (area === 'local' && c.ofertas_pend && (c.ofertas_pend.newValue || []).length) entregarOfertas(); });
+setTimeout(entregarOfertas, 1500);

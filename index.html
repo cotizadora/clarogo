@@ -1150,6 +1150,7 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
       <select id="ct-tipo"><option value="">Todas las tipificaciones</option></select>
       <select id="ct-seg"><option value="">Todos los segmentos</option></select>
       <div class="ct-rango full" id="ct-rango" hidden><label for="ct-desde">Desde</label><input type="date" id="ct-desde"><label for="ct-hasta">Hasta</label><input type="date" id="ct-hasta"></div>
+      <label class="chk" title="Clientes a los que les enviaste la oferta por WhatsApp desde GoExt"><input type="checkbox" id="ct-oferta"> 📤 Solo con oferta enviada</label>
       <label class="chk"><input type="checkbox" id="ct-verborr"> Ver borrados</label>
     </div>
     <div class="card" id="ag-panel" hidden style="padding:12px 14px"></div>
@@ -1489,7 +1490,7 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.33.0';
+const APP_VERSION = '2.34.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -4312,7 +4313,7 @@ function agPinta() {
 function agVerFila(id) {
   if (location.hash !== '#control') location.hash = 'control';
   setTimeout(() => {
-    $('#ct-periodo').value = 'todo'; $('#ct-tipo').value = ''; $('#ct-seg').value = ''; $('#ct-q').value = ''; $('#ct-verborr').checked = false;
+    $('#ct-periodo').value = 'todo'; $('#ct-tipo').value = ''; $('#ct-seg').value = ''; $('#ct-q').value = ''; $('#ct-verborr').checked = false; $('#ct-oferta').checked = false;
     ctNuevo = id; if (id) ctNeon = id; ctPinta();
     const tr = id ? $(`#ct-body tr[data-id="${id}"]`) : $('#ag-panel');
     if (tr) tr.scrollIntoView({ block: 'center', behavior: 'smooth' });
@@ -4417,6 +4418,39 @@ window.clarogoDesdeGenesys = (txt, extra = {}) => {
   setTimeout(() => { ctAgregar(d); if (!d.telefono) toast('Llegaron los datos de Genesys, pero sin teléfono.'); }, 120);
   return d.telefono ? 'ok' : 'sin-telefono';
 };
+/* ── Ofertas enviadas por WhatsApp desde GoExt ─────────────────────
+   Cada envío queda sí o sí en Mi Planilla: si el cliente ya tiene fila (mismo teléfono), se anota en la observación;
+   si no, se crea la fila con los datos de la llamada. GoExt guarda los envíos en una cola y puente.js los entrega
+   apenas ClaroGo! está abierto, aunque sea en otra sección (no cambia de sección ni de pestaña). */
+const ult9 = v => String(v || '').replace(/\D/g, '').slice(-9);
+window.clarogoOfertaEnviada = (rec = {}) => {
+  const tel = ult9(rec.tel); if (tel.length !== 9 || !rec.id) return 'sin-datos';
+  if (CT.some(r => (r.ofertaIds || []).includes(rec.id))) return 'ya';   // ya se había anotado (otra pestaña o reintento)
+  const d = new Date(rec.ts || Date.now()), p = n => String(n).padStart(2, '0');
+  const linea = `📤 ${p(d.getDate())}-${p(d.getMonth() + 1)}-${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())} Oferta enviada por WhatsApp${rec.plan ? ': ' + rec.plan : ''}`;
+  const anotar = r => { r.notas = (r.notas ? r.notas + '\n' : '') + linea; r.ofertaEnv = rec.ts || Date.now(); r.ofertaIds = [...(r.ofertaIds || []), rec.id].slice(-30); r.upd = Date.now(); };
+  let r = CT.filter(x => !x.borrado && TEL_CAMPOS.some(k => ult9(x[k]) === tel)).sort((a, b) => String(b.fecha + b.hora).localeCompare(String(a.fecha + a.hora)))[0];
+  if (r) { anotar(r); ctGuardar(); }
+  else {
+    const g = leerGenesys(rec.txt || '');
+    if (!g.telefono) g.telefono = telFormato(tel) || tel;
+    const c = String(rec.rut || '').replace(/[^0-9kK]/g, '').replace(/^0+/, '').toUpperCase();
+    if (!g.rut && c.length > 6) g.rut = c.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '-' + c.slice(-1);
+    if (rec.plan && PLANES_WA().some(x => x.title === rec.plan)) g.plan = rec.plan;
+    if (String(rec.notas || '').trim()) g.notas = String(rec.notas).trim().slice(0, 2000);
+    r = ctAgregar(g, true);
+    if (!(r.ofertaIds || []).includes(rec.id)) { anotar(r); ctGuardar(); }
+  }
+  try { ctRepintar(); } catch (e) {}
+  return 'ok';
+};
+// Entrega desde GoExt (puente.js): una lista de envíos; se responde con los que quedaron anotados
+window.addEventListener('message', e => {
+  if (e.source !== window || !e.data || e.data.tipo !== 'clarogo-ofertas' || !Array.isArray(e.data.lista)) return;
+  const ok = [];
+  e.data.lista.forEach(rec => { try { const r = window.clarogoOfertaEnviada(rec); if (r === 'ok' || r === 'ya') ok.push(rec.id); } catch (x) {} });
+  window.postMessage({ tipo: 'clarogo-ofertas-ok', ids: ok }, location.origin);
+});
 const GEN_CAMPOS = [['telefono', 'teléfono'], ['rut', 'RUT'], ['nombre', 'nombre'], ['campana', 'campaña'], ['cola', 'cola'], ['origen', 'compañía de origen'], ['oferta', 'oferta']];
 function ctCompletarFila(id, d) {
   const r = CT.find(x => x.id === id); if (!r) return;
@@ -4538,8 +4572,8 @@ function ctRango() {
   return ['', ''];
 }
 function ctFiltradas() {
-  const [desde, hasta] = ctRango(), tipo = $('#ct-tipo').value, seg = $('#ct-seg').value, q = $('#ct-q').value.trim().toLowerCase(), verBorr = $('#ct-verborr').checked;
-  return CT.filter(r => (verBorr ? r.borrado : !r.borrado) && (!desde || r.fecha >= desde) && (!hasta || r.fecha <= hasta)
+  const [desde, hasta] = ctRango(), tipo = $('#ct-tipo').value, seg = $('#ct-seg').value, q = $('#ct-q').value.trim().toLowerCase(), verBorr = $('#ct-verborr').checked, conOferta = $('#ct-oferta').checked;
+  return CT.filter(r => (verBorr ? r.borrado : !r.borrado) && (!conOferta || r.ofertaEnv) && (!desde || r.fecha >= desde) && (!hasta || r.fecha <= hasta)
     && (!tipo || (tipo === '__fav' ? r.fav : tipo === 'Sin tipificar' ? !r.tipo : (r.tipo === tipo || TIPIF_EQUIV[r.tipo] === tipo))) && (!seg || ctSeg(r) === seg)
     && (!q || [r.rut, r.nombre, r.telefono, r.notas, r.mail, r.contacto, r.fono, dirTexto(r), r.eq].join(' ').toLowerCase().includes(q)));
 }
@@ -4701,7 +4735,7 @@ function initControl() {
     + `<optgroup label="Códigos de Genesys (incluye su equivalente de la planilla)">${TIPIF_GENESYS.map(x => `<option>${esc(x)}</option>`).join('')}</optgroup>`;
   $('#ct-desde').value = isoMenos(6); $('#ct-hasta').value = hoyISO();
   // Siempre parte sin filtros, aunque el navegador intente recordar los de la visita anterior
-  const sinFiltros = () => { $('#ct-periodo').value = 'todo'; $('#ct-tipo').value = ''; $('#ct-seg').value = ''; $('#ct-q').value = ''; $('#ct-verborr').checked = false; $('#ct-rango').hidden = true; };
+  const sinFiltros = () => { $('#ct-periodo').value = 'todo'; $('#ct-tipo').value = ''; $('#ct-seg').value = ''; $('#ct-q').value = ''; $('#ct-verborr').checked = false; $('#ct-oferta').checked = false; $('#ct-rango').hidden = true; };
   sinFiltros(); window.addEventListener('pageshow', () => { sinFiltros(); ctPinta(); });
   let destino = '';
   // Arriba (sin destino) crea siempre una fila nueva. El botón de Genesys de una fila reemplaza su teléfono.
@@ -4755,7 +4789,7 @@ function initControl() {
   $('#ct-vacio').addEventListener('click', e => { const b = e.target.closest('[data-ver]'); if (!b) return; $('#ct-periodo').value = b.dataset.ver; $('#ct-rango').hidden = true; ctPinta(); });
   $('#ct-excel').onclick = ctExcel;
   $('#ct-q').addEventListener('input', ctPinta);
-  ['#ct-tipo', '#ct-seg', '#ct-desde', '#ct-hasta', '#ct-verborr'].forEach(s => $(s).addEventListener('change', ctPinta));
+  ['#ct-tipo', '#ct-seg', '#ct-desde', '#ct-hasta', '#ct-verborr', '#ct-oferta'].forEach(s => $(s).addEventListener('change', ctPinta));
   $('#ct-periodo').addEventListener('change', () => { $('#ct-rango').hidden = $('#ct-periodo').value !== 'rango'; ctPinta(); });
   $('#ct-resp').addEventListener('click', e => {
     const b = e.target.closest('[data-resp]'); if (!b) return;

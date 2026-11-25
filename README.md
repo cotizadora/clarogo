@@ -68,6 +68,13 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: ClaroGo! 2.34.0 y GoExt 1.64.0, cada oferta enviada queda en Mi Planilla
+
+- Cada vez que se envía la oferta por WhatsApp desde GoExt, queda registrada sí o sí en Mi Planilla: si el cliente ya tiene fila (mismo teléfono), se agrega a su observación "📤 fecha hora Oferta enviada por WhatsApp: plan"; si no, se crea la fila con los datos de la llamada (teléfono, nombre, RUT y comentario).
+- Funciona en segundo plano: GoExt guarda el envío en una cola y lo entrega a ClaroGo! apenas está abierto, en cualquier sección y sin cambiar de pestaña. Si ClaroGo! está cerrado, se anota al abrirlo. Un mismo envío nunca se anota dos veces.
+- Mi Planilla tiene un filtro nuevo "📤 Solo con oferta enviada" para llamar a todos los clientes a los que se les mandó la información.
+- En GoExt, el botón "Volver a llamar (le interesa)" vuelve a llamarse "Se envía info por WhatsApp" (mismo cruce: Genesys "Volver a llamar (cliente no acepta, pero le interesa)" y formulario "SE ENVIA INFO POR WSP").
+
 ### 25-11-2026: GoExt 1.63.0, todos los códigos de Genesys como botones y ventana sin scroll
 
 - Fuente: códigos de conclusión de Genesys enviados por Eduardo el 25-11-2026 y opciones del formulario de no venta leídas desde el formulario publicado.

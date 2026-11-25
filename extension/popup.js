@@ -210,7 +210,7 @@ const TIPOS = [
   { id: 'vx', t: 'Venta con excepción', g: 'venta', gc: 'Venta con excepción', f: null },
   { id: 'vr', t: 'Venta referido', g: 'venta', gc: 'Venta Referido Base', f: null },
   { id: 'ag', t: 'Agendado / pre-cierre', g: 'seg', gc: 'Agendado / Pre-Cierre (llamar para cerrar venta)', f: { s: 'NO', m: '__otro', o: 'AGENDADO / PRE-CIERRE' } },
-  { id: 'vl', t: 'Volver a llamar (le interesa)', g: 'seg', gc: 'Volver a llamar (cliente no acepta, pero le interesa)', f: { s: 'NO', m: 'SE ENVIA INFO POR WSP' } },
+  { id: 'vl', t: 'Se envía info por WhatsApp', g: 'seg', gc: 'Volver a llamar (cliente no acepta, pero le interesa)', f: { s: 'NO', m: 'SE ENVIA INFO POR WSP' } },
   { id: 'bz', t: 'Buzón de voz', g: 'llam', gc: 'Buzón de Voz', f: { s: 'NO', m: '__otro', o: 'BUZON DE VOZ' } },
   { id: 'mu', t: 'Mudo / sin audio', g: 'llam', gc: 'Mudo / Sin Audio', f: { s: 'NO', m: 'LLAMADA MUDA' } },
   { id: 'cs', t: 'Corta en el saludo', g: 'llam', gc: 'Cliente Corta Llamada en saludo', f: { s: 'NO', m: 'CORTE DE LLAMADO' } },
@@ -459,6 +459,16 @@ $('#wa-abrir').onclick = async () => {
   const url = `https://web.whatsapp.com/send?phone=56${TEL}&text=${encodeURIComponent(m.texto)}`;
   const img = $('#wa-lamina').checked && !$('#wa-lamina').disabled ? (IMGS[m.id] || '') : '';
   $('#wa-abrir').disabled = true;
+  // Cada oferta enviada queda sí o sí en Mi Planilla: se guarda en la cola y puente.js la entrega a ClaroGo!
+  // (si el cliente ya tiene fila se anota en la observación; si no, se crea la fila)
+  try {
+    const tel9 = String(TEL_NV || TEL || '').replace(/\D/g, '').slice(-9);
+    if (tel9.length === 9) {
+      const rec = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), ts: Date.now(), tel: tel9, txt: TEXTO, plan: m.id ? m.titulo : '', rut: ($('#rut-cli').value || '').trim(), notas: ($('#comentario').value || '').trim() };
+      const o = await chrome.storage.local.get('ofertas_pend');
+      await chrome.storage.local.set({ ofertas_pend: [...(o.ofertas_pend || []), rec].slice(-200) });
+    }
+  } catch (e) {}
   // Portapapeles de respaldo: con lámina queda la imagen (Ctrl+V la adjunta); sin lámina queda el mensaje
   try { if (img) await navigator.clipboard.write([new ClipboardItem({ 'image/png': pngDe(img) })]); else await navigator.clipboard.writeText(m.texto); } catch (e) {}
   // Primero el modo rápido del proceso de fondo (abre el chat sin recargar, escribe el mensaje y adjunta la lámina).
