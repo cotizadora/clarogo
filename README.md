@@ -68,6 +68,22 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: ClaroGo! 2.26.0, Black Friday (23 al 30 de noviembre de 2026)
+
+- **Fuente de precios:** "Oferta Black Friday 2026.xlsx" (hoja Resumen), entregado por Eduardo el 25-11-2026. Son 41 ofertas, vigentes del 23-11-2026 al 30-11-2026.
+  - Precio de portabilidad: columnas **REB** (pie, 18 cuotas y total), confirmado por Eduardo.
+  - "Antes": columnas **PEB** (el precio normal de hoy). El ahorro es PEB total menos REB total.
+  - También se muestra el **precio referencia**.
+- **Fotos oficiales:** la imagen principal (vista frontal) de cada equipo en tienda.clarochile.cl, convertida a WebP de 585 × 750 con fondo transparente, en `ofertas/bf/`. Son 33 fotos y pesan 0,72 MB en total. H400 Lite y Magic 7 Pro no están en el sitio de Claro: quedan sin foto, con un recuadro "Imagen no disponible".
+- **Stock de Equipos:**
+  - Banner negro "BLACK FRIDAY" y una ventana que se abre sola al entrar a Stock, una vez por sesión del navegador.
+  - Tiene la misma interfaz del stock: buscador, marca, pie, "Solo con stock", "Filtro rápido (Pie $0 + stock)", "Limpiar" y orden (mayor ahorro, menor cuota, menor pie, menor total, marca).
+  - Las unidades se cruzan con el stock publicado, sumando todos los colores: en verde con más de 60 unidades y en rojo si no pasa por el Front.
+- **Láminas de 1080 × 1350 por oferta**, estilo campaña: negro, dorado y rojo, foto oficial, sello "Ahorras", 18 cuotas, pie, total y "antes". Se copian o descargan para WhatsApp, y también se pueden copiar como texto.
+- **Galería:** muestra todas las láminas de Black Friday al comienzo mientras dure la campaña.
+- **Gráfica cuadrada negra de 1080 × 1080**, animada. Lleva de fondo el iPhone 17 Pro y las 4 ofertas con más ahorro, solo entre equipos con más de 60 unidades en stock.
+- Después del 30-11-2026, el banner, la ventana y las láminas dejan de mostrarse solos.
+
 ### 25-11-2026: ClaroGo! 2.25.0, gráfica "Stock actualizado" para WhatsApp
 
 - Al publicar el stock aparece sola una gráfica cuadrada para compartir por WhatsApp. Funciona desde el acceso "Actualizar stock ClaroGo" del escritorio, que abre ClaroGo! con `?stocklisto`, y desde "Publicar para todos" en el portal.

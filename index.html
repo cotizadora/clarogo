@@ -292,6 +292,57 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 
 /* Galería */
 .gal{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+/* ── Black Friday: negro, dorado y rojo, aspecto premium ── */
+.bf-banner{display:flex;align-items:center;gap:14px;width:100%;margin:0 0 12px;padding:14px 18px;border:1px solid #3a3226;border-radius:16px;background:radial-gradient(600px 140px at 15% 0%,#3a0a10,transparent 70%),linear-gradient(110deg,#050505,#161310 55%,#050505);color:#fff;cursor:pointer;box-shadow:0 10px 28px rgba(0,0,0,.25);position:relative;overflow:hidden;text-align:left;font:inherit}
+.bf-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,226,150,.18) 45%,transparent 60%);transform:translateX(-100%);animation:bfBrillo 3.6s ease-in-out infinite}
+@keyframes bfBrillo{60%,100%{transform:translateX(100%)}}
+.bf-b-t{font-size:1.5rem;font-weight:900;letter-spacing:.06em;line-height:1}
+.bf-b-t i,.bf-logo i{font-style:normal;background:linear-gradient(180deg,#ffe8a6,#d9a441 55%,#a8741d);-webkit-background-clip:text;background-clip:text;color:transparent}
+.bf-b-d{flex:1;font-size:.82rem;color:#d9d2c2}
+.bf-b-go{padding:8px 14px;border-radius:999px;background:linear-gradient(180deg,#ffe08a,#c9922e);color:#1a1205;font-weight:800;font-size:.85rem;white-space:nowrap}
+.bf-dlg{width:min(1240px,97vw);max-width:none;height:min(92vh,1000px);padding:0;border:1px solid #2c2620;border-radius:20px;background:#070707;color:#f1ede4;overflow:auto}
+.bf-dlg::backdrop{background:rgba(0,0,0,.72);backdrop-filter:blur(3px)}
+.bf-head{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 20px;background:radial-gradient(700px 160px at 10% 0%,#3d0a12,transparent 70%),#070707;border-bottom:1px solid #221d18}
+.bf-logo{font-size:clamp(1.5rem,3vw,2.3rem);font-weight:900;letter-spacing:.06em;line-height:1}
+.bf-tit small{display:block;margin-top:4px;font-size:.8rem;color:#bdb49f}
+.bf-head-acc{display:flex;gap:8px;align-items:center}
+.bf-x{width:40px;height:40px;border-radius:50%;border:1px solid #3a342b;background:#14110e;color:#fff;font-size:1rem;cursor:pointer}
+.bf-btn{padding:9px 14px;border:1px solid #3a342b;border-radius:10px;background:#15120f;color:#f1ede4;font:600 .85rem/1.1 inherit;cursor:pointer}
+.bf-btn:hover{border-color:#6b5a3c}
+.bf-btn.oro{background:linear-gradient(180deg,#ffe08a,#c9922e);border-color:#c9922e;color:#1a1205;font-weight:800}
+.bf-btn.rojo{background:#c4000f;border-color:#c4000f;color:#fff;font-weight:700}
+.bf-filtros{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 20px 4px}
+.bf-filtros #bf-q{grid-column:1/-1}
+.bf-filtros input[type=search],.bf-filtros select{width:100%;padding:10px 12px;border:1px solid #2f2a23;border-radius:10px;background:#121010;color:#f1ede4;font:inherit}
+.bf-chk{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid #2f2a23;border-radius:10px;background:#121010;font-size:.9rem;color:#f1ede4;margin:0}
+.bf-meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;padding:8px 20px;font-size:.78rem;color:#9d947f}
+.bf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;padding:6px 20px 24px}
+.bf-card{position:relative;display:flex;flex-direction:column;border:1px solid #26211b;border-radius:18px;background:linear-gradient(180deg,#121010,#0a0908);overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s;animation:bfEntra .5s ease both}
+.bf-card:hover{transform:translateY(-4px);border-color:#6b5a3c;box-shadow:0 18px 40px rgba(0,0,0,.5),0 0 0 1px rgba(217,164,65,.25)}
+@keyframes bfEntra{from{opacity:0;transform:translateY(12px)}}
+.bf-foto{position:relative;height:230px;display:flex;align-items:center;justify-content:center;background:radial-gradient(160px 120px at 50% 62%,rgba(217,164,65,.22),transparent 70%),radial-gradient(220px 160px at 50% 110%,rgba(196,0,15,.35),transparent 70%)}
+.bf-foto img{max-height:210px;max-width:88%;object-fit:contain;filter:drop-shadow(0 16px 18px rgba(0,0,0,.6))}
+.bf-sinfoto{width:96px;height:180px;border-radius:18px;border:2px solid #3a342b;display:flex;align-items:center;justify-content:center;color:#6b6252;font-size:.72rem;text-align:center;padding:6px}
+.bf-ahorro{position:absolute;top:12px;left:12px;padding:6px 10px;border-radius:10px;background:linear-gradient(180deg,#ffe08a,#c9922e);color:#1a1205;font-weight:900;font-size:.78rem;line-height:1.1;box-shadow:0 6px 14px rgba(0,0,0,.4)}
+.bf-tags{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+.bf-tags span{padding:3px 8px;border-radius:999px;background:#1d1915;border:1px solid #3a342b;font-size:.68rem;font-weight:700;color:#d9d2c2}
+.bf-tags .eol{background:#3d0a12;border-color:#7a1420;color:#ffb3bb}
+.bf-info{display:flex;flex-direction:column;gap:3px;padding:12px 14px 14px;flex:1}
+.bf-marca{font-size:.7rem;font-weight:800;letter-spacing:.14em;color:#d9a441;text-transform:uppercase}
+.bf-modelo{font-size:1rem;font-weight:800;line-height:1.25;color:#fff}
+.bf-cuota{margin-top:6px;font-size:.78rem;color:#bdb49f}.bf-cuota b{display:block;font-size:1.45rem;color:#fff;line-height:1.1}
+.bf-pie{font-size:.86rem;color:#e9e3d6}
+.bf-antes{font-size:.78rem;color:#8f8673}.bf-antes s{color:#a39a86}
+.bf-ref{font-size:.72rem;color:#7d7564}
+.bf-st{display:inline-block;margin-top:6px;padding:3px 9px;border-radius:999px;font-size:.72rem;font-weight:800;width:max-content}
+.bf-st.hi{background:#0f3d22;color:#7ee2a5}.bf-st.lo{background:#3d0a12;color:#ffb3bb}.bf-st.nd{background:#1d1915;color:#9d947f}
+.bf-acc{display:flex;gap:6px;padding:0 14px 14px}.bf-acc .bf-btn{flex:1}
+.bf-vacio{padding:40px;text-align:center;color:#9d947f}
+.bf-gal button{background:#070707;border-color:#26211b}.bf-gal span{color:#f1ede4;background:#0d0b09}
+.bf-gal canvas{width:100%;aspect-ratio:4/5;display:block}
+@media (min-width:760px){.bf-filtros{grid-template-columns:minmax(180px,2fr) repeat(3,minmax(165px,1fr)) auto auto auto}.bf-filtros #bf-q{grid-column:auto}}
+@media (max-width:520px){.bf-head{flex-wrap:wrap}.bf-grid{grid-template-columns:1fr 1fr;gap:10px;padding:6px 12px 20px}.bf-foto{height:170px}.bf-foto img{max-height:150px}.bf-cuota b{font-size:1.15rem}.bf-acc{flex-direction:column}}
+@media (prefers-reduced-motion:reduce){.bf-banner::after,.bf-card{animation:none}}
 .gal button{padding:0;overflow:hidden;text-align:center}
 .gal img{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:#eef0f4}
 .gal span{display:block;padding:8px;font-size:.78rem;font-weight:700}
@@ -798,6 +849,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <section id="v-stock" class="view" hidden>
     <h1 class="h">Stock de Equipos</h1>
     <p class="sub">Busca por modelo, marca o SKU. Toca un SKU para copiarlo.</p>
+    <button type="button" class="bf-banner" id="bf-banner" hidden><span class="bf-b-t"><b>BLACK</b> <i>FRIDAY</i></span><span class="bf-b-d" id="bf-banner-d"></span><span class="bf-b-go">Ver ofertas ›</span></button>
     <div class="note" style="margin-bottom:10px;border-left:4px solid var(--red)"><b>Importante:</b> en el Front solo pasan los equipos con <b>más de 60 unidades</b> en stock. En <span class="st st-hi" style="padding:1px 7px">verde</span> los que pasan y en <span class="st st-lo" style="padding:1px 7px">rojo</span> los de 60 o menos: no los ofrezcas. "Copiar lista filtrada" copia solo los verdes.</div>
     <div class="s-act mal" id="s-act"><span class="i">📅</span><div><small>Última actualización del stock</small><b>Cargando fecha…</b></div></div>
     <div class="card filters">
@@ -945,6 +997,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
     <h1 class="h">Galería</h1>
     <p class="sub">Imágenes de equipos para compartir con el cliente.</p>
     <input type="search" id="g-q" placeholder="Buscar dispositivo" autocomplete="off" style="margin-bottom:12px">
+    <div id="g-bf" hidden><div class="sec-t" style="margin-top:0">Black Friday <em>láminas para WhatsApp</em></div><div class="gal bf-gal" id="g-bf-grid"></div><div class="sec-t">Equipos</div></div>
     <div class="gal" id="g-grid"></div>
     <div class="empty" id="g-none" hidden>Sin resultados</div>
   </section>
@@ -1127,6 +1180,38 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   </div>
 </dialog>
 
+<dialog id="dlg-bf" class="bf-dlg">
+  <div class="bf-head">
+    <div class="bf-tit"><span class="bf-logo"><b>BLACK</b> <i>FRIDAY</i></span><small id="bf-vig"></small></div>
+    <div class="bf-head-acc"><button class="bf-btn oro" id="bf-grafica" title="Gráfica cuadrada con las ofertas más destacadas, para WhatsApp">📲 Gráfica para WhatsApp</button><button class="bf-x" data-close title="Cerrar">✕</button></div>
+  </div>
+  <div class="bf-filtros">
+    <input type="search" id="bf-q" placeholder="Buscar modelo o marca" autocomplete="off">
+    <select id="bf-marca"><option value="">Todas las marcas</option></select>
+    <select id="bf-pie"><option value="">Cualquier pie</option><option value="0-0">Pie $0</option><option value="1-50000">Hasta $50.000</option><option value="50001-300000">$50.001 a $300.000</option><option value="300001-9999999">$300.001 o más</option></select>
+    <select id="bf-orden"><option value="ahorro">Mayor ahorro</option><option value="cuota">Menor cuota</option><option value="pie">Menor pie</option><option value="total">Menor precio total</option><option value="marca">Marca</option></select>
+    <label class="bf-chk"><input type="checkbox" id="bf-solo"> Solo con stock</label>
+    <button class="bf-btn rojo" id="bf-rapido">Filtro rápido (Pie $0 + stock)</button>
+    <button class="bf-btn" id="bf-limpiar">Limpiar</button>
+  </div>
+  <div class="bf-meta"><span id="bf-count"></span><span>Portabilidad · pie + 18 cuotas · precios del Excel de la campaña</span></div>
+  <div class="bf-grid" id="bf-grid"></div>
+  <div class="bf-vacio" id="bf-vacio" hidden>No hay ofertas con esos filtros.</div>
+</dialog>
+<dialog id="dlg-bflam" style="max-width:min(560px,96vw)">
+  <div class="d-head"><div><h2 id="bfl-tit">Lámina Black Friday</h2><p>Imagen para enviar al cliente por WhatsApp</p></div><button class="d-x" data-close>✕</button></div>
+  <div class="d-body">
+    <canvas id="bfl-canvas" width="1080" height="1350" style="display:block;width:100%;aspect-ratio:4/5;border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.3);background:#050505"></canvas>
+    <div class="d-foot"><button class="btn" id="bfl-texto">📋 Copiar texto</button><button class="btn" id="bfl-bajar">⬇ Descargar</button><button class="btn red" id="bfl-copiar">📸 Copiar lámina para WhatsApp</button></div>
+  </div>
+</dialog>
+<dialog id="dlg-bfgraf" style="max-width:min(600px,96vw)">
+  <div class="d-head"><div><h2>Black Friday</h2><p>Gráfica cuadrada con las ofertas más destacadas</p></div><button class="d-x" data-close>✕</button></div>
+  <div class="d-body">
+    <canvas id="bfg-canvas" width="1080" height="1080" style="display:block;width:100%;aspect-ratio:1;border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.3);background:#050505"></canvas>
+    <div class="d-foot"><button class="btn" id="bfg-otra">↺ Ver animación</button><button class="btn" id="bfg-bajar">⬇ Descargar</button><button class="btn red" id="bfg-copiar">📋 Copiar imagen para WhatsApp</button></div>
+  </div>
+</dialog>
 <dialog id="dlg-stocklisto" style="max-width:min(600px,96vw)">
   <div class="d-head"><div><h2>Stock actualizado</h2><p>Gráfica cuadrada para compartir por WhatsApp</p></div><button class="d-x" data-close>✕</button></div>
   <div class="d-body">
@@ -1292,7 +1377,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.25.0';
+const APP_VERSION = '2.26.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -1954,6 +2039,263 @@ function stockListoAbrir() {
 }
 // La imagen que se copia es siempre el cuadro final, plano y en alta calidad
 function stockListoImagen() { const c = document.createElement('canvas'); c.width = c.height = 1080; stockListoDibujar(c, 1, stockListoDatos()); return c; }
+
+/* ════════════════════════════════════════════════════════════════
+   BLACK FRIDAY (evento especial)
+   Fuente: "Oferta Black Friday 2026.xlsx" (hoja Resumen), entregado por Eduardo el 25-11-2026.
+   Precio de portabilidad = columnas REB (pie, 18 cuotas, total). "Antes" = columnas PEB (precio normal de hoy).
+   Fotos: imagen principal (vista frontal) de cada equipo en tienda.clarochile.cl, en ofertas/bf/.
+   Fuera de las fechas de la campaña, el botón, la ventana y las láminas no se muestran.
+   ════════════════════════════════════════════════════════════════ */
+const BF_DESDE = '2026-11-23', BF_HASTA = '2026-11-30';
+// [marca, modelo, segmento, red, estado, precio referencia, pie, 18 cuotas, total, total normal (PEB), foto]
+const BF = [
+  ['Apple', 'iPhone 15 128GB', 'Premium', '5G', 'Vigente', 1054990, 49900, 57000, 1075900, 1164900, 'iphone-15'],
+  ['Apple', 'iPhone 16 128GB', 'Premium', '5G', 'Vigente', 1069990, 99900, 67000, 1305900, 1365900, 'iphone-16'],
+  ['Apple', 'iPhone 17 256GB', 'Premium', '5G', 'Vigente', 1199990, 299900, 61000, 1397900, 1417900, 'iphone-17'],
+  ['Apple', 'iPhone 17 Pro 256GB', 'Premium', '5G', 'Vigente', 1459990, 499900, 83000, 1993900, 2083900, 'iphone-17-pro'],
+  ['Apple', 'iPhone 17e 256GB', 'Premium', '5G', 'Vigente', 949990, 89900, 53000, 1043900, 1117900, 'iphone-17e'],
+  ['Apple', 'iPhone 18 Pro 256GB', 'Premium', '5G', 'Vigente', 1699990, 699900, 76000, 2067900, 2185900, 'iphone-18-pro'],
+  ['Apple', 'iPhone 18 Pro Max 256GB', 'Premium', '5G', 'Vigente', 1869990, 799900, 81000, 2257900, 2411900, 'iphone-18-pro-max'],
+  ['Honor', '600 Elite 5G 256GB', 'High', '5G', 'Vigente', 529990, 0, 34500, 621000, 773900, 'honor-600-elite'],
+  ['Honor', '600 Smart 5G 256GB', 'High', '5G', 'Vigente', 479990, 0, 29000, 522000, 643900, 'honor-600-smart'],
+  ['Honor', 'X7e Plus 5G 256GB', 'Mid', '5G', 'Vigente', 449990, 0, 26000, 468000, 515900, 'honor-x7e-plus'],
+  ['Honor', '600e 5G 512GB', 'High', '5G', 'Vigente', 599990, 0, 45500, 819000, 1039900, 'honor-600e'],
+  ['Honor', '600e 5G 512GB + 45W', 'High', '5G', 'Vigente', 599990, 0, 43000, 774000, 985900, 'honor-600e'],
+  ['Honor', 'H400 Lite 5G 256GB', 'Mid', '5G', 'EOL', 349990, 0, 22500, 405000, 549000, ''],
+  ['Honor', 'Magic 7 Pro 5G 512GB', 'Premium', '5G', 'EOL', 1499990, 199900, 65000, 1369900, 1685900, ''],
+  ['Honor', 'X5D 128GB', 'Low', '4G', 'Vigente', 199990, 0, 13500, 243000, 306000, 'honor-x5d'],
+  ['Honor', '600 5G 512GB + Clip 2', 'Premium', '5G', 'Vigente', 749990, 49900, 50500, 958900, 1221900, 'honor-600'],
+  ['Motorola', 'Edge 60 256GB', 'High', '5G', 'Vigente', 599990, 0, 25000, 450000, 612000, 'moto-edge-60'],
+  ['Motorola', 'Edge 70 512GB', 'Premium', '5G', 'Vigente', 799990, 19900, 37000, 685900, 859900, 'moto-edge-70'],
+  ['Motorola', 'G67 5G 256GB', 'Mid', '5G', 'Vigente', 299990, 0, 19000, 342000, 433900, 'moto-g67'],
+  ['Motorola', 'Signature 1TB', 'Premium', '5G', 'Vigente', 1399990, 299900, 55000, 1289900, 1659900, 'moto-signature'],
+  ['Oppo', 'Reno 16F 5G 256GB', 'High', '5G', 'Vigente', 799990, 0, 50000, 900000, 1089900, 'oppo-reno-16f'],
+  ['Samsung', 'A37 5G 256GB', 'Mid', '5G', 'Vigente', 569990, 0, 33500, 603000, 765000, 'samsung-a37'],
+  ['Samsung', 'A57 5G 256GB', 'High', '5G', 'Vigente', 659990, 0, 43000, 774000, 972000, 'samsung-a57'],
+  ['Samsung', 'S26 FE 5G 128GB', 'Premium', '5G', 'Vigente', 809990, 49900, 51500, 976900, 1239900, 'samsung-s26-fe'],
+  ['Samsung', 'S26 FE 5G 256GB', 'Premium', '5G', 'Vigente', 919990, 69900, 53000, 1023900, 1317900, 'samsung-s26-fe'],
+  ['Xiaomi', '17 512GB', 'Premium', '5G', 'Vigente', 1199990, 299900, 60000, 1379900, 1829900, 'xiaomi-17'],
+  ['Xiaomi', '17 512GB + PB90W', 'Premium', '5G', 'Vigente', 1199990, 299900, 60000, 1379900, 1829900, 'xiaomi-17'],
+  ['Xiaomi', '17 Ultra 512GB', 'Premium', '5G', 'Vigente', 1599990, 599900, 80000, 2039900, 2463900, 'xiaomi-17-ultra'],
+  ['Xiaomi', '17 Ultra 512GB + FK90W', 'Premium', '5G', 'Vigente', 1599990, 599900, 80000, 2039900, 2463900, 'xiaomi-17-ultra'],
+  ['Xiaomi', '17T 256GB', 'Premium', '5G', 'Vigente', 749990, 19900, 46000, 847900, 1065900, 'xiaomi-17t'],
+  ['Xiaomi', '17T 256GB + Sound Outdoor', 'Premium', '5G', 'Vigente', 749990, 19900, 46000, 847900, 1075900, 'xiaomi-17t'],
+  ['Xiaomi', '17T Pro 512GB + Sound Outdoor', 'Premium', '5G', 'Vigente', 999990, 49900, 60000, 1129900, 1413900, 'xiaomi-17t-pro'],
+  ['Xiaomi', 'Redmi 17 5G 128GB', 'Mid', '5G', 'Vigente', 279990, 0, 16000, 288000, 378000, 'redmi-17'],
+  ['Xiaomi', 'Redmi 17C 5G 128GB', 'Low', '5G', 'Vigente', 259990, 0, 14500, 261000, 324000, 'redmi-17c'],
+  ['Xiaomi', 'Redmi Note 17 5G 128GB + Buds 6 Play', 'Mid', '5G', 'Vigente', 349990, 0, 21500, 387000, 504000, 'redmi-note-17'],
+  ['Xiaomi', 'Redmi Note 17 5G 256GB + Buds 6 Play', 'Mid', '5G', 'Vigente', 399990, 0, 22000, 396000, 523900, 'redmi-note-17'],
+  ['Xiaomi', 'Redmi Note 17 Pro 5G 256GB + Headphones Neo', 'Mid', '5G', 'Vigente', 499990, 0, 28000, 504000, 615900, 'redmi-note-17-pro'],
+  ['Xiaomi', 'Redmi Note 17 Pro Max 5G 256GB + Headphones Neo', 'High', '5G', 'Vigente', 599990, 0, 36000, 648000, 869900, 'redmi-note-17-pro-max'],
+  ['ZTE', 'Nubia Air 5G 256GB', 'Mid', '5G', 'Vigente', 399990, 0, 16500, 297000, 423000, 'nubia-air'],
+  ['ZTE', 'Nubia Focus 2 Ultra 5G 256GB', 'Mid', '5G', 'Vigente', 459990, 0, 16000, 288000, 396000, 'nubia-focus-2-ultra'],
+  ['ZTE', 'V80 Max 256GB', 'Low', '4G', 'Vigente', 199990, 0, 11500, 207000, 288000, 'zte-v80-max']
+].map(([marca, modelo, seg, red, estado, ref, pie, cuota, total, antes, foto], i) => ({ i, marca, modelo, seg, red, estado, ref, pie, cuota, total, antes, ahorro: Math.max(0, antes - total), foto }));
+const bfActivo = () => { const h = isoLocal(new Date()); return h >= BF_DESDE && h <= BF_HASTA; };
+const bfFechas = () => `Del ${+BF_DESDE.slice(8)} al ${+BF_HASTA.slice(8)} de ${MESES_L[+BF_HASTA.slice(5, 7) - 1]}`;
+const bfNombre = o => `${o.marca === 'Apple' ? '' : o.marca + ' '}${o.modelo}`;
+// Unidades en el stock publicado: mismo equipo en todos sus colores (sin confundir 17 con 17 Ultra o 17T)
+const BF_VARIANTE = /^(pro|max|ultra|plus|lite|smart|elite|fe|air|mini|neo|t|c|e|s|focus|note|edge|signature)$/;
+function bfStock(o) {
+  const n = s => String(s || '').toLowerCase().replace(/\+.*$/, '').replace(/\b[45]g\b/g, ' ').replace(/\s+/g, ' ').trim();
+  const base = n(o.modelo), marca = o.marca.toLowerCase();
+  let u = 0, hay = false;
+  EQ.forEach(e => {
+    if (String(e.marca || '').toLowerCase() !== marca) return;
+    const m = n(e.modelo); if (!m.startsWith(base)) return;
+    const resto = m.slice(base.length).trim().split(' ').filter(Boolean);
+    if (resto.some(w => /\d/.test(w) || BF_VARIANTE.test(w))) return;
+    hay = true; u += +e.stock || 0;
+  });
+  return hay ? u : null;
+}
+// Fotos: se cargan una vez y se reutilizan en las tarjetas, láminas y gráfica
+const bfFotos = {};
+const bfFoto = f => f ? (bfFotos[f] = bfFotos[f] || new Promise(r => { const im = new Image(); im.onload = () => r(im); im.onerror = () => r(null); im.src = `ofertas/bf/${f}.webp`; })) : Promise.resolve(null);
+
+function bfPintar() {
+  const q = $('#bf-q').value.trim().toLowerCase(), marca = $('#bf-marca').value, pie = $('#bf-pie').value, solo = $('#bf-solo').checked, orden = $('#bf-orden').value;
+  const [p0, p1] = pie ? pie.split('-').map(Number) : [0, 0];
+  const lista = BF.map(o => Object.assign(o, { st: bfStock(o) })).filter(o =>
+    (!q || bfNombre(o).toLowerCase().includes(q) || o.marca.toLowerCase().includes(q)) && (!marca || o.marca === marca) &&
+    (!pie || (o.pie >= p0 && o.pie <= p1)) && (!solo || o.st > 0));
+  const cmp = { ahorro: (a, b) => b.ahorro - a.ahorro, cuota: (a, b) => a.cuota - b.cuota, pie: (a, b) => a.pie - b.pie || a.cuota - b.cuota, total: (a, b) => a.total - b.total, marca: (a, b) => a.marca.localeCompare(b.marca) || a.cuota - b.cuota }[orden];
+  lista.sort(cmp);
+  $('#bf-count').textContent = `${lista.length} ofertas · ${lista.filter(o => o.st > 0).length} con stock`;
+  $('#bf-vacio').hidden = lista.length > 0;
+  $('#bf-grid').innerHTML = lista.map((o, k) => {
+    const st = o.st === null ? '<span class="bf-st nd">Sin dato de stock</span>' : o.st > STOCK_FRONT ? `<span class="bf-st hi">● ${o.st} en stock</span>` : `<span class="bf-st lo">● ${o.st} unidades: no pasa por el Front</span>`;
+    return `<article class="bf-card" style="animation-delay:${Math.min(k, 12) * 40}ms">
+      <div class="bf-foto">${o.foto ? `<img src="ofertas/bf/${o.foto}.webp" alt="${esc(bfNombre(o))}" loading="lazy">` : '<div class="bf-sinfoto">Sin foto en el sitio de Claro</div>'}
+        ${o.ahorro ? `<span class="bf-ahorro">AHORRAS<br>${clp(o.ahorro)}</span>` : ''}
+        <span class="bf-tags"><span>${esc(o.red)}</span>${o.estado === 'EOL' ? '<span class="eol">Últimas unidades</span>' : ''}</span></div>
+      <div class="bf-info"><span class="bf-marca">${esc(o.marca)}</span><span class="bf-modelo">${esc(o.modelo)}</span>
+        <span class="bf-cuota">18 cuotas de<b>${clp(o.cuota)}</b></span>
+        <span class="bf-pie">Pie <b>${clp(o.pie)}</b> · Total ${clp(o.total)}</span>
+        ${o.ahorro ? `<span class="bf-antes">Antes <s>${clp(o.antes)}</s></span>` : ''}
+        <span class="bf-ref">Precio referencia ${clp(o.ref)}</span>${st}</div>
+      <div class="bf-acc"><button class="bf-btn oro" data-bflam="${o.i}">📸 Lámina</button><button class="bf-btn" data-bftxt="${o.i}">📋 Texto</button></div>
+    </article>`;
+  }).join('');
+}
+const bfTexto = o => `*🖤 BLACK FRIDAY* · ${bfFechas().toLowerCase()}\n\n*${bfNombre(o)}*\n💳 *Pie:* ${clp(o.pie)}\n📆 *18 cuotas de:* ${clp(o.cuota)}\n💰 *Total:* ${clp(o.total)}${o.ahorro ? ` (antes ${clp(o.antes)})\n🔥 *Ahorras:* ${clp(o.ahorro)}` : ''}\n\n_Portabilidad. Sujeto a evaluación comercial y stock disponible._`;
+function bfAbrir() {
+  if (!$('#bf-marca').options.length || $('#bf-marca').options.length < 2) $('#bf-marca').innerHTML = '<option value="">Todas las marcas</option>' + [...new Set(BF.map(o => o.marca))].sort().map(m => `<option>${esc(m)}</option>`).join('');
+  $('#bf-vig').textContent = `${bfFechas()} · Portabilidad con equipo · ${BF.length} ofertas`;
+  bfPintar(); abrir('dlg-bf');
+}
+/* ── Dibujo común: fondo premium negro con brillos dorados y rojos ── */
+function bfFondo(x, W, H) {
+  x.fillStyle = '#050505'; x.fillRect(0, 0, W, H);
+  let g = x.createRadialGradient(W * .5, H * .05, 10, W * .5, H * .05, W * .85); g.addColorStop(0, 'rgba(120,14,26,.75)'); g.addColorStop(1, 'rgba(120,14,26,0)'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+  g = x.createRadialGradient(W * .5, H * 1.02, 10, W * .5, H * 1.02, W * .7); g.addColorStop(0, 'rgba(217,164,65,.28)'); g.addColorStop(1, 'rgba(217,164,65,0)'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.save(); x.globalAlpha = .06; x.strokeStyle = '#d9a441'; x.lineWidth = 2;
+  for (let i = -6; i < 14; i++) { x.beginPath(); x.moveTo(i * 120, 0); x.lineTo(i * 120 - 520, H); x.stroke(); }
+  x.restore();
+}
+const bfOro = (x, y0, y1) => { const g = x.createLinearGradient(0, y0, 0, y1); g.addColorStop(0, '#fff1c2'); g.addColorStop(.45, '#e0ac48'); g.addColorStop(1, '#9c6a17'); return g; };
+const BF_F = '"Segoe UI",system-ui,Arial,sans-serif';
+function bfAjustar(x, txt, peso, max, ancho) { let s = max; do { x.font = `${peso} ${s}px ${BF_F}`; s -= 2; } while (x.measureText(txt).width > ancho && s > 18); return s + 2; }
+function bfSinFoto(x, cx, cy, h) {   // silueta neutra cuando el sitio de Claro no tiene foto del equipo
+  const w = h * .48; x.save(); x.strokeStyle = 'rgba(217,164,65,.5)'; x.lineWidth = 6; x.beginPath(); x.roundRect(cx - w / 2, cy - h / 2, w, h, 44); x.stroke();
+  x.fillStyle = 'rgba(255,255,255,.35)'; x.font = `600 26px ${BF_F}`; x.textAlign = 'center'; x.fillText('Imagen no disponible', cx, cy); x.restore();
+}
+/* ── Lámina por equipo: 1080 × 1350 (formato vertical de WhatsApp), estilo campaña publicitaria ── */
+function bfLamina(c, o, im) {
+  const x = c.getContext('2d'), W = 1080, H = 1350, k = c.width / W;
+  x.setTransform(k, 0, 0, k, 0, 0); bfFondo(x, W, H);
+  x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+  // Titular
+  x.fillStyle = '#fff'; x.font = `900 118px ${BF_F}`; x.fillText('BLACK', W / 2 - 4, 150);
+  x.fillStyle = bfOro(x, 160, 270); x.font = `900 118px ${BF_F}`; x.fillText('FRIDAY', W / 2, 262);
+  x.font = `800 26px ${BF_F}`; const fch = bfFechas().toUpperCase(), fw = x.measureText(fch).width + 56;
+  x.strokeStyle = 'rgba(217,164,65,.7)'; x.lineWidth = 2; x.beginPath(); x.roundRect(W / 2 - fw / 2, 290, fw, 50, 25); x.stroke();
+  x.fillStyle = '#f3e2b4'; x.fillText(fch, W / 2, 324);
+  // Equipo (foto oficial) con halo y sombra
+  let g = x.createRadialGradient(W / 2, 700, 40, W / 2, 700, 380); g.addColorStop(0, 'rgba(217,164,65,.35)'); g.addColorStop(.6, 'rgba(196,0,15,.12)'); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(0, 360, W, 700);
+  x.save(); x.fillStyle = 'rgba(0,0,0,.55)'; x.filter = 'blur(18px)'; x.beginPath(); x.ellipse(W / 2, 960, 260, 34, 0, 0, 7); x.fill(); x.restore();
+  if (im) { const h = 690, w = h * im.width / im.height; x.save(); x.shadowColor = 'rgba(0,0,0,.7)'; x.shadowBlur = 40; x.shadowOffsetY = 24; x.drawImage(im, W / 2 - w / 2, 330, w, h); x.restore(); }
+  else bfSinFoto(x, W / 2, 670, 520);
+  // Sello de ahorro
+  if (o.ahorro) {
+    x.save(); x.translate(860, 470); x.rotate(-.18);
+    x.fillStyle = bfOro(x, -95, 95); x.beginPath(); for (let q = 0; q < 32; q++) { const r = q % 2 ? 98 : 112, a = q / 32 * Math.PI * 2; x.lineTo(Math.cos(a) * r, Math.sin(a) * r); } x.fill();
+    x.fillStyle = '#1a1205'; x.font = `900 30px ${BF_F}`; x.fillText('AHORRAS', 0, -12); bfAjustar(x, clp(o.ahorro), 900, 46, 170); x.fillText(clp(o.ahorro), 0, 36);
+    x.restore();
+  }
+  // Marca y modelo
+  x.fillStyle = '#d9a441'; x.font = `800 28px ${BF_F}`; x.fillText(o.marca.toUpperCase().split('').join(' '), W / 2, 1012);
+  x.fillStyle = '#fff'; bfAjustar(x, o.modelo, 800, 52, 960); x.fillText(o.modelo, W / 2, 1068);
+  // Precio
+  x.fillStyle = 'rgba(255,255,255,.06)'; x.strokeStyle = 'rgba(217,164,65,.45)'; x.lineWidth = 2; x.beginPath(); x.roundRect(70, 1098, W - 140, 168, 26); x.fill(); x.stroke();
+  x.textAlign = 'left'; x.fillStyle = '#bdb49f'; x.font = `700 26px ${BF_F}`; x.fillText('18 CUOTAS DE', 110, 1146);
+  x.fillStyle = '#fff'; x.font = `900 84px ${BF_F}`; x.fillText(clp(o.cuota), 106, 1232);
+  x.textAlign = 'right'; x.fillStyle = '#bdb49f'; x.font = `700 26px ${BF_F}`; x.fillText('PIE', W - 110, 1146);
+  x.fillStyle = bfOro(x, 1160, 1215); x.font = `900 52px ${BF_F}`; x.fillText(clp(o.pie), W - 110, 1204);
+  x.fillStyle = '#d9d2c2'; x.font = `600 25px ${BF_F}`; x.fillText(`Total ${clp(o.total)}`, W - 110, 1242);
+  if (o.ahorro) { x.fillStyle = '#8f8673'; x.font = `500 22px ${BF_F}`; const t = `Antes ${clp(o.antes)}`, tw = x.measureText(t).width; x.fillText(t, W - 110, 1088); x.fillRect(W - 110 - tw, 1081, tw, 2); }
+  // Letra chica e identificación
+  x.textAlign = 'center'; x.fillStyle = 'rgba(255,255,255,.55)'; x.font = `500 21px ${BF_F}`;
+  x.fillText('Portabilidad con equipo. Sujeto a evaluación comercial y stock disponible.', W / 2, 1300);
+  x.fillStyle = 'rgba(255,255,255,.35)'; x.font = `500 17px ${BF_F}`; x.fillText('Lámina generada con ClaroGo! · herramienta no oficial', W / 2, 1330);
+  x.setTransform(1, 0, 0, 1, 0, 0);
+}
+let bfActual = null;
+async function bfLaminaAbrir(i) {
+  const o = BF.find(x => x.i === i); if (!o) return; bfActual = o;
+  $('#bfl-tit').textContent = bfNombre(o);
+  abrir('dlg-bflam'); const c = $('#bfl-canvas'), im = await bfFoto(o.foto); bfLamina(c, o, im);
+}
+const bfArchivo = o => 'black-friday-' + bfNombre(o).toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '.png';
+/* ── Gráfica cuadrada 1080 × 1080: equipo de alta gama de fondo y las ofertas más destacadas ── */
+let bfgAnim = 0;
+function bfDestacadas() {
+  const vistos = new Set(), out = [];
+  // Solo equipos que se pueden vender: con foto, vigentes y, si el stock está cargado, con más de 60 unidades
+  [...BF].filter(o => o.foto && o.estado !== 'EOL' && (!EQ.length || bfStock(o) > STOCK_FRONT)).sort((a, b) => b.ahorro - a.ahorro).forEach(o => { if (out.length < 4 && !vistos.has(o.foto)) { vistos.add(o.foto); out.push(o); } });
+  return out;
+}
+function bfGrafica(c, t, fondoIm, items, ims) {
+  const x = c.getContext('2d'), W = 1080, cl = v => Math.max(0, Math.min(1, v)), tr = (a, b) => cl((t - a) / (b - a)), eo = p => 1 - Math.pow(1 - p, 3);
+  x.setTransform(c.width / W, 0, 0, c.width / W, 0, 0); bfFondo(x, W, W);
+  // Equipo de alta gama de fondo, grande y con luz de borde
+  if (fondoIm) {
+    const p = eo(tr(0, .55)), h = 1180, w = h * fondoIm.width / fondoIm.height;
+    x.save(); x.globalAlpha = .95 * p; x.translate(860 + (1 - p) * 120, 540); x.rotate(-.16);
+    x.shadowColor = 'rgba(217,164,65,.6)'; x.shadowBlur = 80; x.drawImage(fondoIm, -w / 2, -h / 2, w, h); x.restore();
+    const g = x.createLinearGradient(0, 0, W, 0); g.addColorStop(0, 'rgba(5,5,5,.97)'); g.addColorStop(.5, 'rgba(5,5,5,.78)'); g.addColorStop(.75, 'rgba(5,5,5,.2)'); g.addColorStop(1, 'rgba(5,5,5,0)'); x.fillStyle = g; x.fillRect(0, 0, W, W);
+  }
+  x.textAlign = 'left'; x.textBaseline = 'alphabetic';
+  let p = eo(tr(.08, .45)); x.globalAlpha = p;
+  x.fillStyle = '#fff'; x.font = `900 132px ${BF_F}`; x.fillText('BLACK', 70 - (1 - p) * 60, 190);
+  x.fillStyle = bfOro(x, 200, 320); x.fillText('FRIDAY', 70 - (1 - p) * 60, 312);
+  p = eo(tr(.2, .55)); x.globalAlpha = p; x.fillStyle = '#f3e2b4'; x.font = `700 32px ${BF_F}`; x.fillText(bfFechas() + ' · Portabilidad con equipo', 74, 370);
+  x.globalAlpha = 1;
+  // Ofertas destacadas
+  items.forEach((o, k) => {
+    const pk = eo(tr(.35 + k * .1, .6 + k * .1)); if (!pk) return;
+    const y = 420 + k * 132;
+    x.save(); x.globalAlpha = pk; x.translate(-(1 - pk) * 80, 0);
+    x.fillStyle = 'rgba(255,255,255,.06)'; x.strokeStyle = 'rgba(217,164,65,.35)'; x.lineWidth = 2; x.beginPath(); x.roundRect(70, y, 620, 112, 22); x.fill(); x.stroke();
+    const im = ims[k]; if (im) { const h = 96, w = h * im.width / im.height; x.drawImage(im, 104 - w / 2 + 14, y + 8, w, h); }
+    x.fillStyle = '#d9a441'; x.font = `800 19px ${BF_F}`; x.fillText(o.marca.toUpperCase(), 170, y + 34);
+    x.fillStyle = '#fff'; bfAjustar(x, o.modelo.replace(/ \+.*$/, ''), 800, 30, 300); x.fillText(o.modelo.replace(/ \+.*$/, ''), 170, y + 68);
+    x.fillStyle = '#bdb49f'; x.font = `600 22px ${BF_F}`; x.fillText(`Pie ${clp(o.pie)} + 18 × ${clp(o.cuota)}`, 170, y + 98);
+    x.textAlign = 'right'; x.fillStyle = bfOro(x, y + 30, y + 90); x.font = `900 22px ${BF_F}`; x.fillText('AHORRAS', 670, y + 44); x.font = `900 34px ${BF_F}`; x.fillText(clp(o.ahorro), 670, y + 84); x.textAlign = 'left';
+    x.restore();
+  });
+  p = eo(tr(.8, 1)); x.globalAlpha = p;
+  x.fillStyle = 'rgba(0,0,0,.45)'; x.fillRect(0, 980, W, 100);
+  x.textAlign = 'center'; x.fillStyle = '#fff'; x.font = `700 28px ${BF_F}`; x.fillText(`${BF.length} equipos en oferta · Revisa todas en ClaroGo!`, W / 2, 1024);
+  x.fillStyle = 'rgba(255,255,255,.55)'; x.font = `500 19px ${BF_F}`; x.fillText('Sujeto a evaluación comercial y stock disponible · ClaroGo! herramienta no oficial', W / 2, 1056);
+  x.globalAlpha = 1; x.setTransform(1, 0, 0, 1, 0, 0);
+}
+async function bfGraficaDatos() { const items = bfDestacadas(); return { items, ims: await Promise.all(items.map(o => bfFoto(o.foto))), fondo: await bfFoto('iphone-17-pro') }; }
+async function bfGraficaAnimar() {
+  const c = $('#bfg-canvas'), d = await bfGraficaDatos(); cancelAnimationFrame(bfgAnim);
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return bfGrafica(c, 1, d.fondo, d.items, d.ims);
+  const ini = performance.now(), paso = a => { const t = Math.min(1, (a - ini) / 2400); bfGrafica(c, t, d.fondo, d.items, d.ims); if (t < 1) bfgAnim = requestAnimationFrame(paso); };
+  bfgAnim = requestAnimationFrame(paso);
+}
+async function bfGraficaImagen() { const c = document.createElement('canvas'); c.width = c.height = 1080; const d = await bfGraficaDatos(); bfGrafica(c, 1, d.fondo, d.items, d.ims); return c; }
+/* ── Galería: una lámina por oferta, al comienzo de la Galería mientras dure la campaña ── */
+let bfGalListo = false;
+async function bfGaleria() {
+  if (!bfActivo()) return; $('#g-bf').hidden = false; if (bfGalListo) return; bfGalListo = true;
+  const grid = $('#g-bf-grid');
+  grid.innerHTML = BF.map(o => `<button class="card" data-bflam="${o.i}"><canvas width="360" height="450"></canvas><span>${esc(bfNombre(o))}</span></button>`).join('');
+  for (const b of grid.children) { const o = BF.find(x => x.i === +b.dataset.bflam); bfLamina(b.querySelector('canvas'), o, await bfFoto(o.foto)); }
+}
+function initBlackFriday() {
+  if (!bfActivo()) return;
+  $('#bf-banner').hidden = false; $('#bf-banner-d').textContent = `${bfFechas()} · ${BF.length} equipos con precio especial en portabilidad`;
+  $('#bf-banner').onclick = bfAbrir;
+  ['#bf-q'].forEach(s => $(s).addEventListener('input', bfPintar));
+  ['#bf-marca', '#bf-pie', '#bf-orden', '#bf-solo'].forEach(s => $(s).addEventListener('change', bfPintar));
+  $('#bf-rapido').onclick = () => { $('#bf-pie').value = '0-0'; $('#bf-solo').checked = true; $('#bf-orden').value = 'cuota'; bfPintar(); };
+  $('#bf-limpiar').onclick = () => { $('#bf-q').value = ''; $('#bf-marca').value = ''; $('#bf-pie').value = ''; $('#bf-solo').checked = false; $('#bf-orden').value = 'ahorro'; bfPintar(); };
+  document.addEventListener('click', e => {
+    const l = e.target.closest('[data-bflam]'); if (l) return bfLaminaAbrir(+l.dataset.bflam);
+    const t = e.target.closest('[data-bftxt]'); if (t) { const o = BF.find(x => x.i === +t.dataset.bftxt); if (o) copyText(bfTexto(o), 'Texto copiado. Pégalo en WhatsApp.'); }
+  });
+  $('#bfl-copiar').onclick = async () => { const o = bfActual; if (!o) return; const c = document.createElement('canvas'); c.width = 1080; c.height = 1350; bfLamina(c, o, await bfFoto(o.foto)); copyCanvas(c, bfArchivo(o), 'Lámina copiada. Pégala en WhatsApp con Ctrl+V.'); };
+  $('#bfl-bajar').onclick = async () => { const o = bfActual; if (!o) return; const c = document.createElement('canvas'); c.width = 1080; c.height = 1350; bfLamina(c, o, await bfFoto(o.foto)); downloadBlob(await canvasBlob(c), bfArchivo(o)); };
+  $('#bfl-texto').onclick = () => bfActual && copyText(bfTexto(bfActual), 'Texto copiado. Pégalo en WhatsApp.');
+  $('#bf-grafica').onclick = () => { abrir('dlg-bfgraf'); bfGraficaAnimar(); };
+  $('#bfg-otra').onclick = bfGraficaAnimar;
+  $('#bfg-copiar').onclick = async () => copyCanvas(await bfGraficaImagen(), 'black-friday.png', 'Imagen copiada. Pégala en WhatsApp con Ctrl+V.');
+  $('#bfg-bajar').onclick = async () => downloadBlob(await canvasBlob(await bfGraficaImagen()), 'black-friday.png');
+  $('#dlg-bfgraf').addEventListener('close', () => cancelAnimationFrame(bfgAnim));
+  // Ventana al entrar a Stock: una vez por sesión del navegador
+  const alEntrar = () => {
+    if (location.hash === '#galeria') bfGaleria();
+    if (location.hash !== '#stock') return;
+    let visto = false; try { visto = sessionStorage.getItem('bf_visto') === '1'; sessionStorage.setItem('bf_visto', '1'); } catch (e) {}
+    if (!visto && !/[?&]stocklisto\b/.test(location.search)) setTimeout(() => { if (EQ.length) bfAbrir(); else { const r = setInterval(() => { if (EQ.length) { clearInterval(r); bfAbrir(); } }, 300); setTimeout(() => clearInterval(r), 15000); } }, 350);
+  };
+  window.addEventListener('hashchange', alEntrar); alEntrar();
+}
 async function procesarArchivoStock(f) {
   const out = $('#u-result'); out.innerHTML = '<div class="note blue">Leyendo ' + esc(f.name) + '…</div>'; $('#u-actions').hidden = true;
   try {
@@ -4466,7 +4808,7 @@ async function limpiarCache() {
 document.addEventListener('click', e => { const b = e.target.closest('[data-copiar-txt]'); if (!b) return; try { navigator.clipboard.writeText(b.dataset.copiarTxt).then(() => { const t = b.textContent; b.textContent = 'Copiado'; setTimeout(() => { b.textContent = t; }, 1600); }, () => toast('No se pudo copiar')); } catch (x) {} });
 // En Chrome la página de extensiones es chrome://extensions (edge://extensions no abre en Chrome)
 if (!/Edg\//.test(navigator.userAgent)) $$('[data-copiar-txt="edge://extensions"]').forEach(b => { b.dataset.copiarTxt = 'chrome://extensions'; const c = b.previousElementSibling; if (c) c.textContent = 'chrome://extensions'; const s = b.closest('li') && b.closest('li').querySelector('small'); if (s) s.innerHTML = 'En Edge: <code>edge://extensions</code>'; });
-$$('[data-app-ver]').forEach(e => { e.textContent = 'v' + APP_VERSION; }); initMenu(); initLineas(); initExcepciones(); initSugerencias(); iniciarRespaldo(); initWhatsApp(); initAgenda(); initPerfil(); initDeshacer(); initSonido(); mostrarTruco(); $('#truco').onclick = mostrarTruco; window.addEventListener('hashchange', () => { if ((location.hash || '#inicio') === '#inicio') mostrarTruco(); });
+$$('[data-app-ver]').forEach(e => { e.textContent = 'v' + APP_VERSION; }); initMenu(); initLineas(); initExcepciones(); initSugerencias(); iniciarRespaldo(); initWhatsApp(); initAgenda(); initPerfil(); initDeshacer(); initSonido(); initBlackFriday(); mostrarTruco(); $('#truco').onclick = mostrarTruco; window.addEventListener('hashchange', () => { if ((location.hash || '#inicio') === '#inicio') mostrarTruco(); });
 try { if (sessionStorage.getItem('clarogo_limpio')) { sessionStorage.removeItem('clarogo_limpio'); setTimeout(() => toast('Caché limpiada. Tu planilla está a salvo.'), 400); } } catch (e) {}
 $('#cache-btn').onclick = limpiarCache;
 window.addEventListener('hashchange', route);
