@@ -68,6 +68,14 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: ClaroGo! 2.25.0, gráfica "Stock actualizado" para WhatsApp
+
+- Al publicar el stock aparece sola una gráfica cuadrada para compartir por WhatsApp. Funciona desde el acceso "Actualizar stock ClaroGo" del escritorio, que abre ClaroGo! con `?stocklisto`, y desde "Publicar para todos" en el portal.
+- Qué muestra: un teléfono con la lista del stock, un visto bueno verde, un calendario de fondo con el día marcado y "STOCK ACTUALIZADO". También la fecha, la hora de publicación y los números reales: equipos con stock y cuántos pasan por el Front (más de 60 unidades).
+- Entra con animación (el teléfono sube, el visto bueno aparece con destellos, los textos entran en orden). La imagen que se copia es plana, de 1080 × 1080 en PNG.
+- Botones: "Copiar imagen para WhatsApp", "Descargar" y "Ver animación". En el equipo administrador hay un botón en Stock para volver a abrirla.
+- Se actualizó `herramientas/actualizar-stock.ps1` y su copia en `Documentos\CLARO\ClaroGo\actualizar-stock.ps1`, que es la que usa el acceso del escritorio.
+
 ### 25-11-2026: GoExt 1.60.0 y ClaroGo! 2.24.3, sin el aviso de Windows de llamada entrante
 
 - Se quitó el aviso de Windows "📞 ENTRÓ UNA LLAMADA". Eduardo lo encontró innecesario: el aviso verde "LLAMADA ENTRANTE" y el salto inmediato a Genesys bastan.

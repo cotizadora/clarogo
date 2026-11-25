@@ -218,7 +218,8 @@ try {
   if ($SinPreguntar) { Write-Host "Resultado en linea: $ok"; exit }
   if ($ok) { Aviso "Listo. El stock del $($fecha.ToString('dd-MM-yyyy')) ya está en línea para todos." }
   else { Aviso 'El stock quedó publicado, pero el sitio está tardando en mostrarlo. Revísalo en unos minutos.' 'Warning' }
-  Start-Process ($Sitio + '#stock')
+  # Con el stock en línea, ClaroGo! abre la gráfica "Stock actualizado" para compartir por WhatsApp
+  if ($ok) { Start-Process ($Sitio + '?stocklisto=1#stock') } else { Start-Process ($Sitio + '#stock') }
 } catch {
   Aviso ("No se pudo actualizar el stock.`n`n" + $_.Exception.Message) 'Error'
   exit 1

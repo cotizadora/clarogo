@@ -816,6 +816,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
         <button class="btn sm" id="s-limpiar">Limpiar</button>
         <button class="btn sm" id="s-copiar">Copiar lista filtrada</button>
         <button class="btn dark sm" id="s-actualizar" hidden>Actualizar stock</button>
+        <button class="btn sm" id="s-grafica" hidden title="Gráfica cuadrada para avisar por WhatsApp que el stock está actualizado">📲 Gráfica "Stock actualizado"</button>
       </div>
     </div>
     <div class="s-meta"><span id="s-count"></span><span id="s-fecha"></span></div>
@@ -1126,6 +1127,13 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   </div>
 </dialog>
 
+<dialog id="dlg-stocklisto" style="max-width:min(600px,96vw)">
+  <div class="d-head"><div><h2>Stock actualizado</h2><p>Gráfica cuadrada para compartir por WhatsApp</p></div><button class="d-x" data-close>✕</button></div>
+  <div class="d-body">
+    <canvas id="sl-canvas" width="1080" height="1080" style="display:block;width:100%;aspect-ratio:1;border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.22)"></canvas>
+    <div class="d-foot"><button class="btn" id="sl-otra">↺ Ver animación</button><button class="btn" id="sl-bajar">⬇ Descargar</button><button class="btn red" id="sl-copiar">📋 Copiar imagen para WhatsApp</button></div>
+  </div>
+</dialog>
 <dialog id="dlg-admin" style="max-width:min(360px,94vw)">
   <div class="d-head"><div><h2>Acceso de administrador</h2><p>Solo para quien actualiza el stock</p></div><button class="d-x" data-close>✕</button></div>
   <div class="d-body">
@@ -1284,7 +1292,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.24.3';
+const APP_VERSION = '2.25.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -1598,6 +1606,8 @@ async function cargarStock() {
     let info = await pInfo;
     if (!info || !info.fecha) { const lm = r.headers.get('last-modified'); info = lm ? { fecha: isoLocal(new Date(lm)), publicado: new Date(lm).toISOString() } : null; }
     pintarFechaStock(info);
+    // El acceso "Actualizar stock ClaroGo" del escritorio abre la página con ?stocklisto al terminar de publicar
+    if (/[?&]stocklisto\b/.test(location.search)) { history.replaceState(null, '', location.pathname + location.hash); setTimeout(stockListoAbrir, 400); }
   } catch (e) {
     $('#s-body').innerHTML = ''; $('#s-count').textContent = '';
     $('#s-msg').hidden = false;
@@ -1614,6 +1624,7 @@ const DIAS_SEMANA = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'vier
 const isoLocal = d => { const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
 const fechaLarga = iso => { const [y, m, d] = iso.split('-').map(Number), f = new Date(y, m - 1, d), dia = DIAS_SEMANA[f.getDay()]; return `${dia[0].toUpperCase() + dia.slice(1)} ${iso.slice(8, 10)}-${iso.slice(5, 7)}-${y}`; };
 function pintarFechaStock(info, vista) {
+  if (info && !vista) S_INFO = info;   // para la gráfica "Stock actualizado"
   const box = $('#s-act');
   if (!info || !/^\d{4}-\d{2}-\d{2}$/.test(info.fecha || '')) {
     box.className = 's-act mal';
@@ -1740,7 +1751,7 @@ function stockDesdeExcel(hojas, archivo) {
    lo que de verdad protege la publicación es la clave de GitHub, que nunca está en el código. */
 const ADMIN = { key: 'clarogo_admin', huella: 'b3f10cf09560d00327dda6afe98ea19ceae17609aff10f97174d68d0c8231f3e' };
 const esAdmin = () => { try { return localStorage.getItem(ADMIN.key) === '1'; } catch (e) { return false; } };
-const adminPinta = () => { $('#s-actualizar').hidden = !esAdmin(); };
+const adminPinta = () => { $('#s-actualizar').hidden = !esAdmin(); $('#s-grafica').hidden = !esAdmin(); };
 async function huellaDe(s) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
 function adminEntrar() {
   if (esAdmin()) return $('#s-actualizar').click();
@@ -1815,9 +1826,134 @@ async function publicarStock() {
 async function esperarPublicacion(marca, n = 0) {
   if (n > 16) return toast('GitHub está tardando. Revisa el stock en unos minutos.');
   await new Promise(r => setTimeout(r, 15000));
-  try { const r = await fetch('datos/stock-info.json?v=' + Date.now(), { cache: 'no-store' }); if (r.ok && (await r.json()).publicado === marca) return toast('✓ El stock nuevo ya está en línea para todos.'); } catch (e) {}
+  try { const r = await fetch('datos/stock-info.json?v=' + Date.now(), { cache: 'no-store' }); if (r.ok) { const j = await r.json(); if (j.publicado === marca) { toast('✓ El stock nuevo ya está en línea para todos.'); S_INFO = j; return stockListoAbrir(); } } } catch (e) {}
   esperarPublicacion(marca, n + 1);
 }
+
+/* ── Gráfica "Stock actualizado" para WhatsApp ──────────────────────
+   Imagen cuadrada de 1080 × 1080 dibujada aquí mismo: teléfono con la lista, visto bueno verde, calendario de fondo,
+   fecha y hora de publicación y los números reales del stock. En pantalla entra con animación; la imagen que se copia
+   es plana, el cuadro final. Se abre sola al publicar (desde el portal o desde el acceso del escritorio). */
+var S_INFO = null, slAnim = 0;   // var: la fecha del stock puede llegar antes de que se lea esta línea
+const MESES_L = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+function stockListoDatos() {
+  const info = S_INFO || {}, iso = /^\d{4}-\d{2}-\d{2}$/.test(info.fecha || '') ? info.fecha : isoLocal(new Date());
+  const pub = info.publicado ? new Date(info.publicado) : null;
+  const hora = pub && !isNaN(pub) ? `${String(pub.getHours()).padStart(2, '0')}:${String(pub.getMinutes()).padStart(2, '0')} h` : '';
+  return { iso, dia: +iso.slice(8, 10), mes: MESES_L[+iso.slice(5, 7) - 1], fecha: fechaLarga(iso), hora,
+    conStock: EQ.filter(e => e.stock > 0).length || info.conStock || 0, front: EQ.filter(stockOk).length };
+}
+function stockListoDibujar(c, t, D) {
+  const x = c.getContext('2d'), W = 1080, F = '"Segoe UI",system-ui,Arial,sans-serif';
+  const cl = v => Math.max(0, Math.min(1, v)), tr = (a, b) => cl((t - a) / (b - a));
+  const eo = p => 1 - Math.pow(1 - p, 3), back = p => { const s = 1.7; p -= 1; return p * p * ((s + 1) * p + s) + 1; };
+  const rr = (X, Y, w, h, r) => { x.beginPath(); x.roundRect(X, Y, w, h, r); };
+  x.clearRect(0, 0, W, W);
+  // Fondo corporativo rojo con brillo diagonal
+  let g = x.createRadialGradient(380, 330, 60, 540, 540, 900); g.addColorStop(0, '#ff2d3a'); g.addColorStop(.55, '#d00513'); g.addColorStop(1, '#6e0009');
+  x.fillStyle = g; x.fillRect(0, 0, W, W);
+  x.save(); x.globalAlpha = .07; x.fillStyle = '#fff';
+  for (let i = -2; i < 8; i++) { x.beginPath(); x.moveTo(i * 190 + (1 - eo(tr(0, .6))) * 120, 0); x.lineTo(i * 190 + 70, 0); x.lineTo(i * 190 - 330, W); x.lineTo(i * 190 - 400, W); x.fill(); }
+  x.restore();
+  // Calendario de fondo con el día del stock marcado
+  const pc = eo(tr(.05, .5));
+  x.save(); x.globalAlpha = pc; x.translate(830 + (1 - pc) * 160, 236); x.rotate((9 - (1 - pc) * 12) * Math.PI / 180); x.scale(.78, .78);
+  x.fillStyle = 'rgba(255,255,255,.11)'; rr(-230, -220, 460, 440, 34); x.fill();
+  x.strokeStyle = 'rgba(255,255,255,.32)'; x.lineWidth = 4; x.stroke();
+  x.fillStyle = 'rgba(255,255,255,.22)'; rr(-230, -220, 460, 92, [34, 34, 0, 0]); x.fill();
+  for (const ax of [-120, 120]) { x.fillStyle = 'rgba(255,255,255,.55)'; rr(ax - 11, -250, 22, 62, 11); x.fill(); }
+  x.fillStyle = 'rgba(255,255,255,.85)'; x.font = `800 40px ${F}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(D.mes.toUpperCase(), 0, -172);
+  const pri = new Date(+D.iso.slice(0, 4), +D.iso.slice(5, 7) - 1, 1).getDay(), lun = (pri + 6) % 7;
+  for (let k = 0; k < 35; k++) {
+    const n = k - lun + 1, cx = -180 + (k % 7) * 60, cy = -90 + Math.floor(k / 7) * 60;
+    if (n < 1 || n > 31) continue;
+    if (n === D.dia) { x.fillStyle = '#ffffff'; x.beginPath(); x.arc(cx, cy, 25, 0, 7); x.fill(); x.fillStyle = '#c40010'; x.font = `900 26px ${F}`; }
+    else { x.fillStyle = 'rgba(255,255,255,.42)'; x.font = `600 22px ${F}`; }
+    x.fillText(String(n), cx, cy + 1);
+  }
+  x.restore();
+  // Marca arriba a la izquierda
+  const pm = eo(tr(0, .35));
+  x.save(); x.globalAlpha = pm; x.textAlign = 'left'; x.textBaseline = 'alphabetic';
+  x.fillStyle = '#fff'; x.font = `900 54px ${F}`; x.fillText('ClaroGo!', 70, 118);
+  x.font = `800 22px ${F}`; const et = 'STOCK DE EQUIPOS', ew = x.measureText(et).width + 36;
+  x.fillStyle = 'rgba(255,255,255,.18)'; rr(70, 140, ew, 42, 21); x.fill(); x.fillStyle = '#fff'; x.fillText(et, 88, 169);
+  x.restore();
+  // Teléfono con la lista del stock
+  const pf = back(tr(.12, .55)), fy = 300 + (1 - pf) * 520;
+  x.save(); x.globalAlpha = cl(tr(.12, .3) * 1.4);
+  x.shadowColor = 'rgba(0,0,0,.45)'; x.shadowBlur = 50; x.shadowOffsetY = 24;
+  x.fillStyle = '#15171d'; rr(110, fy, 320, 600, 52); x.fill(); x.shadowColor = 'transparent';
+  let gs = x.createLinearGradient(0, fy, 0, fy + 600); gs.addColorStop(0, '#ffffff'); gs.addColorStop(1, '#eef1f6');
+  x.fillStyle = gs; rr(126, fy + 16, 288, 568, 40); x.fill();
+  x.fillStyle = '#15171d'; rr(225, fy + 28, 90, 24, 12); x.fill();
+  x.fillStyle = '#e30613'; rr(126, fy + 16, 288, 92, [40, 40, 0, 0]); x.fill();
+  x.fillStyle = '#fff'; x.font = `800 24px ${F}`; x.textAlign = 'left'; x.fillText('Stock de Equipos', 150, fy + 90);
+  for (let k = 0; k < 6; k++) {
+    const pk = eo(tr(.32 + k * .05, .5 + k * .05)), yy = fy + 132 + k * 72;
+    x.save(); x.globalAlpha = pk; x.translate((1 - pk) * 40, 0);
+    x.fillStyle = '#ffffff'; rr(142, yy, 256, 58, 12); x.fill(); x.strokeStyle = '#e2e6ee'; x.lineWidth = 2; x.stroke();
+    x.fillStyle = '#cfd5df'; rr(158, yy + 14, 120 - (k % 3) * 18, 12, 6); x.fill();
+    x.fillStyle = '#e3e7ee'; rr(158, yy + 34, 80, 10, 5); x.fill();
+    x.fillStyle = k === 4 ? '#e30613' : '#19a356'; rr(330, yy + 17, 52, 24, 12); x.fill();
+    x.restore();
+  }
+  x.restore();
+  // Visto bueno verde con destellos
+  const pv = tr(.5, .78), sv = pv < .7 ? back(pv / .7) * 1.08 : 1.08 - (pv - .7) / .3 * .08;
+  if (pv > 0) {
+    x.save(); x.translate(415, fy + 520); x.scale(sv, sv);
+    x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 40; x.shadowOffsetY = 14;
+    x.fillStyle = '#ffffff'; x.beginPath(); x.arc(0, 0, 122, 0, 7); x.fill(); x.shadowColor = 'transparent';
+    let gv = x.createLinearGradient(0, -110, 0, 110); gv.addColorStop(0, '#2bd36f'); gv.addColorStop(1, '#0f8f43');
+    x.fillStyle = gv; x.beginPath(); x.arc(0, 0, 106, 0, 7); x.fill();
+    x.strokeStyle = '#fff'; x.lineWidth = 26; x.lineCap = 'round'; x.lineJoin = 'round';
+    const pt = eo(tr(.6, .8)); x.beginPath(); x.moveTo(-48, 4);
+    if (pt < .4) x.lineTo(-48 + 34 * pt / .4, 4 + 36 * pt / .4); else { x.lineTo(-14, 40); x.lineTo(-14 + 70 * (pt - .4) / .6, 40 - 82 * (pt - .4) / .6); }
+    x.stroke(); x.restore();
+    const pd = tr(.6, 1);
+    if (pd > 0 && pd < 1) for (let k = 0; k < 14; k++) {
+      const a = k / 14 * Math.PI * 2 + .3, d = 140 + eo(pd) * 120;
+      x.save(); x.globalAlpha = 1 - pd; x.fillStyle = k % 3 ? '#ffd84d' : '#ffffff';
+      x.translate(415 + Math.cos(a) * d, fy + 520 + Math.sin(a) * d); x.rotate(a + pd * 3);
+      x.beginPath(); for (let q = 0; q < 8; q++) { const r = q % 2 ? 4 : 12; x.lineTo(Math.cos(q * Math.PI / 4) * r, Math.sin(q * Math.PI / 4) * r); } x.fill(); x.restore();
+    }
+  }
+  // Textos
+  const tx = 590, ancho = 420, aparecer = (a, b) => { const p = eo(tr(a, b)); x.globalAlpha = p; return (1 - p) * 60; };
+  const ajustar = (txt, peso, max, ancho) => { let s = max; do { x.font = `${peso} ${s}px ${F}`; s -= 2; } while (x.measureText(txt).width > ancho && s > 20); };
+  x.save(); x.textAlign = 'left'; x.textBaseline = 'alphabetic';
+  let dx = aparecer(.42, .7); x.fillStyle = '#fff'; ajustar('STOCK', 900, 150, ancho); x.fillText('STOCK', tx + dx, 560);
+  dx = aparecer(.5, .78); ajustar('ACTUALIZADO', 900, 70, ancho);
+  const aw = x.measureText('ACTUALIZADO').width; x.fillStyle = '#ffffff'; rr(tx - 14 + dx, 586, aw + 28, 86, 18); x.fill();
+  x.fillStyle = '#0f8f43'; x.fillText('ACTUALIZADO', tx + dx, 652);
+  dx = aparecer(.58, .86); x.fillStyle = '#fff'; ajustar(D.fecha, 800, 42, ancho); x.fillText(D.fecha, tx + dx, 730);
+  if (D.hora) { x.font = `600 32px ${F}`; x.fillStyle = 'rgba(255,255,255,.85)'; x.fillText('Publicado a las ' + D.hora, tx + dx, 776); }
+  dx = aparecer(.68, .95);
+  const pastilla = (txt, y) => { x.font = `800 27px ${F}`; const w = Math.min(ancho, x.measureText(txt).width + 64); x.fillStyle = 'rgba(0,0,0,.22)'; rr(tx + dx, y, w, 54, 27); x.fill(); x.fillStyle = '#2bd36f'; x.beginPath(); x.arc(tx + dx + 28, y + 27, 9, 0, 7); x.fill(); x.fillStyle = '#fff'; x.fillText(txt, tx + dx + 48, y + 37); };
+  pastilla(`${D.conStock} equipos con stock`, 812);
+  if (D.front) pastilla(`${D.front} pasan por el Front`, 878);
+  x.restore();
+  // Pie: identificación de la herramienta
+  x.save(); x.globalAlpha = eo(tr(.7, 1)); x.fillStyle = 'rgba(0,0,0,.28)'; x.fillRect(0, 980, W, 100);
+  x.fillStyle = '#fff'; x.textAlign = 'center'; x.font = `700 28px ${F}`; x.fillText('Revisa el stock en ClaroGo! antes de ofrecer un equipo', W / 2, 1024);
+  x.font = `500 20px ${F}`; x.fillStyle = 'rgba(255,255,255,.7)'; x.fillText('ClaroGo! · herramienta no oficial', W / 2, 1056);
+  x.restore();
+}
+function stockListoAnimar() {
+  const c = $('#sl-canvas'), D = stockListoDatos();
+  cancelAnimationFrame(slAnim);
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return stockListoDibujar(c, 1, D);
+  const ini = performance.now(), dur = 2200;
+  const paso = ahora => { const t = Math.min(1, (ahora - ini) / dur); stockListoDibujar(c, t, D); if (t < 1) slAnim = requestAnimationFrame(paso); };
+  slAnim = requestAnimationFrame(paso);
+}
+function stockListoAbrir() {
+  if (!EQ.length) return toast('Primero tiene que cargar el stock.');
+  abrir('dlg-stocklisto'); stockListoAnimar();
+}
+// La imagen que se copia es siempre el cuadro final, plano y en alta calidad
+function stockListoImagen() { const c = document.createElement('canvas'); c.width = c.height = 1080; stockListoDibujar(c, 1, stockListoDatos()); return c; }
 async function procesarArchivoStock(f) {
   const out = $('#u-result'); out.innerHTML = '<div class="note blue">Leyendo ' + esc(f.name) + '…</div>'; $('#u-actions').hidden = true;
   try {
@@ -1892,6 +2028,11 @@ function initStock() {
   });
   // Actualizar stock
   adminInit();
+  $('#s-grafica').onclick = stockListoAbrir;
+  $('#sl-otra').onclick = stockListoAnimar;
+  $('#sl-copiar').onclick = () => copyCanvas(stockListoImagen(), 'stock-actualizado.png', 'Imagen copiada. Pégala en WhatsApp con Ctrl+V.');
+  $('#sl-bajar').onclick = async () => { const s = stockListoDatos(); downloadBlob(await canvasBlob(stockListoImagen()), `stock-actualizado-${s.iso}.png`); };
+  $('#dlg-stocklisto').addEventListener('close', () => cancelAnimationFrame(slAnim));
   $('#s-actualizar').onclick = () => { $('#u-result').innerHTML = ''; $('#u-actions').hidden = true; $('#u-fecha-box').hidden = true; ghPintaEstado(); abrir('dlg-stock'); };
   $('#u-github').href = GITHUB_SUBIR;
   $('#u-file').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (f) procesarArchivoStock(f); });
