@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: ClaroGo! 2.29.0, aviso para que cada ejecutivo ponga su nombre y su teléfono
+
+- En Inicio aparece un aviso rojo con un dedito si el ejecutivo todavía tiene el nombre o el teléfono de ejemplo. El botón de arriba cambia a "👉 Pon aquí TU nombre y TU teléfono" en amarillo y late. No se muestra en el equipo administrador.
+- Aviso de voz en español (voz chilena de Edge si está, si no la voz en español del navegador): al tocar la página en Inicio (máximo una vez cada 2 minutos), al abrir la ventana, al cerrarla sin guardar y al guardar.
+- La ventana "Mi nombre y mi mensaje" es más compacta: la vista previa es pequeña y se desliza, y la barra con el botón 💾 Guardar queda siempre fija abajo, con un dedito "No olvides guardar" cuando hay cambios sin guardar.
+
 ### 25-11-2026: ClaroGo! 2.28.1, los filtros de Black Friday a la vista apenas se entra
 
 - Arreglo: en la sección Black Friday, el título negro se corría hacia abajo y tapaba los filtros. Ahora el título queda fijo en su lugar y los filtros se ven apenas se entra.

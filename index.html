@@ -514,7 +514,23 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
 .ver{display:inline-block;vertical-align:middle;background:#fff;color:var(--red-dk);font-size:.32em;font-weight:800;padding:.25em .7em;border-radius:999px;letter-spacing:0;margin-left:.15em}
 .perfil-btn{border:1px solid currentColor;background:transparent;color:inherit;border-radius:999px;padding:1px 10px;font:inherit;font-size:.95em;cursor:pointer;opacity:.95}
 .perfil-btn:hover{opacity:1;background:rgba(255,255,255,.15)}
-#pf-vista{white-space:pre-wrap;font:inherit;font-size:.84rem;background:#f1fbf4;border:1px solid #c8eed6;border-radius:10px;padding:10px;margin:6px 0 0}
+#pf-vista{white-space:pre-wrap;font:inherit;font-size:.74rem;line-height:1.35;background:#f1fbf4;border:1px solid #c8eed6;border-radius:10px;padding:8px 10px;margin:4px 0 0;max-height:92px;overflow:auto}
+#dlg-perfil .d-body{gap:6px;padding-bottom:0}
+#dlg-perfil textarea{min-height:0;resize:vertical}
+#dlg-perfil .d-foot{position:sticky;bottom:0;background:#fff;margin:6px -18px 0;padding:10px 18px 14px;border-top:1px solid var(--border);box-shadow:0 -6px 14px rgba(0,0,0,.06);align-items:center}
+#dlg-perfil .pf-dedo{margin-right:auto;font-size:.8rem;font-weight:700;color:#b00010;display:none;align-items:center;gap:4px}
+#dlg-perfil .pf-dedo.on{display:inline-flex}
+#dlg-perfil .pf-dedo i{font-style:normal;font-size:1.4rem;animation:dedoX 1s ease-in-out infinite}
+@keyframes dedoX{0%,100%{transform:translateX(0)}50%{transform:translateX(7px)}}
+@keyframes dedoY{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes pfLatido{0%,100%{box-shadow:0 0 0 0 rgba(255,214,0,.9)}50%{box-shadow:0 0 0 7px rgba(255,214,0,0)}}
+.perfil-btn.falta{background:#ffd600;color:#111;border-color:#ffd600;font-weight:800;animation:pfLatido 1.2s ease-in-out infinite}
+.pf-alerta{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:12px 14px;border-radius:14px;background:#fff4f4;border:2px solid #e3000f;color:#5a0008;cursor:pointer;text-align:left;width:100%;font:inherit;animation:pfLatido 1.6s ease-in-out infinite}
+.pf-alerta[hidden]{display:none}
+.pf-alerta .pf-mano{font-size:2.2rem;line-height:1;animation:dedoY .9s ease-in-out infinite;flex-shrink:0}
+.pf-alerta b{display:block;font-size:1rem;color:#c00010}
+.pf-alerta span{font-size:.84rem}
+.pf-alerta .pf-ir{margin-left:auto;flex-shrink:0;background:#e3000f;color:#fff;border-radius:999px;padding:7px 14px;font-weight:800;font-size:.85rem}
 .hero p.truco{font-style:italic;font-size:clamp(.68rem,1.6vh,.84rem);opacity:.9;cursor:pointer;margin-top:clamp(2px,.8vh,8px);max-width:760px;margin-left:auto;margin-right:auto;animation:trucoEntra .6s ease-out}
 .hero p.truco b{font-style:normal}
 @keyframes trucoEntra{from{opacity:0;transform:translateY(-4px)}to{opacity:.9;transform:none}}
@@ -875,6 +891,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
       <p>Portal de ventas 2026 · Elige una sección · <button class="perfil-btn" id="perfil-btn" title="Tu nombre y tu mensaje de WhatsApp"></button></p>
       <p class="truco" id="truco" title="Clic para ver otro truco"></p>
     </div>
+    <button type="button" class="pf-alerta" id="pf-alerta" hidden><span class="pf-mano">👆</span><span><b>¡Falta poner TU nombre y TU teléfono!</b><span>Tus mensajes de WhatsApp están saliendo con el nombre y el teléfono de otra persona. Cámbialos ahora y aprieta <b style="display:inline;color:inherit">💾 Guardar</b>.</span></span><span class="pf-ir">Cambiar ahora</span></button>
     <a class="mute-banner" href="#descargas"><span class="mb-i">⬇️</span><span><b>Descargas</b> · GoExt, la extensión con la que ClaroGo! funciona mucho mejor, y MuteReal para tu micrófono</span><span class="mb-b">Ir a Descargas</span></a>
     <div class="tiles" id="tiles"></div>
     <div id="home-links"></div>
@@ -1356,15 +1373,15 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
   <div class="d-head"><div><h2>👤 Mi nombre y mi mensaje</h2><p>Se usa en WhatsApp, en la planilla, en la extensión y en el Script</p></div><button class="d-x" data-close>✕</button></div>
   <div class="d-body">
     <label for="pf-nombre">Tu nombre</label><input id="pf-nombre" placeholder="Ej: Eduardo Pérez" autocomplete="off">
-    <label for="pf-telefono" style="margin-top:10px">Tu teléfono (va en la firma)</label><input id="pf-telefono" placeholder="+56 9 1234 5678" autocomplete="off">
-    <label for="pf-plantilla" style="margin-top:10px">Tu mensaje de presentación</label>
-    <textarea id="pf-plantilla" rows="4"></textarea>
+    <label for="pf-telefono" style="margin-top:6px">Tu teléfono (va en la firma)</label><input id="pf-telefono" placeholder="+56 9 1234 5678" autocomplete="off">
+    <label for="pf-plantilla" style="margin-top:6px">Tu mensaje de presentación</label>
+    <textarea id="pf-plantilla" rows="3"></textarea>
     <p class="dim" style="font-size:.76rem;margin:4px 0 0">Escribe <b>{saludo}</b> donde va "muy buenos días", "muy buenas tardes" o "muy buenas noches" (cambia solo según la hora) , <b>{nombre}</b> donde va tu nombre, <b>{trato}</b> donde va ", estimada María" o ", estimado Juan" (solo desde la planilla y si se sabe el nombre; si no, se omite), <b>{cliente}</b> donde va el primer nombre del cliente (si la planilla no lo tiene, se omite solo) y <b>{compania}</b> para su compañía de origen. Después del mensaje se agrega el plan que elijas.</p>
-    <label for="pf-firma" style="margin-top:10px">Tu firma (va al final, después de la oferta)</label>
-    <textarea id="pf-firma" rows="5"></textarea>
+    <label for="pf-firma" style="margin-top:6px">Tu firma (va al final, después de la oferta)</label>
+    <textarea id="pf-firma" rows="3"></textarea>
     <p class="dim" style="font-size:.76rem;margin:4px 0 0">En la firma, <b>{nombre}</b> es tu nombre y <b>{telefono}</b> tu teléfono. Lo que va entre asteriscos (*Claro Chile*) sale en negrita en WhatsApp.</p>
-    <label style="margin-top:10px">Así se ve ahora</label><pre id="pf-vista"></pre>
-    <div class="d-foot"><button class="btn" id="pf-defecto">Volver al mensaje corporativo</button><button class="btn red" id="pf-guardar">Guardar</button></div>
+    <label style="margin-top:8px">Así se ve ahora <span class="dim" style="font-weight:400;font-size:.74rem">(desliza para ver todo)</span></label><pre id="pf-vista"></pre>
+    <div class="d-foot"><span class="pf-dedo" id="pf-dedo">No olvides guardar <i>👉</i></span><button class="btn" id="pf-defecto">Volver al mensaje corporativo</button><button class="btn red" id="pf-guardar">💾 Guardar</button></div>
   </div>
 </dialog>
 
@@ -1434,7 +1451,7 @@ body[data-view="inicio"] main{display:flex;flex-direction:column;min-height:0;pa
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.28.1';
+const APP_VERSION = '2.29.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -1895,7 +1912,7 @@ function stockDesdeExcel(hojas, archivo) {
    lo que de verdad protege la publicación es la clave de GitHub, que nunca está en el código. */
 const ADMIN = { key: 'clarogo_admin', huella: 'b3f10cf09560d00327dda6afe98ea19ceae17609aff10f97174d68d0c8231f3e' };
 const esAdmin = () => { try { return localStorage.getItem(ADMIN.key) === '1'; } catch (e) { return false; } };
-const adminPinta = () => { $('#s-actualizar').hidden = !esAdmin(); $('#s-grafica').hidden = !esAdmin(); $('#bf-aviso').hidden = !esAdmin(); };   // solo en el equipo administrador
+const adminPinta = () => { $('#s-actualizar').hidden = !esAdmin(); $('#s-grafica').hidden = !esAdmin(); $('#bf-aviso').hidden = !esAdmin(); try { perfilPintaBoton(); } catch (e) {} };   // solo en el equipo administrador
 async function huellaDe(s) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
 function adminEntrar() {
   if (esAdmin()) return $('#s-actualizar').click();
@@ -3982,7 +3999,9 @@ function laminaDataURL(id) {
 const dataABlob = d => { const [cab, b64] = String(d).split(','), tipo = (cab.match(/data:([^;]+)/) || [])[1] || 'image/png', bin = atob(b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new Blob([u], { type: tipo }); };
 // El portapapeles solo acepta PNG: si la lámina es JPG (Persona Mayor) se convierte
 const pngDeData = d => new Promise(res => { if (/^data:image\/png/.test(d)) return res(dataABlob(d)); const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = i.naturalWidth; c.height = i.naturalHeight; c.getContext('2d').drawImage(i, 0, 0); c.toBlob(res, 'image/png'); }; i.onerror = () => res(null); i.src = d; });
-const perfilPintaBoton = () => { const b = $('#perfil-btn'); if (b) b.textContent = '👤 ' + agenteNombre() + ' · Mi mensaje'; };
+// Ejecutivo que todavía tiene el nombre o el teléfono de ejemplo: se le muestra el aviso con el dedito (nunca en el equipo administrador)
+const perfilFalta = () => { if (esAdmin()) return false; try { const n = (localStorage.getItem('agentName') || '').trim(), t = (localStorage.getItem('clarogo_telefono') || '').trim(); return !n || n === NOMBRE_DEFECTO || !t || t === TELEFONO_DEFECTO; } catch (e) { return false; } };
+const perfilPintaBoton = () => { const b = $('#perfil-btn'), falta = perfilFalta(); if (b) { b.textContent = falta ? '👉 Pon aquí TU nombre y TU teléfono' : '👤 ' + agenteNombre() + ' · Mi mensaje'; b.classList.toggle('falta', falta); } const a = $('#pf-alerta'); if (a) a.hidden = !falta; };
 /* ── Sonido al pasar el mouse ───────────────────────────────────────
    Un "tic" muy corto y suave cuando el mouse entra a algo que se puede presionar. Se puede apagar en el pie de página. */
 const SONIDO_KEY = 'clarogo_sonido';
@@ -4045,13 +4064,59 @@ function mostrarTruco() {
   p.style.animation = 'none'; void p.offsetWidth; p.style.animation = '';
   p.innerHTML = '<b>✨ Truco:</b> ' + esc(TRUCOS[n]);
 }
+/* Aviso hablado en español mientras el ejecutivo no ponga su nombre y su teléfono.
+   El navegador solo deja hablar después de un clic o una tecla, por eso suena con la primera interacción. */
+const perfilVozFrases = {
+  inicio: 'Atención. Todavía no has puesto tu nombre ni tu teléfono. Tus mensajes de WhatsApp están saliendo con los datos de otra persona. Haz clic en el aviso rojo, escribe tus datos y aprieta el botón Guardar.',
+  ventana: 'Escribe tu nombre y tu teléfono. Cuando termines, aprieta el botón rojo Guardar, abajo a la derecha. Si no lo aprietas, no queda guardado.',
+  sinGuardar: 'Ojo. Cerraste sin guardar. Tus datos no quedaron guardados. Vuelve a abrir y aprieta Guardar.',
+  listo: 'Listo. Tus datos quedaron guardados.',
+  aunFalta: 'Guardaste, pero todavía falta tu nombre o tu teléfono. Escribe los tuyos, no los del ejemplo.'
+};
+function perfilHablar(clave) {
+  try {
+    const s = window.speechSynthesis; if (!s) return;
+    const voces = s.getVoices(), es = voces.filter(v => /^es/i.test(v.lang));
+    // Siempre voz en español: si el navegador todavía no carga sus voces, espera a que estén listas
+    if (!es.length && !perfilHablar.yaEspero) {
+      perfilHablar.yaEspero = 1; let hecho = false;
+      const seguir = () => { if (hecho) return; hecho = true; perfilHablar(clave); };
+      s.addEventListener('voiceschanged', seguir, { once: true }); setTimeout(seguir, 1500);
+      return;
+    }
+    const voz = es.find(v => /es-CL/i.test(v.lang) && /natural/i.test(v.name)) || es.find(v => /natural/i.test(v.name)) || es.find(v => /es-CL/i.test(v.lang)) || es.find(v => /es-(419|MX|US)/i.test(v.lang)) || es[0];
+    const u = new SpeechSynthesisUtterance(perfilVozFrases[clave]); u.lang = voz ? voz.lang : 'es-CL'; if (voz) u.voice = voz; u.rate = 1;
+    s.cancel(); s.speak(u);
+  } catch (e) {}
+}
+let perfilVozUltima = 0;
+function perfilVozInicio() {
+  if (!perfilFalta() || (location.hash || '#inicio') !== '#inicio' || $('dialog[open]')) return;
+  if (Date.now() - perfilVozUltima < 120000) return;   // como máximo una vez cada 2 minutos
+  perfilVozUltima = Date.now(); perfilHablar('inicio');
+}
 function initPerfil() {
   perfilPintaBoton();
   const vista = () => { const p = $('#pf-plantilla').value.trim() || PLANTILLA_DEFECTO, n = $('#pf-nombre').value.trim() || NOMBRE_DEFECTO, t = $('#pf-telefono').value.trim() || TELEFONO_DEFECTO, fi = $('#pf-firma').value.trim() || FIRMA_DEFECTO; $('#pf-vista').textContent = 'Desde la planilla, con el nombre del cliente:\n' + presentacion(p, n, { nombre: 'MARÍA SOTO' }) + '\n' + presentacion(p, n, { nombre: 'JUAN PÉREZ' }) + '\n\nSin nombre (siempre en la extensión):\n' + presentacion(p, n) + '\n\n[detalle del plan elegido]\n\n' + firmaTexto(fi, n, t); };
-  $('#perfil-btn').onclick = () => { $('#pf-nombre').value = agenteNombre(); $('#pf-telefono').value = agenteTelefono(); $('#pf-plantilla').value = plantillaMsg(); $('#pf-firma').value = firmaMsg(); vista(); abrir('dlg-perfil'); };
-  ['#pf-nombre', '#pf-telefono', '#pf-plantilla', '#pf-firma'].forEach(id => $(id).addEventListener('input', vista));
-  $('#pf-defecto').onclick = () => { $('#pf-plantilla').value = PLANTILLA_DEFECTO; $('#pf-firma').value = FIRMA_DEFECTO; vista(); };
-  $('#pf-guardar').onclick = () => { perfilGuardar($('#pf-nombre').value || NOMBRE_DEFECTO, $('#pf-plantilla').value, $('#pf-telefono').value, $('#pf-firma').value); $('#dlg-perfil').close(); toast('Listo. Tu mensaje quedó guardado.'); };
+  $('#perfil-btn').onclick = () => { $('#pf-nombre').value = agenteNombre(); $('#pf-telefono').value = agenteTelefono(); $('#pf-plantilla').value = plantillaMsg(); $('#pf-firma').value = firmaMsg(); vista(); dedo(); abrir('dlg-perfil'); if (perfilFalta()) setTimeout(() => { const i = $('#pf-nombre'); if (i.value.trim() === NOMBRE_DEFECTO) i.select(); i.focus(); }, 60); };
+  const dedo = () => $('#pf-dedo').classList.toggle('on', perfilFalta() || $('#pf-nombre').value.trim() !== agenteNombre() || $('#pf-telefono').value.trim() !== agenteTelefono() || $('#pf-plantilla').value.trim() !== plantillaMsg() || $('#pf-firma').value.trim() !== firmaMsg());
+  ['#pf-nombre', '#pf-telefono', '#pf-plantilla', '#pf-firma'].forEach(id => $(id).addEventListener('input', () => { vista(); dedo(); }));
+  $('#pf-alerta').onclick = () => $('#perfil-btn').click();
+  $('#pf-defecto').onclick = () => { $('#pf-plantilla').value = PLANTILLA_DEFECTO; $('#pf-firma').value = FIRMA_DEFECTO; vista(); dedo(); };
+  let guardado = false, faltabaAlAbrir = false;
+  $('#pf-guardar').onclick = () => {
+    perfilGuardar($('#pf-nombre').value || NOMBRE_DEFECTO, $('#pf-plantilla').value, $('#pf-telefono').value, $('#pf-firma').value);
+    guardado = true; $('#dlg-perfil').close();
+    if (perfilFalta()) { perfilHablar('aunFalta'); toast('Guardado, pero todavía falta TU nombre o TU teléfono'); }
+    else { if (faltabaAlAbrir) perfilHablar('listo'); toast('Listo. Tu mensaje quedó guardado.'); }
+  };
+  // Voz: al abrir la ventana sin datos, al cerrarla sin guardar, y en Inicio con la primera interacción
+  $('#perfil-btn').addEventListener('click', () => { guardado = false; faltabaAlAbrir = perfilFalta(); if (faltabaAlAbrir) perfilHablar('ventana'); });
+  $('#dlg-perfil').addEventListener('close', () => { if (!guardado && $('#pf-dedo').classList.contains('on')) perfilHablar('sinGuardar'); });
+  const alTocar = e => { if (!e.target.closest('#pf-alerta, #perfil-btn, dialog')) perfilVozInicio(); };
+  document.addEventListener('pointerdown', alTocar, true); document.addEventListener('keydown', alTocar, true);
+  window.addEventListener('hashchange', () => setTimeout(perfilVozInicio, 300));
+  try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices(); } catch (e) {}
   setTimeout(perfilAvisar, 500);
 }
 function waTexto(planId, cli) {
