@@ -1489,7 +1489,7 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.31.3';
+const APP_VERSION = '2.32.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -3342,8 +3342,8 @@ function initFaq() {
    ════════════════════════════════════════════════════════════════ */
 // Códigos de conclusión de Genesys según la Inducción VR (Venta, Buzón de voz, Mudo o corta llamada, No molestar) y otros frecuentes
 const TIPIFICACIONES = ['Venta', 'Volver a llamar', 'Pendiente validación, volver a llamar', 'Buzón de voz', 'No contesta', 'Mudo o corta llamada', 'No interesado', 'No molestar', 'Ya es cliente Claro', 'Rechazo de evaluación', 'Número equivocado', 'Otro'];
-// Códigos de conclusión de Genesys (los mismos de GoExt), tal como aparecen en Genesys (lista enviada por Eduardo el 24-11-2026)
-const TIPIF_GENESYS = ['Agendado / Pre-Cierre (llamar para cerrar venta)', 'Buzón de Voz', 'Cliente Corta Llamada en conversación', 'Cliente Corta Llamada en saludo', 'Cliente no desea que lo vuelvan a llamar (No Molestar)', 'FVC/Sin cobertura delivery (google)', 'Mudo / Sin Audio', 'No Venta / Deuda > $14.000 (según calculadora excel)', 'No Venta / No cumple el plazo 120 días', 'Rechazo/Cliente con deuda Claro', 'Rechazo/Cliente con deuda Operador Actual', 'Rechazo/Cliente con Serie No Vigente', 'Rechazo/Conformidad con su compañía actual', 'Rechazo/Desconfia de la llamada', 'Rechazo/Mala Experiencia Claro Cobertura (señal)', 'Rechazo/Mala Experiencia Claro Precio/postventa', 'Rechazo/Mejor oferta competencia $ precio', 'Rechazo/No aprueba validacion facial', 'Rechazo/No es el titular de la linea (pedir referido)', 'Rechazo/Tiene plan empresa (con rut empresa)', 'Venta + Equipo Outbound', 'Venta Outbound', 'Venta Referido Outbound', 'Volver a llamar (cliente no acepta, pero le interesa)', 'YA ES CLIENTE'];
+// Códigos de conclusión de Genesys (los mismos de GoExt), tal como aparecen en Genesys (lista enviada por Eduardo el 25-11-2026: se agregó "Venta con excepción" y "Venta Referido Outbound" pasó a "Venta Referido Base")
+const TIPIF_GENESYS = ['Agendado / Pre-Cierre (llamar para cerrar venta)', 'Buzón de Voz', 'Cliente Corta Llamada en conversación', 'Cliente Corta Llamada en saludo', 'Cliente no desea que lo vuelvan a llamar (No Molestar)', 'FVC/Sin cobertura delivery (google)', 'Mudo / Sin Audio', 'No Venta / Deuda > $14.000 (según calculadora excel)', 'No Venta / No cumple el plazo 120 días', 'Rechazo/Cliente con deuda Claro', 'Rechazo/Cliente con deuda Operador Actual', 'Rechazo/Cliente con Serie No Vigente', 'Rechazo/Conformidad con su compañía actual', 'Rechazo/Desconfia de la llamada', 'Rechazo/Mala Experiencia Claro Cobertura (señal)', 'Rechazo/Mala Experiencia Claro Precio/postventa', 'Rechazo/Mejor oferta competencia $ precio', 'Rechazo/No aprueba validacion facial', 'Rechazo/No es el titular de la linea (pedir referido)', 'Rechazo/Tiene plan empresa (con rut empresa)', 'Venta + Equipo Outbound', 'Venta con excepción', 'Venta Outbound', 'Venta Referido Base', 'Volver a llamar (cliente no acepta, pero le interesa)', 'YA ES CLIENTE'];
 // Calce de cada tipificación de Mi Planilla con su código de Genesys más parecido (aprobado por Eduardo el 24-11-2026).
 // No reemplaza ni elimina nada: se guarda la tipificación elegida y el calce solo se muestra y sirve para filtrar.
 const TIPIF_EQUIV = {
@@ -3366,7 +3366,7 @@ const tipoOpciones = (sel, vacio = 'Sin tipificar') => `<option value="">${vacio
   + `<optgroup label="Mi Planilla">${TIPIFICACIONES.map(x => `<option value="${esc(x)}"${x === sel ? ' selected' : ''}>${esc(x)}${TIPIF_EQUIV[x] ? ' → ' + esc(TIPIF_EQUIV[x]) : ''}</option>`).join('')}</optgroup>`
   + `<optgroup label="Códigos de Genesys">${TIPIF_GENESYS.map(x => `<option${x === sel ? ' selected' : ''}>${esc(x)}</option>`).join('')}</optgroup>`
   + (sel && !TIPIFICACIONES.includes(sel) && !TIPIF_GENESYS.includes(sel) ? `<option selected>${esc(sel)}</option>` : '');
-// Es venta: "Venta" de la planilla o los códigos de venta de Genesys (Venta Outbound, Venta + Equipo Outbound, Venta Referido Outbound)
+// Es venta: "Venta" de la planilla o los códigos de venta de Genesys (Venta Outbound, Venta + Equipo Outbound, Venta con excepción, Venta Referido Base)
 const esVentaTipo = t => /^Venta(\s|$)/.test(String(t || ''));
 // Color de la fila según la tipificación: verde (venta o por cerrar), amarillo (neutra) y rojo (negativa)
 const TIPO_VERDE = ['Venta', 'Volver a llamar', 'Pendiente validación, volver a llamar'];

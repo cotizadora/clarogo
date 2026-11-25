@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: ClaroGo! 2.32.0 y GoExt 1.61.0, códigos de conclusión al día con Genesys
+
+- Fuente: lista de códigos de conclusión de Genesys enviada por Eduardo el 25-11-2026 (26 códigos).
+- Genesys agregó "Venta con excepción" y cambió "Venta Referido Outbound" por "Venta Referido Base". Se actualizaron GoExt y la tipificación de Mi Planilla: las dos listas quedan idénticas a Genesys, letra por letra. No se quitó ningún código; las filas ya tipificadas con el nombre antiguo se conservan tal cual.
+- "Venta con excepción" y "Venta Referido Base" cuentan como venta (fila verde).
+
 ### 25-11-2026: ClaroGo! 2.31.3, el Inicio parte en modo claro
 
 - El modo claro (el de más contraste) queda por defecto. Quien haya elegido el modo oscuro con el botón 🌙 lo mantiene.
