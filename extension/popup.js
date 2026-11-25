@@ -198,69 +198,91 @@ const NV_FORM = 'https://docs.google.com/forms/d/e/1FAIpQLSeWwyqN1vbUn3wOvHTImDs
 const NV_MOTIVOS = ['CLIENTE EMPRESA', 'CLIENTE OFENSIVO', 'CLIENTE PIDE NO SER CONTACTADO', 'CLIENTE CONFORME CON COMPAÑIA ACTUAL', 'CORTE DE LLAMADO', 'LLAMADA MUDA', 'MALA EXPERIENCIA CON CLARO', 'PORTABILIDAD MENOS DE 120 DIAS', 'NO ES TITULAR', 'NO HAY STOCK DE EQUIPO SOLICITADO', 'PAGA MENOS EN LA COMPAÑIA ACTUAL', 'SE ENVIA INFO POR WSP', 'SIN COBERTURA CLARO', 'EXTRANJERO SIN DOCUMENTACION', 'C.I VENCIDO', 'NUMERO NO ACTIVO'];
 const NV_COMPANIAS = ['WOM', 'ENTEL', 'MOVISTAR', 'MUNDO PACIFICO', 'Otros'];
 let TEL_NV = '', ORIGEN_NV = '';
-// Grupos de motivos con su color: seguimiento (verde), rechazo del cliente (rojo), requisitos (naranjo), llamada (gris)
-const NV_GRUPOS = [
-  ['seg', 'Seguimiento', ['SE ENVIA INFO POR WSP']],
-  ['rech', 'Rechazo del cliente', ['CLIENTE CONFORME CON COMPAÑIA ACTUAL', 'PAGA MENOS EN LA COMPAÑIA ACTUAL', 'MALA EXPERIENCIA CON CLARO', 'CLIENTE PIDE NO SER CONTACTADO', 'CLIENTE OFENSIVO']],
-  ['req', 'Requisitos', ['PORTABILIDAD MENOS DE 120 DIAS', 'NO ES TITULAR', 'SIN COBERTURA CLARO', 'NO HAY STOCK DE EQUIPO SOLICITADO', 'CLIENTE EMPRESA', 'EXTRANJERO SIN DOCUMENTACION', 'C.I VENCIDO', 'NUMERO NO ACTIVO']],
-  ['llam', 'Llamada', ['CORTE DE LLAMADO', 'LLAMADA MUDA']]
+/* ── Tipificaciones: un botón por cada código de conclusión de Genesys y por cada motivo del formulario ──
+   El cruce va en ambas direcciones: cada botón marca su código en Genesys (gc) y llena el formulario de no venta (f).
+   f.s = 'NO': cliente no evaluado, f.m = motivo de "MOTIVO DE NO VENTA" (o __otro con f.o como texto)
+   f.s = 'SI': cliente evaluado, f.m = motivo de la sección "CLIENTE EVALUADO"
+   f = null: no va al formulario de no venta (las ventas se registran en Ingreso de Venta) */
+const NV_GRUPOS = [['venta', 'Venta'], ['seg', 'Seguimiento'], ['llam', 'Llamada'], ['rech', 'Rechazo del cliente'], ['req', 'Requisitos y evaluación'], ['otro', 'Solo formulario']];
+const TIPOS = [
+  { id: 'v', t: 'Venta', g: 'venta', gc: 'Venta Outbound', f: null },
+  { id: 've', t: 'Venta + equipo', g: 'venta', gc: 'Venta + Equipo Outbound', f: null },
+  { id: 'vx', t: 'Venta con excepción', g: 'venta', gc: 'Venta con excepción', f: null },
+  { id: 'vr', t: 'Venta referido', g: 'venta', gc: 'Venta Referido Base', f: null },
+  { id: 'ag', t: 'Agendado / pre-cierre', g: 'seg', gc: 'Agendado / Pre-Cierre (llamar para cerrar venta)', f: { s: 'NO', m: '__otro', o: 'AGENDADO / PRE-CIERRE' } },
+  { id: 'vl', t: 'Volver a llamar (le interesa)', g: 'seg', gc: 'Volver a llamar (cliente no acepta, pero le interesa)', f: { s: 'NO', m: 'SE ENVIA INFO POR WSP' } },
+  { id: 'bz', t: 'Buzón de voz', g: 'llam', gc: 'Buzón de Voz', f: { s: 'NO', m: '__otro', o: 'BUZON DE VOZ' } },
+  { id: 'mu', t: 'Mudo / sin audio', g: 'llam', gc: 'Mudo / Sin Audio', f: { s: 'NO', m: 'LLAMADA MUDA' } },
+  { id: 'cs', t: 'Corta en el saludo', g: 'llam', gc: 'Cliente Corta Llamada en saludo', f: { s: 'NO', m: 'CORTE DE LLAMADO' } },
+  { id: 'cc', t: 'Corta en conversación', g: 'llam', gc: 'Cliente Corta Llamada en conversación', f: { s: 'NO', m: 'CORTE DE LLAMADO' } },
+  { id: 'cf', t: 'Conforme con su compañía', g: 'rech', gc: 'Rechazo/Conformidad con su compañía actual', f: { s: 'NO', m: 'CLIENTE CONFORME CON COMPAÑIA ACTUAL' } },
+  { id: 'pm', t: 'Mejor oferta / paga menos', g: 'rech', gc: 'Rechazo/Mejor oferta competencia $ precio', f: { s: 'NO', m: 'PAGA MENOS EN LA COMPAÑIA ACTUAL' } },
+  { id: 'mp', t: 'Mala exp. Claro precio o postventa', g: 'rech', gc: 'Rechazo/Mala Experiencia Claro Precio/postventa', f: { s: 'NO', m: 'MALA EXPERIENCIA CON CLARO' } },
+  { id: 'mc', t: 'Mala exp. Claro cobertura', g: 'rech', gc: 'Rechazo/Mala Experiencia Claro Cobertura (señal)', f: { s: 'NO', m: 'SIN COBERTURA CLARO' } },
+  { id: 'de', t: 'Desconfía de la llamada', g: 'rech', gc: 'Rechazo/Desconfia de la llamada', f: { s: 'NO', m: '__otro', o: 'DESCONFIA DE LA LLAMADA' } },
+  { id: 'nm', t: 'No molestar', g: 'rech', gc: 'Cliente no desea que lo vuelvan a llamar (No Molestar)', f: { s: 'NO', m: 'CLIENTE PIDE NO SER CONTACTADO' } },
+  { id: 'p1', t: 'No cumple 120 días', g: 'req', gc: 'No Venta / No cumple el plazo 120 días', f: { s: 'NO', m: 'PORTABILIDAD MENOS DE 120 DIAS' } },
+  { id: 'd1', t: 'Deuda > $14.000', g: 'req', gc: 'No Venta / Deuda > $14.000 (según calculadora excel)', f: { s: 'SI', m: 'DEUDA EN COMPAÑIA DONANTE' } },
+  { id: 'dc', t: 'Deuda en Claro', g: 'req', gc: 'Rechazo/Cliente con deuda Claro', f: { s: 'SI', m: 'DEUDA EN CLARO' } },
+  { id: 'do', t: 'Deuda operador actual', g: 'req', gc: 'Rechazo/Cliente con deuda Operador Actual', f: { s: 'SI', m: 'DEUDA EN COMPAÑIA DONANTE' } },
+  { id: 'sv', t: 'Serie no vigente (carnet)', g: 'req', gc: 'Rechazo/Cliente con Serie No Vigente', f: { s: 'NO', m: 'C.I VENCIDO' } },
+  { id: 'vf', t: 'No aprueba validación facial', g: 'req', gc: 'Rechazo/No aprueba validacion facial', f: { s: 'SI', m: 'NO PASA VALIDACION' } },
+  { id: 'nt', t: 'No es titular', g: 'req', gc: 'Rechazo/No es el titular de la linea (pedir referido)', f: { s: 'NO', m: 'NO ES TITULAR' } },
+  { id: 'em', t: 'Plan empresa', g: 'req', gc: 'Rechazo/Tiene plan empresa (con rut empresa)', f: { s: 'NO', m: 'CLIENTE EMPRESA' } },
+  { id: 'fv', t: 'Sin cobertura delivery (FVC)', g: 'req', gc: 'FVC/Sin cobertura delivery (google)', f: { s: 'NO', m: 'SIN COBERTURA CLARO' } },
+  { id: 'yc', t: 'Ya es cliente', g: 'req', gc: 'YA ES CLIENTE', f: { s: 'SI', m: 'CLIENTE CLARO' } },
+  { id: 'of', t: 'Cliente ofensivo', g: 'otro', gc: 'Cliente no desea que lo vuelvan a llamar (No Molestar)', f: { s: 'NO', m: 'CLIENTE OFENSIVO' } },
+  { id: 'ss', t: 'Sin stock del equipo', g: 'otro', gc: 'Volver a llamar (cliente no acepta, pero le interesa)', f: { s: 'NO', m: 'NO HAY STOCK DE EQUIPO SOLICITADO' } },
+  { id: 'ex', t: 'Extranjero sin documentación', g: 'otro', gc: 'Rechazo/Cliente con Serie No Vigente', f: { s: 'NO', m: 'EXTRANJERO SIN DOCUMENTACION' } },
+  { id: 'na', t: 'Número no activo', g: 'otro', gc: 'Rechazo/No es el titular de la linea (pedir referido)', f: { s: 'NO', m: 'NUMERO NO ACTIVO' } },
+  { id: '__otro', t: 'Otro (escribir)', g: 'otro', gc: '', f: { s: 'NO', m: '__otro' } }
 ];
-const nvGrupo = m => (NV_GRUPOS.find(g => g[2].includes(m)) || ['otro'])[0];
-const NV_CORTO = { 'CLIENTE CONFORME CON COMPAÑIA ACTUAL': 'Conforme con su compañía', 'PAGA MENOS EN LA COMPAÑIA ACTUAL': 'Paga menos en su compañía', 'CLIENTE PIDE NO SER CONTACTADO': 'Pide no ser contactado', 'PORTABILIDAD MENOS DE 120 DIAS': 'Portabilidad menos de 120 días', 'NO HAY STOCK DE EQUIPO SOLICITADO': 'Sin stock del equipo', 'EXTRANJERO SIN DOCUMENTACION': 'Extranjero sin documentación', 'MALA EXPERIENCIA CON CLARO': 'Mala experiencia con Claro', 'SE ENVIA INFO POR WSP': 'Se envía info por WhatsApp', 'NUMERO NO ACTIVO': 'Número no activo', 'C.I VENCIDO': 'Carnet vencido', 'SIN COBERTURA CLARO': 'Sin cobertura Claro' };
-const nvTexto = m => m === '__otro' ? 'Otro (escribir)' : (NV_CORTO[m] || m.charAt(0) + m.slice(1).toLowerCase());
-// Uso: cada vez que se abre un registro se guarda la fecha. El puntaje pesa más lo reciente (la mitad cada 14 días)
+const tipoDe = id => TIPOS.find(x => x.id === id) || null;
+const nvTexto = id => (tipoDe(id) || {}).t || '';
+// Uso: cada vez que se tipifica se guarda la fecha. El puntaje pesa más lo reciente (la mitad cada 14 días)
 let NV_USO = {}, NV_ORDEN = 'grupo';
-const nvPuntaje = m => (NV_USO[m] || []).reduce((s, t) => s + Math.pow(.5, (Date.now() - t) / (14 * 864e5)), 0);
+const nvPuntaje = id => (NV_USO[id] || []).reduce((s, t) => s + Math.pow(.5, (Date.now() - t) / (14 * 864e5)), 0);
 function nvPintarChips() {
-  const todos = [...NV_MOTIVOS, '__otro'], cont = $('#nv-chips'), sel = $('#nv-motivo').value;
-  const chip = m => `<button type="button" class="g-${m === '__otro' ? 'otro' : nvGrupo(m)}${m === sel ? ' on' : ''}" data-m="${m}" title="${m === '__otro' ? 'Escribir otro motivo' : m + (GC_SUGERIDO[m] ? ' → Genesys: ' + GC_SUGERIDO[m] : '')}">${nvTexto(m)}</button>`;
-  if (NV_ORDEN === 'grupo') cont.innerHTML = NV_GRUPOS.map(([g, t, ms]) => `<div class="g-t">${t}</div>` + ms.map(chip).join('')).join('') + `<div class="g-t">Otro</div>` + chip('__otro');
+  const cont = $('#nv-chips'), sel = $('#nv-motivo').value;
+  const chip = x => `<button type="button" class="g-${x.g}${x.id === sel ? ' on' : ''}" data-m="${x.id}" title="${x.gc ? 'Genesys: ' + x.gc : 'Sin código en Genesys'}${x.f ? ' · Formulario: ' + (x.f.m === '__otro' ? (x.f.o || 'otro motivo') : x.f.m) : ' · Sin formulario de no venta'}">${x.t}</button>`;
+  if (NV_ORDEN === 'grupo') cont.innerHTML = NV_GRUPOS.map(([g, t]) => `<div class="g-t">${t}</div>` + TIPOS.filter(x => x.g === g).map(chip).join('')).join('');
   else {
-    const lista = NV_MOTIVOS.slice().sort(NV_ORDEN === 'az' ? (a, b) => nvTexto(a).localeCompare(nvTexto(b), 'es') : (a, b) => (nvPuntaje(b) - nvPuntaje(a)) || nvTexto(a).localeCompare(nvTexto(b), 'es'));
-    cont.innerHTML = lista.map(chip).join('') + chip('__otro');
+    const lista = TIPOS.filter(x => x.id !== '__otro').sort(NV_ORDEN === 'az' ? (a, b) => a.t.localeCompare(b.t, 'es') : (a, b) => (nvPuntaje(b.id) - nvPuntaje(a.id)) || a.t.localeCompare(b.t, 'es'));
+    cont.innerHTML = lista.map(chip).join('') + chip(tipoDe('__otro'));
   }
   [...$('#nv-orden').querySelectorAll('button')].forEach(b => b.classList.toggle('on', b.dataset.orden === NV_ORDEN));
 }
 function nvPintar() {
+  // Solo "Otro" necesita escribir y confirmar con su botón; los demás tipifican con un clic
   const m = $('#nv-motivo').value;
-  // Solo "Otro" necesita escribir y confirmar con su botón; los demás motivos tipifican con un clic
   $('#nv-otro').hidden = m !== '__otro';
   $('#nv-abrir').hidden = m !== '__otro';
   nvPintarChips();
 }
-function nvURL() {
-  const m = $('#nv-motivo').value, otro = ($('#nv-otro').value || '').trim(), comp = $('#nv-comp').value, obs = ($('#comentario').value || '').trim();
-  const p = [['entry.1000912384', 'No'], ['entry.1655228490', 'NO']];
-  if (TEL_NV) p.push(['entry.1534465510', TEL_NV.slice(-9)]);
-  if (m === '__otro') { p.push(['entry.335135472', '__other_option__']); if (otro) p.push(['entry.335135472.other_option_response', otro]); }
-  else if (m) p.push(['entry.335135472', m]);
-  if (comp && /CONFORME CON COMPA/.test(m)) p.push(['entry.46466138', comp]);
-  if (comp && /PAGA MENOS/.test(m)) p.push(['entry.1557285403', comp]);
+function nvURL(tipo) {
+  const f = tipo.f, otro = f.m === '__otro' ? (f.o || ($('#nv-otro').value || '').trim()) : '', comp = $('#nv-comp').value, obs = ($('#comentario').value || '').trim();
+  const p = [];
+  if (f.s === 'SI') {
+    // Cliente evaluado: motivo, RUT, número a portar, una línea y compañía donante
+    const rut = ($('#rut-cli').value || '').trim().replace(/^[0.]+(?=[1-9])/, ''), donante = nvCompDe(ORIGEN_NV);
+    p.push(['entry.1000912384', 'SI'], ['entry.1400459439', f.m]);
+    if (rut) p.push(['entry.982064239', rut]);
+    if (TEL_NV) p.push(['entry.1431051709', TEL_NV.slice(-9)]);
+    p.push(['entry.512490978', '1']);
+    if (donante) p.push(['entry.322646471', donante === 'Otros' ? 'OTRO' : donante]);
+  } else {
+    p.push(['entry.1000912384', 'No'], ['entry.1655228490', 'NO']);
+    if (TEL_NV) p.push(['entry.1534465510', TEL_NV.slice(-9)]);
+    if (f.m === '__otro') { p.push(['entry.335135472', '__other_option__']); if (otro) p.push(['entry.335135472.other_option_response', otro]); }
+    else p.push(['entry.335135472', f.m]);
+    if (comp && /CONFORME CON COMPA/.test(f.m)) p.push(['entry.46466138', comp]);
+    if (comp && /PAGA MENOS/.test(f.m)) p.push(['entry.1557285403', comp]);
+  }
   if (obs) p.push(['entry.613959426', obs]);
   return NV_FORM + '?usp=pp_url&' + p.map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&');
 }
-/* ── Código de conclusión en Genesys (segunda tipificación) ─────────
-   Los motivos del formulario y los códigos de Genesys no calzan uno a uno: se sugiere uno y el ejecutivo puede cambiarlo.
-   La extensión solo lo marca en Genesys; enviarlo en Genesys es decisión del ejecutivo. */
+/* ── Código de conclusión en Genesys: GoExt solo lo marca; nunca presiona "Listo" ni envía nada en Genesys ── */
 const GC_CODIGOS = ['Agendado / Pre-Cierre (llamar para cerrar venta)', 'Buzón de Voz', 'Cliente Corta Llamada en conversación', 'Cliente Corta Llamada en saludo', 'Cliente no desea que lo vuelvan a llamar (No Molestar)', 'FVC/Sin cobertura delivery (google)', 'Mudo / Sin Audio', 'No Venta / Deuda > $14.000 (según calculadora excel)', 'No Venta / No cumple el plazo 120 días', 'Rechazo/Cliente con deuda Claro', 'Rechazo/Cliente con deuda Operador Actual', 'Rechazo/Cliente con Serie No Vigente', 'Rechazo/Conformidad con su compañía actual', 'Rechazo/Desconfia de la llamada', 'Rechazo/Mala Experiencia Claro Cobertura (señal)', 'Rechazo/Mala Experiencia Claro Precio/postventa', 'Rechazo/Mejor oferta competencia $ precio', 'Rechazo/No aprueba validacion facial', 'Rechazo/No es el titular de la linea (pedir referido)', 'Rechazo/Tiene plan empresa (con rut empresa)', 'Venta + Equipo Outbound', 'Venta con excepción', 'Venta Outbound', 'Venta Referido Base', 'Volver a llamar (cliente no acepta, pero le interesa)', 'YA ES CLIENTE'];
-const GC_SUGERIDO = {
-  'CLIENTE EMPRESA': 'Rechazo/Tiene plan empresa (con rut empresa)',
-  'CLIENTE OFENSIVO': 'Cliente no desea que lo vuelvan a llamar (No Molestar)',
-  'CLIENTE PIDE NO SER CONTACTADO': 'Cliente no desea que lo vuelvan a llamar (No Molestar)',
-  'CLIENTE CONFORME CON COMPAÑIA ACTUAL': 'Rechazo/Conformidad con su compañía actual',
-  'CORTE DE LLAMADO': 'Cliente Corta Llamada en conversación',
-  'LLAMADA MUDA': 'Mudo / Sin Audio',
-  'MALA EXPERIENCIA CON CLARO': 'Rechazo/Mala Experiencia Claro Precio/postventa',
-  'PORTABILIDAD MENOS DE 120 DIAS': 'No Venta / No cumple el plazo 120 días',
-  'NO ES TITULAR': 'Rechazo/No es el titular de la linea (pedir referido)',
-  'NO HAY STOCK DE EQUIPO SOLICITADO': 'Volver a llamar (cliente no acepta, pero le interesa)',
-  'PAGA MENOS EN LA COMPAÑIA ACTUAL': 'Rechazo/Mejor oferta competencia $ precio',
-  'SE ENVIA INFO POR WSP': 'Volver a llamar (cliente no acepta, pero le interesa)',
-  'SIN COBERTURA CLARO': 'Rechazo/Mala Experiencia Claro Cobertura (señal)',
-  'C.I VENCIDO': 'Rechazo/Cliente con Serie No Vigente',
-  'EXTRANJERO SIN DOCUMENTACION': 'Rechazo/Cliente con Serie No Vigente',
-  'NUMERO NO ACTIVO': 'Rechazo/No es el titular de la linea (pedir referido)'
-};
 // Corre dentro de cada marco de Genesys: solo actúa en el recuadro "Códigos de conclusión" y solo marca (no envía)
 async function elegirConclusion(codigo) {
   if (!/acw-gadgets-wrap-up/.test(location.pathname)) return null;
@@ -297,62 +319,57 @@ async function marcarEnGenesys(codigo) {
   } catch (e) {}
   return 'no';
 }
-/* Un clic en el motivo tipifica: llena el formulario de no venta y marca en Genesys el código que calza.
+/* Un clic en el botón tipifica: marca en Genesys su código y llena el formulario de no venta con su motivo.
    Además el código queda pedido en segundo plano (gc_pendiente): conclusion.js lo vuelve a marcar si el recuadro
    de códigos de conclusión aparece después o se limpia, así la llamada se cierra con el código aunque se acabe el tiempo. */
-let GC_FORZADO = '';   // solo para el corte de llamada temprano ("Cliente Corta Llamada en saludo")
 const nvCompDe = s => { const t = String(s || '').toUpperCase(); return NV_COMPANIAS.find(c => c !== 'Otros' && t.includes(c)) || ''; };
 async function gcPedir(codigo) {
   if (!codigo) return;
   try { await chrome.storage.local.set({ gc_pendiente: { codigo, tel: TEL_NV.slice(-9), ts: Date.now() } }); } catch (e) {}
 }
 async function nvLanzar() {
-  const m = $('#nv-motivo').value;
-  if (!m) { mostrar('Elige el motivo de no venta.', 'mal'); return; }
-  if (m === '__otro' && !($('#nv-otro').value || '').trim()) { mostrar('Escribe el motivo en el cuadro "Otro".', 'mal'); $('#nv-otro').focus(); return; }
-  // Se guarda el uso para ordenar por "Más usados" (máximo 60 fechas por motivo)
-  try { NV_USO[m] = [...(NV_USO[m] || []), Date.now()].slice(-60); await chrome.storage.local.set({ nvUso: NV_USO }); } catch (e) {}
-  // Aviso para formas.js: pasa a la segunda página, recorre lo llenado y deja listo el botón Enviar
-  const resumen = (m === '__otro' ? ($('#nv-otro').value || '').trim() : nvTexto(m)) + (TEL_NV ? ' · ' + TEL_NV.slice(-9) : '');
-  try { await chrome.storage.local.remove('nv_enviado'); } catch (e) {}   // un registro nuevo nunca hereda el envío anterior
-  try { await chrome.storage.local.set({ nv_pedido: { ts: Date.now(), auto: $('#nv-auto').checked, aviso: $('#nv-aviso').checked, resumen, tel: TEL_NV.slice(-9), motivo: m === '__otro' ? ($('#nv-otro').value || '').trim() : nvTexto(m) } }); } catch (e) {}
+  const id = $('#nv-motivo').value, tipo = tipoDe(id);
+  if (!tipo) { mostrar('Elige la tipificación.', 'mal'); return; }
+  const otroTxt = ($('#nv-otro').value || '').trim();
+  if (id === '__otro' && !otroTxt) { mostrar('Escribe el motivo en el cuadro "Otro".', 'mal'); $('#nv-otro').focus(); return; }
+  // Se guarda el uso para ordenar por "Más usados" (máximo 60 fechas por botón)
+  try { NV_USO[id] = [...(NV_USO[id] || []), Date.now()].slice(-60); await chrome.storage.local.set({ nvUso: NV_USO }); } catch (e) {}
   marcarTipificada();
-  // Segunda tipificación, automática: el código de Genesys que calza con el motivo
-  const codigo = GC_FORZADO || GC_SUGERIDO[m] || '';
-  if (codigo) {
-    await gcPedir(codigo);
-    $('#gc-info').textContent = 'Marcando en Genesys: ' + codigo + '…'; $('#gc-info').className = 'gc-info ok';
-    await marcarEnGenesys(codigo);   // si el recuadro todavía no está, queda marcado en segundo plano apenas aparezca
+  // 1. Genesys: se marca al tiro y queda pedido en segundo plano
+  if (tipo.gc) {
+    await gcPedir(tipo.gc);
+    $('#gc-info').textContent = 'Genesys: ' + tipo.gc; $('#gc-info').className = 'gc-info ok';
+    await marcarEnGenesys(tipo.gc);   // si el recuadro todavía no está, queda marcado apenas aparezca
   }
+  // 2. Formulario de no venta (las ventas no van a este formulario)
+  if (!tipo.f) {
+    mostrar('✅ ' + tipo.t + ': quedó marcado en Genesys. Registra la venta en Ingreso de Venta.', 'ok');
+    return;
+  }
+  const motivoTxt = id === '__otro' ? otroTxt : tipo.t;
+  const resumen = motivoTxt + (TEL_NV ? ' · ' + TEL_NV.slice(-9) : '');
+  try { await chrome.storage.local.remove('nv_enviado'); } catch (e) {}   // un registro nuevo nunca hereda el envío anterior
+  try { await chrome.storage.local.set({ nv_pedido: { ts: Date.now(), auto: $('#nv-auto').checked, aviso: $('#nv-aviso').checked, resumen, tel: TEL_NV.slice(-9), motivo: motivoTxt } }); } catch (e) {}
   // Si el formulario ya está abierto en una pestaña, se reutiliza (no se juntan pestañas); si no, se abre una nueva
   let tabNV = null;
   try { tabNV = (await chrome.tabs.query({ url: 'https://docs.google.com/forms/*' })).filter(t => String(t.url || t.pendingUrl || '').includes('1FAIpQLSeWwyqN1vbUn3wOvHTImDsNFbUwVvG0rijrWWggigDqOrgJHQ')).sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0))[0] || null; } catch (e) {}
-  if (tabNV) { await chrome.tabs.update(tabNV.id, { url: nvURL(), active: true }); try { await chrome.windows.update(tabNV.windowId, { focused: true }); } catch (e) {} }
-  else await chrome.tabs.create({ url: nvURL(), active: true });
+  if (tabNV) { await chrome.tabs.update(tabNV.id, { url: nvURL(tipo), active: true }); try { await chrome.windows.update(tabNV.windowId, { focused: true }); } catch (e) {} }
+  else await chrome.tabs.create({ url: nvURL(tipo), active: true });
   window.close();
-}
-// Compañía actual (solo "Conforme con su compañía" y "Paga menos"): se toma de la llamada; si no viene, se elige con un botón
-function nvPedirCompania() {
-  const c = $('#nv-comps');
-  c.innerHTML = '<b>¿Cuál es su compañía actual? Tócala para tipificar:</b>' + NV_COMPANIAS.map(x => `<button type="button" data-comp="${x}">${x}</button>`).join('');
-  c.hidden = false;
 }
 function initNoVenta() {
   $('#nv-comp').innerHTML = '<option value=""></option>' + NV_COMPANIAS.map(x => `<option>${x}</option>`).join('');
   $('#nv-chips').addEventListener('click', e => {
     const b = e.target.closest('[data-m]'); if (!b) return;
-    const m = b.dataset.m;
-    $('#nv-motivo').value = m; $('#nv-comps').hidden = true; nvPintar();
-    if (m !== 'CORTE DE LLAMADO') GC_FORZADO = '';
-    if (m === '__otro') { $('#nv-otro').focus(); return; }
-    if (/CONFORME CON COMPA|PAGA MENOS/.test(m)) {
-      const comp = nvCompDe(ORIGEN_NV);
-      if (!comp) { nvPedirCompania(); return; }
-      $('#nv-comp').value = comp;
+    const id = b.dataset.m, tipo = tipoDe(id); if (!tipo) return;
+    $('#nv-motivo').value = id; nvPintar();
+    if (id === '__otro') { $('#nv-otro').focus(); return; }
+    if (tipo.f && /CONFORME CON COMPA|PAGA MENOS/.test(tipo.f.m)) {
+      // La compañía la toma GoExt de la llamada; si no viene, queda en blanco (nunca se pregunta)
+      $('#nv-comp').value = nvCompDe(ORIGEN_NV);
     } else $('#nv-comp').value = '';
     nvLanzar();
   });
-  $('#nv-comps').addEventListener('click', e => { const b = e.target.closest('[data-comp]'); if (!b) return; $('#nv-comp').value = b.dataset.comp; nvLanzar(); });
   $('#nv-otro').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); nvLanzar(); } });
   $('#nv-abrir').addEventListener('click', nvLanzar);
   $('#nv-orden').addEventListener('click', e => { const b = e.target.closest('[data-orden]'); if (!b) return; NV_ORDEN = b.dataset.orden; try { chrome.storage.local.set({ nvOrden: NV_ORDEN }); } catch (x) {} nvPintarChips(); });
@@ -360,7 +377,8 @@ function initNoVenta() {
   // Preferencias de cada ejecutivo: envío automático y aviso al enviar
   ['nv-auto', 'nv-aviso'].forEach(id => $('#' + id).addEventListener('change', e => { try { chrome.storage.local.set({ [id]: e.target.checked }); } catch (x) {} }));
   try { chrome.storage.local.get(['nv-auto', 'nv-aviso']).then(o => { if (typeof o['nv-auto'] === 'boolean') $('#nv-auto').checked = o['nv-auto']; if (typeof o['nv-aviso'] === 'boolean') $('#nv-aviso').checked = o['nv-aviso']; }); } catch (e) {}
-  try { chrome.storage.local.get(['nvUso', 'nvOrden']).then(o => { NV_USO = o.nvUso || {}; NV_ORDEN = o.nvOrden || 'grupo'; nvPintarChips(); }); } catch (e) {}
+  // El uso antiguo se guardaba por motivo del formulario: se ignora lo que no sea un botón actual
+  try { chrome.storage.local.get(['nvUso', 'nvOrden']).then(o => { NV_USO = Object.fromEntries(Object.entries(o.nvUso || {}).filter(([k]) => tipoDe(k))); NV_ORDEN = o.nvOrden || 'grupo'; nvPintarChips(); }); } catch (e) {}
 }initNoVenta();
 
 /* ── WhatsApp Web con la oferta ───────────────────────────────────── */
@@ -539,14 +557,14 @@ try {
     chrome.storage.local.remove('corte');
     setTimeout(() => {
       // Solo queda marcado (no abre el formulario solo): el ejecutivo toca el botón para tipificar
-      $('#nv-motivo').value = 'CORTE DE LLAMADO'; nvPintar();
-      GC_FORZADO = c.temprano ? 'Cliente Corta Llamada en saludo' : '';
+      const tipo = tipoDe(c.temprano ? 'cs' : 'cc');
+      $('#nv-motivo').value = tipo.id; nvPintar();
       // El código de Genesys sí se deja marcado de inmediato en segundo plano
-      const codigo = GC_FORZADO || GC_SUGERIDO['CORTE DE LLAMADO'];
+      const codigo = tipo.gc;
       gcPedir(codigo).then(() => marcarEnGenesys(codigo));
       $('#gc-info').textContent = 'En Genesys ya queda marcado: ' + codigo; $('#gc-info').className = 'gc-info ok';
       const nv = $('#nv'); if (nv && nv.scrollIntoView) nv.scrollIntoView({ block: 'center' });
-      mostrar('📵 El cliente cortó. Toca "Corte de llamado" para llenar el formulario.', 'mal');
+      mostrar('📵 El cliente cortó. Toca "' + tipo.t + '" para llenar el formulario.', 'mal');
     }, 900);
   });
 } catch (e) {}

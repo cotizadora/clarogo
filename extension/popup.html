@@ -99,6 +99,34 @@
   .gc-info { margin: 2px 0 4px; font-size: .68rem; color: #4b5262; }
   .gc-info.ok { color: #14532d; font-weight: 700; }
   .gc-info.mal { color: #8a1010; font-weight: 700; }
+  /* Ventana compacta: todo cabe sin barras de desplazamiento (máximo de Chrome: 800 x 600) */
+  html { overflow-x: hidden; }
+  body { width: 784px; }
+  header { padding: 5px 12px; }
+  main { padding: 7px 9px 8px; grid-template-columns: 4fr 7fr; gap: 0 9px; }
+  #estado { margin: 0 0 5px; font-size: .78rem; }
+  table { margin-bottom: 5px; font-size: .78rem; }
+  td { padding: 1px 0; }
+  td.tel { font-size: 1.05rem; }
+  #rut-cli { padding: 6px 9px; margin: 0 0 5px; font-size: .84rem; }
+  #comentario { padding: 6px 9px; font-size: .8rem; }
+  button { padding: 7px 10px; margin-top: 5px; }
+  .wa { margin: 6px 0 0; padding: 7px 8px; }
+  .wa select { padding: 5px; }
+  .lam-chk { margin: 5px 0 0 !important; }
+  .nv { padding: 7px 8px; }
+  .nv-cab { margin-bottom: 3px; }
+  .nv-cab b { font-size: .76rem; }
+  .nv-chips { grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 4px; }
+  .nv-chips .g-t { margin: 2px 0 -1px; font-size: .58rem; }
+  .nv-chips button { min-height: 26px; padding: 2px 5px; font-size: .64rem; line-height: 1.1; }
+  .g-venta { background: #d6f5e1; border-color: #2fae63 !important; color: #0b5d31; }
+  .nv-fila { display: flex; gap: 6px; }
+  .nv-fila #nv-otro { flex: 1; margin: 0 0 4px; }
+  .nv-fila #nv-abrir { width: auto; margin: 0 0 4px; padding: 5px 12px; }
+  .gc-info { margin: 1px 0 3px; }
+  .gc-info:not(.ok):not(.mal) { display: none; }
+  .nv-op { gap: 10px; font-size: .7rem; }
 </style>
 </head>
 <body>
@@ -120,20 +148,16 @@
   </div>
   <div class="col">
   <div class="nv" id="nv">
-    <div class="nv-cab"><b>No venta: motivo</b><span class="nv-orden" id="nv-orden"><button type="button" data-orden="uso">Más usados</button><button type="button" data-orden="az">A-Z</button><button type="button" data-orden="grupo">Por grupo</button></span></div>
+    <div class="nv-cab"><b title="Un toque: marca el código en Genesys y llena el formulario">Tipificación (Genesys + formulario)</b><span class="nv-orden" id="nv-orden"><button type="button" data-orden="uso">Más usados</button><button type="button" data-orden="az">A-Z</button><button type="button" data-orden="grupo">Por grupo</button></span></div>
     <input type="hidden" id="nv-motivo">
     <div class="nv-chips" id="nv-chips"></div>
-    <input id="nv-otro" placeholder="Escribe el motivo" hidden>
+    <div class="nv-fila"><input id="nv-otro" placeholder="Escribe el motivo y presiona Enter" hidden><button class="rojo" id="nv-abrir" hidden title="Tipifica con el motivo escrito">Tipificar</button></div>
     <select id="nv-comp" hidden></select>
-    <div class="nv-comps" id="nv-comps" hidden></div>
-    <p class="gc-info" id="gc-info">Toca el motivo: se llena el formulario y en Genesys queda marcado el código que corresponde.</p>
-    <div class="nv-op"><label><input type="checkbox" id="nv-auto" checked> Enviar automáticamente</label><label><input type="checkbox" id="nv-aviso" checked> Avisar cuando se envíe</label></div>
-    <button class="rojo" id="nv-abrir" hidden title="Tipifica con el motivo escrito">📝 Tipificar con este motivo</button>
-
+    <p class="gc-info" id="gc-info">Un toque: marca el código en Genesys y llena el formulario.</p>
+    <div class="nv-op"><label><input type="checkbox" id="nv-auto" checked> Enviar solo</label><label><input type="checkbox" id="nv-aviso" checked> Avisar al enviar</label><label title="Si el cliente corta, aparece al centro una alerta roja 'LLAMADA CORTADA'"><input type="checkbox" id="aviso-corte" checked> 📵 Avisar si corta</label></div>
   </div>
   </div>
 </main>
-<p class="auto-abrir"><label title="Si el cliente corta, aparece al centro una alerta roja 'LLAMADA CORTADA' y GoExt se abre con el motivo Corte de llamado."><input type="checkbox" id="aviso-corte" checked> 📵 Avisar si el cliente corta la llamada</label></p>
 <!-- Actualización obligatoria: tapa la ventanita hasta actualizar (se puede postergar 10 minutos, solo 2 veces por versión) -->
 <div id="obligatorio" hidden>
   <div class="ob-caja">

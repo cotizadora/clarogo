@@ -68,6 +68,14 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 25-11-2026: GoExt 1.63.0, todos los códigos de Genesys como botones y ventana sin scroll
+
+- Fuente: códigos de conclusión de Genesys enviados por Eduardo el 25-11-2026 y opciones del formulario de no venta leídas desde el formulario publicado.
+- La ventana de GoExt tiene 31 botones de tipificación: los 26 códigos de Genesys y los 5 motivos que solo existen en el formulario (cliente ofensivo, sin stock, extranjero sin documentación, número no activo y otro). El cruce va en ambas direcciones: cada botón marca su código en Genesys y llena el formulario con su motivo.
+- Los motivos de cliente evaluado (deuda > $14.000, deuda en Claro, deuda operador actual, no aprueba validación facial, ya es cliente) llenan la parte "cliente evaluado" del formulario con RUT, número, una línea y compañía donante. Buzón de voz, agendado y desconfía de la llamada van como "otro" con su texto. Los cuatro botones de venta solo marcan Genesys (la venta va en Ingreso de Venta).
+- La compañía de "Conforme con su compañía" y "Paga menos" la toma GoExt de la llamada; ya no se pregunta.
+- Ventana compacta: todo cabe sin barras de desplazamiento, ni vertical ni horizontal. Las opciones (enviar solo, avisar al enviar, avisar si corta) van en una sola línea.
+
 ### 25-11-2026: GoExt 1.62.0 (ClaroGo! 2.33.0), tipificar con un solo clic
 
 - En GoExt, tocar el botón del motivo tipifica de inmediato: llena el formulario de no venta y marca en Genesys el código de conclusión que calza con ese motivo. Se quitaron el menú desplegable de Genesys y el botón rojo de abajo. Solo "Otro" pide escribir el motivo y confirmar; "Conforme con su compañía" y "Paga menos" toman la compañía de la llamada y, si no viene, la piden con botones.
