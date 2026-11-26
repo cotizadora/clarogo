@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 26-11-2026: Actualizar horario ClaroGo, ventana para elegir el Excel siempre al frente
+
+- Arreglo del .bat del horario: la ventana para elegir el Excel de turnos y los mensajes de resumen quedaban detrás de otras ventanas (por ejemplo, del navegador) y parecía que no pasaba nada. Ahora siempre aparecen al frente.
+
 ### 26-11-2026: ClaroGo! 2.40.0, horario que se actualiza desde el escritorio
 
 - Nuevo "Actualizar horario ClaroGo" en el escritorio (herramientas/actualizar-horario.ps1 y su .bat): se elige el Excel de turnos, muestra el resumen (fechas y ejecutivos) y publica datos/horario.json con la sesión de GitHub del computador. Lee la fila de fechas, la columna "Ejecutivo" y los turnos ("10:00 a 19:00", "Sin turno" = libre); cualquier otra columna, como los grupos A, B, C y D, no se publica.

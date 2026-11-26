@@ -15,7 +15,8 @@ $Repo = Join-Path $Base 'repo'
 $Url = 'https://github.com/cotizadora/clarogo.git'
 $Sitio = 'https://cotizadora.github.io/clarogo/'
 
-function Aviso([string]$texto, [string]$icono = 'Information') { [void][Windows.Forms.MessageBox]::Show($texto, 'ClaroGo! Horario', 'OK', $icono) }
+function AlFrente { $f = New-Object Windows.Forms.Form -Property @{ TopMost = $true; ShowInTaskbar = $false; StartPosition = 'CenterScreen'; Width = 1; Height = 1; Opacity = 0 }; $f.Show(); $f.Activate(); return $f }
+function Aviso([string]$texto, [string]$icono = 'Information') { $f = AlFrente; [void][Windows.Forms.MessageBox]::Show($f, $texto, 'ClaroGo! Horario', 'OK', $icono); $f.Close() }
 function GitOk { & git @args; if ($LASTEXITCODE -ne 0) { throw "Git falló: git $($args -join ' ')" } }
 
 # Primera hoja del Excel: devuelve un diccionario fila -> (columna -> texto)
@@ -109,7 +110,10 @@ try {
     $dlg.InitialDirectory = $desc
     $ultimo = Get-ChildItem $desc -Filter '*turno*.xlsx' -ErrorAction SilentlyContinue | Where-Object { $_.Name -notlike '~$*' } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
     if ($ultimo) { $dlg.FileName = $ultimo.Name }
-    if ($dlg.ShowDialog() -ne 'OK') { exit }
+    # La ventana para elegir el archivo siempre al frente (si no, puede quedar escondida detrás del navegador)
+    Write-Host 'Se abrió la ventana para elegir el Excel de turnos.'
+    $f = AlFrente; $r = $dlg.ShowDialog($f); $f.Close()
+    if ($r -ne 'OK') { exit }
     $Archivo = $dlg.FileName
   }
   $nombre = [IO.Path]::GetFileName($Archivo)
@@ -128,7 +132,8 @@ try {
     $txt = "Archivo: $nombre`n`nTurnos del $(& $fmt $res.Desde) al $(& $fmt $res.Hasta) ($($res.Dias.Count) días)`nEjecutivos: $($res.Ejecutivos.Count)`n`n" +
       (($res.Ejecutivos | ForEach-Object { '• ' + $_.nombre }) -join "`n") +
       "`n`nNo se publica ninguna otra columna (por ejemplo los grupos).`n`n¿Publicar este horario para todos?"
-    if ([Windows.Forms.MessageBox]::Show($txt, 'ClaroGo! Horario', 'YesNo', 'Question') -ne 'Yes') { exit }
+    $f = AlFrente; $resp = [Windows.Forms.MessageBox]::Show($f, $txt, 'ClaroGo! Horario', 'YesNo', 'Question'); $f.Close()
+    if ($resp -ne 'Yes') { exit }
   }
 
   # 3. Publicar en GitHub con la sesión de este computador
