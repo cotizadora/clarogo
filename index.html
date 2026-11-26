@@ -915,7 +915,9 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
 #ct-tabla .acc .fic:not(.on) .fic-fl{animation:ficFlecha 1.3s ease-in-out infinite}
 #ct-tabla .acc .fic.on .fic-fl{transform:rotate(180deg)}
 @keyframes ficFlecha{0%,100%{transform:translateY(-1px)}50%{transform:translateY(3px)}}
-.ct-wrap:has(#ct-tabla.vm){background:#e8ecf3;border-color:#d3d9e4;padding:2px 10px 12px}
+.ct-wrap:has(#ct-tabla.vm){background:linear-gradient(180deg,#c3cee2 0%,#b3c0d8 100%);border:1px solid #8fa1c2;border-radius:14px;padding:2px 12px 14px;box-shadow:inset 0 2px 10px rgba(20,35,70,.18),0 6px 18px rgba(20,35,70,.12)}
+#ct-tabla.vm thead th{color:#1f2a44 !important}
+#ct-tabla.vm thead th small{color:#3b4a6b !important}
 #ct-tabla.vm{border-collapse:separate;border-spacing:0}
 #ct-tabla.vm tr.sep{display:table-row}
 #ct-tabla.vm tr.sep td{height:12px;border:0;background:transparent;padding:0}
@@ -1573,7 +1575,7 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.37.1';
+const APP_VERSION = '2.37.2';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 

@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 26-11-2026: ClaroGo! 2.37.2, más contraste alrededor de los clientes
+
+- En la vista mediana, el fondo que rodea las cápsulas de los clientes pasa a un gris azulado medio con degradado, borde y sombra interior, para que no se pierda con el fondo de la página y las cápsulas resalten. Los títulos de las columnas quedan en un tono más oscuro.
+
 ### 26-11-2026: ClaroGo! 2.37.1, cliente abierto con zona premium y despliegue suave
 
 - Al abrir la ficha o la observación de un cliente, toda su zona (la fila y lo que se despliega) toma un mismo tono azul perla con un borde azul continuo, para que se vea que es el mismo cliente.
