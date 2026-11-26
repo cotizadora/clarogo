@@ -795,7 +795,6 @@ body.pf-falta .mute-banner{display:none!important}
 .fi-pie span{display:flex;gap:6px;flex-wrap:wrap}
 .cp-fila{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.84rem}
 .cp-fila span{display:flex;gap:6px}
-@media (min-width:640px){#v-control .filters{grid-template-columns:2fr 1fr 1fr 1fr auto}}
 /* Calculadora de líneas *//* Vista previa idéntica a lo que se copia */
 .lamcard{padding:0;display:flex;flex-direction:column;overflow:hidden}
 .lam{padding:12px 12px 6px;background:#eef0f4}
@@ -993,6 +992,44 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
 #ct-tabla.vm tbody tr.ficha.abre .ficha-in{animation:fichaBaja 1s cubic-bezier(.33,0,.15,1) both}
 @keyframes fichaBaja{0%{grid-template-rows:0fr;opacity:.15;transform:translateY(-6px)}45%{opacity:1}100%{grid-template-rows:1fr;opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){#nota-panel.abre,#nota-panel.abre > *,#ct-tabla.vm tbody tr.ficha.abre .ficha-in{animation:none}}
+/* Barra de controles de Mi Planilla: dos filas juntas, nombres claros, botones con brillo rojo corporativo al pasar el mouse.
+   La barra y los títulos de las columnas quedan fijos arriba al bajar por la planilla. */
+.ct-barra{display:flex;flex-direction:column;gap:8px;padding:10px 12px;margin-bottom:12px;border-radius:14px;background:linear-gradient(180deg,#ffffff,#f6f8fc);border:1px solid #d5dbe6;box-shadow:0 6px 18px rgba(20,35,70,.10)}
+.ct-barra .cb-fila{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.ct-barra .cb-sep{width:1px;align-self:stretch;background:#d5dbe6;margin:0 3px}
+.cb-btn{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 13px;border:1px solid #cfd6e2;border-radius:10px;background:#fff;color:#1f2430;font:inherit;font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:box-shadow .2s,transform .15s,border-color .2s,background .2s}
+.cb-btn .gico{width:15px;height:15px;fill:currentColor}
+.cb-btn:hover{border-color:#e3000f;transform:translateY(-1px);box-shadow:0 0 0 2px rgba(227,0,15,.14),0 0 14px rgba(227,0,15,.38)}
+.cb-btn:active{transform:translateY(0)}
+.cb-btn.cb-nuevo{height:42px;padding:0 20px;font-size:.95rem;font-weight:800;color:#fff;border:0;background:linear-gradient(180deg,#ff2b2b,#d0000d);box-shadow:0 5px 14px rgba(208,0,13,.35)}
+.cb-btn.cb-nuevo:hover{box-shadow:0 0 0 3px rgba(255,43,43,.25),0 0 22px rgba(255,30,30,.65),0 6px 16px rgba(208,0,13,.35)}
+.cb-btn.cb-gen{height:42px;padding:0 16px;font-size:.88rem;color:#e3000f;border:2px solid #e3000f;background:#fff5f5}
+.cb-btn.cb-suave{color:#5f6673;font-weight:600}
+.ct-barra .ct-vista{margin-left:auto}
+.ct-barra .ct-vista button{height:34px}
+.ct-barra .ct-vista button:hover:not(.on){box-shadow:inset 0 0 0 2px rgba(227,0,15,.35)}
+.ct-barra .cb-filtros input[type=search]{flex:1 1 300px;min-width:220px;height:38px;border:1px solid #cfd6e2;border-radius:10px;padding:0 12px;font:inherit;font-size:.86rem;background:#fff}
+.ct-barra .cb-filtros select{flex:0 1 auto;width:auto;min-width:150px;height:38px;border:1px solid #cfd6e2;border-radius:10px;padding:0 8px;font:inherit;font-size:.84rem;background:#fff;cursor:pointer}
+.ct-barra .cb-filtros .chk{height:38px;padding:0 11px;font-size:.82rem;border-color:#cfd6e2;white-space:nowrap}
+.ct-barra .cb-filtros input[type=search]:focus,.ct-barra .cb-filtros select:focus{outline:none;border-color:#e3000f;box-shadow:0 0 0 3px rgba(227,0,15,.15)}
+.ct-barra .cb-filtros select:hover,.ct-barra .cb-filtros .chk:hover{border-color:#e3000f;box-shadow:0 0 10px rgba(227,0,15,.25)}
+@media (min-width:700px){
+  #v-control .gbarra{z-index:12}
+  .ct-barra{position:sticky;top:calc(var(--top-h,0px) + var(--gb-h,0px));z-index:11}
+  #ct-tabla thead th{position:sticky;top:calc(var(--top-h,0px) + var(--gb-h,0px) + var(--cb-h,0px));z-index:9;box-shadow:0 3px 6px rgba(20,35,70,.12)}
+  #ct-tabla.vm thead th{background:#c3cee2;box-shadow:0 4px 8px rgba(20,35,70,.18)}
+  .ct-wrap{overflow:clip}
+}
+/* Barra más justa: cabe en dos filas en pantallas de 1350 px */
+.ct-barra{padding:8px 10px;gap:6px}
+.ct-barra .cb-fila{gap:6px}
+.cb-btn{height:34px;padding:0 10px;font-size:.78rem}
+.cb-btn.cb-nuevo{height:38px;padding:0 16px;font-size:.9rem}
+.cb-btn.cb-gen{height:38px;padding:0 12px;font-size:.82rem}
+.ct-barra .ct-vista button{height:32px;padding:0 10px;font-size:.74rem}
+.ct-barra .cb-filtros input[type=search]{flex:1 1 220px;min-width:180px;height:34px;font-size:.82rem}
+.ct-barra .cb-filtros select{min-width:0;max-width:200px;height:34px;font-size:.8rem}
+.ct-barra .cb-filtros .chk{height:34px;padding:0 9px;font-size:.78rem}
 </style>
 </head>
 <body data-view="inicio">
@@ -1220,23 +1257,26 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
     <div class="gbarra" data-gbarra><button class="btn sm" data-undo disabled title="Deshacer el último cambio (Ctrl+Z)">↶ Deshacer</button><button class="btn sm dark" data-guardar title="Guardar ahora">💾 Guardar</button><span class="gestado" data-gestado>✓ Todo guardado</span></div>
     <p class="sub">En Genesys presiona Ctrl+A y Ctrl+C con el cliente en pantalla, y aquí presiona "Pegar desde Genesys". Todo se puede editar y ningún registro se pierde.</p>
     <div id="ct-resp" class="note resp"></div>
-    <div class="card filters">
-      <div class="f-actions">
-        <button class="btn red" id="ct-pegar"><svg class="gico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="11.2" cy="2.6" r="1.8"/><rect x="4.2" y="5.4" width="6" height="9.4" rx="3"/></svg> Pegar desde Genesys</button>
-        <button class="btn sm" id="ct-nueva">+ Fila vacía</button>
-        <button class="btn sm" id="ct-excel">⬇ Exportar a Excel</button>
-        <button class="btn sm" id="ct-exportar" title="Archivo con todos los datos de los clientes de la lista, para enviarlo por WhatsApp o abrirlo en otro computador">💾 Exportar clientes</button>
-        <button class="btn sm" id="ct-importar" title="Cargar clientes desde un archivo exportado por ClaroGo!">📂 Importar clientes</button><input type="file" id="ct-imp-file" accept=".txt,.json,text/plain,application/json" hidden>
-        <button class="btn sm" id="ct-prueba" title="Crea un cliente de prueba con 6 líneas para ver cómo se sube la venta línea por línea">🧪 Cliente de prueba (6 líneas)</button>
+    <div class="card ct-barra" id="ct-barra">
+      <div class="cb-fila">
+        <button class="cb-btn cb-nuevo" id="ct-nueva" title="Agrega un cliente en blanco al comienzo de la planilla para llenarlo a mano">➕ Crear cliente nuevo</button>
+        <button class="cb-btn cb-gen" id="ct-pegar" title="Copia el cliente en Genesys (Ctrl+A y Ctrl+C) y presiona aquí"><svg class="gico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="11.2" cy="2.6" r="1.8"/><rect x="4.2" y="5.4" width="6" height="9.4" rx="3"/></svg> Pegar cliente desde Genesys</button>
+        <span class="cb-sep" aria-hidden="true"></span>
+        <button class="cb-btn" id="ct-excel" title="Descarga la planilla en un archivo de Excel">📊 Descargar Excel</button>
+        <button class="cb-btn" id="ct-exportar" title="Archivo con todos los datos de los clientes de la lista, para enviarlo por WhatsApp o abrirlo en otro computador">💾 Guardar clientes en archivo</button>
+        <button class="cb-btn" id="ct-importar" title="Cargar clientes desde un archivo guardado con ClaroGo! (por ejemplo, desde otro computador)">📂 Abrir clientes de un archivo</button><input type="file" id="ct-imp-file" accept=".txt,.json,text/plain,application/json" hidden>
+        <button class="cb-btn cb-suave" id="ct-prueba" title="Crea un cliente de prueba con 6 líneas para ver cómo se sube la venta línea por línea">🧪 Prueba</button>
+        <div class="ct-vista" role="group" aria-label="Vista de la planilla"><button type="button" data-vista="media" title="Vista mediana: cada cliente en su propia cápsula, con más espacio">▤ Mediana</button><button type="button" data-vista="compacta" title="Una sola línea por cliente, como antes">☰ Compacta</button></div>
       </div>
-      <input class="full" type="search" id="ct-q" placeholder="Buscar RUT, nombre, teléfono u observación" autocomplete="off">
-      <select id="ct-periodo" autocomplete="off"><option value="todo" selected>Todo el historial</option><option value="hoy">Hoy</option><option value="7">Últimos 7 días</option><option value="30">Últimos 30 días</option><option value="mes">Este mes</option><option value="rango">Entre fechas</option></select>
-      <select id="ct-tipo"><option value="">Todas las tipificaciones</option></select>
-      <select id="ct-seg"><option value="">Todos los segmentos</option></select>
-      <div class="ct-rango full" id="ct-rango" hidden><label for="ct-desde">Desde</label><input type="date" id="ct-desde"><label for="ct-hasta">Hasta</label><input type="date" id="ct-hasta"></div>
-      <div class="ct-vista" role="group" aria-label="Vista de la planilla"><button type="button" data-vista="media" title="Cada cliente en su propia cápsula, con más espacio">▤ Vista mediana</button><button type="button" data-vista="compacta" title="Una sola línea por cliente, como antes">☰ Vista compacta</button></div>
-      <label class="chk" title="Clientes a los que les enviaste la oferta por WhatsApp desde GoExt"><input type="checkbox" id="ct-oferta"> 📤 Solo con oferta enviada</label>
-      <label class="chk"><input type="checkbox" id="ct-verborr"> Ver borrados</label>
+      <div class="cb-fila cb-filtros">
+        <input type="search" id="ct-q" placeholder="🔎 Buscar por RUT, nombre, teléfono u observación" autocomplete="off">
+        <select id="ct-periodo" autocomplete="off" title="Qué días mostrar"><option value="todo" selected>📅 Todo el historial</option><option value="hoy">📅 Hoy</option><option value="7">📅 Últimos 7 días</option><option value="30">📅 Últimos 30 días</option><option value="mes">📅 Este mes</option><option value="rango">📅 Entre fechas</option></select>
+        <select id="ct-tipo" title="Mostrar solo una tipificación"><option value="">Todas las tipificaciones</option></select>
+        <select id="ct-seg" title="Mostrar solo un segmento"><option value="">Todos los segmentos</option></select>
+        <label class="chk" title="Clientes a los que les enviaste la oferta por WhatsApp desde GoExt"><input type="checkbox" id="ct-oferta"> 📤 Con oferta enviada</label>
+        <label class="chk" title="Muestra los clientes borrados para recuperarlos"><input type="checkbox" id="ct-verborr"> 🗑 Ver borrados</label>
+      </div>
+      <div class="ct-rango" id="ct-rango" hidden><label for="ct-desde">Desde</label><input type="date" id="ct-desde"><label for="ct-hasta">Hasta</label><input type="date" id="ct-hasta"></div>
     </div>
     <div class="card" id="ag-panel" hidden style="padding:12px 14px"></div>
     <div class="chips" id="ct-resumen"></div>    <div class="ct-wrap"><table id="ct-tabla">
@@ -1575,7 +1615,7 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.37.3';
+const APP_VERSION = '2.38.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -4650,7 +4690,7 @@ function ctAgregar(datos, silencioso) {
   if (fila.rut) setTimeout(() => { rutifAuto(fila); deudaAuto(fila); }, 400);
   if (silencioso) { ctRepintar(); return fila; }
   ctNuevo = fila.id; ctPinta();
-  if (!datos || (!datos.rut && !datos.telefono)) toast(datos && Object.keys(datos).length === 0 ? 'Fila vacía agregada' : 'No encontré datos de Genesys. Agregué una fila vacía para completar a mano.');
+  if (!datos || (!datos.rut && !datos.telefono)) toast(datos && Object.keys(datos).length === 0 ? 'Cliente nuevo creado: llénalo en la primera fila de la planilla.' : 'No encontré datos de Genesys. Agregué una fila vacía para completar a mano.');
   else if (fila.histTip) toast('🔁 Cliente ya contactado antes. ' + fila.histTip);
   else toast('Cliente agregado' + (fila.telefono ? ' con su teléfono' : '') + '. Si conversas con él, abre su ficha con ▾.');
   return fila;
@@ -4929,6 +4969,11 @@ function initControl() {
   const vistaPinta = () => { let v = 'media'; try { v = localStorage.getItem('clarogo_vista_ct') === 'compacta' ? 'compacta' : 'media'; } catch (e) {} $('#ct-tabla').classList.toggle('vm', v === 'media'); $$('.ct-vista [data-vista]').forEach(b => b.classList.toggle('on', b.dataset.vista === v)); };
   $('.ct-vista').addEventListener('click', e => { const b = e.target.closest('[data-vista]'); if (!b) return; try { localStorage.setItem('clarogo_vista_ct', b.dataset.vista); } catch (x) {} vistaPinta(); });
   vistaPinta();
+  // Barra de controles y títulos fijos: se miden la barra Deshacer/Guardar y la barra de controles para apilarlas arriba
+  const medirBarras = () => { const gb = $('#v-control .gbarra'), cb = $('#ct-barra'); document.documentElement.style.setProperty('--gb-h', (gb ? gb.offsetHeight : 0) + 'px'); document.documentElement.style.setProperty('--cb-h', (cb ? cb.offsetHeight : 0) + 'px'); };
+  medirBarras(); if ('ResizeObserver' in window) { const ro = new ResizeObserver(medirBarras); [$('#v-control .gbarra'), $('#ct-barra')].forEach(x => x && ro.observe(x)); } window.addEventListener('resize', medirBarras);
+  // Crear cliente nuevo: se sube a la primera fila para que se vea dónde quedó
+  $('#ct-nueva').addEventListener('click', () => setTimeout(() => { const t = $('#ct-tabla'); if (t) window.scrollTo({ top: t.getBoundingClientRect().top + scrollY - 260, behavior: 'smooth' }); }, 80));
   $('#ct-periodo').addEventListener('change', () => { $('#ct-rango').hidden = $('#ct-periodo').value !== 'rango'; ctPinta(); });
   $('#ct-resp').addEventListener('click', e => {
     const b = e.target.closest('[data-resp]'); if (!b) return;

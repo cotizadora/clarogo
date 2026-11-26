@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 26-11-2026: ClaroGo! 2.38.0, controles de Mi Planilla juntos, claros y fijos
+
+- Los controles de Mi Planilla quedan juntos en una barra de dos filas: arriba las acciones y abajo la búsqueda y los filtros. En PC la barra y los títulos de las columnas quedan fijos arriba al bajar por la planilla (en celular se desplazan normal).
+- "+ Fila vacía" pasa a ser un botón rojo grande "➕ Crear cliente nuevo"; al crearlo, la planilla sube a la primera fila. "Pegar desde Genesys" pasa a "Pegar cliente desde Genesys", y los demás botones tienen nombres más claros: "📊 Descargar Excel", "💾 Guardar clientes en archivo", "📂 Abrir clientes de un archivo", "📤 Con oferta enviada", "🗑 Ver borrados".
+- Aspecto más premium: botones redondeados con brillo rojo corporativo al pasar el mouse.
+
 ### 26-11-2026: ClaroGo! 2.37.3, importar clientes siempre muestra lo importado
 
 - Arreglo: al importar un cliente guardado con "💾 Guardar cliente en un archivo", si ese cliente estaba borrado en el otro computador quedaba borrado; ahora se recupera con los datos del archivo.
