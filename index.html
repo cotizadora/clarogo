@@ -1575,7 +1575,7 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.37.2';
+const APP_VERSION = '2.37.3';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -4832,16 +4832,26 @@ function ctImportarTexto(txt) {
     : datos.app === 'clarogo' && Array.isArray(datos.clientes) ? datos.clientes
     : datos.app === 'ClaroGo!' && Array.isArray(datos.registros) ? datos.registros : null;
   if (!clientes) return toast('Este archivo no es una exportación de clientes ni una planilla de ClaroGo!.');
-  let nuevos = 0, actualizados = 0;
+  let nuevos = 0, actualizados = 0, recuperados = 0, iguales = 0; const ids = [];
   clientes.slice(0, 5000).forEach(c => {
     if (!c || typeof c !== 'object' || typeof c.id !== 'string' || !c.id) return;
     const limpio = {}; Object.entries(c).forEach(([k, v]) => { if (/^[a-zA-Z]{1,20}$/.test(k) && ['string', 'number', 'boolean'].includes(typeof v)) limpio[k] = typeof v === 'string' ? v.slice(0, 5000) : v; });
     const r = CT.find(x => x.id === limpio.id);
+    if (!limpio.borrado) ids.push(limpio.id);
     if (!r) { CT.push(limpio); nuevos++; }
+    // Estaba borrado en este computador y el archivo lo trae vivo: se recupera con los datos del archivo
+    else if (r.borrado && !limpio.borrado) { Object.assign(r, limpio, { borrado: false, upd: Math.max(Date.now(), limpio.upd || 0) }); recuperados++; }
     else if ((limpio.upd || 0) > (r.upd || 0)) { Object.assign(r, limpio); actualizados++; }
+    else iguales++;
   });
-  notasRetroTodas(); ctGuardar(); ctPinta();
-  toast(`Importación lista: ${nuevos} clientes nuevos y ${actualizados} actualizados.`);
+  notasRetroTodas(); ctGuardar();
+  // Se quitan los filtros para que lo importado se vea, y el primer cliente queda iluminado
+  $('#ct-periodo').value = 'todo'; $('#ct-tipo').value = ''; $('#ct-seg').value = ''; $('#ct-q').value = ''; $('#ct-verborr').checked = false; $('#ct-oferta').checked = false; $('#ct-rango').hidden = true;
+  if (ids.length) { ctNeon = ids[0]; ctNeonApagarAlClic(); }
+  ctPinta();
+  if (ids.length) setTimeout(() => { const t = $(`#ct-body tr[data-id="${ids[0]}"]`); if (t) t.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 150);
+  const partes = [nuevos && `${nuevos} ${nuevos === 1 ? 'cliente nuevo' : 'clientes nuevos'}`, actualizados && `${actualizados} actualizado${actualizados === 1 ? '' : 's'}`, recuperados && `${recuperados} recuperado${recuperados === 1 ? '' : 's'} (estaba${recuperados === 1 ? '' : 'n'} borrado${recuperados === 1 ? '' : 's'})`, iguales && `${iguales} ya estaba${iguales === 1 ? '' : 'n'} en tu planilla igual o más nuevo${iguales === 1 ? '' : 's'}`].filter(Boolean);
+  toast('Importación lista: ' + (partes.join(', ') || 'el archivo no traía clientes') + '.');
 }
 function ctExcel() {
   const lista = ctFiltradas(); if (!lista.length) return toast('No hay filas para exportar');

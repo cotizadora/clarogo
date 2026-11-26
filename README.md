@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 26-11-2026: ClaroGo! 2.37.3, importar clientes siempre muestra lo importado
+
+- Arreglo: al importar un cliente guardado con "💾 Guardar cliente en un archivo", si ese cliente estaba borrado en el otro computador quedaba borrado; ahora se recupera con los datos del archivo.
+- Si el cliente ya estaba igual o más nuevo, ahora lo dice claramente ("ya estaba en tu planilla") en vez de "0 nuevos y 0 actualizados".
+- Después de importar se quitan los filtros (período, búsqueda, tipificación) y el cliente importado queda iluminado y a la vista, aunque sea de otro día.
+
 ### 26-11-2026: ClaroGo! 2.37.2, más contraste alrededor de los clientes
 
 - En la vista mediana, el fondo que rodea las cápsulas de los clientes pasa a un gris azulado medio con degradado, borde y sombra interior, para que no se pierda con el fondo de la página y las cápsulas resalten. Los títulos de las columnas quedan en un tono más oscuro.
