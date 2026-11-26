@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 26-11-2026: ClaroGo! 2.36.0, Mi Planilla en vista mediana con cápsulas por cliente
+
+- Nueva vista mediana, por defecto: cada cliente es una cápsula con puntas redondeadas, separada de la siguiente, con colores intercalados (blanco y celeste suave) sobre un fondo gris, filas más altas y letra más grande. La tipificación se ve como color en el número de la izquierda.
+- El botón de la ficha ahora es "Ver ficha" con una flechita que se mueve hacia abajo. Al abrirla, la misma cápsula se estira hacia abajo con una animación suave y muestra todos los datos del cliente; al estar abierta la flecha gira y dice "Cerrar".
+- Botón "☰ Vista compacta" para volver a una sola línea por cliente, como antes. Cada navegador recuerda la vista elegida (también después de "Limpiar caché").
+
 ### 26-11-2026: ClaroGo! 2.35.0, Black Friday se copia directo a la planilla
 
 - En cada equipo de Black Friday el botón principal es "📋 Copiar": copia de inmediato, sin abrir otra ventana, con el mismo formato del botón Copiar del Stock (SKU, marca, modelo, pie, cuotas, total y stock) más la marca "BLACK FRIDAY" y el ahorro. Toma el SKU y el modelo del color con más unidades del stock publicado.

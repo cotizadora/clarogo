@@ -909,6 +909,51 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
 .redes svg{width:20px;height:20px;fill:var(--muted)}
 .redes small{flex-basis:100%}
 .plan-rows span:first-child{white-space:nowrap}
+/* Mi Planilla, vista mediana (por defecto): cada cliente es una cápsula redondeada con colores intercalados,
+   separada de la siguiente. La ficha se abre estirando la misma cápsula hacia abajo. */
+#ct-tabla tr.sep{display:none}
+.ct-vista{display:inline-flex;border:1px solid var(--border);border-radius:999px;overflow:hidden;background:#fff}
+.ct-vista button{border:0;background:transparent;padding:6px 12px;font:inherit;font-size:.78rem;font-weight:700;color:var(--muted);cursor:pointer}
+.ct-vista button.on{background:#1f2430;color:#fff}
+#ct-tabla .acc .fic .fic-fl{width:14px;height:14px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .35s ease}
+#ct-tabla .acc .fic:not(.on) .fic-fl{animation:ficFlecha 1.3s ease-in-out infinite}
+#ct-tabla .acc .fic.on .fic-fl{transform:rotate(180deg)}
+@keyframes ficFlecha{0%,100%{transform:translateY(-1px)}50%{transform:translateY(3px)}}
+.ct-wrap:has(#ct-tabla.vm){background:#e8ecf3;border-color:#d3d9e4;padding:2px 10px 12px}
+#ct-tabla.vm{border-collapse:separate;border-spacing:0}
+#ct-tabla.vm tr.sep{display:table-row}
+#ct-tabla.vm tr.sep td{height:12px;border:0;background:transparent;padding:0}
+#ct-tabla.vm thead th{background:transparent;border:0;border-bottom:0;color:#4b5262;font-size:.72rem;padding:10px 3px 6px}
+#ct-tabla.vm tbody tr{--cap:#ffffff;--capb:#c9d2e3;--caph:#f7f9ff;--capn:#eef2f9}
+#ct-tabla.vm tbody tr.alt{--cap:#eef4ff;--capb:#b9c8e6;--caph:#e6eefd;--capn:#dde7fa}
+#ct-tabla.vm tbody tr:not(.sep):not(.ficha) > td{height:62px;background:var(--cap);border:0;border-top:1.5px solid var(--capb);border-bottom:1.5px solid var(--capb);font-size:.86rem}
+#ct-tabla.vm tbody tr:not(.sep):not(.ficha):hover > td{background:var(--caph)}
+#ct-tabla.vm tbody tr:not(.ficha) > td.c-n{border-left:1.5px solid var(--capb);border-radius:16px 0 0 16px;background:var(--capn)}
+#ct-tabla.vm tbody tr:not(.ficha) > td.c-acc{border-right:1.5px solid var(--capb);border-radius:0 16px 16px 0}
+#ct-tabla.vm tbody tr:not(.sep):not(.ficha){box-shadow:0 4px 12px rgba(30,45,80,.10)}
+/* La tipificación se ve en el número (franja de color a la izquierda), sin teñir toda la cápsula */
+#ct-tabla.vm tbody tr.t-verde:not(.ficha) > td.c-n{background:#c6e9cf}
+#ct-tabla.vm tbody tr.t-amarillo:not(.ficha) > td.c-n{background:#ffe7a3}
+#ct-tabla.vm tbody tr.t-rojo:not(.ficha) > td.c-n{background:#f6c4c4}
+/* Más aire en la cápsula sin que se corte el borde derecho: botones de acción más justos */
+#ct-tabla.vm .acc .gen-t{display:none}
+#ct-tabla.vm .c-acc{width:342px} #ct-tabla.vm .c-ag{width:70px} #ct-tabla.vm .c-tipo{width:128px} #ct-tabla.vm .c-rut{width:82px}
+#ct-tabla.vm .acc .rutif{font-size:.58rem;padding:0 5px;letter-spacing:0}
+#ct-tabla.vm td.c-dir textarea.nom,#ct-tabla.vm td.c-notas textarea.nom{font-size:.76rem}
+#ct-tabla.vm td input,#ct-tabla.vm td select{font-size:.84rem}
+#ct-tabla.vm td textarea.nom{font-size:.84rem}
+/* Ficha abierta: la cápsula del cliente se estira hacia abajo sin cortar el contorno */
+#ct-tabla.vm tbody tr.abierta{box-shadow:none}
+#ct-tabla.vm tbody tr.abierta > td{border-bottom-color:transparent}
+#ct-tabla.vm tbody tr.abierta > td.c-n{border-radius:16px 0 0 0}
+#ct-tabla.vm tbody tr.abierta > td.c-acc{border-radius:0 16px 0 0}
+#ct-tabla.vm tbody tr.ficha{--cap:#ffffff;--capb:#c9d2e3}
+#ct-tabla.vm tbody tr.ficha.alt{--cap:#eef4ff;--capb:#b9c8e6}
+#ct-tabla.vm tbody tr.ficha > td{background:var(--cap);border:1.5px solid var(--capb);border-top:0;border-radius:0 0 16px 16px;box-shadow:0 8px 18px rgba(30,45,80,.12)}
+#ct-tabla.vm tbody tr.ficha.abre .ficha-in{animation:fichaEstira .6s cubic-bezier(.22,.8,.3,1) both;transform-origin:top center}
+@keyframes fichaEstira{from{max-height:0;opacity:0;transform:scaleY(.92)}60%{opacity:1}to{max-height:2400px;opacity:1;transform:none}}
+#ct-tabla .ficha-in{overflow:hidden}
+@media (prefers-reduced-motion:reduce){#ct-tabla .acc .fic .fic-fl,#ct-tabla.vm tbody tr.ficha.abre .ficha-in{animation:none}}
 </style>
 </head>
 <body data-view="inicio">
@@ -1150,6 +1195,7 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
       <select id="ct-tipo"><option value="">Todas las tipificaciones</option></select>
       <select id="ct-seg"><option value="">Todos los segmentos</option></select>
       <div class="ct-rango full" id="ct-rango" hidden><label for="ct-desde">Desde</label><input type="date" id="ct-desde"><label for="ct-hasta">Hasta</label><input type="date" id="ct-hasta"></div>
+      <div class="ct-vista" role="group" aria-label="Vista de la planilla"><button type="button" data-vista="media" title="Cada cliente en su propia cápsula, con más espacio">▤ Vista mediana</button><button type="button" data-vista="compacta" title="Una sola línea por cliente, como antes">☰ Vista compacta</button></div>
       <label class="chk" title="Clientes a los que les enviaste la oferta por WhatsApp desde GoExt"><input type="checkbox" id="ct-oferta"> 📤 Solo con oferta enviada</label>
       <label class="chk"><input type="checkbox" id="ct-verborr"> Ver borrados</label>
     </div>
@@ -1490,7 +1536,7 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.35.0';
+const APP_VERSION = '2.36.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -3742,7 +3788,7 @@ function notaRetro(r) {
 }
 function notasRetroTodas() { let n = 0; CT.forEach(r => { if (!r.borrado && notaRetro(r)) { r.upd = Date.now(); n++; } }); if (n) ctGuardar(); return n; }
 const OBS_RAPIDAS = ['Interesado, llamar más tarde', 'Pide la oferta por WhatsApp', 'Evaluación pendiente', 'Tiene deuda', 'Quiere equipo', 'Comparando con otra compañía', 'No contesta, reintentar'];
-let ctAbierto = '';
+let ctAbierto = '', ctFichaVista = '';
 /* ── ¿Tiene deuda? ──────────────────────────────────────────────────
    En la ficha, un botón por compañía: copia el RUT del cliente y abre el portal de pago de esa compañía.
    Con la extensión GoExt (1.14.0 o más nueva) el RUT se escribe solo y el resultado vuelve a la fila. */
@@ -3931,12 +3977,12 @@ function ctFichaHTML(r) {
   const modulo = ([t, cs]) => { const [c, ico] = MOD[t] || ['cliente', ICO.cliente]; return t === 'Equipo'
       ? `<section class="fi-mod fi-m-${c}"><div class="fi-t">${ico}<span>Equipo</span><label class="fi-sin"><input type="checkbox" data-k="sineq"${r.sineq ? ' checked' : ''}> Sin equipo</label><button type="button" class="btn sm" data-eqpegar${r.sineq ? ' disabled' : ''}>Pegar equipo del Stock</button></div><div class="fi-g${r.sineq ? ' fi-off' : ''}">${cs.map(campo).join('')}</div></section>`
       : `<section class="fi-mod fi-m-${c}"><div class="fi-t">${ico}<span>${t}</span></div><div class="fi-g">${cs.map(campo).join('')}</div>${t === 'Venta' ? fichaLineasHTML(r) : ''}</section>`; };
-  return `<tr class="ficha" data-id="${r.id}"><td colspan="13">
+  return `<tr class="ficha" data-id="${r.id}"><td colspan="13"><div class="ficha-in">
     <div class="fi-top"><div class="fi-acc"><button type="button" class="btn sm red" data-ct="script" title="Abre el Script de Cierre con los datos de este cliente ya cargados">▶ Ir al Script de Cierre con este cliente</button><button type="button" class="btn sm" data-subir title="Abre el formulario de ventas con los datos de este cliente ya escritos">📤 Subir la venta al formulario</button><button type="button" class="btn sm" data-ct="copiar" title="Copia los datos del cliente para pegarlos en WhatsApp (por ejemplo, para la supervisora)">📋 Copiar datos del cliente para WhatsApp</button><button type="button" class="btn sm" data-exportar title="Archivo con todos los datos de este cliente, para WhatsApp o para otro computador">💾 Guardar cliente en un archivo</button><button type="button" class="btn sm dark" data-ct="ficha" title="Cierra la ficha. Todo queda guardado.">▴ Cerrar esta ficha</button></div>${deudaBarra(r)}</div>
     ${r.histTip ? `<div class="fi-hist">🔁 <b>Contactado antes:</b> ${esc(r.histTip)}</div>` : ''}
     <div class="fi-mods">${FICHA.map(modulo).join('')}
     <section class="fi-mod fi-m-obs"><div class="fi-t">${ICO.obs}<span>Observaciones</span></div><div class="fi-obs"><div class="fi-chips">${OBS_RAPIDAS.map(o => `<button type="button" data-obs="${esc(o)}">+ ${esc(o)}</button>`).join('')}</div><textarea data-k="notas" class="fi-obs-txt" rows="5" placeholder="Pega o escribe aquí todo lo que conversaste con el cliente">${esc(r.notas || '')}</textarea><small class="fi-obs-ayuda">Se ven todos los comentarios. Si son muchos, desliza con la rueda del mouse dentro del cuadro o arrastra la esquina de abajo a la derecha para agrandarlo.</small></div></section></div>
-    <div class="fi-nota">Todo se guarda solo, sea venta o no.</div></td></tr>`;
+    <div class="fi-nota">Todo se guarda solo, sea venta o no.</div></div></td></tr>`;
 }
 // Completa una fila con lo leído de Genesys: solo llena lo vacío, nunca borra lo que ya escribiste
 let ctPegarEnFila = () => {};
@@ -4650,7 +4696,8 @@ function ctPinta() {
   const lista = ctFiltradas(), verBorr = $('#ct-verborr').checked;
   const opt = (arr, sel, vacio) => `<option value="">${vacio}</option>` + arr.map(x => `<option${x === sel ? ' selected' : ''}>${esc(x)}</option>`).join('');
   const fmtF = iso => { const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/); return m ? `${m[3]}-${m[2]}-${m[1]}` : iso; };
-  $('#ct-body').innerHTML = lista.map((r, i) => `<tr data-id="${r.id}" class="${r.id === ctNuevo ? 'nuevo ' : ''}${r.id === ctNeon ? 'neon ' : ''}${esVentaTipo(r.tipo) ? 't-venta ' : ''}${tipoColor(r.tipo)} ${r.fav ? 'fav ' : ''}${r.borrado ? 'borrado ' : ''}${r.id === ctAbierto ? 'abierta' : ''}">
+  const animar = ctAbierto && ctAbierto !== ctFichaVista; ctFichaVista = ctAbierto;   // la ficha se estira solo cuando recién se abre
+  $('#ct-body').innerHTML = lista.map((r, i) => `${i ? '<tr class="sep" aria-hidden="true"><td colspan="13"></td></tr>' : ''}<tr data-id="${r.id}" class="${i % 2 ? 'alt ' : ''}${r.id === ctNuevo ? 'nuevo ' : ''}${r.id === ctNeon ? 'neon ' : ''}${esVentaTipo(r.tipo) ? 't-venta ' : ''}${tipoColor(r.tipo)} ${r.fav ? 'fav ' : ''}${r.borrado ? 'borrado ' : ''}${r.id === ctAbierto ? 'abierta' : ''}">
     <td class="c-n"><button class="estrella" data-ct="fav" title="${r.fav ? 'Quitar de favoritos' : 'Marcar como cliente favorito'}">${r.fav ? '★' : '☆'}</button><span data-ct="ficha" title="${esc(ctSeg(r))} · ${ctExtras(r)} datos en la ficha. Clic para abrir la ficha.">${i + 1}</span>${r.histTip ? `<span class="hist-m" title="${esc('Contactado antes. ' + r.histTip)}">🔁</span>` : ''}</td>
     <td class="c-fecha"><input data-k="fecha" value="${esc(fmtF(r.fecha))}" placeholder="DD-MM-AAAA" title="${esc(fmtF(r.fecha))}"><input data-k="hora" class="hora-2" value="${esc(r.hora)}" placeholder="HH:MM" title="Hora"></td>
     <td class="c-rut"><input data-k="rut" value="${esc(r.rut)}" placeholder="RUT" title="${esc(r.rut)}"></td>
@@ -4663,8 +4710,8 @@ function ctPinta() {
     <td class="c-ag">${r.borrado ? '' : agBoton(r)}</td>
     <td class="c-acc"><div class="acc">${r.borrado
       ? `<button data-ct="restaurar" class="go" title="Recuperar registro">↺</button>`
-      : `<button data-ct="wa" class="wa" title="Abrir WhatsApp Web con este cliente y enviarle la oferta"><svg viewBox="0 0 16 16"><path d="${ICONOS.wa}"/></svg></button><button data-ct="genesys" class="gen" title="Traer el teléfono desde Genesys (reemplaza el de esta fila)"><svg class="gico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="11.2" cy="2.6" r="1.8"/><rect x="4.2" y="5.4" width="6" height="9.4" rx="3"/></svg><span class="gen-t">Genesys</span></button><button data-ct="copiar" class="cop" title="Copiar los datos del cliente para WhatsApp (por ejemplo, para enviarlos a la supervisora)">📋</button><button data-ct="ficha" class="fic${r.id === ctAbierto ? ' on' : ''}" style="--i:${i}" title="${r.id === ctAbierto ? 'Cerrar la ficha' : 'Abrir la ficha con todos los datos del cliente'}">${r.id === ctAbierto ? '▴<span class="fic-t"> Cerrar</span>' : '▾<span class="fic-t"> Ficha</span>'}</button><button data-ct="rutificador" class="rutif" title="Copiar el RUT y abrir el Rutificador">RUTIFICADOR</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
-  </tr>${r.id === ctAbierto && !r.borrado ? ctFichaHTML(r) : ''}`).join('');
+      : `<button data-ct="wa" class="wa" title="Abrir WhatsApp Web con este cliente y enviarle la oferta"><svg viewBox="0 0 16 16"><path d="${ICONOS.wa}"/></svg></button><button data-ct="genesys" class="gen" title="Traer el teléfono desde Genesys (reemplaza el de esta fila)"><svg class="gico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="11.2" cy="2.6" r="1.8"/><rect x="4.2" y="5.4" width="6" height="9.4" rx="3"/></svg><span class="gen-t">Genesys</span></button><button data-ct="copiar" class="cop" title="Copiar los datos del cliente para WhatsApp (por ejemplo, para enviarlos a la supervisora)">📋</button><button data-ct="ficha" class="fic${r.id === ctAbierto ? ' on' : ''}" style="--i:${i}" title="${r.id === ctAbierto ? 'Cerrar la ficha' : 'Abrir la ficha con todos los datos del cliente'}"><svg class="fic-fl" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6l4.5 4.5L12.5 6"/></svg><span class="fic-t">${r.id === ctAbierto ? ' Cerrar' : ' Ver ficha'}</span></button><button data-ct="rutificador" class="rutif" title="Copiar el RUT y abrir el Rutificador">RUTIFICADOR</button><button data-ct="script" class="go" title="Pasar al Script de Cierre">▶</button><button data-ct="borrar" title="Borrar (se puede recuperar)">✕</button>`}</div></td>
+  </tr>${r.id === ctAbierto && !r.borrado ? ctFichaHTML(r).replace('<tr class="ficha"', `<tr class="ficha${i % 2 ? ' alt' : ''}${animar ? ' abre' : ''}"`) : ''}`).join('');
   $$('#ct-body textarea.nom').forEach(nomAlto);
   $$('#ct-body .ln-ui').forEach(c => lineasUI(c, c.previousElementSibling, c.dataset.fila ? etiquetaAdic(c.dataset.fila) : null));
   $('#ct-vacio').hidden = lista.length > 0;
@@ -4798,6 +4845,10 @@ function initControl() {
   $('#ct-excel').onclick = ctExcel;
   $('#ct-q').addEventListener('input', ctPinta);
   ['#ct-tipo', '#ct-seg', '#ct-desde', '#ct-hasta', '#ct-verborr', '#ct-oferta'].forEach(s => $(s).addEventListener('change', ctPinta));
+  // Vista de la planilla: mediana (por defecto, cada cliente en su cápsula) o compacta (una línea por cliente). Se recuerda.
+  const vistaPinta = () => { let v = 'media'; try { v = localStorage.getItem('clarogo_vista_ct') === 'compacta' ? 'compacta' : 'media'; } catch (e) {} $('#ct-tabla').classList.toggle('vm', v === 'media'); $$('.ct-vista [data-vista]').forEach(b => b.classList.toggle('on', b.dataset.vista === v)); };
+  $('.ct-vista').addEventListener('click', e => { const b = e.target.closest('[data-vista]'); if (!b) return; try { localStorage.setItem('clarogo_vista_ct', b.dataset.vista); } catch (x) {} vistaPinta(); });
+  vistaPinta();
   $('#ct-periodo').addEventListener('change', () => { $('#ct-rango').hidden = $('#ct-periodo').value !== 'rango'; ctPinta(); });
   $('#ct-resp').addEventListener('click', e => {
     const b = e.target.closest('[data-resp]'); if (!b) return;
@@ -5089,7 +5140,7 @@ async function limpiarCache() {
   toast('Guardando tu planilla y limpiando la caché…');
   try { await respSync('limpieza'); } catch (e) {}
   // Se conservan la planilla, la clave de GitHub, el modo administrador y los datos personales del ejecutivo (nombre, teléfono, mensaje, firma y preferencias)
-  const CONSERVAR = [CT_KEY, GH.key, ADMIN.key, 'agentName', 'clarogo_telefono', 'clarogo_plantilla', 'clarogo_firma', 'clarogo_soy_autor', 'clarogo_tema', SONIDO_KEY];
+  const CONSERVAR = [CT_KEY, GH.key, ADMIN.key, 'agentName', 'clarogo_telefono', 'clarogo_plantilla', 'clarogo_firma', 'clarogo_soy_autor', 'clarogo_tema', 'clarogo_vista_ct', SONIDO_KEY];
   const guardados = {}; try { CONSERVAR.forEach(k => { const v = localStorage.getItem(k); if (v !== null) guardados[k] = v; }); } catch (e) {}
   try {
     document.cookie.split(';').forEach(c => {
