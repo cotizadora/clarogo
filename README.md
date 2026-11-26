@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 26-11-2026: ClaroGo! 2.39.0, horario de diciembre
+
+- Fuente: planilla "turnos diciembre.xlsx" enviada por Eduardo el 26-11-2026 (turnos del 01-12-2026 al 02-01-2027, 15 ejecutivos). No se incluyó la columna de grupos (A, B, C, D), que es solo para Eduardo.
+- Horario Ejecutivos ya trae diciembre. En los navegadores que tenían un horario guardado se agregan solo los días de diciembre, una vez, sin tocar noviembre.
+- "Sin turno" se muestra como día libre. Carla Daniela Gómez quedó con el mismo nombre de noviembre (en el Excel de diciembre dice "Lanzon") para no duplicarla.
+
 ### 26-11-2026: ClaroGo! 2.38.0, controles de Mi Planilla juntos, claros y fijos
 
 - Los controles de Mi Planilla quedan juntos en una barra de dos filas: arriba las acciones y abajo la búsqueda y los filtros. En PC la barra y los títulos de las columnas quedan fijos arriba al bajar por la planilla (en celular se desplazan normal).
