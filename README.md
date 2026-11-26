@@ -68,6 +68,10 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 26-11-2026: ClaroGo! 2.39.1, semanas del horario como botones
+
+- En Horario Ejecutivos, el menú desplegable de semanas se reemplazó por botones: uno por semana ("23 nov al 29 nov"), la semana actual marcada con "★ Esta semana", las pasadas más tenues y la elegida en rojo. Brillo rojo al pasar el mouse.
+
 ### 26-11-2026: ClaroGo! 2.39.0, horario de diciembre
 
 - Fuente: planilla "turnos diciembre.xlsx" enviada por Eduardo el 26-11-2026 (turnos del 01-12-2026 al 02-01-2027, 15 ejecutivos). No se incluyó la columna de grupos (A, B, C, D), que es solo para Eduardo.

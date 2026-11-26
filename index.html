@@ -1030,6 +1030,16 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
 .ct-barra .cb-filtros input[type=search]{flex:1 1 220px;min-width:180px;height:34px;font-size:.82rem}
 .ct-barra .cb-filtros select{min-width:0;max-width:200px;height:34px;font-size:.8rem}
 .ct-barra .cb-filtros .chk{height:34px;padding:0 9px;font-size:.78rem}
+/* Semanas del Horario como botones */
+.hz-semanas{display:flex;flex-wrap:wrap;gap:8px;grid-column:1/-1 !important}
+.hz-sem{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:132px;padding:8px 14px;border:1.5px solid #cfd6e2;border-radius:12px;background:#fff;color:#1f2430;font:inherit;cursor:pointer;text-align:left;transition:box-shadow .2s,transform .15s,border-color .2s}
+.hz-sem small{font-size:.68rem;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.04em}
+.hz-sem b{font-size:.92rem}
+.hz-sem.pasada{opacity:.7}
+.hz-sem.hoy small{color:#e3000f}
+.hz-sem:hover{border-color:#e3000f;transform:translateY(-1px);box-shadow:0 0 0 2px rgba(227,0,15,.14),0 0 14px rgba(227,0,15,.35);opacity:1}
+.hz-sem.on{background:linear-gradient(180deg,#ff2b2b,#d0000d);border-color:#d0000d;color:#fff;box-shadow:0 5px 14px rgba(208,0,13,.35);opacity:1}
+.hz-sem.on small{color:#ffe1e1}
 </style>
 </head>
 <body data-view="inicio">
@@ -1236,7 +1246,8 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
         <button class="btn red" id="hz-pegar">📋 Pegar horario</button>
         <button class="btn sm" id="hz-borrar">Borrar horario</button>
       </div>
-      <select id="hz-semana"></select>
+      <select id="hz-semana" hidden></select>
+      <div class="hz-semanas full" id="hz-sem-btns" role="group" aria-label="Elige la semana"></div>
       <input type="search" id="hz-q" placeholder="Buscar ejecutivo" autocomplete="off">
       <label class="chk" title="Horas que se descuentan por cada día trabajado">Colación por día <input type="number" id="hz-colacion" min="0" max="3" step="0.5" style="width:64px;margin-left:6px"> h</label>
     </div>
@@ -1615,7 +1626,7 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.39.0';
+const APP_VERSION = '2.39.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -5195,6 +5206,9 @@ function hzPinta() {
   const semanas = hzSemanas(), sel = $('#hz-semana'), hoyLun = lunesDe(isoDe(new Date()));
   if (!semanas.includes(hzSemana)) hzSemana = semanas.includes(hoyLun) ? hoyLun : (semanas.find(s => s > hoyLun) || semanas[semanas.length - 1] || '');
   sel.innerHTML = semanas.map(s => `<option value="${s}"${s === hzSemana ? ' selected' : ''}>${s === hoyLun ? 'Esta semana · ' : ''}${ddmm(s)} al ${ddmm(masDias(s, 6))}</option>`).join('') || '<option value="">Sin horario cargado</option>';
+  // Semanas como botones (más fácil que un menú): la elegida queda marcada en rojo y la actual dice "Esta semana"
+  const MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  $('#hz-sem-btns').innerHTML = semanas.map(s => { const f = masDias(s, 6); return `<button type="button" class="hz-sem${s === hzSemana ? ' on' : ''}${s === hoyLun ? ' hoy' : ''}${s < hoyLun ? ' pasada' : ''}" data-sem="${s}"><small>${s === hoyLun ? '★ Esta semana' : s < hoyLun ? 'Semana pasada' : 'Semana del'}</small><b>${+s.slice(8)} ${MES[+s.slice(5, 7) - 1]} al ${+f.slice(8)} ${MES[+f.slice(5, 7) - 1]}</b></button>`; }).join('') || '<span class="dim">Sin horario cargado</span>';
   $('#hz-colacion').value = HZ.colacion;
   const dias = hzSemana ? [0, 1, 2, 3, 4, 5, 6].map(i => masDias(hzSemana, i)) : [];
   $('#hz-head').innerHTML = `<tr><th class="h-n"></th><th class="h-nom">Ejecutivo</th>${dias.map((d, i) => `<th class="h-dia${d === isoDe(new Date()) ? ' hoy' : ''}">${HZ_DIAS[i]}<br><small>${ddmm(d)}</small></th>`).join('')}<th class="h-hrs">Horas</th><th class="h-est">Estado</th></tr>`;
@@ -5245,6 +5259,7 @@ function initHorario() {
   };
   $('#hz-procesar').onclick = () => { const txt = $('#hz-texto').value; $('#dlg-horario').close(); procesar(txt); };
   $('#hz-semana').addEventListener('change', e => { hzSemana = e.target.value; hzPinta(); });
+  $('#hz-sem-btns').addEventListener('click', e => { const b = e.target.closest('[data-sem]'); if (!b) return; hzSemana = b.dataset.sem; hzPinta(); });
   $('#hz-colacion').addEventListener('change', e => { const v = parseFloat(String(e.target.value).replace(',', '.')); HZ.colacion = isNaN(v) || v < 0 ? 1 : v; hzGuardar(); hzPinta(); });
   $('#hz-q').addEventListener('input', hzPinta);
   // Teléfono: vista apaisada. Pantalla completa + giro horizontal (Android con Chrome o Edge).
