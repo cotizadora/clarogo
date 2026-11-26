@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 26-11-2026: ClaroGo! 2.40.0, horario que se actualiza desde el escritorio
+
+- Nuevo "Actualizar horario ClaroGo" en el escritorio (herramientas/actualizar-horario.ps1 y su .bat): se elige el Excel de turnos, muestra el resumen (fechas y ejecutivos) y publica datos/horario.json con la sesión de GitHub del computador. Lee la fila de fechas, la columna "Ejecutivo" y los turnos ("10:00 a 19:00", "Sin turno" = libre); cualquier otra columna, como los grupos A, B, C y D, no se publica.
+- Horario Ejecutivos lee ese archivo solo: cada navegador agrega los días del horario publicado una vez por publicación, por nombre, sin borrar los otros días. Reconoce al mismo ejecutivo aunque cambie una letra del apellido (por ejemplo Lazon y Lanzon).
+- Arriba del horario se indica "Horario oficial publicado el …" con las fechas que trae.
+
 ### 26-11-2026: ClaroGo! 2.39.1, semanas del horario como botones
 
 - En Horario Ejecutivos, el menú desplegable de semanas se reemplazó por botones: uno por semana ("23 nov al 29 nov"), la semana actual marcada con "★ Esta semana", las pasadas más tenues y la elegida en rojo. Brillo rojo al pasar el mouse.

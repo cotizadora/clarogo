@@ -1626,7 +1626,7 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.39.1';
+const APP_VERSION = '2.40.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -5242,11 +5242,31 @@ function hzPinta() {
   const faltan = dias.filter(d => !HZ.ejecutivos.some(e => Object.prototype.hasOwnProperty.call(e.turnos, d)));
   $('#hz-aviso').hidden = !HZ.ejecutivos.length || !faltan.length || faltan.length === 7;
   $('#hz-aviso').textContent = `La planilla no trae ` + faltan.map(d => HZ_DIAS[dias.indexOf(d)] + ' ' + ddmm(d)).join(', ') + `: las horas de esta semana son solo de los días cargados.`;
-  $('#hz-info').textContent = HZ.base ? 'Horario de la planilla del 13-11-2026 (12-11 al 29-11). Para actualizarlo, pega el horario nuevo.' : HZ.cargado ? `Horario cargado el ${new Date(HZ.cargado).toLocaleString('es-CL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}.` : '';
+  $('#hz-info').textContent = HZ.remoto ? `Horario oficial publicado el ${new Date(HZ.remoto).toLocaleDateString('es-CL')}${HZ.remotoDesde ? ` (turnos del ${ddmm(HZ.remotoDesde)} al ${ddmm(HZ.remotoHasta)})` : ''}. Se actualiza solo cuando se publica uno nuevo.` : HZ.base ? 'Horario de la planilla del 13-11-2026 (12-11 al 29-11). Para actualizarlo, pega el horario nuevo.' : HZ.cargado ? `Horario cargado el ${new Date(HZ.cargado).toLocaleString('es-CL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}.` : '';
 }
 
+/* Horario publicado desde el escritorio ("Actualizar horario ClaroGo"): datos/horario.json.
+   Cada navegador lo agrega una vez por publicación, por nombre y solo en los días que trae. */
+const hzClave = n => String(n || '').toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
+// Mismo ejecutivo: mismo nombre, o los mismos tres primeros nombres con la misma cantidad de palabras (por ejemplo Lazon / Lanzon)
+const hzMismo = (a, b) => { const x = hzClave(a), y = hzClave(b); if (x === y) return true; const p = x.split(' '), q = y.split(' '); return p.length >= 3 && p.length === q.length && p.slice(0, 3).join(' ') === q.slice(0, 3).join(' '); };
+async function hzRemoto() {
+  try {
+    const r = await fetch('datos/horario.json?v=' + Date.now(), { cache: 'no-store' }); if (!r.ok) return;
+    const j = await r.json(); if (!j || !Array.isArray(j.ejecutivos) || !j.publicado || String(HZ.remoto || '') >= j.publicado) return;
+    j.ejecutivos.forEach(n => {
+      if (!n || !n.nombre || !n.turnos || typeof n.turnos !== 'object') return;
+      const t = {}; Object.entries(n.turnos).forEach(([d, v]) => { if (/^\d{4}-\d{2}-\d{2}$/.test(d)) t[d] = String(v || '').slice(0, 40); });
+      const x = HZ.ejecutivos.find(e => hzMismo(e.nombre, n.nombre));
+      if (x) Object.assign(x.turnos, t); else HZ.ejecutivos.push({ nombre: String(n.nombre).slice(0, 80), turnos: t });
+    });
+    Object.assign(HZ, { remoto: j.publicado, remotoDesde: j.desde || '', remotoHasta: j.hasta || '', base: false, cargado: j.publicado });
+    hzGuardar(); hzSemana = ''; hzPinta();
+  } catch (e) {}
+}
 function initHorario() {
   hzLeer();
+  setTimeout(hzRemoto, 300);
   const procesar = txt => {
     const r = hzLeerPegado(txt || '');
     if (r.error) return toast(r.error);
