@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 26-11-2026: ClaroGo! 2.37.0, planilla a todo el ancho, correo y observación desplegable
+
+- Arreglo: en la vista mediana la planilla quedaba cargada a la izquierda con espacio vacío a la derecha (los separadores entre clientes declaraban más columnas de las que hay). Ahora usa todo el ancho, con filas un poco más altas y letra más grande.
+- El correo del cliente se ve y se edita en la planilla, debajo de la dirección (columna "Dirección / Correo").
+- Observación desplegable: al hacer clic en la observación, la cápsula del cliente se estira hacia abajo con un espacio grande para escribir libremente. Apenas se escribe algo nuevo se agrega sola la línea "📅 día-mes-año hora:minuto", y arriba se muestra cuál será. Enter hace línea nueva; "✓ Listo", Esc o un clic afuera la cierran. Se guarda mientras se escribe.
+
 ### 26-11-2026: ClaroGo! 2.36.0, Mi Planilla en vista mediana con cápsulas por cliente
 
 - Nueva vista mediana, por defecto: cada cliente es una cápsula con puntas redondeadas, separada de la siguiente, con colores intercalados (blanco y celeste suave) sobre un fondo gris, filas más altas y letra más grande. La tipificación se ve como color en el número de la izquierda.

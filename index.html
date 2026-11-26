@@ -641,10 +641,6 @@ body.pf-falta .mute-banner{display:none!important}
 #ct-tabla .plan-caja .plan-ver.vacio{color:#9aa0a6}
 #ct-tabla .plan-caja select.plan-sel{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
 #ct-tabla .plan-caja:focus-within{outline:2px solid #217346;outline-offset:-2px}
-#nota-zoom{position:fixed;display:none;z-index:40;min-height:130px;max-height:60vh;padding:10px 12px;border:2px solid #217346;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.25);font:inherit;font-size:.9rem;line-height:1.45;color:var(--text);background:#fff;resize:vertical}
-#nota-zoom.on{display:block}
-#nota-zoom-ayuda{position:fixed;display:none;z-index:41;font-size:.7rem;color:#fff;background:#217346;padding:2px 8px;border-radius:6px 6px 0 0}
-#nota-zoom-ayuda.on{display:block}
 #ct-tabla tbody tr:hover td{background:#f5f9ff}
 /* Barra fija de Deshacer y Guardar */
 .gbarra{position:sticky;top:var(--top-h,0px);z-index:6;display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--bg);padding:8px 0;margin:-4px 0 8px;border-bottom:1px solid var(--border)}
@@ -954,6 +950,31 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
 @keyframes fichaEstira{from{max-height:0;opacity:0;transform:scaleY(.92)}60%{opacity:1}to{max-height:2400px;opacity:1;transform:none}}
 #ct-tabla .ficha-in{overflow:hidden}
 @media (prefers-reduced-motion:reduce){#ct-tabla .acc .fic .fic-fl,#ct-tabla.vm tbody tr.ficha.abre .ficha-in{animation:none}}
+/* Observación desplegable: sale de la cápsula del cliente y se estira hacia abajo */
+#nota-panel{position:absolute;z-index:30;background:#fff;border:1.5px solid #c9d2e3;border-top:0;border-radius:0 0 18px 18px;box-shadow:0 16px 32px rgba(30,45,80,.20);padding:10px 14px 12px}
+#nota-panel.alt{background:#eef4ff;border-color:#b9c8e6}
+#nota-panel.abre{animation:notaEstira .5s cubic-bezier(.22,.8,.3,1) both}
+@keyframes notaEstira{from{clip-path:inset(0 0 100% 0 round 0 0 18px 18px);opacity:.4}to{clip-path:inset(0 0 0 0 round 0 0 18px 18px);opacity:1}}
+#nota-panel .np-cab{display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+#nota-panel .np-tit{font-size:.95rem;color:#1f2430}
+#nota-panel .np-sello{flex:1;min-width:220px;font-size:.8rem;color:#1a56b8;background:#fff;border:1.5px dashed #9bb7e6;border-radius:999px;padding:4px 12px}
+#nota-panel .np-listo{border:0;border-radius:999px;background:#13804a;color:#fff;font:inherit;font-weight:800;font-size:.85rem;padding:7px 16px;cursor:pointer;box-shadow:0 3px 8px rgba(19,128,74,.3)}
+#nota-panel .np-txt{display:block;width:100%;min-height:180px;max-height:52vh;resize:vertical;border:1.5px solid #c9d2e3;border-radius:12px;padding:12px 14px;font:inherit;font-size:.95rem;line-height:1.55;background:#fff;color:#1f2430}
+#nota-panel .np-txt:focus{outline:2px solid #1a56b8;outline-offset:-1px}
+#nota-panel .np-pie{margin-top:6px;font-size:.74rem;color:#5f6673}
+#ct-tabla tbody tr.nota-abierta > td.c-notas{background:#fff8d6 !important}
+#ct-tabla.vm tbody tr.nota-abierta{box-shadow:none}
+#ct-tabla.vm tbody tr.nota-abierta > td{border-bottom-color:transparent}
+#ct-tabla.vm tbody tr.nota-abierta > td.c-n{border-radius:16px 0 0 0}
+#ct-tabla.vm tbody tr.nota-abierta > td.c-acc{border-radius:0 16px 0 0}
+@media (prefers-reduced-motion:reduce){#nota-panel.abre{animation:none}}
+/* Correo debajo de la dirección */
+#ct-tabla td.c-dir input.mail-2{display:block;height:20px;padding:0 6px;font-size:.72rem;color:#1a56b8}
+#ct-tabla td.c-dir input.mail-2::placeholder{color:#b3b7be}
+/* Vista mediana un poco más grande */
+#ct-tabla.vm tbody tr:not(.sep):not(.ficha) > td{height:68px}
+#ct-tabla.vm td input,#ct-tabla.vm td select,#ct-tabla.vm td textarea.nom{font-size:.88rem}
+#ct-tabla.vm td.c-dir input.mail-2{font-size:.76rem}
 </style>
 </head>
 <body data-view="inicio">
@@ -1202,7 +1223,7 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
     <div class="card" id="ag-panel" hidden style="padding:12px 14px"></div>
     <div class="chips" id="ct-resumen"></div>    <div class="ct-wrap"><table id="ct-tabla">
       <colgroup><col class="c-n"><col class="c-fecha"><col class="c-rut"><col class="c-nombre"><col class="c-dir"><col class="c-tel"><col class="c-deu"><col class="c-tipo"><col class="c-notas"><col class="c-ag"><col class="c-acc"></colgroup>
-      <thead><tr><th class="c-n"></th><th class="c-fecha">Fecha<small>Hora</small></th><th class="c-rut">RUT</th><th class="c-nombre">Nombre</th><th class="c-dir">Dirección</th><th class="c-tel" title="Teléfono y compañía de origen">Teléfono<small>Compañía</small></th><th class="c-deu" title="Revisar si el cliente tiene deuda en su compañía">Deuda</th><th class="c-tipo">Tipificación<small>Plan</small></th><th class="c-notas">Observación</th><th class="c-ag" title="Agenda una llamada de vuelta">Agendar</th><th class="c-acc"></th></tr></thead>
+      <thead><tr><th class="c-n"></th><th class="c-fecha">Fecha<small>Hora</small></th><th class="c-rut">RUT</th><th class="c-nombre">Nombre</th><th class="c-dir">Dirección<small>Correo</small></th><th class="c-tel" title="Teléfono y compañía de origen">Teléfono<small>Compañía</small></th><th class="c-deu" title="Revisar si el cliente tiene deuda en su compañía">Deuda</th><th class="c-tipo">Tipificación<small>Plan</small></th><th class="c-notas">Observación</th><th class="c-ag" title="Agenda una llamada de vuelta">Agendar</th><th class="c-acc"></th></tr></thead>
       <tbody id="ct-body"></tbody>
     </table></div>
     <div class="empty" id="ct-vacio" hidden>No hay llamadas en este período. Pega la primera desde Genesys.</div>
@@ -1536,7 +1557,7 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.36.0';
+const APP_VERSION = '2.37.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -3977,7 +3998,7 @@ function ctFichaHTML(r) {
   const modulo = ([t, cs]) => { const [c, ico] = MOD[t] || ['cliente', ICO.cliente]; return t === 'Equipo'
       ? `<section class="fi-mod fi-m-${c}"><div class="fi-t">${ico}<span>Equipo</span><label class="fi-sin"><input type="checkbox" data-k="sineq"${r.sineq ? ' checked' : ''}> Sin equipo</label><button type="button" class="btn sm" data-eqpegar${r.sineq ? ' disabled' : ''}>Pegar equipo del Stock</button></div><div class="fi-g${r.sineq ? ' fi-off' : ''}">${cs.map(campo).join('')}</div></section>`
       : `<section class="fi-mod fi-m-${c}"><div class="fi-t">${ico}<span>${t}</span></div><div class="fi-g">${cs.map(campo).join('')}</div>${t === 'Venta' ? fichaLineasHTML(r) : ''}</section>`; };
-  return `<tr class="ficha" data-id="${r.id}"><td colspan="13"><div class="ficha-in">
+  return `<tr class="ficha" data-id="${r.id}"><td colspan="11"><div class="ficha-in">
     <div class="fi-top"><div class="fi-acc"><button type="button" class="btn sm red" data-ct="script" title="Abre el Script de Cierre con los datos de este cliente ya cargados">▶ Ir al Script de Cierre con este cliente</button><button type="button" class="btn sm" data-subir title="Abre el formulario de ventas con los datos de este cliente ya escritos">📤 Subir la venta al formulario</button><button type="button" class="btn sm" data-ct="copiar" title="Copia los datos del cliente para pegarlos en WhatsApp (por ejemplo, para la supervisora)">📋 Copiar datos del cliente para WhatsApp</button><button type="button" class="btn sm" data-exportar title="Archivo con todos los datos de este cliente, para WhatsApp o para otro computador">💾 Guardar cliente en un archivo</button><button type="button" class="btn sm dark" data-ct="ficha" title="Cierra la ficha. Todo queda guardado.">▴ Cerrar esta ficha</button></div>${deudaBarra(r)}</div>
     ${r.histTip ? `<div class="fi-hist">🔁 <b>Contactado antes:</b> ${esc(r.histTip)}</div>` : ''}
     <div class="fi-mods">${FICHA.map(modulo).join('')}
@@ -4660,33 +4681,64 @@ function initColumnas() {
   });
   $('#ct-tabla thead').addEventListener('dblclick', e => { if (!e.target.closest('.col-res')) return; try { localStorage.removeItem(COL_KEY); } catch (x) {} colAplicar(); toast('Columnas en su ancho original'); });
 }
-/* ── Notas en grande ────────────────────────────────────────────────
-   Al hacer clic en la celda de Notas se abre encima un cuadro grande para leer y escribir cómodo.
-   Enter o Esc lo cierran; Shift+Enter hace una línea nueva. Todo se guarda mientras se escribe. */
+/* ── Observación desplegable ──────────────────────────────────────
+   Al hacer clic en la Observación de un cliente, su cápsula se estira hacia abajo y aparece un espacio grande para
+   escribir libremente. Apenas se escribe algo nuevo, ClaroGo! pone sola la línea "📅 día-mes-año hora:minuto".
+   Enter hace una línea nueva; Esc, "Listo" o un clic afuera la cierran. Todo se guarda mientras se escribe. */
 function initNotaZoom() {
-  const z = document.createElement('textarea'), ayuda = document.createElement('div');
-  z.id = 'nota-zoom'; z.placeholder = 'Escribe el comentario del cliente';
-  ayuda.id = 'nota-zoom-ayuda'; ayuda.textContent = 'Observación · Enter o Esc para cerrar · Shift+Enter: otra línea';
-  document.body.append(z, ayuda);
-  let fila = '';
-  // Al cerrar el editor, lo agregado lleva su línea de fecha y hora
-  const cerrar = () => { if (!fila) return; { const rr = CT.find(x => x.id === fila); if (rr) { const s = notaSellar(z.dataset.antes, rr.notas); if (s !== rr.notas) { rr.notas = s; rr.upd = Date.now(); ctGuardar(); } } } z.classList.remove('on'); ayuda.classList.remove('on'); const id = fila; fila = ''; const inp = $(`#ct-body tr[data-id="${id}"]:not(.ficha) [data-k="notas"]`); if (inp) { const r = CT.find(x => x.id === id); if (r) notaPoner(inp, r.notas); } };
+  const p = document.createElement('div');
+  p.id = 'nota-panel'; p.hidden = true;
+  p.innerHTML = `<div class="np-cab"><b class="np-tit">📝 Observación</b><span class="np-sello"></span><button type="button" class="np-listo">✓ Listo</button></div>
+    <textarea class="np-txt" placeholder="Escribe aquí lo que conversaste con el cliente…"></textarea>
+    <div class="np-pie">Enter: línea nueva · Esc o "Listo": cerrar · Se guarda solo mientras escribes</div>`;
+  document.body.appendChild(p);
+  const z = p.querySelector('.np-txt'), sello = p.querySelector('.np-sello');
+  let fila = '', sellado = false, reloj = 0;
+  const trDe = () => fila && $(`#ct-body tr[data-id="${fila}"]:not(.ficha)`);
+  const ubicar = () => {
+    const tr = trDe(); if (!tr) return;
+    tr.classList.add('nota-abierta');
+    const c = tr.getBoundingClientRect();
+    Object.assign(p.style, { left: (c.left + scrollX) + 'px', top: (c.bottom + scrollY - 2) + 'px', width: c.width + 'px' });
+    p.classList.toggle('alt', tr.classList.contains('alt'));
+  };
+  const pintaSello = () => { sello.innerHTML = sellado ? '✓ Quedó con fecha y hora' : `Al escribir algo nuevo queda con fecha y hora: <b>${esc(selloNota())}</b>`; };
+  const cerrar = () => {
+    if (!fila) return;
+    const rr = CT.find(x => x.id === fila);
+    if (rr) { const s = notaSellar(z.dataset.antes, rr.notas); if (s !== rr.notas) { rr.notas = s; rr.upd = Date.now(); ctGuardar(); } $$(`#ct-body [data-id="${rr.id}"] [data-k="notas"]`).forEach(x => notaPoner(x, rr.notas)); }
+    const tr = trDe(); if (tr) tr.classList.remove('nota-abierta');
+    fila = ''; p.hidden = true; p.classList.remove('abre'); clearInterval(reloj);
+  };
   $('#ct-body').addEventListener('focusin', e => {
     const el = e.target; if (!el.matches('tr:not(.ficha) [data-k="notas"]')) return;
     const r = CT.find(x => x.id === el.closest('tr').dataset.id); if (!r) return;
-    fila = r.id;
-    const c = el.closest('td').getBoundingClientRect(), w = Math.min(Math.max(380, c.width), innerWidth - 24);
-    const izq = Math.max(12, Math.min(c.left, innerWidth - w - 12)), arriba = Math.min(c.top, innerHeight - 200);
-    Object.assign(z.style, { left: izq + 'px', top: arriba + 'px', width: w + 'px' });
-    Object.assign(ayuda.style, { left: izq + 'px', top: (arriba - 18) + 'px' });
-    z.value = r.notas ? r.notas.replace(/\s+$/, '') + '\n' : ''; z.dataset.antes = r.notas || ''; z.classList.add('on'); ayuda.classList.add('on');
-    z.focus(); z.setSelectionRange(z.value.length, z.value.length);
+    if (fila && fila !== r.id) cerrar();
+    fila = r.id; sellado = false;
+    p.querySelector('.np-tit').textContent = '📝 Observación' + (r.nombre ? ' · ' + r.nombre : '');
+    z.value = r.notas ? r.notas.replace(/\s+$/, '') + '\n' : ''; z.dataset.antes = r.notas || '';
+    pintaSello(); clearInterval(reloj); reloj = setInterval(() => { if (!sellado) pintaSello(); }, 20000);
+    p.hidden = false; ubicar(); p.classList.remove('abre'); void p.offsetWidth; p.classList.add('abre');
+    el.blur(); z.focus(); z.setSelectionRange(z.value.length, z.value.length); z.scrollTop = z.scrollHeight;
   });
-  z.addEventListener('input', () => { const r = CT.find(x => x.id === fila); if (!r) return; r.notas = z.value; r.upd = Date.now(); ctGuardar(); });
-  z.addEventListener('blur', cerrar);
-  z.addEventListener('keydown', e => { if (e.key === 'Escape' || (e.key === 'Enter' && !e.shiftKey)) { e.preventDefault(); z.blur(); } });
-  window.addEventListener('scroll', () => { if (fila) z.blur(); }, { passive: true });
-  window.addEventListener('hashchange', () => { if (fila) z.blur(); });
+  z.addEventListener('input', () => {
+    const r = CT.find(x => x.id === fila); if (!r) return;
+    // Lo primero nuevo que se escribe lleva al tiro su línea de fecha y hora (así se ve que queda registrado)
+    const antes = String(z.dataset.antes || '').replace(/\s+$/, '');
+    if (!sellado && z.value.startsWith(antes)) {
+      const extra = z.value.slice(antes.length).replace(/^\s+/, '');
+      if (extra.trim() && !NOTA_SELLO_RE.test(extra.split('\n')[0])) {
+        z.value = (antes ? antes + '\n' : '') + selloNota() + '\n' + extra;
+        z.setSelectionRange(z.value.length, z.value.length); sellado = true; pintaSello();
+      }
+    }
+    r.notas = z.value; r.upd = Date.now(); ctGuardar(); ubicar();
+  });
+  z.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); cerrar(); } });
+  p.querySelector('.np-listo').addEventListener('click', cerrar);
+  document.addEventListener('pointerdown', e => { if (fila && !p.contains(e.target) && !e.target.closest(`tr[data-id="${fila}"] td.c-notas`)) cerrar(); }, true);
+  window.addEventListener('resize', () => { if (fila) ubicar(); });
+  window.addEventListener('hashchange', cerrar);
 }
 function ctPinta() {
   scRefrescar();
@@ -4697,12 +4749,12 @@ function ctPinta() {
   const opt = (arr, sel, vacio) => `<option value="">${vacio}</option>` + arr.map(x => `<option${x === sel ? ' selected' : ''}>${esc(x)}</option>`).join('');
   const fmtF = iso => { const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/); return m ? `${m[3]}-${m[2]}-${m[1]}` : iso; };
   const animar = ctAbierto && ctAbierto !== ctFichaVista; ctFichaVista = ctAbierto;   // la ficha se estira solo cuando recién se abre
-  $('#ct-body').innerHTML = lista.map((r, i) => `${i ? '<tr class="sep" aria-hidden="true"><td colspan="13"></td></tr>' : ''}<tr data-id="${r.id}" class="${i % 2 ? 'alt ' : ''}${r.id === ctNuevo ? 'nuevo ' : ''}${r.id === ctNeon ? 'neon ' : ''}${esVentaTipo(r.tipo) ? 't-venta ' : ''}${tipoColor(r.tipo)} ${r.fav ? 'fav ' : ''}${r.borrado ? 'borrado ' : ''}${r.id === ctAbierto ? 'abierta' : ''}">
+  $('#ct-body').innerHTML = lista.map((r, i) => `${i ? '<tr class="sep" aria-hidden="true"><td colspan="11"></td></tr>' : ''}<tr data-id="${r.id}" class="${i % 2 ? 'alt ' : ''}${r.id === ctNuevo ? 'nuevo ' : ''}${r.id === ctNeon ? 'neon ' : ''}${esVentaTipo(r.tipo) ? 't-venta ' : ''}${tipoColor(r.tipo)} ${r.fav ? 'fav ' : ''}${r.borrado ? 'borrado ' : ''}${r.id === ctAbierto ? 'abierta' : ''}">
     <td class="c-n"><button class="estrella" data-ct="fav" title="${r.fav ? 'Quitar de favoritos' : 'Marcar como cliente favorito'}">${r.fav ? '★' : '☆'}</button><span data-ct="ficha" title="${esc(ctSeg(r))} · ${ctExtras(r)} datos en la ficha. Clic para abrir la ficha.">${i + 1}</span>${r.histTip ? `<span class="hist-m" title="${esc('Contactado antes. ' + r.histTip)}">🔁</span>` : ''}</td>
     <td class="c-fecha"><input data-k="fecha" value="${esc(fmtF(r.fecha))}" placeholder="DD-MM-AAAA" title="${esc(fmtF(r.fecha))}"><input data-k="hora" class="hora-2" value="${esc(r.hora)}" placeholder="HH:MM" title="Hora"></td>
     <td class="c-rut"><input data-k="rut" value="${esc(r.rut)}" placeholder="RUT" title="${esc(r.rut)}"></td>
     <td class="c-nombre${RUTIF_ESPERA.has(r.id) ? ' rutif-espera' : ''}"><textarea data-k="nombre" class="nom" rows="1" placeholder="Pegar nombre" title="${esc(r.nombre)}">${esc(nombreDos(r.nombre))}</textarea></td>
-    <td class="c-dir"><textarea data-k="direccion" class="nom" rows="1" placeholder="Dirección" title="${esc(dirTexto(r))}">${esc(dirTexto(r))}</textarea></td>
+    <td class="c-dir"><textarea data-k="direccion" class="nom" rows="1" placeholder="Dirección" title="${esc(dirTexto(r))}">${esc(dirTexto(r))}</textarea><input data-k="mail" class="mail-2" type="email" value="${esc(r.mail || "")}" placeholder="Correo" title="${esc(r.mail || "Correo electrónico del cliente")}" autocomplete="off"></td>
     <td class="c-tel"><div class="tel-nom">${esc(r.nombre || '')}</div><input data-k="telefono" value="${esc(r.telefono)}" placeholder="9XXXXXXXX" title="${esc(r.telefono)}"><select data-k="origen" title="Compañía de origen. Cámbiala para revisar la deuda en otra compañía.">${origenOpciones(r.origen)}</select></td>
     <td class="c-deu">${deudaBoton(r)}</td>
     <td class="c-tipo"><select data-k="tipo" title="${esc(tipoTitulo(r.tipo))}">${tipoOpciones(r.tipo)}</select><div class="plan-caja"><div class="plan-ver${r.plan ? '' : ' vacio'}">${esc(r.plan ? r.plan.replace(/^Plan\s+/i, '') : 'Sin plan')}</div><select data-k="plan" class="plan-sel" title="${esc(r.plan || 'Elegir plan')}">${opt(PLANES_WA().map(p => p.title), r.plan, 'Sin plan')}</select></div></td>
