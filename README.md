@@ -68,6 +68,12 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 26-11-2026: ClaroGo! 2.35.0, Black Friday se copia directo a la planilla
+
+- En cada equipo de Black Friday el botón principal es "📋 Copiar": copia de inmediato, sin abrir otra ventana, con el mismo formato del botón Copiar del Stock (SKU, marca, modelo, pie, cuotas, total y stock) más la marca "BLACK FRIDAY" y el ahorro. Toma el SKU y el modelo del color con más unidades del stock publicado.
+- En Mi Planilla, "Pegar equipo del Stock" lo reconoce y llena los casilleros solo; el equipo queda indicado como "(Black Friday)".
+- Se reemplazó el botón "📋 Texto", que copiaba un texto que la planilla no reconocía. La lámina sigue disponible en "📸 Lámina".
+
 ### 25-11-2026: ClaroGo! 2.34.0 y GoExt 1.64.0, cada oferta enviada queda en Mi Planilla
 
 - Cada vez que se envía la oferta por WhatsApp desde GoExt, queda registrada sí o sí en Mi Planilla: si el cliente ya tiene fila (mismo teléfono), se agrega a su observación "📤 fecha hora Oferta enviada por WhatsApp: plan"; si no, se crea la fila con los datos de la llamada (teléfono, nombre, RUT y comentario).

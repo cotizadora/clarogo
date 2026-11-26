@@ -1315,7 +1315,7 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
   <div class="d-head"><div><h2 id="bfl-tit">Lámina Black Friday</h2><p>Imagen para enviar al cliente por WhatsApp</p></div><button class="d-x" data-close>✕</button></div>
   <div class="d-body">
     <canvas id="bfl-canvas" width="1080" height="1350" style="display:block;width:100%;aspect-ratio:4/5;border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.3);background:#050505"></canvas>
-    <div class="d-foot"><button class="btn" id="bfl-texto">📋 Copiar texto</button><button class="btn" id="bfl-bajar">⬇ Descargar</button><button class="btn red" id="bfl-copiar">📸 Copiar lámina para WhatsApp</button></div>
+    <div class="d-foot"><button class="btn" id="bfl-texto">📋 Copiar equipo</button><button class="btn" id="bfl-bajar">⬇ Descargar</button><button class="btn red" id="bfl-copiar">📸 Copiar lámina para WhatsApp</button></div>
   </div>
 </dialog>
 <dialog id="dlg-bfgraf" style="max-width:min(600px,96vw)">
@@ -1490,7 +1490,7 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.34.0';
+const APP_VERSION = '2.35.0';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -2212,19 +2212,20 @@ const bfFechas = () => `Del ${+BF_DESDE.slice(8)} al ${+BF_HASTA.slice(8)} de ${
 const bfNombre = o => `${o.marca === 'Apple' ? '' : o.marca + ' '}${o.modelo}`;
 // Unidades en el stock publicado: mismo equipo en todos sus colores (sin confundir 17 con 17 Ultra o 17T)
 const BF_VARIANTE = /^(pro|max|ultra|plus|lite|smart|elite|fe|air|mini|neo|t|c|e|s|focus|note|edge|signature)$/;
-function bfStock(o) {
+function bfEquipos(o) {
   const n = s => String(s || '').toLowerCase().replace(/\+.*$/, '').replace(/\b[45]g\b/g, ' ').replace(/\s+/g, ' ').trim();
   const base = n(o.modelo), marca = o.marca.toLowerCase();
-  let u = 0, hay = false;
+  const out = [];
   EQ.forEach(e => {
     if (String(e.marca || '').toLowerCase() !== marca) return;
     const m = n(e.modelo); if (!m.startsWith(base)) return;
     const resto = m.slice(base.length).trim().split(' ').filter(Boolean);
     if (resto.some(w => /\d/.test(w) || BF_VARIANTE.test(w))) return;
-    hay = true; u += +e.stock || 0;
+    out.push(e);
   });
-  return hay ? u : null;
+  return out;
 }
+function bfStock(o) { const l = bfEquipos(o); return l.length ? l.reduce((s, e) => s + (+e.stock || 0), 0) : null; }
 // Fotos: se cargan una vez y se reutilizan en las tarjetas, láminas y gráfica
 const bfFotos = {};
 const bfFoto = f => f ? (bfFotos[f] = bfFotos[f] || new Promise(r => { const im = new Image(); im.onload = () => r(im); im.onerror = () => r(null); im.src = `ofertas/bf/${f}.webp`; })) : Promise.resolve(null);
@@ -2250,11 +2251,17 @@ function bfPintar() {
         <span class="bf-pie">Pie <b>${clp(o.pie)}</b> · Total ${clp(o.total)}</span>
         ${o.ahorro ? `<span class="bf-antes">Antes <s>${clp(o.antes)}</s></span>` : ''}
         <span class="bf-ref">Precio referencia ${clp(o.ref)}</span>${st}</div>
-      <div class="bf-acc"><button class="bf-btn oro" data-bflam="${o.i}">📸 Lámina</button><button class="bf-btn" data-bftxt="${o.i}">📋 Texto</button></div>
+      <div class="bf-acc"><button class="bf-btn oro" data-bftxt="${o.i}" title="Copia el equipo listo para pegarlo en la planilla o en WhatsApp">📋 Copiar</button><button class="bf-btn" data-bflam="${o.i}">📸 Lámina</button></div>
     </article>`;
   }).join('');
 }
-const bfTexto = o => `*🖤 BLACK FRIDAY* · ${bfFechas().toLowerCase()}\n\n*${bfNombre(o)}*\n💳 *Pie:* ${clp(o.pie)}\n📆 *18 cuotas de:* ${clp(o.cuota)}\n💰 *Total:* ${clp(o.total)}${o.ahorro ? ` (antes ${clp(o.antes)})\n🔥 *Ahorras:* ${clp(o.ahorro)}` : ''}\n\n_Portabilidad. Sujeto a evaluación comercial y stock disponible._`;
+// Copiar de Black Friday: mismo formato que el botón Copiar del Stock (la planilla lo pega solo con "Pegar equipo del Stock")
+// más la marca BLACK FRIDAY. Toma el color con más unidades del stock publicado (su SKU y su modelo completo).
+function bfCopia(o) {
+  const e = bfEquipos(o).sort((a, b) => (+b.stock || 0) - (+a.stock || 0))[0], st = bfStock(o);
+  return `*🖤 BLACK FRIDAY* · ${bfFechas().toLowerCase()}\n\n*Financiamiento:* \n\n${e && e.sku ? `*SKU:* ${e.sku}\n` : ''}*MARCA:* ${String(o.marca).toUpperCase()}\n*MODELO:* ${e ? e.modelo : o.modelo}\n*PIE:* ${clp(o.pie)}\n*18 CUOTAS DE:* ${clp(o.cuota)}\n*PRECIO TOTAL:* ${clp(o.total)}${st != null ? `\n*STOCK:* ${st} unidades` : ''}${o.ahorro ? `\n🔥 *Ahorras:* ${clp(o.ahorro)} (antes ${clp(o.antes)})` : ''}\n\n_Portabilidad. Sujeto a evaluación comercial y stock disponible._`;
+}
+const bfCopiar = o => copyText(bfCopia(o), 'Copiado. En la planilla usa "Pegar equipo del Stock" y se llena solo.');
 function bfPreparar() {
   if ($('#bf-marca').options.length < 2) $('#bf-marca').innerHTML = '<option value="">Todas las marcas</option>' + [...new Set(BF.map(o => o.marca))].sort().map(m => `<option>${esc(m)}</option>`).join('');
   $('#bf-vig').textContent = `${bfFechas()} · Portabilidad con equipo · ${BF.length} ofertas`;
@@ -2464,11 +2471,11 @@ function initBlackFriday() {
   $('#bf-limpiar').onclick = () => { $('#bf-q').value = ''; $('#bf-marca').value = ''; $('#bf-pie').value = ''; $('#bf-solo').checked = false; $('#bf-orden').value = 'ahorro'; bfPintar(); };
   document.addEventListener('click', e => {
     const l = e.target.closest('[data-bflam]'); if (l) return bfLaminaAbrir(+l.dataset.bflam);
-    const t = e.target.closest('[data-bftxt]'); if (t) { const o = BF.find(x => x.i === +t.dataset.bftxt); if (o) copyText(bfTexto(o), 'Texto copiado. Pégalo en WhatsApp.'); }
+    const t = e.target.closest('[data-bftxt]'); if (t) { const o = BF.find(x => x.i === +t.dataset.bftxt); if (o) bfCopiar(o); }
   });
   $('#bfl-copiar').onclick = async () => { const o = bfActual; if (!o) return; const c = document.createElement('canvas'); c.width = 1080; c.height = 1350; bfLamina(c, o, await bfFoto(o.foto)); copyCanvas(c, bfArchivo(o), 'Lámina copiada. Pégala en WhatsApp con Ctrl+V.'); };
   $('#bfl-bajar').onclick = async () => { const o = bfActual; if (!o) return; const c = document.createElement('canvas'); c.width = 1080; c.height = 1350; bfLamina(c, o, await bfFoto(o.foto)); downloadBlob(await canvasBlob(c), bfArchivo(o)); };
-  $('#bfl-texto').onclick = () => bfActual && copyText(bfTexto(bfActual), 'Texto copiado. Pégalo en WhatsApp.');
+  $('#bfl-texto').onclick = () => bfActual && bfCopiar(bfActual);
   $('#bf-grafica').onclick = () => { abrir('dlg-bfgraf'); bfGraficaAnimar(); };
   $('#bfg-otra').onclick = bfGraficaAnimar;
   $('#bfg-copiar').onclick = async () => copyCanvas(await bfGraficaImagen(), 'black-friday.png', 'Imagen copiada. Pégala en WhatsApp con Ctrl+V.');
@@ -4518,14 +4525,15 @@ function leerEquipo(txt) {
   const pie = g(/PIE:\s*([^\n]+?)(?=\s+\d+\s*CUOTAS|\n|$)/i), total = g(/PRECIO TOTAL:\s*([^\n]+?)(?=\s+STOCK:|\n|$)/i);
   const c = t.match(/(\d+)\s*CUOTAS DE:\s*([^\n]+?)(?=\s+PRECIO|\n|$)/i);
   if (!sku && !modelo) return null;
-  return { sineq: false, eqsku: sku, eq: [marca, modelo].filter(Boolean).join(' '), eqpie: pie, eqtotal: total, eqforma: c ? `${c[1]} cuotas de ${c[2].trim()}` : '' };
+  const bf = /BLACK FRIDAY/i.test(t);   // copiado desde Black Friday: queda indicado en el equipo
+  return { sineq: false, eqsku: sku, eq: [marca, modelo].filter(Boolean).join(' ') + (bf ? ' (Black Friday)' : ''), eqpie: pie, eqtotal: total, eqforma: c ? `${c[1]} cuotas de ${c[2].trim()}` : '', eqbf: bf };
 }
 function ctPonerEquipo(id, txt) {
   const r = CT.find(x => x.id === id), d = leerEquipo(txt);
   if (!r) return;
   if (!d) return toast('No encontré un equipo en lo copiado. En Stock de Equipos presiona "Copiar" en el equipo y vuelve a intentarlo.');
   Object.assign(r, d, { upd: Date.now() }); ctGuardar(); ctPinta();
-  toast(`Equipo agregado: ${d.eq}`);
+  toast(d.eqbf ? `🖤 Equipo Black Friday agregado: ${d.eq}` : `Equipo agregado: ${d.eq}`);
 }
 let eqFila = '';
 async function ctPegarEquipo(id) {
