@@ -68,6 +68,11 @@ Opción con Tampermonkey:
 
 ## Historial de cambios
 
+### 26-11-2026: ClaroGo! 2.37.1, cliente abierto con zona premium y despliegue suave
+
+- Al abrir la ficha o la observación de un cliente, toda su zona (la fila y lo que se despliega) toma un mismo tono azul perla con un borde azul continuo, para que se vea que es el mismo cliente.
+- El despliegue ahora es lento y suave (alrededor de un segundo): la zona baja deslizándose desde la cápsula y el contenido aparece un poco después. Antes era brusco.
+
 ### 26-11-2026: ClaroGo! 2.37.0, planilla a todo el ancho, correo y observación desplegable
 
 - Arreglo: en la vista mediana la planilla quedaba cargada a la izquierda con espacio vacío a la derecha (los separadores entre clientes declaraban más columnas de las que hay). Ahora usa todo el ancho, con filas un poco más altas y letra más grande.

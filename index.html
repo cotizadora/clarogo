@@ -946,9 +946,6 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
 #ct-tabla.vm tbody tr.ficha{--cap:#ffffff;--capb:#c9d2e3}
 #ct-tabla.vm tbody tr.ficha.alt{--cap:#eef4ff;--capb:#b9c8e6}
 #ct-tabla.vm tbody tr.ficha > td{background:var(--cap);border:1.5px solid var(--capb);border-top:0;border-radius:0 0 16px 16px;box-shadow:0 8px 18px rgba(30,45,80,.12)}
-#ct-tabla.vm tbody tr.ficha.abre .ficha-in{animation:fichaEstira .6s cubic-bezier(.22,.8,.3,1) both;transform-origin:top center}
-@keyframes fichaEstira{from{max-height:0;opacity:0;transform:scaleY(.92)}60%{opacity:1}to{max-height:2400px;opacity:1;transform:none}}
-#ct-tabla .ficha-in{overflow:hidden}
 @media (prefers-reduced-motion:reduce){#ct-tabla .acc .fic .fic-fl,#ct-tabla.vm tbody tr.ficha.abre .ficha-in{animation:none}}
 /* Observación desplegable: sale de la cápsula del cliente y se estira hacia abajo */
 #nota-panel{position:absolute;z-index:30;background:#fff;border:1.5px solid #c9d2e3;border-top:0;border-radius:0 0 18px 18px;box-shadow:0 16px 32px rgba(30,45,80,.20);padding:10px 14px 12px}
@@ -975,6 +972,25 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
 #ct-tabla.vm tbody tr:not(.sep):not(.ficha) > td{height:68px}
 #ct-tabla.vm td input,#ct-tabla.vm td select,#ct-tabla.vm td textarea.nom{font-size:.88rem}
 #ct-tabla.vm td.c-dir input.mail-2{font-size:.76rem}
+/* Cliente abierto (ficha u observación): toda su zona toma un mismo tono azul perla con borde azul continuo,
+   así se ve que la parte de abajo es el mismo cliente. El despliegue es lento y suave. */
+#ct-tabla.vm tbody tr.abierta > td,#ct-tabla.vm tbody tr.nota-abierta > td{background:linear-gradient(180deg,#f6f9ff,#edf3ff) !important;border-top:2px solid #6f94d8;border-bottom-color:transparent}
+#ct-tabla.vm tbody tr.abierta > td.c-n,#ct-tabla.vm tbody tr.nota-abierta > td.c-n{border-left:2px solid #6f94d8}
+#ct-tabla.vm tbody tr.abierta > td.c-acc,#ct-tabla.vm tbody tr.nota-abierta > td.c-acc{border-right:2px solid #6f94d8}
+#ct-tabla.vm tbody tr.ficha > td,#ct-tabla.vm tbody tr.ficha.alt > td{background:linear-gradient(180deg,#edf3ff 0%,#f7f9ff 45%,#ffffff 100%);border:2px solid #6f94d8;border-top:0;box-shadow:0 18px 38px rgba(26,70,150,.16)}
+#nota-panel,#nota-panel.alt{background:linear-gradient(180deg,#edf3ff 0%,#f7f9ff 40%,#ffffff 100%);border:2px solid #6f94d8;border-top:0;box-shadow:0 18px 38px rgba(26,70,150,.16)}
+#nota-panel .np-txt{border-color:#c5d5f2;box-shadow:inset 0 1px 3px rgba(26,70,150,.08)}
+#ct-tabla tbody tr.nota-abierta > td.c-notas{background:linear-gradient(180deg,#fff9e3,#fff3c9) !important}
+/* Despliegue elegante: la zona baja deslizándose desde la cápsula y el contenido aparece un poco después */
+@keyframes zonaBaja{0%{clip-path:inset(0 0 100% 0 round 0 0 18px 18px);transform:translateY(-6px);opacity:.2}55%{opacity:1}100%{clip-path:inset(0 0 0 0 round 0 0 18px 18px);transform:none;opacity:1}}
+@keyframes contenidoAparece{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+#nota-panel.abre{animation:zonaBaja 1.1s cubic-bezier(.33,0,.15,1) both}
+#nota-panel.abre > *{animation:contenidoAparece .7s ease .35s both}
+#ct-tabla .ficha-in{display:grid;grid-template-rows:1fr}
+#ct-tabla .ficha-cont{min-height:0;overflow:hidden}
+#ct-tabla.vm tbody tr.ficha.abre .ficha-in{animation:fichaBaja 1s cubic-bezier(.33,0,.15,1) both}
+@keyframes fichaBaja{0%{grid-template-rows:0fr;opacity:.15;transform:translateY(-6px)}45%{opacity:1}100%{grid-template-rows:1fr;opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#nota-panel.abre,#nota-panel.abre > *,#ct-tabla.vm tbody tr.ficha.abre .ficha-in{animation:none}}
 </style>
 </head>
 <body data-view="inicio">
@@ -1557,7 +1573,7 @@ body[data-view="inicio"].tema-claro .pf-alerta{box-shadow:0 6px 16px rgba(255,18
    ════════════════════════════════════════════════════════════════ */
 const WSP = '56927690949';
 // Versión de ClaroGo!: se ve arriba en todas las secciones. Subirla en cada cambio publicado (como la extensión).
-const APP_VERSION = '2.37.0';
+const APP_VERSION = '2.37.1';
 const FORM_VENTA = 'https://docs.google.com/forms/d/e/1FAIpQLSe3nbhazUn9YVJqTLlP6tOdMZum-VkfEa9wTE8yAGPTqVuRsw/viewform';
 const GITHUB_SUBIR = 'https://github.com/cotizadora/clarogo/upload/main/datos';
 
@@ -3998,12 +4014,12 @@ function ctFichaHTML(r) {
   const modulo = ([t, cs]) => { const [c, ico] = MOD[t] || ['cliente', ICO.cliente]; return t === 'Equipo'
       ? `<section class="fi-mod fi-m-${c}"><div class="fi-t">${ico}<span>Equipo</span><label class="fi-sin"><input type="checkbox" data-k="sineq"${r.sineq ? ' checked' : ''}> Sin equipo</label><button type="button" class="btn sm" data-eqpegar${r.sineq ? ' disabled' : ''}>Pegar equipo del Stock</button></div><div class="fi-g${r.sineq ? ' fi-off' : ''}">${cs.map(campo).join('')}</div></section>`
       : `<section class="fi-mod fi-m-${c}"><div class="fi-t">${ico}<span>${t}</span></div><div class="fi-g">${cs.map(campo).join('')}</div>${t === 'Venta' ? fichaLineasHTML(r) : ''}</section>`; };
-  return `<tr class="ficha" data-id="${r.id}"><td colspan="11"><div class="ficha-in">
+  return `<tr class="ficha" data-id="${r.id}"><td colspan="11"><div class="ficha-in"><div class="ficha-cont">
     <div class="fi-top"><div class="fi-acc"><button type="button" class="btn sm red" data-ct="script" title="Abre el Script de Cierre con los datos de este cliente ya cargados">▶ Ir al Script de Cierre con este cliente</button><button type="button" class="btn sm" data-subir title="Abre el formulario de ventas con los datos de este cliente ya escritos">📤 Subir la venta al formulario</button><button type="button" class="btn sm" data-ct="copiar" title="Copia los datos del cliente para pegarlos en WhatsApp (por ejemplo, para la supervisora)">📋 Copiar datos del cliente para WhatsApp</button><button type="button" class="btn sm" data-exportar title="Archivo con todos los datos de este cliente, para WhatsApp o para otro computador">💾 Guardar cliente en un archivo</button><button type="button" class="btn sm dark" data-ct="ficha" title="Cierra la ficha. Todo queda guardado.">▴ Cerrar esta ficha</button></div>${deudaBarra(r)}</div>
     ${r.histTip ? `<div class="fi-hist">🔁 <b>Contactado antes:</b> ${esc(r.histTip)}</div>` : ''}
     <div class="fi-mods">${FICHA.map(modulo).join('')}
     <section class="fi-mod fi-m-obs"><div class="fi-t">${ICO.obs}<span>Observaciones</span></div><div class="fi-obs"><div class="fi-chips">${OBS_RAPIDAS.map(o => `<button type="button" data-obs="${esc(o)}">+ ${esc(o)}</button>`).join('')}</div><textarea data-k="notas" class="fi-obs-txt" rows="5" placeholder="Pega o escribe aquí todo lo que conversaste con el cliente">${esc(r.notas || '')}</textarea><small class="fi-obs-ayuda">Se ven todos los comentarios. Si son muchos, desliza con la rueda del mouse dentro del cuadro o arrastra la esquina de abajo a la derecha para agrandarlo.</small></div></section></div>
-    <div class="fi-nota">Todo se guarda solo, sea venta o no.</div></div></td></tr>`;
+    <div class="fi-nota">Todo se guarda solo, sea venta o no.</div></div></div></td></tr>`;
 }
 // Completa una fila con lo leído de Genesys: solo llena lo vacío, nunca borra lo que ya escribiste
 let ctPegarEnFila = () => {};
